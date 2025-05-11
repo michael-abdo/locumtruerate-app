@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Locum True Rate Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { font-family:'Inter',sans-serif; background:#eef2f7; margin:0; padding:2rem; color:#2c3e50; }
+    .banner { display:flex; align-items:center; justify-content:center; gap:0.75rem; background:linear-gradient(90deg,#6a11cb,#2575fc); color:#fff; padding:1rem 2rem; border-radius:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.1); max-width:800px; margin:0 auto 1rem; }
+    .banner i { font-size:1.75rem; }
+    .banner span { font-size:1.5rem; font-weight:600; }
+    .login-bar { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; }
+    .login-bar a { text-decoration:none; padding:0.5rem 1rem; border:2px solid #2575fc; border-radius:1rem; color:#2575fc; font-weight:500; background:#fff; transition:all .3s; }
+    .login-bar a:hover { background:#2575fc; color:#fff; transform:translateY(-2px); }
+    .calculator-form { background:#fff; border-radius:1.5rem; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-top:6px solid #2575fc; max-width:800px; margin:0 auto; }
+    .header { text-align:center; margin-bottom:1.5rem; }
+    .header i { font-size:2.5rem; color:#2575fc; }
+    .header h1 { margin:0; font-size:1.75rem; color:#2575fc; font-weight:600; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; }
+    label { display:flex; flex-direction:column; font-weight:500; font-size:0.95rem; }
+    select,input { margin-top:0.5rem; padding:0.75rem 1rem; border:none; border-radius:2rem; background:#f6f9fc; box-shadow:inset 0 2px 6px rgba(0,0,0,0.05); font-size:0.95rem; transition:all .3s; }
+    select:hover,input:hover,select:focus,input:focus { background:#fff; box-shadow:0 4px 20px rgba(37,117,252,0.15); outline:none; transform:translateY(-2px); }
+    .calculate-btn { display:block; margin:2rem auto 0; padding:1rem; width:100%; max-width:400px; background:linear-gradient(90deg,#2575fc,#6a11cb); color:#fff; font-size:1rem; font-weight:600; border:none; border-radius:2rem; cursor:pointer; box-shadow:0 6px 20px rgba(37,117,252,0.3); transition:all .3s; }
+    .calculate-btn:hover { transform:translateY(-3px); }
+    .board-section { background:#fff; border-radius:1.5rem; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-top:6px solid #2575fc; margin:2rem auto 0; max-width:800px; }
+    .board-section h2 { color:#2575fc; margin-top:0; font-size:1.5rem; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    th,td { padding:0.75rem; text-align:left; border-bottom:1px solid #eee; }
+    tr.best { background:#e6ffe6; }
+    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; }
+    .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:2rem; border-radius:1.5rem; box-shadow:0 12px 36px rgba(0,0,0,0.2); z-index:1000; max-width:500px; }
+    .true-bubble { background:#28a745; color:#fff; padding:1rem; font-size:1.25rem; font-weight:700; border-radius:1rem; text-align:center; margin-bottom:1rem; }
+    .close-btn { display:block; margin-top:1rem; padding:1rem; width:100%; background:#dc3545; color:#fff; border:none; border-radius:1rem; font-weight:600; cursor:pointer; transition:background .3s; }
+    .close-btn:hover { background:#c82333; }
+    /* Match popup style to calculator page */
+  .popup {
+    border-top: 6px solid #2575fc;
+  }
+  .popup .results {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .popup .results p {
+    background: #f6f9fc;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+    margin: 0;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+  <div class="banner"><i class="fas fa-calculator"></i><span>Locum True Rate Calculator</span></div>
+  <div class="login-bar"><a href="#">Job Search Board</a><a href="#">Applicant Login</a><a href="#">Recruiter Login</a></div>
+  <div class="calculator-form">
+    <div class="header"><i class="fas fa-stethoscope"></i><h1>Let’s Calculate Your Contract's True Rate</h1></div>
+    <div class="grid">
+      <label>Contract State
+        <select id="contractState">
+          <option value="">Select State</option>
+          <option value="AL">Alabama</option>
+          <option value="AK">Alaska</option>
+          <option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option>
+          <option value="CA">California</option>
+          <option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option>
+          <option value="DE">Delaware</option>
+          <option value="DC">District of Columbia</option>
+          <option value="FL">Florida</option>
+          <option value="GA">Georgia</option>
+          <option value="HI">Hawaii</option>
+          <option value="ID">Idaho</option>
+          <option value="IL">Illinois</option>
+          <option value="IN">Indiana</option>
+          <option value="IA">Iowa</option>
+          <option value="KS">Kansas</option>
+          <option value="KY">Kentucky</option>
+          <option value="LA">Louisiana</option>
+          <option value="ME">Maine</option>
+          <option value="MD">Maryland</option>
+          <option value="MA">Massachusetts</option>
+          <option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option>
+          <option value="MS">Mississippi</option>
+          <option value="MO">Missouri</option>
+          <option value="MT">Montana</option>
+          <option value="NE">Nebraska</option>
+          <option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NM">New Mexico</option>
+          <option value="NY">New York</option>
+          <option value="NC">North Carolina</option>
+          <option value="ND">North Dakota</option>
+          <option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option>
+          <option value="OR">Oregon</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option>
+          <option value="SC">South Carolina</option>
+          <option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option>
+          <option value="TX">Texas</option>
+          <option value="UT">Utah</option>
+          <option value="VT">Vermont</option>
+          <option value="VA">Virginia</option>
+          <option value="WA">Washington</option>
+          <option value="WV">West Virginia</option>
+          <option value="WI">Wisconsin</option>
+          <option value="WY">Wyoming</option>
+          <option value="PR">Puerto Rico</option>
+        </select>
+      </label>
+      <label>Practitioner Type
+        <select id="practitionerType">
+          <option value="MD">MD</option>
+          <option value="CRNA">CRNA</option>
+          <option value="NP">NP</option>
+          <option value="PA">PA</option>
+          <option value="RN">RN</option>
+          <option value="ScrubTech">Scrub Tech</option>
+        </select>
+      </label>
+      <label>Hourly Base Rate (per hour)<input id="hourly" type="number" /></label>
+      <label>Overtime Rate (per hour)<input id="otRate" type="number" /></label>
+      <label>Weekly Housing Stipend (per week)<input id="weeklyStipend" type="number" /></label>
+      <label>Daily Food Stipend (per day)<input id="dailyStipend" type="number" /></label>
+      <label>Contract Length in Weeks<input id="weeks" type="number" /></label>
+      <label>How many weeks off?<input id="pto" type="number" /></label>
+      <label>How may hours worked per shift<input id="hoursPerShift" type="number" /></label>
+      <label>How many shifts per week?<input id="shiftsPerWeek" type="number" /></label>
+      <label>How many miles roundtrip per day?<input id="dailyMiles" type="number" /></label>
+      <label>Completion Bonus (lump sum)<input id="completionBonus" type="number" /></label>
+    </div>
+    <button class="calculate-btn" onclick="addToBoard()">Calculate Your Contract's True Rate</button>
+  </div>
+  <div class="board-section">
+    <h2>Job Search Board - Compare Contracts</h2>
+    <table id="boardTable">
+      <thead><tr><th>#</th><th>State</th><th>Practitioner Type</th><th>True Rate</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="resultsPopup">
+    <div class="true-bubble" id="trueBubble"></div>
+    <h2>Your Contract Summary</h2>
+    <div class="results">
+      <p id="grossDaily"></p>
+      <p id="grossWeekly"></p>
+      <p id="grossMonthly"></p>
+      <p id="grossYearly"></p>
+      <p id="stipendTotal"></p>
+      <p id="mileageReimbursement"></p>
+      <p id="totalHours"></p>
+      <p id="completionBonusDisplay"></p>
+      <p id="trueRateDisplay"></p>
+    </div>
+    <button class="close-btn" onclick="closePopup()">Close</button>
+  </div>
+  <script>
+    let board = [];
+    function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+    function addToBoard() {
+      const state = document.getElementById('contractState').value;
+      const type = document.getElementById('practitionerType').value;
+      const h = val('hourly'), ot = val('otRate'), ws = val('weeklyStipend');
+      const ds = val('dailyStipend'), wk = val('weeks'), pto = val('pto');
+      const hps = val('hoursPerShift'), spw = val('shiftsPerWeek'), dm = val('dailyMiles');
+      const bonus = val('completionBonus');
+      const workedWeeks = wk - pto;
+      const workingShifts = workedWeeks * spw;
+      const totalHours = workingShifts * hps;
+      const weeklyHours = hps * spw;
+      const regularHours = Math.min(weeklyHours, 40);
+      const overtimeHours = Math.max(weeklyHours - 40, 0);
+      const grossDaily = spw ? (regularHours * h + overtimeHours * ot) / spw : 0;
+      const grossWeekly = grossDaily * spw;
+      const grossMonthly = grossWeekly * 4;
+      const grossYearly = grossWeekly * workedWeeks;
+      const stipendTotal = ws * workedWeeks + ds * workingShifts;
+      const mileageReimbursement = dm * workingShifts * 0.67;
+      const totalIncome = grossYearly + stipendTotal + mileageReimbursement + bonus;
+      const trueRate = totalHours ? totalIncome / totalHours : 0;
+      board.push({ state, type, trueRate });
+      renderBoard();
+      showPopup(grossDaily, grossWeekly, grossMonthly, grossYearly, stipendTotal, mileageReimbursement, totalHours, bonus, trueRate, type, state);
+    }
+    function renderBoard() {
+      const tbody = document.querySelector('#boardTable tbody');
+      tbody.innerHTML = '';
+      const best = Math.max(...board.map(c => c.trueRate));
+      board.forEach((c, i) => {
+        const tr = document.createElement('tr');
+        if (c.trueRate === best) tr.classList.add('best');
+        tr.innerHTML = `<td>${i+1}</td><td>${c.state}</td><td>${c.type}</td><td>$${c.trueRate.toFixed(2)} per hour</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function showPopup(gd, gw, gm, gy, st, mr, th, bonus, tr, type, state) {
+      document.getElementById('trueBubble').textContent = `${type} (${state}) True Rate: $${tr.toFixed(2)} per hour`;
+      document.getElementById('grossDaily').textContent = `Gross Daily: $${gd.toFixed(2)}`;
+      document.getElementById('grossWeekly').textContent = `Gross Weekly: $${gw.toFixed(2)}`;
+      document.getElementById('grossMonthly').textContent = `Gross Monthly: $${gm.toFixed(2)}`;
+      document.getElementById('grossYearly').textContent = `Gross Yearly: $${gy.toFixed(2)}`;
+      document.getElementById('stipendTotal').textContent = `Total Stipend: $${st.toFixed(2)}`;
+      document.getElementById('mileageReimbursement').textContent = `Mileage Reimbursement: $${mr.toFixed(2)}`;
+      document.getElementById('totalHours').textContent = `Total Hours: ${th}`;
+      document.getElementById('completionBonusDisplay').textContent = `Completion Bonus: $${bonus.toFixed(2)}`;
+      document.getElementById('trueRateDisplay').textContent = `True Rate: $${tr.toFixed(2)} per hour`;
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('resultsPopup').style.display = 'block';
+    }
+    function closePopup() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('resultsPopup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
+
+
