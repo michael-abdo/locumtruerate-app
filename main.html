@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Locum True Rate Calculator</title>
+  <title>Locum True Rate™ Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -18,7 +18,11 @@
     .header { text-align:center; margin-bottom:1.5rem; }
     .header i { font-size:2.5rem; color:#2575fc; }
     .header h1 { margin:0; font-size:1.75rem; color:#2575fc; font-weight:600; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.5rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
     label { display:flex; flex-direction:column; font-weight:500; font-size:0.95rem; }
     select,input { margin-top:0.5rem; padding:0.75rem 1rem; border:none; border-radius:2rem; background:#f6f9fc; box-shadow:inset 0 2px 6px rgba(0,0,0,0.05); font-size:0.95rem; transition:all .3s; }
     select:hover,input:hover,select:focus,input:focus { background:#fff; box-shadow:0 4px 20px rgba(37,117,252,0.15); outline:none; transform:translateY(-2px); }
@@ -31,7 +35,23 @@
     tr.best { background:#e6ffe6; }
     .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; }
     .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:2rem; border-radius:1.5rem; box-shadow:0 12px 36px rgba(0,0,0,0.2); z-index:1000; max-width:500px; }
-    .true-bubble { background:#28a745; color:#fff; padding:1rem; font-size:1.25rem; font-weight:700; border-radius:1rem; text-align:center; margin-bottom:1rem; }
+    .true-bubble {
+      display: block;
+      margin: 0 auto 1rem;
+      padding: 0.75rem;
+      width: 80%;
+      background: linear-gradient(90deg,#2575fc,#6a11cb);
+      color: #fff;
+      font-size: 1rem;
+      font-weight:600;
+      border:none;
+      border-radius:2rem;
+      text-align:center;
+      cursor:pointer;
+      box-shadow:0 6px 20px rgba(37,117,252,0.3);
+      transition:all .3s;
+    }
+    .true-bubble:hover { transform: translateY(-3px); }
     .close-btn { display:block; margin-top:1rem; padding:1rem; width:100%; background:#dc3545; color:#fff; border:none; border-radius:1rem; font-weight:600; cursor:pointer; transition:background .3s; }
     .close-btn:hover { background:#c82333; }
     /* Match popup style to calculator page */
@@ -54,7 +74,7 @@
 </style>
 </head>
 <body>
-  <div class="banner"><i class="fas fa-calculator"></i><span>Locum True Rate Calculator</span></div>
+  <div class="banner"><i class="fas fa-calculator"></i><span>Locum True Rate™ Calculator</span></div>
   <div class="login-bar"><a href="#">Job Search Board</a><a href="#">Applicant Login</a><a href="#">Recruiter Login</a></div>
   <div class="calculator-form">
     <div class="header"><i class="fas fa-stethoscope"></i><h1>Let’s Calculate Your Contract's True Rate</h1></div>
@@ -123,26 +143,27 @@
           <option value="NP">NP</option>
           <option value="PA">PA</option>
           <option value="RN">RN</option>
-          <option value="ScrubTech">Scrub Tech</option>
+          <option value="AA">AA</option>
+          <option value="Tech">Tech</option>
         </select>
       </label>
-      <label>Hourly Base Rate (per hour)<input id="hourly" type="number" /></label>
-      <label>Overtime Rate (per hour)<input id="otRate" type="number" /></label>
-      <label>Weekly Housing Stipend (per week)<input id="weeklyStipend" type="number" /></label>
-      <label>Daily Food Stipend (per day)<input id="dailyStipend" type="number" /></label>
+      <label>Hourly Base Rate <input id="hourly" type="number" /></label>
+      <label>Overtime Rate <input id="otRate" type="number" /></label>
+      <label>Weekly Housing Stipend<input id="weeklyStipend" type="number" /></label>
+      <label>Daily Food Stipend<input id="dailyStipend" type="number" /></label>
       <label>Contract Length in Weeks<input id="weeks" type="number" /></label>
       <label>How many weeks off?<input id="pto" type="number" /></label>
-      <label>How may hours worked per shift<input id="hoursPerShift" type="number" /></label>
+      <label>How many hours worked per week?<input id="hoursPerWeek" type="number" /></label>
       <label>How many shifts per week?<input id="shiftsPerWeek" type="number" /></label>
-      <label>How many miles roundtrip per day?<input id="dailyMiles" type="number" /></label>
-      <label>Completion Bonus (lump sum)<input id="completionBonus" type="number" /></label>
+      <label>How many miles driven round trip per day?<input id="dailyMiles" type="number" /></label>
+      <label>Completion Bonus<input id="completionBonus" type="number" /></label>
     </div>
     <button class="calculate-btn" onclick="addToBoard()">Calculate Your Contract's True Rate</button>
   </div>
   <div class="board-section">
     <h2>Job Search Board - Compare Contracts</h2>
     <table id="boardTable">
-      <thead><tr><th>#</th><th>State</th><th>Practitioner Type</th><th>True Rate</th></tr></thead>
+      <thead><tr><th>#</th><th>State</th><th>Practitioner Type</th><th>True Rate</th><th>Gross Contract Value</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -171,12 +192,12 @@
       const type = document.getElementById('practitionerType').value;
       const h = val('hourly'), ot = val('otRate'), ws = val('weeklyStipend');
       const ds = val('dailyStipend'), wk = val('weeks'), pto = val('pto');
-      const hps = val('hoursPerShift'), spw = val('shiftsPerWeek'), dm = val('dailyMiles');
+      const hps = val('hoursPerWeek'), spw = val('shiftsPerWeek'), dm = val('dailyMiles');
       const bonus = val('completionBonus');
       const workedWeeks = wk - pto;
       const workingShifts = workedWeeks * spw;
-      const totalHours = workingShifts * hps;
-      const weeklyHours = hps * spw;
+      const totalHours = hps * workedWeeks; // based on weekly hours input
+      const weeklyHours = hps; // total hours per week
       const regularHours = Math.min(weeklyHours, 40);
       const overtimeHours = Math.max(weeklyHours - 40, 0);
       const grossDaily = spw ? (regularHours * h + overtimeHours * ot) / spw : 0;
@@ -187,7 +208,7 @@
       const mileageReimbursement = dm * workingShifts * 0.67;
       const totalIncome = grossYearly + stipendTotal + mileageReimbursement + bonus;
       const trueRate = totalHours ? totalIncome / totalHours : 0;
-      board.push({ state, type, trueRate });
+      board.push({ state, type, trueRate, grossValue: totalIncome });
       renderBoard();
       showPopup(grossDaily, grossWeekly, grossMonthly, grossYearly, stipendTotal, mileageReimbursement, totalHours, bonus, trueRate, type, state);
     }
@@ -198,12 +219,12 @@
       board.forEach((c, i) => {
         const tr = document.createElement('tr');
         if (c.trueRate === best) tr.classList.add('best');
-        tr.innerHTML = `<td>${i+1}</td><td>${c.state}</td><td>${c.type}</td><td>$${c.trueRate.toFixed(2)} per hour</td>`;
+        tr.innerHTML = `<td>${i+1}</td><td>${c.state}</td><td>${c.type}</td><td>$${c.trueRate.toFixed(2)}</td><td>$${c.grossValue.toFixed(2)}</td>`;
         tbody.appendChild(tr);
       });
     }
     function showPopup(gd, gw, gm, gy, st, mr, th, bonus, tr, type, state) {
-      document.getElementById('trueBubble').textContent = `${type} (${state}) True Rate: $${tr.toFixed(2)} per hour`;
+      document.getElementById('trueBubble').textContent = `${type} (${state}) True Rate: $${tr.toFixed(2)}`;
       document.getElementById('grossDaily').textContent = `Gross Daily: $${gd.toFixed(2)}`;
       document.getElementById('grossWeekly').textContent = `Gross Weekly: $${gw.toFixed(2)}`;
       document.getElementById('grossMonthly').textContent = `Gross Monthly: $${gm.toFixed(2)}`;
@@ -212,7 +233,7 @@
       document.getElementById('mileageReimbursement').textContent = `Mileage Reimbursement: $${mr.toFixed(2)}`;
       document.getElementById('totalHours').textContent = `Total Hours: ${th}`;
       document.getElementById('completionBonusDisplay').textContent = `Completion Bonus: $${bonus.toFixed(2)}`;
-      document.getElementById('trueRateDisplay').textContent = `True Rate: $${tr.toFixed(2)} per hour`;
+      document.getElementById('trueRateDisplay').textContent = `True Rate: $${tr.toFixed(2)}`;
       document.getElementById('overlay').style.display = 'block';
       document.getElementById('resultsPopup').style.display = 'block';
     }
@@ -223,5 +244,11 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
