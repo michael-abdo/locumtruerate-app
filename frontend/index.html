@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Locum True Rate™ Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="banner">
+    <i class="fas fa-calculator"></i>
+    <span>Locum True Rate™ Calculator</span>
+  </div>
+  
+  <div class="login-bar">
+    <a href="job-board.html"><i class="fas fa-search"></i> Job Search Board</a>
+    <a href="#" id="login-button"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="#" id="register-button"><i class="fas fa-user-plus"></i> Register</a>
+    <a href="paycheck-calculator.html"><i class="fas fa-money-bill-wave"></i> Paycheck Calculator</a>
+  </div>
+
+  <!-- User menu - initially hidden, shown when logged in -->
+  <div class="user-menu" style="display: none;">
+    <span>Welcome, <span id="user-name">User</span></span>
+    <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> My Dashboard</a>
+    <a href="#" id="logout-button"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+
+  <div class="calculator-form">
+    <div class="header">
+      <i class="fas fa-stethoscope"></i>
+      <h1>Let's Calculate Your Contract's True Rate</h1>
+    </div>
+    
+    <div class="grid">
+      <label>Contract State
+        <select id="contractState">
+          <option value="">Select State</option>
+          <option value="AL">Alabama</option>
+          <option value="AK">Alaska</option>
+          <option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option>
+          <option value="CA">California</option>
+          <option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option>
+          <option value="DE">Delaware</option>
+          <option value="DC">District of Columbia</option>
+          <option value="FL">Florida</option>
+          <option value="GA">Georgia</option>
+          <option value="HI">Hawaii</option>
+          <option value="ID">Idaho</option>
+          <option value="IL">Illinois</option>
+          <option value="IN">Indiana</option>
+          <option value="IA">Iowa</option>
+          <option value="KS">Kansas</option>
+          <option value="KY">Kentucky</option>
+          <option value="LA">Louisiana</option>
+          <option value="ME">Maine</option>
+          <option value="MD">Maryland</option>
+          <option value="MA">Massachusetts</option>
+          <option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option>
+          <option value="MS">Mississippi</option>
+          <option value="MO">Missouri</option>
+          <option value="MT">Montana</option>
+          <option value="NE">Nebraska</option>
+          <option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NM">New Mexico</option>
+          <option value="NY">New York</option>
+          <option value="NC">North Carolina</option>
+          <option value="ND">North Dakota</option>
+          <option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option>
+          <option value="OR">Oregon</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option>
+          <option value="SC">South Carolina</option>
+          <option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option>
+          <option value="TX">Texas</option>
+          <option value="UT">Utah</option>
+          <option value="VT">Vermont</option>
+          <option value="VA">Virginia</option>
+          <option value="WA">Washington</option>
+          <option value="WV">West Virginia</option>
+          <option value="WI">Wisconsin</option>
+          <option value="WY">Wyoming</option>
+          <option value="PR">Puerto Rico</option>
+        </select>
+      </label>
+      
+      <label>Practitioner Type
+        <select id="practitionerType">
+          <option value="MD">MD</option>
+          <option value="CRNA">CRNA</option>
+          <option value="NP">NP</option>
+          <option value="PA">PA</option>
+          <option value="RN">RN</option>
+          <option value="AA">AA</option>
+          <option value="Tech">Tech</option>
+        </select>
+      </label>
+      
+      <label>Hourly Base Rate
+        <input id="hourly" type="number" min="0" step="0.01" />
+      </label>
+      
+      <label>Overtime Rate
+        <input id="otRate" type="number" min="0" step="0.01" />
+      </label>
+      
+      <label>Hourly Beeper Call Rate
+        <input id="beeperRate" type="number" min="0" step="0.01" />
+      </label>
+      
+      <label>How many hours on beeper call will you do each month?
+        <input id="beeperHoursPerMonth" type="number" min="0" />
+      </label>
+      
+      <label>Weekly Housing Stipend
+        <input id="weeklyStipend" type="number" min="0" step="0.01" />
+      </label>
+      
+      <label>Daily Food Stipend
+        <input id="dailyStipend" type="number" min="0" step="0.01" />
+      </label>
+      
+      <label>Contract Length in Weeks
+        <input id="weeks" type="number" min="0" />
+      </label>
+      
+      <label>How many weeks off?
+        <input id="pto" type="number" min="0" />
+      </label>
+      
+      <label>Hours worked per week?
+        <input id="hoursPerWeek" type="number" min="0" />
+      </label>
+      
+      <label>How many shifts per week?
+        <input id="shiftsPerWeek" type="number" min="0" />
+      </label>
+      
+      <label>How many miles driven round trip per day?
+        <input id="dailyMiles" type="number" min="0" />
+      </label>
+      
+      <label>Completion Bonus
+        <input id="completionBonus" type="number" min="0" step="0.01" />
+      </label>
+    </div>
+    
+    <button class="calculate-btn" id="calculate-button">Calculate Your Contract's True Rate</button>
+  </div>
+
+  <div class="board-section">
+    <h2>Job Search Board - Compare Contracts</h2>
+    <table id="boardTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>State</th>
+          <th>Type</th>
+          <th>True Rate</th>
+          <th>Gross Contract Value</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Results Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="resultsPopup">
+    <button class="true-bubble" id="trueBubble"></button>
+    <h2>Your Contract Summary</h2>
+    <div class="results">
+      <p id="grossContractValue"></p>
+      <p id="grossDaily"></p>
+      <p id="grossWeekly"></p>
+      <p id="grossMonthly"></p>
+      <p id="grossYearly"></p>
+      <p id="stipendTotal"></p>
+      <p id="mileageReimbursement"></p>
+      <p id="beeperCompDisplay"></p>
+      <p id="totalHours"></p>
+      <p id="completionBonusDisplay"></p>
+      <button id="trueRateDisplay" class="true-bubble"></button>
+    </div>
+    <div class="popup-actions">
+      <button class="save-btn" id="save-calculation-btn" style="display: none;">
+        <i class="fas fa-save"></i> Save This Calculation
+      </button>
+      <button class="close-btn" id="close-popup-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal" id="login-modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="login-tab">Login</button>
+        <button class="tab-btn" data-tab="register-tab">Register</button>
+      </div>
+      
+      <div class="tab-content" id="login-tab">
+        <h2>Login to Your Account</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary-btn">Login</button>
+          </div>
+        </form>
+      </div>
+      
+      <div class="tab-content" id="register-tab" style="display: none;">
+        <h2>Create a New Account</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input type="password" id="register-password" name="password" required>
+            <div class="password-strength" id="password-strength"></div>
+          </div>
+          <div class="form-group">
+            <label for="register-confirm-password">Confirm Password</label>
+            <input type="password" id="register-confirm-password" name="confirmPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="register-user-type">Account Type</label>
+            <select id="register-user-type" name="userType" required>
+              <option value="locum">Locum</option>
+              <option value="recruiter">Recruiter</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary-btn">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications container -->
+  <div id="toast-container"></div>
+
+  <script src="js/calculator.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
