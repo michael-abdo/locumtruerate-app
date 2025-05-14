@@ -1,0 +1,20 @@
+# wrangler.toml - Job Board Worker Configuration
+
+name = "locum-job-board-worker"
+main = "src/job-board.js"
+compatibility_date = "2025-01-01"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "locum_calculator"
+database_id = "${CLOUDFLARE_D1_ID}" # This will be replaced with your actual D1 database ID
+
+# Environment variables
+[vars]
+JWT_SECRET = "${JWT_SECRET}" # This will be replaced with your secure JWT secret
+
+# Routes (Custom Domain setup)
+routes = [
+  { pattern = "api.locumcalculator.com/api/job-board/*", custom_domain = true }
+]
