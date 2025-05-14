@@ -4,7 +4,7 @@
  */
 
 // Global variables
-const API_URL = 'https://api.truelocumrate.com'; // Will be replaced with your Cloudflare Worker URL
+const API_URL = 'https://api.locumtruerate.com'; // Will be replaced with your Cloudflare Worker URL
 let board = []; // Array to store calculations for comparison
 let currentUser = null; // Will store user info when logged in
 
