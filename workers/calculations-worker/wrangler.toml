@@ -16,5 +16,5 @@ JWT_SECRET = "${JWT_SECRET}" # This will be replaced with your secure JWT secret
 
 # Routes (Custom Domain setup)
 routes = [
-  { pattern = "api.locumcalculator.com/api/calculations/*", custom_domain = true }
+  { pattern = "api.locumtruerate.com/api/calculations/*", custom_domain = true }
 ]
