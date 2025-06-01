@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locum True Rate™ Locum Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #eef2f7; margin: 0; padding: 2rem; color: #2c3e50; }
+    .banner { display: flex; align-items: center; justify-content: center; gap: 0.75rem; background: linear-gradient(90deg, #6a11cb, #2575fc); color: #fff; padding: 1rem 2rem; border-radius: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 0.75rem 1.5rem; border-radius: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+    .nav-bar a { text-decoration: none; color: #2575fc; font-weight: 500; padding: 0.5rem 1rem; border-radius: 1rem; transition: background 0.3s; }
+    .nav-bar a:hover { background: #f0f8ff; }
+    .dashboard-container { display: grid; grid-template-columns: 1fr 3fr; gap: 2rem; }
+    .sidebar { background: #fff; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.05); }
+    .sidebar h2 { margin-top: 0; color: #2575fc; }
+    .sidebar ul { list-style: none; padding: 0; margin: 1rem 0 0; }
+    .sidebar li { margin-bottom: 1rem; }
+    .sidebar li a { text-decoration: none; color: #2c3e50; font-weight: 500; }
+    .sidebar li a:hover { color: #2575fc; }
+    .main-content { background: #fff; border-radius: 1.5rem; padding: 1.5rem; box-shadow: 0 6px 20px rgba(0,0,0,0.05); }
+    .section { margin-bottom: 2rem; }
+    .section h3 { margin-top: 0; color: #2575fc; }
+    .button { background: linear-gradient(90deg, #2575fc, #6a11cb); color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 1.5rem; cursor: pointer; font-weight: 600; transition: transform 0.3s; }
+    .button:hover { transform: translateY(-2px); }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.75rem; border-bottom: 1px solid #eee; text-align: left; }
+    .chat-container { background: #f6f9fc; border-radius: 1rem; padding: 1rem; height: 300px; overflow-y: scroll; margin-top: 1rem; }
+    .chat-message { margin-bottom: 0.75rem; }
+    .chat-message .author { font-weight: 600; margin-right: 0.5rem; }
+    .chat-input { display: flex; margin-top: 0.75rem; }
+    .chat-input input { flex: 1; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 1rem 0 0 1rem; background: #fff; }
+    .chat-input button { background: #2575fc; color: #fff; border: none; border-radius: 0 1rem 1rem 0; padding: 0 1.5rem; cursor: pointer; }
+    .rating-container { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; }
+    .star { color: #ccc; font-size: 1.5rem; cursor: pointer; }
+    .star.selected { color: #f5b301; }
+  </style>
+</head>
+<body>
+  <div class="banner"><i class="fas fa-user-md"></i><span>Locum Dashboard</span></div>
+  <div class="nav-bar">
+    <a href="#">Dashboard Home</a>
+    <a href="#">Profile</a>
+    <a href="#">Sign Out</a>
+  </div>
+  <div class="dashboard-container">
+    <div class="sidebar">
+      <h2>Menu</h2>
+      <ul>
+        <li><a href="#saved-jobs">Saved Jobs</a></li>
+        <li><a href="#chat">Chat with Recruiters</a></li>
+        <li><a href="#ratings">Rate Recruiters</a></li>
+      </ul>
+    </div>
+    <div class="main-content">
+      <!-- Saved Jobs -->
+      <div id="saved-jobs" class="section">
+        <h3>Saved Jobs</h3>
+        <table id="savedJobsTable">
+          <thead><tr><th>#</th><th>Position</th><th>Location</th><th>Posted By</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>CRNA - Hospital A</td><td>Huntsville, AL</td><td>Recruiter X</td><td><button onclick="applyJob(1)">Apply</button> <button onclick="removeSaved(1)">Remove</button></td></tr>
+            <tr><td>2</td><td>NP - Clinic B</td><td>Merritt Island, FL</td><td>Recruiter Y</td><td><button onclick="applyJob(2)">Apply</button> <button onclick="removeSaved(2)">Remove</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Chat -->
+      <div id="chat" class="section">
+        <h3>Chat with Recruiters</h3>
+        <div class="chat-container" id="chatContainer">
+          <!-- Placeholder chat messages -->
+          <div class="chat-message"><span class="author">Recruiter X:</span> Hello, are you interested in the CRNA position?</div>
+          <div class="chat-message"><span class="author">You:</span> Yes, I would like more details.</div>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Type a message..." />
+          <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+      <!-- Rate Recruiters -->
+      <div id="ratings" class="section">
+        <h3>Rate Your Recruiters</h3>
+        <div class="rating-container">
+          <span>Select Recruiter:</span>
+          <select id="recruiterSelect">
+            <option value="recruiterX">Recruiter X</option>
+            <option value="recruiterY">Recruiter Y</option>
+          </select>
+        </div>
+        <div class="rating-container" id="starContainer">
+          <span class="star" data-value="1" onclick="selectStar(this)">&#9733;</span>
+          <span class="star" data-value="2" onclick="selectStar(this)">&#9733;</span>
+          <span class="star" data-value="3" onclick="selectStar(this)">&#9733;</span>
+          <span class="star" data-value="4" onclick="selectStar(this)">&#9733;</span>
+          <span class="star" data-value="5" onclick="selectStar(this)">&#9733;</span>
+        </div>
+        <button class="button" onclick="submitRating()">Submit Rating</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function applyJob(id) { alert('Applying for job #' + id); }
+    function removeSaved(id) { alert('Removing saved job #' + id); }
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if(!message) return;
+      const container = document.getElementById('chatContainer');
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('chat-message');
+      msgDiv.innerHTML = `<span class="author">You:</span> ${message}`;
+      container.appendChild(msgDiv);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+    }
+    let selectedRating = 0;
+    function selectStar(el) {
+      selectedRating = parseInt(el.getAttribute('data-value'));
+      document.querySelectorAll('.star').forEach(star => {
+        star.classList.toggle('selected', parseInt(star.getAttribute('data-value')) <= selectedRating);
+      });
+    }
+    function submitRating() {
+      const recruiter = document.getElementById('recruiterSelect').value;
+      if(selectedRating === 0) { alert('Please select a star rating.'); return; }
+      alert('Submitting rating of ' + selectedRating + ' for ' + recruiter);
+      selectedRating = 0;
+      document.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
+    }
+  </script>
+</body>
+</html>
