@@ -1,0 +1,16 @@
+# Root wrangler configuration
+name = "locum-auth-worker"
+main = "workers/auth-worker/src/index.js"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "locum_calculator"
+database_id = "${CLOUDFLARE_D1_ID}"
+
+[vars]
+JWT_SECRET = "${JWT_SECRET}"
+
+routes = [
+  { pattern = "api.locumtruerate.com/api/auth/*", custom_domain = true }
+]
