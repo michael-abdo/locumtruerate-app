@@ -1,7 +1,7 @@
 # wrangler.toml - Calculations Worker Configuration
 
 name = "locum-calculations-worker"
-main = "src/calculations.js"
+main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 # D1 Database
