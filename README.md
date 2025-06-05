@@ -129,3 +129,6 @@ locumTrueRate/
 #####DEVELOPMENT ENVIRONMENT SETUP#######
 brew install node
 npm install -g wrangler
+### Environment variables
+Copy `.dev.vars.example` to `.dev.vars` and set `CLOUDFLARE_D1_ID` with your D1 database ID and `JWT_SECRET` with your JWT signing key.
+You can list D1 databases with `wrangler d1 list`.
