@@ -1,0 +1,6 @@
+# Ignore environment variable files
+.dev.vars
+.env
+
+# macOS files
+.DS_Store

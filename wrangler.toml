@@ -1,5 +1,5 @@
 # Root wrangler configuration
-name = "locum-auth-worker"
+name = "locumtruerate"
 main = "workers/auth-worker/src/index.js"
 compatibility_date = "2025-01-01"
 
