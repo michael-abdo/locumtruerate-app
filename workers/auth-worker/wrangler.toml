@@ -1,7 +1,7 @@
 # wrangler.toml - Auth Worker Configuration
 
 name = "locum-auth-worker"
-main = "src/auth.js"
+main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 # D1 Database

@@ -1,7 +1,7 @@
 # wrangler.toml - Job Board Worker Configuration
 
 name = "locum-job-board-worker"
-main = "src/job-board.js"
+main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 # D1 Database
