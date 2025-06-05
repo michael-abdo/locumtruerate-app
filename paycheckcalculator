@@ -33,10 +33,11 @@
 <body>
   <div class="banner"><i class="fas fa-wallet"></i><span>Locum Paycheck Calculator</span></div>
   <div class="login-bar">
-    <a href="#">Job Search Board</a>
-    <a href="#">Locum Login</a>
-    <a href="#">Recruiter Login</a>
-    <a href="#">Paycheck Calculator</a>
+    <a href="main.html">Rate Calculator</a>
+    <a href="jobs">Job Board</a>
+    <a href="LocumDashboard">Locum Dashboard</a>
+    <a href="RecruiterDashboard">Recruiter Dashboard</a>
+    <a href="paycheckcalculator">Paycheck Calculator</a>
   </div>
 
   <div class="calculator-form">
