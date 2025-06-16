@@ -1,0 +1,9 @@
+{
+  "extends": "@locumtruerate/config/typescript/base",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
