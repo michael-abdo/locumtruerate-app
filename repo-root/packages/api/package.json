@@ -1,40 +1,84 @@
 {
   "name": "@locumtruerate/api",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "version": "0.1.0",
+  "description": "LocumTrueRate tRPC API with cross-platform compatibility",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
     "test": "jest",
-    "dev": "tsx watch src/standalone.ts",
-    "build": "tsc"
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@locumtruerate/database": "workspace:*",
+    "@locumtruerate/shared": "workspace:*",
     "@locumtruerate/types": "workspace:*",
-    "@clerk/backend": "^0.38.4",
+    "@locumtruerate/database": "workspace:*",
     "@trpc/server": "^10.45.0",
-    "@upstash/ratelimit": "^1.0.0",
-    "@upstash/redis": "^1.28.0",
+    "zod": "^3.22.4",
+    "superjson": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "stripe": "^14.14.0",
-    "superjson": "^2.2.1",
-    "zod": "^3.22.4"
+    "nanoid": "^5.0.4",
+    "date-fns": "^3.0.6"
   },
   "devDependencies": {
-    "@locumtruerate/config": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^29.5.8",
     "@types/jsonwebtoken": "^9.0.5",
-    "@types/node": "^20.11.5",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.10.6",
+    "eslint": "^8.55.0",
     "jest": "^29.7.0",
-    "tsx": "^4.7.0",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/routers/auth.d.ts",
+      "default": "./dist/routers/auth.js"
+    },
+    "./jobs": {
+      "types": "./dist/routers/jobs.d.ts",
+      "default": "./dist/routers/jobs.js"
+    },
+    "./applications": {
+      "types": "./dist/routers/applications.d.ts",
+      "default": "./dist/routers/applications.js"
+    },
+    "./users": {
+      "types": "./dist/routers/users.d.ts",
+      "default": "./dist/routers/users.js"
+    },
+    "./companies": {
+      "types": "./dist/routers/companies.d.ts",
+      "default": "./dist/routers/companies.js"
+    },
+    "./organizations": {
+      "types": "./dist/routers/organizations.d.ts",
+      "default": "./dist/routers/organizations.js"
+    },
+    "./notifications": {
+      "types": "./dist/routers/notifications.d.ts",
+      "default": "./dist/routers/notifications.js"
+    },
+    "./analytics": {
+      "types": "./dist/routers/analytics.d.ts",
+      "default": "./dist/routers/analytics.js"
+    },
+    "./billing": {
+      "types": "./dist/routers/billing.d.ts", 
+      "default": "./dist/routers/billing.js"
+    },
+    "./support": {
+      "types": "./dist/routers/support.d.ts",
+      "default": "./dist/routers/support.js"
+    }
   }
 }
