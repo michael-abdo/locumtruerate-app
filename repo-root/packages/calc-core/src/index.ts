@@ -1,6 +1,8 @@
 // Main exports for LocumTrueRate calculation engine
 export * from './types';
 export { ContractCalculationEngine } from './engines/contract';
+export { PaycheckCalculationEngine } from './engines/paycheck';
+export { ContractComparisonEngine } from './engines/comparison';
 export { TaxCalculator } from './engines/tax-calculator';
 export { LocationDataProvider } from './engines/location-data';
 
