@@ -45,6 +45,14 @@ export default {
       return handleDeleteJob(id, env);
     }
     
+    if (url.pathname === '/api/applications' && request.method === 'GET') {
+      return handleGetApplications(env);
+    }
+    
+    if (url.pathname === '/api/applications' && request.method === 'POST') {
+      return handleCreateApplication(request, env);
+    }
+    
     return new Response('Not Found', { status: 404 });
   },
 };
@@ -160,4 +168,51 @@ async function handleDeleteJob(id, env) {
   return new Response('Job deleted successfully', {
     headers: corsHeaders,
   });
+}
+
+async function handleGetApplications(env) {
+  const applications = await env.APPLICATIONS.list();
+  const applicationList = [];
+  
+  for (const key of applications.keys) {
+    const application = await env.APPLICATIONS.get(key.name);
+    if (application) {
+      applicationList.push(JSON.parse(application));
+    }
+  }
+  
+  return new Response(JSON.stringify(applicationList), {
+    headers: { 
+      'content-type': 'application/json',
+      ...corsHeaders 
+    },
+  });
+}
+
+async function handleCreateApplication(request, env) {
+  try {
+    const application = await request.json();
+    const id = crypto.randomUUID();
+    const applicationWithId = { 
+      ...application, 
+      id, 
+      appliedAt: new Date().toISOString(),
+      status: 'pending'
+    };
+    
+    await env.APPLICATIONS.put(id, JSON.stringify(applicationWithId));
+    
+    return new Response(JSON.stringify(applicationWithId), {
+      status: 201,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response('Invalid request', { 
+      status: 400,
+      headers: corsHeaders 
+    });
+  }
 }
