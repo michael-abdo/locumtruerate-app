@@ -244,9 +244,13 @@
         
         function showMessage(message, type) {
             messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
-            setTimeout(() => {
-                messageDiv.innerHTML = '';
-            }, 5000);
+            
+            // Auto-hide after delay (except for persistent errors)
+            if (type !== 'error' || !message.includes('Network')) {
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+            }
         }
         
         function switchTab(tab) {
@@ -317,10 +321,21 @@
                         window.location.href = 'dashboard.html';
                     }, 1500);
                 } else {
-                    showMessage(result.error || 'Invalid email or password', 'error');
+                    // Handle specific error cases
+                    let errorMessage = result.error || 'Login failed';
+                    if (response.status === 429) {
+                        errorMessage = 'Too many login attempts. Please wait and try again.';
+                    } else if (response.status === 401) {
+                        errorMessage = 'Invalid email or password';
+                    }
+                    showMessage(errorMessage, 'error');
                 }
             } catch (error) {
-                showMessage('Network error. Please try again.', 'error');
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showMessage('Unable to connect to server. Please check your internet connection.', 'error');
+                } else {
+                    showMessage('Network error. Please try again.', 'error');
+                }
                 console.error('Login error:', error);
             } finally {
                 setLoading(loginForm, false);
@@ -365,7 +380,16 @@
                         document.getElementById('loginEmail').value = registerData.email;
                     }, 1500);
                 } else {
-                    showMessage(result.error || 'Registration failed', 'error');
+                    // Handle specific error cases
+                    let errorMessage = result.error || 'Registration failed';
+                    if (response.status === 429) {
+                        errorMessage = 'Too many registration attempts. Please wait and try again.';
+                    } else if (response.status === 400) {
+                        if (result.details && Array.isArray(result.details)) {
+                            errorMessage = result.details.join('. ');
+                        }
+                    }
+                    showMessage(errorMessage, 'error');
                 }
             } catch (error) {
                 showMessage('Network error. Please try again.', 'error');

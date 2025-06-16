@@ -248,7 +248,46 @@
             messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
             setTimeout(() => {
                 messageDiv.innerHTML = '';
-            }, 10000);
+            }, type === 'success' ? 3000 : 8000);
+        }
+
+        function validateForm(formData) {
+            const errors = [];
+            
+            // Email validation
+            const email = formData.get('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                errors.push('Please enter a valid email address');
+            }
+            
+            // Name validation
+            const fullName = formData.get('fullName');
+            if (!fullName || fullName.trim().length < 2) {
+                errors.push('Please enter your full name');
+            }
+            
+            // Cover letter validation
+            const coverLetter = formData.get('coverLetter');
+            if (!coverLetter || coverLetter.trim().length < 50) {
+                errors.push('Cover letter must be at least 50 characters long');
+            }
+            
+            // Resume file validation
+            const resumeFile = document.getElementById('resume').files[0];
+            if (!resumeFile) {
+                errors.push('Please upload your resume');
+            } else {
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(resumeFile.type)) {
+                    errors.push('Resume must be a PDF, DOC, or DOCX file');
+                }
+                if (resumeFile.size > 5 * 1024 * 1024) { // 5MB limit
+                    errors.push('Resume file must be less than 5MB');
+                }
+            }
+            
+            return errors;
         }
         
         async function loadJobDetails() {
@@ -313,6 +352,20 @@
             e.preventDefault();
             
             const formData = new FormData(applicationForm);
+            
+            // Client-side validation
+            const validationErrors = validateForm(formData);
+            if (validationErrors.length > 0) {
+                showMessage('Please fix the following errors: ' + validationErrors.join(', '), 'error');
+                return;
+            }
+            
+            // Disable form during submission
+            const submitButton = applicationForm.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            
             const applicationData = Object.fromEntries(formData);
             
             // Handle file upload (in a real app, you'd upload to cloud storage)
@@ -323,6 +376,10 @@
                 // In production, upload file to cloud storage and store URL
                 applicationData.resumeUrl = 'placeholder-url';
             }
+            
+            // Map form field names to API expected names
+            applicationData.name = applicationData.fullName;
+            delete applicationData.fullName;
             
             applicationData.appliedAt = new Date().toISOString();
             applicationData.status = 'pending';
@@ -336,6 +393,8 @@
                     body: JSON.stringify(applicationData),
                 });
                 
+                const result = await response.json();
+                
                 if (response.ok) {
                     showMessage('Application submitted successfully! We will review your application and get back to you soon.', 'success');
                     applicationForm.reset();
@@ -346,11 +405,26 @@
                         window.location.href = 'index.html';
                     }, 3000);
                 } else {
-                    showMessage('Failed to submit application. Please try again.', 'error');
+                    // Handle specific error cases
+                    let errorMessage = result.error || 'Failed to submit application';
+                    if (response.status === 429) {
+                        errorMessage = 'Too many applications submitted. Please wait before applying again.';
+                    } else if (response.status === 400 && result.details) {
+                        errorMessage = 'Validation failed: ' + result.details.join(', ');
+                    }
+                    showMessage(errorMessage, 'error');
                 }
             } catch (error) {
-                showMessage('Network error. Please check your connection and try again.', 'error');
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showMessage('Unable to connect to server. Please check your internet connection and try again.', 'error');
+                } else {
+                    showMessage('Network error. Please check your connection and try again.', 'error');
+                }
                 console.error('Error submitting application:', error);
+            } finally {
+                // Re-enable form
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
             }
         });
         

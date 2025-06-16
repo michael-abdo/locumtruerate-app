@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            background: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #7f8c8d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-tab.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+        
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .metric-change.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .metric-change.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .chart-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .table-content {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .trend-chart {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+        }
+        
+        .insights-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .insights-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .insight-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        .export-btn:hover {
+            background: #219a52;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .dashboard-nav {
+                gap: 0.5rem;
+            }
+            
+            .nav-tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">📊 Analytics Dashboard</div>
+            <div class="nav-links">
+                <a href="index.html">Job Board</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="auth.html">Login</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <nav class="dashboard-nav">
+            <button class="nav-tab active" onclick="switchSection('overview')">📈 Overview</button>
+            <button class="nav-tab" onclick="switchSection('jobs')">💼 Job Analytics</button>
+            <button class="nav-tab" onclick="switchSection('applications')">📋 Applications</button>
+            <button class="nav-tab" onclick="switchSection('performance')">⚡ Performance</button>
+            <button class="nav-tab" onclick="switchSection('insights')">🧠 AI Insights</button>
+        </nav>
+        
+        <section id="overview" class="dashboard-section active">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number" id="totalJobs">-</div>
+                    <div class="metric-label">Total Jobs Posted</div>
+                    <div class="metric-change positive" id="jobsChange">+12% this month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="totalApplications">-</div>
+                    <div class="metric-label">Total Applications</div>
+                    <div class="metric-change positive" id="applicationsChange">+24% this month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="totalViews">-</div>
+                    <div class="metric-label">Total Job Views</div>
+                    <div class="metric-change positive" id="viewsChange">+8% this month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="conversionRate">-</div>
+                    <div class="metric-label">Application Rate</div>
+                    <div class="metric-change negative" id="conversionChange">-2% this month</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Job Posting Trends</div>
+                    <div class="chart-controls">
+                        <button class="chart-btn active">7D</button>
+                        <button class="chart-btn">30D</button>
+                        <button class="chart-btn">90D</button>
+                        <button class="chart-btn">1Y</button>
+                    </div>
+                </div>
+                <div class="chart-placeholder">
+                    📈 Interactive chart showing job posting trends over time
+                    <br><small>In production: Integration with Chart.js, D3.js, or similar</small>
+                </div>
+            </div>
+            
+            <div class="insights-card">
+                <div class="insights-title">🚀 Quick Insights</div>
+                <div class="insight-item">
+                    <strong>Peak Activity:</strong> Most job applications come in on Tuesday mornings (9-11 AM)
+                </div>
+                <div class="insight-item">
+                    <strong>Top Categories:</strong> Engineering (45%), Design (23%), Marketing (18%)
+                </div>
+                <div class="insight-item">
+                    <strong>Geographic Trends:</strong> Remote jobs have 3x more applications than location-specific roles
+                </div>
+            </div>
+        </section>
+        
+        <section id="jobs" class="dashboard-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number" id="activeJobs">-</div>
+                    <div class="metric-label">Active Jobs</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="expiredJobs">-</div>
+                    <div class="metric-label">Expired Jobs</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="avgViews">-</div>
+                    <div class="metric-label">Avg Views per Job</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="avgApplications">-</div>
+                    <div class="metric-label">Avg Applications per Job</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Job Performance by Category</div>
+                    <button class="export-btn" onclick="exportJobData()">
+                        📊 Export Data
+                    </button>
+                </div>
+                <div class="chart-placeholder">
+                    📊 Bar chart showing applications and views by job category
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <div class="table-header">
+                    <div class="table-title">Top Performing Jobs</div>
+                </div>
+                <div class="table-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Views</th>
+                                <th>Applications</th>
+                                <th>Conversion</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topJobsTable">
+                            <tr>
+                                <td colspan="6" class="loading">Loading job performance data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <section id="applications" class="dashboard-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number" id="pendingApplications">-</div>
+                    <div class="metric-label">Pending Applications</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="acceptedApplications">-</div>
+                    <div class="metric-label">Accepted Applications</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="avgResponseTime">-</div>
+                    <div class="metric-label">Avg Response Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="candidateQuality">-</div>
+                    <div class="metric-label">Candidate Quality Score</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Application Status Distribution</div>
+                </div>
+                <div class="chart-placeholder">
+                    🥧 Pie chart showing application status breakdown
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Application Timeline</div>
+                </div>
+                <div class="trend-chart">
+                    📈 Applications received over time with trend analysis
+                </div>
+            </div>
+        </section>
+        
+        <section id="performance" class="dashboard-section">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number" id="pageLoadTime">1.2s</div>
+                    <div class="metric-label">Avg Page Load Time</div>
+                    <div class="metric-change positive">15% faster</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="uptime">99.9%</div>
+                    <div class="metric-label">System Uptime</div>
+                    <div class="metric-change positive">+0.1%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="apiCalls">45.2K</div>
+                    <div class="metric-label">API Calls (24h)</div>
+                    <div class="metric-change positive">+18%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number" id="searchSpeed">0.08s</div>
+                    <div class="metric-label">Avg Search Time</div>
+                    <div class="metric-change positive">22% faster</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">System Performance Monitoring</div>
+                </div>
+                <div class="chart-placeholder">
+                    ⚡ Real-time system performance metrics and health monitoring
+                </div>
+            </div>
+            
+            <div class="insights-card">
+                <div class="insights-title">🔧 Performance Recommendations</div>
+                <div class="insight-item">
+                    <strong>Optimization:</strong> Consider implementing job search result caching for 15% speed improvement
+                </div>
+                <div class="insight-item">
+                    <strong>Scale Planning:</strong> Current infrastructure can handle 10x traffic increase
+                </div>
+                <div class="insight-item">
+                    <strong>User Experience:</strong> Mobile users have 23% higher engagement with faster loading
+                </div>
+            </div>
+        </section>
+        
+        <section id="insights" class="dashboard-section">
+            <div class="insights-card">
+                <div class="insights-title">🧠 AI-Powered Business Insights</div>
+                <div class="insight-item">
+                    <strong>Hiring Prediction:</strong> Based on current trends, expect 40% increase in tech job postings next quarter
+                </div>
+                <div class="insight-item">
+                    <strong>Candidate Behavior:</strong> Candidates with portfolios are 3.2x more likely to get responses
+                </div>
+                <div class="insight-item">
+                    <strong>Optimal Timing:</strong> Jobs posted on Monday-Wednesday get 67% more applications
+                </div>
+                <div class="insight-item">
+                    <strong>Salary Trends:</strong> Remote positions show 15% higher salary expectations
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Predictive Analytics</div>
+                </div>
+                <div class="chart-placeholder">
+                    🔮 Machine learning predictions for hiring trends and market analysis
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Competitive Analysis</div>
+                </div>
+                <div class="chart-placeholder">
+                    🏆 Benchmarking against industry standards and competitor analysis
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        
+        function switchSection(sectionName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Load section data
+            loadSectionData(sectionName);
+        }
+        
+        async function loadSectionData(section) {
+            switch(section) {
+                case 'overview':
+                    await loadOverviewData();
+                    break;
+                case 'jobs':
+                    await loadJobAnalytics();
+                    break;
+                case 'applications':
+                    await loadApplicationAnalytics();
+                    break;
+                case 'performance':
+                    await loadPerformanceData();
+                    break;
+                case 'insights':
+                    await loadInsights();
+                    break;
+            }
+        }
+        
+        async function loadOverviewData() {
+            try {
+                // Load jobs data
+                const jobsResponse = await fetch(`${API_URL}/jobs`);
+                const jobs = await jobsResponse.json();
+                
+                // Load applications data
+                const appsResponse = await fetch(`${API_URL}/applications`);
+                const applications = await appsResponse.json();
+                
+                // Calculate metrics
+                const totalJobs = jobs.length;
+                const totalApplications = applications.length;
+                const totalViews = jobs.reduce((sum, job) => sum + (job.viewCount || 0), 0);
+                const conversionRate = totalViews > 0 ? ((totalApplications / totalViews) * 100).toFixed(1) : '0.0';
+                
+                // Update UI
+                document.getElementById('totalJobs').textContent = totalJobs;
+                document.getElementById('totalApplications').textContent = totalApplications;
+                document.getElementById('totalViews').textContent = totalViews.toLocaleString();
+                document.getElementById('conversionRate').textContent = conversionRate + '%';
+                
+            } catch (error) {
+                console.error('Error loading overview data:', error);
+            }
+        }
+        
+        async function loadJobAnalytics() {
+            try {
+                const response = await fetch(`${API_URL}/jobs`);
+                const jobs = await response.json();
+                
+                const activeJobs = jobs.filter(job => job.status === 'active').length;
+                const expiredJobs = jobs.filter(job => job.status === 'expired').length;
+                const avgViews = jobs.length > 0 ? Math.round(jobs.reduce((sum, job) => sum + (job.viewCount || 0), 0) / jobs.length) : 0;
+                
+                // Calculate average applications per job (mock data)
+                const avgApplications = Math.round(Math.random() * 10) + 5;
+                
+                document.getElementById('activeJobs').textContent = activeJobs;
+                document.getElementById('expiredJobs').textContent = expiredJobs;
+                document.getElementById('avgViews').textContent = avgViews;
+                document.getElementById('avgApplications').textContent = avgApplications;
+                
+                // Load top jobs table
+                loadTopJobsTable(jobs);
+                
+            } catch (error) {
+                console.error('Error loading job analytics:', error);
+            }
+        }
+        
+        function loadTopJobsTable(jobs) {
+            const sortedJobs = jobs
+                .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+                .slice(0, 10);
+            
+            const tableBody = document.getElementById('topJobsTable');
+            
+            if (sortedJobs.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="loading">No job data available</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = sortedJobs.map(job => {
+                const applications = Math.floor(Math.random() * 20) + 1;
+                const conversion = job.viewCount > 0 ? ((applications / job.viewCount) * 100).toFixed(1) : '0.0';
+                const statusClass = job.status === 'active' ? 'status-active' : 'status-expired';
+                
+                return `
+                    <tr>
+                        <td>${job.title}</td>
+                        <td>${job.company}</td>
+                        <td>${job.viewCount || 0}</td>
+                        <td>${applications}</td>
+                        <td>${conversion}%</td>
+                        <td><span class="status-badge ${statusClass}">${job.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        async function loadApplicationAnalytics() {
+            try {
+                const response = await fetch(`${API_URL}/applications`);
+                const applications = await response.json();
+                
+                const pending = applications.filter(app => app.status === 'pending').length;
+                const accepted = applications.filter(app => app.status === 'accepted').length;
+                
+                // Mock calculations
+                const avgResponseTime = '2.3 days';
+                const qualityScore = Math.floor(Math.random() * 20) + 80;
+                
+                document.getElementById('pendingApplications').textContent = pending;
+                document.getElementById('acceptedApplications').textContent = accepted;
+                document.getElementById('avgResponseTime').textContent = avgResponseTime;
+                document.getElementById('candidateQuality').textContent = qualityScore + '/100';
+                
+            } catch (error) {
+                console.error('Error loading application analytics:', error);
+            }
+        }
+        
+        async function loadPerformanceData() {
+            // Performance metrics are typically loaded from monitoring services
+            // This would integrate with services like Cloudflare Analytics, DataDog, etc.
+            console.log('Performance data loaded (mock implementation)');
+        }
+        
+        async function loadInsights() {
+            // AI insights would come from machine learning models
+            // This could integrate with services like OpenAI, AWS ML, Google AI, etc.
+            console.log('AI insights loaded (mock implementation)');
+        }
+        
+        function exportJobData() {
+            // Create CSV export of job data
+            const csvContent = "data:text/csv;charset=utf-8," 
+                + "Job Title,Company,Views,Applications,Status\n"
+                + "Software Engineer,Tech Corp,156,23,Active\n"
+                + "UX Designer,Design Co,89,12,Active\n"
+                + "Product Manager,Startup Inc,234,45,Expired\n";
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "job_analytics.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Initialize dashboard
+        loadOverviewData();
+        
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            const activeSection = document.querySelector('.dashboard-section.active').id;
+            loadSectionData(activeSection);
+        }, 300000);
+    </script>
+</body>
+</html>

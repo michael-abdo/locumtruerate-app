@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Profile - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            padding: 1.5rem 0;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .company-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .company-header-content {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        
+        .company-logo {
+            width: 120px;
+            height: 120px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498db;
+            flex-shrink: 0;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .company-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+        
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .company-description {
+            margin-bottom: 1.5rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .company-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 1rem 0;
+            cursor: pointer;
+            color: #6c757d;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .tab.active {
+            color: #3498db;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .benefit-icon {
+            width: 24px;
+            height: 24px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .job-card {
+            border: 1px solid #e9ecef;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .job-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.1);
+        }
+        
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .job-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .tech-tag {
+            background: #e9ecef;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .values-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .value-item {
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .value-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 4px;
+            height: 4px;
+            background: #3498db;
+            border-radius: 50%;
+        }
+        
+        .value-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #2c3e50;
+        }
+        
+        .value-description {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+        
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .photo-item {
+            position: relative;
+            padding-top: 60%;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .photo-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .company-header-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .company-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            
+            .company-actions {
+                justify-content: center;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">🏢 Job Board</a>
+            <nav class="nav-links">
+                <a href="index.html">Jobs</a>
+                <a href="companies.html">Companies</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="auth.html">Login</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading company profile...</p>
+        </div>
+        
+        <div id="companyProfile" style="display: none;">
+            <div class="company-header">
+                <div class="company-header-content">
+                    <div class="company-logo" id="companyLogo">TC</div>
+                    <div class="company-info">
+                        <h1 class="company-name" id="companyName">Loading...</h1>
+                        <div class="company-meta">
+                            <div class="company-meta-item">
+                                📍 <span id="companyLocation">Location</span>
+                            </div>
+                            <div class="company-meta-item">
+                                🏭 <span id="companyIndustry">Industry</span>
+                            </div>
+                            <div class="company-meta-item">
+                                👥 <span id="companySize">Size</span>
+                            </div>
+                            <div class="company-meta-item">
+                                📅 Founded <span id="companyFounded">Year</span>
+                            </div>
+                        </div>
+                        <p class="company-description" id="companyDescription">Loading description...</p>
+                        <div class="company-actions">
+                            <a href="#jobs" class="btn" id="viewJobsBtn">
+                                💼 View Open Positions (<span id="jobCount">0</span>)
+                            </a>
+                            <a href="#" class="btn btn-secondary" id="companyWebsite" target="_blank">
+                                🌐 Visit Website
+                            </a>
+                            <button class="btn btn-secondary" onclick="shareCompany()">
+                                📤 Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="activeJobsStat">0</div>
+                    <div class="stat-label">Active Jobs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="employeeCountStat">50-100</div>
+                    <div class="stat-label">Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="responseTimeStat">1 week</div>
+                    <div class="stat-label">Avg Response Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="applicationsStat">0</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('overview')">Overview</div>
+                <div class="tab" onclick="switchTab('jobs')">Jobs</div>
+                <div class="tab" onclick="switchTab('culture')">Culture & Values</div>
+                <div class="tab" onclick="switchTab('benefits')">Benefits</div>
+                <div class="tab" onclick="switchTab('media')">Photos & Videos</div>
+            </div>
+            
+            <div id="overview" class="tab-content active">
+                <div class="section">
+                    <h2 class="section-title">About Us</h2>
+                    <div id="longDescription" style="line-height: 1.8; color: #555;">
+                        <p>Loading detailed description...</p>
+                    </div>
+                </div>
+                
+                <div class="section" id="missionSection" style="display: none;">
+                    <h2 class="section-title">Our Mission</h2>
+                    <p id="companyMission" style="font-size: 1.1rem; line-height: 1.8; color: #555;">Loading mission...</p>
+                </div>
+                
+                <div class="section" id="techStackSection" style="display: none;">
+                    <h2 class="section-title">Tech Stack</h2>
+                    <div class="tech-stack" id="techStack">
+                        <!-- Tech tags will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="jobs" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Open Positions</h2>
+                    <div id="jobsList">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading jobs...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="culture" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Our Culture</h2>
+                    <p id="companyCulture" style="line-height: 1.8; color: #555; margin-bottom: 2rem;">Loading culture information...</p>
+                    
+                    <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: #2c3e50;">Our Values</h3>
+                    <div class="values-list" id="companyValues">
+                        <!-- Values will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="benefits" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Benefits & Perks</h2>
+                    <div class="benefits-grid" id="benefitsList">
+                        <!-- Benefits will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="media" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">Office & Team Photos</h2>
+                    <div class="photo-gallery" id="photoGallery">
+                        <!-- Photos will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="section" id="videosSection" style="display: none;">
+                    <h2 class="section-title">Videos</h2>
+                    <div id="videosList">
+                        <!-- Videos will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        let currentCompany = null;
+        let currentTab = 'overview';
+        
+        // Get company ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyId = urlParams.get('id');
+        
+        if (!companyId) {
+            window.location.href = 'companies.html';
+        }
+        
+        // Load company profile
+        async function loadCompanyProfile() {
+            try {
+                const response = await fetch(`${API_URL}/companies/${companyId}`);
+                if (!response.ok) {
+                    throw new Error('Company not found');
+                }
+                
+                currentCompany = await response.json();
+                displayCompanyProfile(currentCompany);
+                
+                // Load jobs after profile
+                loadCompanyJobs();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('companyProfile').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading company profile:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">😔</div>
+                        <h3>Company Not Found</h3>
+                        <p>The company you're looking for doesn't exist or has been removed.</p>
+                        <a href="companies.html" class="btn" style="margin-top: 1rem;">Browse Companies</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayCompanyProfile(company) {
+            // Update page title
+            document.title = `${company.name} - Company Profile`;
+            
+            // Company header
+            document.getElementById('companyLogo').textContent = company.logo || company.name.substring(0, 2).toUpperCase();
+            document.getElementById('companyName').textContent = company.name;
+            document.getElementById('companyLocation').textContent = company.location || 'Not specified';
+            document.getElementById('companyIndustry').textContent = company.industry || 'Technology';
+            document.getElementById('companySize').textContent = company.size || 'Not specified';
+            document.getElementById('companyFounded').textContent = company.founded || 'N/A';
+            document.getElementById('companyDescription').textContent = company.description || 'No description available';
+            
+            // Stats
+            document.getElementById('activeJobsStat').textContent = company.stats.activeJobs;
+            document.getElementById('jobCount').textContent = company.stats.activeJobs;
+            document.getElementById('employeeCountStat').textContent = company.employeeCount || '50-100';
+            document.getElementById('responseTimeStat').textContent = company.stats.responseTime;
+            document.getElementById('applicationsStat').textContent = company.stats.totalApplications.toLocaleString();
+            
+            // Website link
+            if (company.website) {
+                document.getElementById('companyWebsite').href = company.website;
+                document.getElementById('companyWebsite').style.display = 'inline-flex';
+            } else {
+                document.getElementById('companyWebsite').style.display = 'none';
+            }
+            
+            // Overview tab
+            if (company.longDescription) {
+                document.getElementById('longDescription').innerHTML = `<p>${company.longDescription}</p>`;
+            } else {
+                document.getElementById('longDescription').innerHTML = `<p>${company.description || 'No detailed description available'}</p>`;
+            }
+            
+            if (company.mission) {
+                document.getElementById('missionSection').style.display = 'block';
+                document.getElementById('companyMission').textContent = company.mission;
+            }
+            
+            if (company.techStack && company.techStack.length > 0) {
+                document.getElementById('techStackSection').style.display = 'block';
+                document.getElementById('techStack').innerHTML = company.techStack
+                    .map(tech => `<span class="tech-tag">${tech}</span>`)
+                    .join('');
+            }
+            
+            // Culture tab
+            if (company.culture) {
+                document.getElementById('companyCulture').textContent = company.culture;
+            } else {
+                document.getElementById('companyCulture').textContent = 'Culture information coming soon...';
+            }
+            
+            if (company.values && company.values.length > 0) {
+                document.getElementById('companyValues').innerHTML = company.values
+                    .map(value => `
+                        <div class="value-item">
+                            <div class="value-title">${value.title || value}</div>
+                            ${value.description ? `<div class="value-description">${value.description}</div>` : ''}
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                document.getElementById('companyValues').innerHTML = '<p style="color: #6c757d;">Values information coming soon...</p>';
+            }
+            
+            // Benefits tab
+            if (company.benefits && company.benefits.length > 0) {
+                document.getElementById('benefitsList').innerHTML = company.benefits
+                    .map(benefit => `
+                        <div class="benefit-item">
+                            <div class="benefit-icon">✓</div>
+                            <div>${benefit}</div>
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                document.getElementById('benefitsList').innerHTML = '<p style="color: #6c757d;">Benefits information coming soon...</p>';
+            }
+            
+            // Photos
+            if (company.photos && company.photos.length > 0) {
+                document.getElementById('photoGallery').innerHTML = company.photos
+                    .map(photo => `
+                        <div class="photo-item">
+                            <img src="${photo.url}" alt="${photo.caption || 'Company photo'}">
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                document.getElementById('photoGallery').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">📷</div>
+                        <p>No photos available yet</p>
+                    </div>
+                `;
+            }
+            
+            // Videos
+            if (company.videos && company.videos.length > 0) {
+                document.getElementById('videosSection').style.display = 'block';
+                document.getElementById('videosList').innerHTML = company.videos
+                    .map(video => `
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="margin-bottom: 0.5rem;">${video.title}</h4>
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+                                <iframe src="${video.url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    `)
+                    .join('');
+            }
+        }
+        
+        async function loadCompanyJobs() {
+            try {
+                const response = await fetch(`${API_URL}/companies/${companyId}/jobs`);
+                const data = await response.json();
+                
+                if (data.jobs && data.jobs.length > 0) {
+                    document.getElementById('jobsList').innerHTML = data.jobs
+                        .map(job => `
+                            <div class="job-card" onclick="window.location.href='job-details.html?id=${job.id}'">
+                                <a href="job-details.html?id=${job.id}" class="job-title">${job.title}</a>
+                                <div class="job-meta">
+                                    <span>📍 ${job.location}</span>
+                                    <span>💼 ${job.jobType || 'Full-time'}</span>
+                                    <span>📅 ${new Date(job.createdAt).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        `)
+                        .join('');
+                } else {
+                    document.getElementById('jobsList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💼</div>
+                            <p>No open positions at the moment</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                document.getElementById('jobsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Failed to load jobs</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function switchTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${getTabIndex(tab)})`).classList.add('active');
+            
+            // Update active content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            
+            currentTab = tab;
+            
+            // Update URL
+            if (tab === 'jobs') {
+                document.getElementById('viewJobsBtn').href = '#jobs';
+            }
+        }
+        
+        function getTabIndex(tab) {
+            const tabs = ['overview', 'jobs', 'culture', 'benefits', 'media'];
+            return tabs.indexOf(tab) + 1;
+        }
+        
+        function shareCompany() {
+            if (navigator.share && currentCompany) {
+                navigator.share({
+                    title: currentCompany.name,
+                    text: `Check out ${currentCompany.name} on our job board!`,
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href);
+                alert('Company profile link copied to clipboard!');
+            }
+        }
+        
+        // Handle hash navigation
+        if (window.location.hash === '#jobs') {
+            switchTab('jobs');
+        }
+        
+        // Load company profile on page load
+        loadCompanyProfile();
+    </script>
+</body>
+</html>

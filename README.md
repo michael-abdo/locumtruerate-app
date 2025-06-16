@@ -1,160 +1,119 @@
-# 🚀 Modern Job Board Application
+# Job Board Application
 
-A complete, production-ready job board built with Cloudflare Workers, featuring advanced search, employer authentication, and real-time application tracking.
+A comprehensive job board platform built with Cloudflare Workers, featuring AI-powered search, enterprise support, and advanced analytics.
 
-## ✨ Features
+## Features
 
-### 🔍 **Advanced Job Search**
-- Real-time search across title, company, description, and tags
-- Filter by job type, location, and category
-- Search term highlighting
-- Smart sorting (newest, oldest, alphabetical)
-- Paginated results (10 jobs per page)
+### Core Job Board
+- **Job Listings**: Browse and search job postings with advanced filtering
+- **Job Details**: Detailed job pages with company information
+- **Application System**: Apply to jobs with resume and cover letter
+- **Email Notifications**: Automated emails for applications and status updates
 
-### 💼 **Comprehensive Job Management**
-- Full CRUD operations for job postings
-- 9 predefined categories (Engineering, Design, Marketing, etc.)
-- Custom tag system for skills/technologies
-- Job expiration tracking
-- Rich job descriptions with metadata
+### Advanced Search & AI
+- **AI-Powered Search**: Semantic job matching using natural language
+- **Smart Recommendations**: Personalized job suggestions based on user profile
+- **Skill Synonyms**: Understands related skills (e.g., "JS" matches "JavaScript")
+- **Location Intelligence**: Recognizes location aliases and remote options
 
-### 📋 **Application System**
-- Complete application form with validation
-- File upload support for resumes (PDF, DOC, DOCX)
-- Cover letter and portfolio URL collection
-- Application status tracking
-- Email and phone contact management
+### Application Management
+- **AI Scoring System**: Automatically scores and ranks applications
+- **Bulk Operations**: Process multiple applications at once
+- **Application Analytics**: Track application metrics and conversion rates
+- **Customizable Scoring**: Configure scoring weights for different criteria
 
-### 👔 **Employer Authentication**
-- Secure registration and login system
-- Password hashing with SHA-256
-- JWT-like token authentication
-- Protected employer dashboard
-- Session management
+### Enterprise Features
+- **Multi-Company Support**: Manage multiple companies under one organization
+- **Role-Based Access**: Different permission levels for team members
+- **Team Collaboration**: Invite users and assign roles
+- **Activity Tracking**: Monitor all organization activities
 
-### 📊 **Admin Dashboard**
-- Overview with key statistics
-- Job management interface
-- Application review system
-- User-friendly job posting workflow
-- Real-time data updates
+### Company Profiles
+- **Public Profiles**: Showcase company culture, benefits, and values
+- **Company Pages**: Dedicated pages for each company
+- **Job Listings by Company**: View all jobs from a specific company
+- **Rich Media**: Support for photos, videos, and social links
 
-### 🛠 **Technical Excellence**
-- **Serverless**: Built on Cloudflare Workers
-- **Fast**: Global edge deployment
-- **Scalable**: KV storage for data persistence
-- **Secure**: CORS support, input validation
-- **Mobile-first**: Responsive design
-- **Developer-friendly**: Complete API documentation
+### Analytics Dashboard
+- **Real-Time Metrics**: Track jobs, applications, and performance
+- **Conversion Tracking**: Monitor application-to-hire rates
+- **Performance Insights**: Identify top-performing jobs
+- **Export Capabilities**: Download data for further analysis
 
-## 🏗 Architecture
+### Job Management
+- **Bulk Operations**: Activate, deactivate, or extend multiple jobs
+- **Auto-Renewal**: Automatically renew high-performing jobs
+- **Smart Recommendations**: Get suggestions to improve job performance
+- **Expiration Management**: Track and manage job expiration dates
 
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │  Cloudflare      │    │   KV Storage    │
-│   (HTML/JS)     │◄──►│   Workers        │◄──►│   (Database)    │
-│                 │    │   (API Layer)    │    │                 │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-         ▼                       ▼                       ▼
-   • Job Search UI        • REST API            • Jobs Storage
-   • Application Form     • Authentication      • Applications DB
-   • Employer Dashboard   • CRUD Operations     • Employer Accounts
-   • Responsive Design    • CORS Support        • Session Data
-```
+## Pages
 
-## 🚀 Quick Start
+### Public Pages
+- `index.html` - Main job listings page with AI search
+- `companies.html` - Browse all companies
+- `company-profile.html` - Individual company profiles
+- `job-details.html` - Detailed job information
+- `auth.html` - Login/Register page
 
-### 1. Clone and Install
-```bash
-git clone <repository-url>
-cd job-board
-npm install
-```
+### Dashboard Pages
+- `dashboard.html` - Employer dashboard
+- `analytics.html` - Advanced analytics dashboard
+- `applications-manager.html` - AI-powered application management
+- `enterprise-dashboard.html` - Enterprise organization management
 
-### 2. Deploy to Cloudflare
-```bash
-# Automated deployment with KV namespace setup
-npm run deploy
+## API Endpoints
 
-# Or manual deployment
-wrangler auth
-wrangler publish
-```
+### Jobs
+- `GET /api/jobs` - List all active jobs
+- `POST /api/jobs` - Create new job
+- `GET /api/jobs/:id` - Get job details
+- `PUT /api/jobs/:id` - Update job
+- `DELETE /api/jobs/:id` - Delete job
+- `POST /api/jobs/bulk` - Bulk job operations
 
-### 3. Configure KV Namespaces
-The deployment script will automatically create and configure:
-- `JOBS` - Job postings storage
-- `APPLICATIONS` - Application submissions
-- `EMPLOYERS` - Employer accounts
+### Applications
+- `GET /api/applications` - List applications
+- `POST /api/applications` - Submit application
+- `PUT /api/applications/:id/status` - Update application status
+- `GET /api/applications/:id/score` - Get AI score
+- `POST /api/applications/batch-score` - Batch score applications
 
-### 4. Access Your Job Board
-- **Public Job Board**: `https://your-worker.your-subdomain.workers.dev`
-- **Employer Login**: `https://your-worker.your-subdomain.workers.dev/auth.html`
-- **Admin Dashboard**: `https://your-worker.your-subdomain.workers.dev/dashboard.html`
+### Companies
+- `GET /api/companies` - List public companies
+- `GET /api/companies/:id` - Get company profile
+- `GET /api/companies/:id/jobs` - Get company jobs
+- `PUT /api/companies/:id/profile` - Update company profile
 
-## 📖 Usage
+### Search & AI
+- `GET /api/search/jobs` - Advanced job search
+- `GET /api/search/suggestions` - Search suggestions
+- `POST /api/recommendations` - Get job recommendations
+- `POST /api/search/intelligent` - AI-powered search
 
-### For Job Seekers
-1. Browse jobs at the main page
-2. Use search and filters to find relevant positions
-3. Click "Apply Now" on any job
-4. Fill out the application form with resume upload
-5. Submit and track application status
+### Enterprise
+- `POST /api/enterprise/organizations` - Create organization
+- `GET /api/enterprise/organizations/:id` - Get organization
+- `POST /api/enterprise/organizations/:id/companies` - Add company
+- `POST /api/enterprise/organizations/:id/users` - Invite user
+- `GET /api/enterprise/organizations/:id/dashboard` - Dashboard data
 
-### For Employers
-1. Visit `/auth.html` to register/login
-2. Access dashboard at `/dashboard.html`
-3. Post jobs through the main interface
-4. Review applications in the dashboard
-5. Manage job postings and applicants
+### Analytics
+- `GET /api/jobs/:id/rankings` - Get application rankings
+- `GET /api/jobs/:id/analytics` - Get job analytics
+- `GET /api/renewals/status` - Get renewal status
+- `POST /api/renewals/process` - Process auto-renewals
 
-## 🛠 Development
+## Setup
 
-### Local Development
-```bash
-# Start local development server
-npm run dev
+1. Clone the repository
+2. Install Wrangler CLI: `npm install -g wrangler`
+3. Configure your KV namespaces in `wrangler.toml`
+4. Deploy with: `wrangler publish`
 
-# Open browser to http://localhost:8787
-```
+## Environment Configuration
 
-### Project Structure
-```
-├── public/               # Frontend files
-│   ├── index.html       # Main job board
-│   ├── apply.html       # Application form
-│   ├── auth.html        # Employer authentication
-│   └── dashboard.html   # Employer dashboard
-├── src/                 # Backend API
-│   └── index.js         # Cloudflare Worker
-├── docs/                # Documentation
-│   └── API.md          # Complete API reference
-├── wrangler.toml        # Cloudflare configuration
-├── deploy.sh           # Automated deployment
-└── package.json        # Dependencies and scripts
-```
-
-### Available Scripts
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run deploy   # Deploy with setup script
-npm run publish  # Direct Cloudflare deployment
-npm run setup    # Run setup script
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-Create `.env` file:
-```env
-CLOUDFLARE_API_TOKEN=your-token-here
-```
-
-### Wrangler Configuration
 Update `wrangler.toml` with your KV namespace IDs:
+
 ```toml
 [[kv_namespaces]]
 binding = "JOBS"
@@ -164,93 +123,42 @@ id = "your-jobs-namespace-id"
 binding = "APPLICATIONS"
 id = "your-applications-namespace-id"
 
-[[kv_namespaces]]
-binding = "EMPLOYERS"
-id = "your-employers-namespace-id"
+# ... other namespaces
 ```
 
-## 📚 API Documentation
+## Technologies Used
 
-Complete API documentation is available at [`docs/API.md`](./docs/API.md).
+- **Backend**: Cloudflare Workers (Serverless)
+- **Storage**: Cloudflare KV (Key-Value store)
+- **Frontend**: Vanilla JavaScript, HTML, CSS
+- **AI Features**: Custom scoring algorithms
+- **Email**: Integrated email service
 
-### Key Endpoints
-- `GET /api/jobs` - List all jobs
-- `POST /api/jobs` - Create job posting
-- `POST /api/applications` - Submit application
-- `POST /api/auth/register` - Employer registration
-- `POST /api/auth/login` - Employer login
+## Security Features
 
-### Example API Usage
-```javascript
-// Fetch all jobs
-const response = await fetch('/api/jobs');
-const jobs = await response.json();
+- JWT-based authentication
+- Role-based access control
+- Secure password hashing
+- CORS protection
+- Input validation
 
-// Submit application
-const application = {
-  jobId: 'job-uuid',
-  fullName: 'John Doe',
-  email: 'john@example.com',
-  coverLetter: 'I am interested...'
-};
+## Performance Optimizations
 
-await fetch('/api/applications', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(application)
-});
-```
+- Efficient KV operations
+- Caching strategies
+- Lazy loading
+- Pagination
+- Bulk operations
 
-## 🔒 Security Features
+## Future Enhancements
 
-- **Password Hashing**: SHA-256 encryption for stored passwords
-- **Token Authentication**: JWT-like tokens for session management
-- **Input Validation**: Server-side validation for all inputs
-- **CORS Protection**: Configurable cross-origin resource sharing
-- **XSS Prevention**: Input sanitization and output encoding
+- Real-time notifications
+- Video interviews
+- Advanced analytics
+- Mobile app
+- API rate limiting
+- Webhook integrations
 
-## 🚀 Production Deployment
+## License
 
-### Cloudflare Workers
-1. **Sign up** for Cloudflare account
-2. **Install** Wrangler CLI: `npm install -g wrangler`
-3. **Authenticate**: `wrangler auth`
-4. **Deploy**: `npm run deploy`
-
-### Custom Domain (Optional)
-1. Add your domain to Cloudflare
-2. Configure DNS settings
-3. Update `wrangler.toml` with custom domain
-4. Redeploy: `wrangler publish`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🎯 Roadmap
-
-- [ ] Email notifications for applications
-- [ ] Advanced analytics dashboard
-- [ ] Multi-company support
-- [ ] Application status workflow
-- [ ] Resume parsing and matching
-- [ ] Integration with external job boards
-- [ ] Mobile app development
-
-## 💡 Support
-
-- **Documentation**: [API Docs](./docs/API.md)
-- **Issues**: [GitHub Issues](../../issues)
-- **Discussions**: [GitHub Discussions](../../discussions)
-
----
-
-**Built with ❤️ using Cloudflare Workers**
+This project is proprietary software. All rights reserved.

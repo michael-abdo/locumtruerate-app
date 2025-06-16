@@ -22,5 +22,30 @@ binding = "NOTIFICATIONS"
 id = "your-notifications-kv-namespace-id"
 preview_id = "your-notifications-preview-kv-namespace-id"
 
+[[kv_namespaces]]
+binding = "ORGANIZATIONS"
+id = "your-organizations-kv-namespace-id"
+preview_id = "your-organizations-preview-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "COMPANIES"
+id = "your-companies-kv-namespace-id"
+preview_id = "your-companies-preview-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "ORGANIZATION_USERS"
+id = "your-organization-users-kv-namespace-id"
+preview_id = "your-organization-users-preview-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "ACTIVITY_LOG"
+id = "your-activity-log-kv-namespace-id"
+preview_id = "your-activity-log-preview-kv-namespace-id"
+
+[[kv_namespaces]]
+binding = "APPLICATION_COMMENTS"
+id = "your-application-comments-kv-namespace-id"
+preview_id = "your-application-comments-preview-kv-namespace-id"
+
 [env.production]
 vars = { ENVIRONMENT = "production" }

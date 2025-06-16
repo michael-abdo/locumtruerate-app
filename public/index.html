@@ -285,6 +285,185 @@
             background-color: #229954;
         }
         
+        .smart-search-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+        
+        .smart-search-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .search-input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .smart-search-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .suggestion-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .advanced-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-input {
+            padding: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .filter-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .filter-input option {
+            color: #333;
+            background: white;
+        }
+        
+        .search-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .smart-search-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .smart-search-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+        
+        .smart-search-btn.primary {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border-color: white;
+        }
+        
+        .smart-search-btn.primary:hover {
+            background: white;
+        }
+        
+        .search-stats {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .job-relevance {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+        
+        .match-reasons {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .match-reason {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.125rem;
+        }
+        
+        .personalized-recommendations {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .recommendations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendations-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .recommendation-score {
+            background: #27ae60;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
         @media (max-width: 768px) {
             .filter-controls {
                 gap: 1rem;
@@ -310,7 +489,16 @@
     <header>
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <h1>Job Board</h1>
-            <div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a href="companies.html" class="btn" style="background: #3498db; padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
+                    🏢 Companies
+                </a>
+                <a href="applications-manager.html" class="btn" style="background: #e74c3c; padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
+                    🧠 AI Scoring
+                </a>
+                <a href="analytics.html" class="btn" style="background: #9b59b6; padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
+                    📊 Analytics
+                </a>
                 <a href="auth.html" class="btn" style="background: #27ae60; padding: 0.5rem 1rem; font-size: 0.9rem; text-decoration: none;">
                     👔 Employer Login
                 </a>
@@ -396,7 +584,78 @@
             </form>
         </div>
         
-        <div class="search-filters">
+        <div class="smart-search-section">
+            <h2 class="smart-search-title">🧠 AI-Powered Job Search</h2>
+            
+            <div class="search-input-container">
+                <input type="text" id="smartSearchInput" class="smart-search-input" 
+                       placeholder="Try: 'React developer with 3 years experience' or 'Remote marketing manager'">
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+            
+            <div class="advanced-filters">
+                <select id="categoryFilter" class="filter-input">
+                    <option value="">Any Category</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="design">Design</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="sales">Sales</option>
+                    <option value="product">Product</option>
+                    <option value="finance">Finance</option>
+                    <option value="hr">Human Resources</option>
+                    <option value="operations">Operations</option>
+                    <option value="other">Other</option>
+                </select>
+                
+                <select id="locationFilter" class="filter-input">
+                    <option value="">Any Location</option>
+                    <option value="remote">Remote</option>
+                    <option value="san francisco">San Francisco</option>
+                    <option value="new york">New York</option>
+                    <option value="los angeles">Los Angeles</option>
+                    <option value="seattle">Seattle</option>
+                    <option value="austin">Austin</option>
+                </select>
+                
+                <select id="experienceFilter" class="filter-input">
+                    <option value="">Any Experience</option>
+                    <option value="0">Entry Level (0-1 years)</option>
+                    <option value="2">Mid Level (2-4 years)</option>
+                    <option value="5">Senior Level (5+ years)</option>
+                    <option value="8">Lead Level (8+ years)</option>
+                </select>
+                
+                <select id="typeFilter" class="filter-input">
+                    <option value="">Any Type</option>
+                    <option value="full-time">Full Time</option>
+                    <option value="part-time">Part Time</option>
+                    <option value="contract">Contract</option>
+                    <option value="remote">Remote</option>
+                </select>
+                
+                <input type="number" id="minSalary" class="filter-input" placeholder="Min Salary">
+                <input type="number" id="maxSalary" class="filter-input" placeholder="Max Salary">
+            </div>
+            
+            <div class="search-actions">
+                <button id="smartSearchBtn" class="smart-search-btn primary">🔍 AI Search</button>
+                <button id="personalizedBtn" class="smart-search-btn">👤 Get Recommendations</button>
+                <button id="clearFilters" class="smart-search-btn">🔄 Clear All</button>
+            </div>
+            
+            <div class="search-stats" id="searchStats"></div>
+        </div>
+        
+        <div class="personalized-recommendations" id="personalizedSection">
+            <div class="recommendations-header">
+                <h3 class="recommendations-title">🎯 Personalized Recommendations</h3>
+                <button onclick="hideRecommendations()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            </div>
+            <p style="margin-bottom: 1rem; color: #856404;">Based on your profile, here are jobs that might be perfect for you:</p>
+            <div id="recommendationsList"></div>
+        </div>
+        
+        <div class="search-filters" style="display: none;">
             <h2>Find Jobs</h2>
             <div class="filter-controls">
                 <div class="search-group">
@@ -404,17 +663,17 @@
                     <button id="searchBtn">Search</button>
                 </div>
                 <div class="filter-group">
-                    <select id="typeFilter">
+                    <select id="oldTypeFilter">
                         <option value="">All Job Types</option>
                         <option value="full-time">Full Time</option>
                         <option value="part-time">Part Time</option>
                         <option value="contract">Contract</option>
                         <option value="remote">Remote</option>
                     </select>
-                    <select id="locationFilter">
+                    <select id="oldLocationFilter">
                         <option value="">All Locations</option>
                     </select>
-                    <select id="categoryFilter">
+                    <select id="oldCategoryFilter">
                         <option value="">All Categories</option>
                         <option value="engineering">Engineering</option>
                         <option value="design">Design</option>
@@ -426,7 +685,7 @@
                         <option value="operations">Operations</option>
                         <option value="other">Other</option>
                     </select>
-                    <button id="clearFilters">Clear Filters</button>
+                    <button id="oldClearFilters">Clear Filters</button>
                 </div>
             </div>
         </div>
@@ -455,18 +714,24 @@
     </div>
     
     <script>
-        const API_URL = 'http://localhost:8787/api/jobs';
+        const API_URL = 'http://localhost:8787/api';
         const messageDiv = document.getElementById('message');
         const jobsList = document.getElementById('jobsList');
         const jobForm = document.getElementById('jobForm');
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
+        const smartSearchInput = document.getElementById('smartSearchInput');
+        const smartSearchBtn = document.getElementById('smartSearchBtn');
+        const personalizedBtn = document.getElementById('personalizedBtn');
+        const searchSuggestions = document.getElementById('searchSuggestions');
         const typeFilter = document.getElementById('typeFilter');
         const locationFilter = document.getElementById('locationFilter');
         const categoryFilter = document.getElementById('categoryFilter');
+        const experienceFilter = document.getElementById('experienceFilter');
+        const minSalary = document.getElementById('minSalary');
+        const maxSalary = document.getElementById('maxSalary');
         const sortBy = document.getElementById('sortBy');
         const clearFiltersBtn = document.getElementById('clearFilters');
         const resultsCount = document.getElementById('resultsCount');
+        const searchStats = document.getElementById('searchStats');
         const pagination = document.getElementById('pagination');
         const prevPageBtn = document.getElementById('prevPage');
         const nextPageBtn = document.getElementById('nextPage');
@@ -476,6 +741,8 @@
         let filteredJobs = [];
         let currentPage = 1;
         const jobsPerPage = 10;
+        let searchTimeout = null;
+        let isAISearchActive = false;
         
         function showMessage(message, type) {
             messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
@@ -542,8 +809,8 @@
             return text.replace(regex, '<mark>$1</mark>');
         }
         
-        function displayJobs() {
-            const searchTerm = searchInput.value.toLowerCase();
+        function displayJobs(isAIResults = false) {
+            const searchTerm = isAIResults ? smartSearchInput.value.toLowerCase() : '';
             const totalJobs = filteredJobs.length;
             const totalPages = Math.ceil(totalJobs / jobsPerPage);
             
@@ -576,22 +843,53 @@
                     job.company.toLowerCase().includes(searchTerm)
                 );
                 
+                const relevanceScore = job.searchScore ? Math.round(job.searchScore * 100) : null;
+                const matchReasons = job.matchReasons || [];
+                
                 return `
                     <div class="job-card ${isHighlighted ? 'job-highlight' : ''}">
-                        <div class="job-title">${highlightSearchTerm(job.title, searchTerm)}</div>
-                        <div class="job-company">${highlightSearchTerm(job.company, searchTerm)}</div>
+                        <div class="job-header-row" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <div>
+                                <div class="job-title">
+                                    ${highlightSearchTerm(job.title, searchTerm)}
+                                    ${relevanceScore ? `<span class="job-relevance">${relevanceScore}% match</span>` : ''}
+                                </div>
+                                <div class="job-company-info" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                                    ${job.companyId ? 
+                                        `<a href="company-profile.html?id=${job.companyId}" class="job-company" style="color: #3498db; text-decoration: none; font-weight: 500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                            ${highlightSearchTerm(job.company, searchTerm)}
+                                        </a>` :
+                                        `<div class="job-company">${highlightSearchTerm(job.company, searchTerm)}</div>`
+                                    }
+                                </div>
+                            </div>
+                            ${job.companyLogo ? 
+                                `<div style="width: 48px; height: 48px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #3498db; flex-shrink: 0;">
+                                    ${job.companyLogo}
+                                </div>` : ''
+                            }
+                        </div>
                         <div class="job-location">${job.location}</div>
                         ${job.category ? `<div class="job-category">📂 ${job.category.charAt(0).toUpperCase() + job.category.slice(1)}</div>` : ''}
                         <div class="job-description">${highlightSearchTerm(job.description, searchTerm)}</div>
                         ${job.tags ? `<div class="job-tags">${job.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}</div>` : ''}
+                        
+                        ${matchReasons.length > 0 ? `
+                            <div class="match-reasons">
+                                <strong>Why this matches:</strong> 
+                                ${matchReasons.map(reason => `<span class="match-reason">${reason}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        
                         <div class="job-meta">
-                            <span>${job.type} ${job.salary ? `• ${job.salary}` : ''}</span>
+                            <span>${job.jobType || 'Full-time'} ${job.salary ? `• ${job.salary}` : ''}</span>
                             <span>Posted ${new Date(job.createdAt).toLocaleDateString()}</span>
                             ${job.viewCount ? `<span>👁️ ${job.viewCount} views</span>` : ''}
                             ${job.expiresAt ? `<span>⏰ Expires ${new Date(job.expiresAt).toLocaleDateString()}</span>` : ''}
                         </div>
                         <div class="job-actions">
-                            <button onclick="applyForJob('${job.id}')" class="apply-btn">Apply Now</button>
+                            <button onclick="viewJobDetails('${job.id}')" class="apply-btn">View Details</button>
+                            <button onclick="applyForJob('${job.id}')" style="background: none; border: 1px solid #3498db; color: #3498db; padding: 0.5rem 1rem; border-radius: 4px; margin-left: 0.5rem; cursor: pointer;">Quick Apply</button>
                         </div>
                     </div>
                 `;
@@ -600,13 +898,14 @@
         
         async function loadJobs() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(`${API_URL}/jobs`);
                 allJobs = await response.json();
                 filteredJobs = [...allJobs];
                 
                 populateLocationFilter();
                 sortJobs();
                 displayJobs();
+                updateSearchStats();
             } catch (error) {
                 jobsList.innerHTML = '<p class="error">Failed to load jobs. Please try again later.</p>';
                 console.error('Error loading jobs:', error);
@@ -620,7 +919,7 @@
             const jobData = Object.fromEntries(formData);
             
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(`${API_URL}/jobs`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -641,23 +940,42 @@
             }
         });
         
-        // Event listeners
-        searchInput.addEventListener('input', filterJobs);
-        searchBtn.addEventListener('click', filterJobs);
-        typeFilter.addEventListener('change', filterJobs);
-        locationFilter.addEventListener('change', filterJobs);
-        categoryFilter.addEventListener('change', filterJobs);
+        // AI Search Event Listeners
+        smartSearchInput.addEventListener('input', handleSmartSearchInput);
+        smartSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performAISearch();
+            }
+        });
+        
+        smartSearchBtn.addEventListener('click', performAISearch);
+        personalizedBtn.addEventListener('click', showPersonalizedRecommendations);
+        
+        // Filter change listeners
+        typeFilter.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+            else filterJobs();
+        });
+        locationFilter.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+            else filterJobs();
+        });
+        categoryFilter.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+            else filterJobs();
+        });
+        experienceFilter.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+        });
+        minSalary.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+        });
+        maxSalary.addEventListener('change', () => {
+            if (isAISearchActive) performAISearch();
+        });
         sortBy.addEventListener('change', filterJobs);
         
-        clearFiltersBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            typeFilter.value = '';
-            locationFilter.value = '';
-            categoryFilter.value = '';
-            sortBy.value = 'newest';
-            currentPage = 1;
-            filterJobs();
-        });
+        clearFiltersBtn.addEventListener('click', clearAllFilters);
         
         // Pagination event listeners
         prevPageBtn.addEventListener('click', () => {
@@ -675,15 +993,223 @@
             }
         });
         
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-input-container')) {
+                hideSearchSuggestions();
+            }
+        });
+        
+        // Legacy search support for fallback
+        const oldSearchInput = document.getElementById('searchInput');
+        if (oldSearchInput) {
+            oldSearchInput.addEventListener('input', filterJobs);
+        }
+        
         // Load jobs on page load
         loadJobs();
         
         // Refresh jobs every 30 seconds
         setInterval(loadJobs, 30000);
         
+        // AI Search Functions
+        async function handleSmartSearchInput() {
+            const query = smartSearchInput.value.trim();
+            
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+            
+            if (query.length > 2) {
+                searchTimeout = setTimeout(async () => {
+                    await loadSearchSuggestions(query);
+                }, 300);
+            } else {
+                hideSearchSuggestions();
+            }
+        }
+        
+        async function loadSearchSuggestions(query) {
+            try {
+                const response = await fetch(`${API_URL}/search/suggestions?q=${encodeURIComponent(query)}&limit=5`);
+                const data = await response.json();
+                
+                showSearchSuggestions(data.suggestions);
+            } catch (error) {
+                console.error('Error loading suggestions:', error);
+            }
+        }
+        
+        function showSearchSuggestions(suggestions) {
+            if (suggestions.length === 0) {
+                hideSearchSuggestions();
+                return;
+            }
+            
+            searchSuggestions.innerHTML = suggestions.map(suggestion => 
+                `<div class="suggestion-item" onclick="selectSuggestion('${suggestion}')">${suggestion}</div>`
+            ).join('');
+            
+            searchSuggestions.style.display = 'block';
+        }
+        
+        function hideSearchSuggestions() {
+            searchSuggestions.style.display = 'none';
+        }
+        
+        function selectSuggestion(suggestion) {
+            smartSearchInput.value = suggestion;
+            hideSearchSuggestions();
+            performAISearch();
+        }
+        
+        async function performAISearch() {
+            const query = smartSearchInput.value.trim();
+            isAISearchActive = true;
+            
+            smartSearchBtn.textContent = '🔍 Searching...';
+            smartSearchBtn.disabled = true;
+            
+            try {
+                const params = new URLSearchParams();
+                if (query) params.append('q', query);
+                if (categoryFilter.value) params.append('category', categoryFilter.value);
+                if (locationFilter.value) params.append('location', locationFilter.value);
+                if (experienceFilter.value) params.append('experience', experienceFilter.value);
+                if (typeFilter.value) params.append('type', typeFilter.value);
+                if (minSalary.value) params.append('minSalary', minSalary.value);
+                if (maxSalary.value) params.append('maxSalary', maxSalary.value);
+                params.append('limit', '50');
+                
+                const response = await fetch(`${API_URL}/search/jobs?${params}`);
+                const data = await response.json();
+                
+                filteredJobs = data.jobs || [];
+                currentPage = 1;
+                
+                displayJobs(true); // true indicates AI search results
+                updateSearchStats(data);
+                
+            } catch (error) {
+                console.error('AI Search error:', error);
+                showMessage('Search failed. Please try again.', 'error');
+            } finally {
+                smartSearchBtn.textContent = '🔍 AI Search';
+                smartSearchBtn.disabled = false;
+            }
+        }
+        
+        async function showPersonalizedRecommendations() {
+            // Simple user profile for demo - in production this would come from user account
+            const userProfile = {
+                skills: ['javascript', 'react', 'node.js', 'python'],
+                experience: 3,
+                preferredCategories: ['engineering', 'design'],
+                preferredLocations: ['remote', 'san francisco'],
+                salaryExpectations: { min: 80000, max: 120000 }
+            };
+            
+            personalizedBtn.textContent = '🧠 Loading...';
+            personalizedBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/recommendations`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ...userProfile, limit: 5 })
+                });
+                
+                const data = await response.json();
+                
+                if (data.recommendations && data.recommendations.length > 0) {
+                    displayPersonalizedRecommendations(data.recommendations);
+                } else {
+                    showMessage('No personalized recommendations available at this time.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Recommendations error:', error);
+                showMessage('Failed to load recommendations.', 'error');
+            } finally {
+                personalizedBtn.textContent = '👤 Get Recommendations';
+                personalizedBtn.disabled = false;
+            }
+        }
+        
+        function displayPersonalizedRecommendations(recommendations) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            const personalizedSection = document.getElementById('personalizedSection');
+            
+            recommendationsList.innerHTML = recommendations.map(job => `
+                <div class="job-card" style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ffeaa7; border-radius: 8px; background: #fffef7;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                        <div>
+                            <div class="job-title" style="color: #856404; font-weight: bold;">${job.title}</div>
+                            <div class="job-company" style="color: #6c5b36;">${job.company} • ${job.location}</div>
+                        </div>
+                        <span class="recommendation-score">${Math.round(job.recommendationScore * 100)}% match</span>
+                    </div>
+                    <div class="match-reasons">
+                        ${job.matchReasons ? job.matchReasons.map(reason => `<span class="match-reason">${reason}</span>`).join('') : ''}
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button onclick="applyForJob('${job.id}')" class="apply-btn" style="background: #856404;">Apply Now</button>
+                        <button onclick="viewJobDetails('${job.id}')" style="background: none; border: 1px solid #856404; color: #856404; padding: 0.5rem 1rem; border-radius: 4px; margin-left: 0.5rem; cursor: pointer;">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            personalizedSection.style.display = 'block';
+            personalizedSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function hideRecommendations() {
+            document.getElementById('personalizedSection').style.display = 'none';
+        }
+        
+        function clearAllFilters() {
+            smartSearchInput.value = '';
+            categoryFilter.value = '';
+            locationFilter.value = '';
+            experienceFilter.value = '';
+            typeFilter.value = '';
+            minSalary.value = '';
+            maxSalary.value = '';
+            sortBy.value = 'newest';
+            currentPage = 1;
+            isAISearchActive = false;
+            hideSearchSuggestions();
+            hideRecommendations();
+            
+            // Reload original jobs
+            loadJobs();
+        }
+        
+        function updateSearchStats(searchData) {
+            if (searchData) {
+                const { totalResults, query, searchTime } = searchData;
+                searchStats.innerHTML = `
+                    Found ${totalResults} job${totalResults !== 1 ? 's' : ''} ${query ? `for "${query}"` : ''} 
+                    <span style="color: rgba(255,255,255,0.7);">• Search took ${Date.now() - searchTime}ms</span>
+                `;
+            } else {
+                searchStats.innerHTML = `Showing ${filteredJobs.length} job${filteredJobs.length !== 1 ? 's' : ''}`;
+            }
+        }
+        
         // Apply for job function
         function applyForJob(jobId) {
             window.location.href = `apply.html?job=${jobId}`;
+        }
+        
+        function viewJobDetails(jobId) {
+            // In a real app, this would open a detailed job view
+            const job = filteredJobs.find(j => j.id === jobId) || allJobs.find(j => j.id === jobId);
+            if (job) {
+                alert(`Job Details:\n\nTitle: ${job.title}\nCompany: ${job.company}\nLocation: ${job.location}\n\nDescription: ${job.description.substring(0, 200)}...`);
+            }
         }
     </script>
 </body>

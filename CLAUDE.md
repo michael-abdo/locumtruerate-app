@@ -1,7 +1,29 @@
-# jobboard_021932213797238218657 - AI Navigation Guide
+# LocumTrueRate.com - AI Navigation Guide
+
+## CRITICAL DEVELOPMENT CONSTRAINT
+**🚨 MOBILE-FIRST ARCHITECTURE REQUIREMENT 🚨**
+
+**EVERYTHING MUST BE BUILT WITH MOBILE DEPLOYMENT IN MIND**
+
+All code, components, APIs, and architectural decisions must be designed from the ground up to support:
+- **Cross-platform deployment** (Web + iOS + Android)
+- **Shared TypeScript codebase** (≥80% code reuse target)
+- **TurboRepo monorepo structure** for seamless mobile integration
+- **React Native compatibility** for all UI components
+- **Universal API design** that works identically on web and mobile
+
+**Implementation Rules:**
+1. Use **React components** that can be adapted for React Native
+2. Design **responsive layouts** that work on mobile screens first
+3. Create **shared business logic** in pure TypeScript packages
+4. Avoid **web-only APIs** or browser-specific features
+5. Plan **data structures** and **API endpoints** for mobile consumption
+6. Use **cross-platform compatible** libraries and patterns
+
+This is not just a web application - it's the foundation for a full cross-platform LocumTrueRate.com ecosystem.
 
 ## Project Overview
-This project was created using the Triangulated Perspectives Constructor methodology.
+This project was created using the Triangulated Perspectives Constructor methodology and is being developed as LocumTrueRate.com - a comprehensive locum tenens platform.
 
 ## Document Purpose Matrix
 

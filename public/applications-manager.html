@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Management - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .job-selector {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .selector-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .job-dropdown {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 300px;
+            background: white;
+        }
+        
+        .scoring-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .applications-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .applications-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .applications-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .applications-stats {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .applications-list {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .application-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        
+        .application-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .application-item:last-child {
+            border-bottom: none;
+        }
+        
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .applicant-info {
+            flex: 1;
+        }
+        
+        .applicant-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .applicant-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .applicant-contact {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .scoring-section {
+            min-width: 300px;
+            padding-left: 2rem;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .total-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .score-excellent { color: #27ae60; }
+        .score-strong { color: #2ecc71; }
+        .score-good { color: #f39c12; }
+        .score-fair { color: #e67e22; }
+        .score-weak { color: #e74c3c; }
+        
+        .score-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rank-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .rank-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .rank-strong {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .rank-good {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .rank-fair {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .rank-weak {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .score-breakdown {
+            margin-top: 1rem;
+        }
+        
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .score-bar {
+            width: 60px;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: #3498db;
+            transition: width 0.3s;
+        }
+        
+        .application-content {
+            margin-top: 1rem;
+        }
+        
+        .content-section {
+            margin-bottom: 1rem;
+        }
+        
+        .content-label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 0.25rem;
+        }
+        
+        .content-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .application-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .recommendation-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .recommendation-strong {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .recommendation-consider {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .recommendation-review {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .recommendation-pass {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .analytics-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .analytics-card {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .analytics-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+        
+        .analytics-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .application-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .scoring-section {
+                padding-left: 0;
+                min-width: auto;
+            }
+            
+            .scoring-controls {
+                justify-content: center;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🧠 Application Intelligence</div>
+            <div class="nav-links">
+                <a href="index.html">Job Board</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="analytics.html">Analytics</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="job-selector">
+            <div class="selector-header">
+                <h2 class="selector-title">Application Scoring & Ranking</h2>
+            </div>
+            
+            <div>
+                <label for="jobSelect" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Select Job to Analyze:</label>
+                <select id="jobSelect" class="job-dropdown" onchange="loadJobApplications()">
+                    <option value="">Choose a job...</option>
+                </select>
+            </div>
+            
+            <div class="scoring-controls">
+                <button class="btn btn-success" onclick="scoreAllApplications()" id="scoreAllBtn" disabled>
+                    🧮 Score All Applications
+                </button>
+                <button class="btn btn-warning" onclick="exportApplicationData()" id="exportBtn" disabled>
+                    📊 Export Rankings
+                </button>
+                <button class="btn" onclick="refreshApplications()" id="refreshBtn" disabled>
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+        
+        <div id="analyticsSection" style="display: none;">
+            <div class="analytics-summary">
+                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Application Analytics</h3>
+                <div class="analytics-grid" id="analyticsGrid">
+                    <!-- Analytics cards will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="applications-container">
+            <div class="applications-header">
+                <h3 class="applications-title">Applications</h3>
+                <div class="applications-stats" id="applicationsStats">
+                    <div class="stat-item">
+                        <span>📋</span>
+                        <span id="totalCount">0 applications</span>
+                    </div>
+                </div>
+            </div>
+            <div class="applications-list" id="applicationsList">
+                <div class="empty-state">
+                    <h3>Select a job to view applications</h3>
+                    <p>Choose a job from the dropdown above to see applications and their intelligent scoring.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        let selectedJobId = null;
+        let applications = [];
+        let jobsData = [];
+        
+        // Load available jobs on page load
+        async function loadJobs() {
+            try {
+                const response = await fetch(`${API_URL}/jobs`);
+                jobsData = await response.json();
+                
+                const jobSelect = document.getElementById('jobSelect');
+                jobSelect.innerHTML = '<option value="">Choose a job...</option>';
+                
+                jobsData.forEach(job => {
+                    const option = document.createElement('option');
+                    option.value = job.id;
+                    option.textContent = `${job.title} at ${job.company}`;
+                    jobSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+            }
+        }
+        
+        // Load applications for selected job
+        async function loadJobApplications() {
+            const jobSelect = document.getElementById('jobSelect');
+            selectedJobId = jobSelect.value;
+            
+            if (!selectedJobId) {
+                resetApplicationsView();
+                return;
+            }
+            
+            // Enable controls
+            document.getElementById('scoreAllBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = false;
+            document.getElementById('refreshBtn').disabled = false;
+            
+            try {
+                // Load applications
+                const response = await fetch(`${API_URL}/applications`);
+                const allApplications = await response.json();
+                
+                // Filter applications for selected job
+                applications = allApplications.filter(app => app.jobId === selectedJobId);
+                
+                updateApplicationsStats();
+                displayApplications();
+                await loadAnalytics();
+                
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('applicationsList').innerHTML = 
+                    '<div class="loading">Error loading applications. Please try again.</div>';
+            }
+        }
+        
+        // Score all applications for the selected job
+        async function scoreAllApplications() {
+            if (!selectedJobId || applications.length === 0) return;
+            
+            const scoreAllBtn = document.getElementById('scoreAllBtn');
+            scoreAllBtn.textContent = '🧮 Scoring Applications...';
+            scoreAllBtn.disabled = true;
+            
+            try {
+                // Get rankings (which includes scoring)
+                const response = await fetch(`${API_URL}/jobs/${selectedJobId}/rankings`);
+                const data = await response.json();
+                
+                applications = data.applications;
+                displayApplications();
+                await loadAnalytics();
+                
+                scoreAllBtn.textContent = '✅ Scoring Complete!';
+                setTimeout(() => {
+                    scoreAllBtn.textContent = '🧮 Score All Applications';
+                    scoreAllBtn.disabled = false;
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error scoring applications:', error);
+                scoreAllBtn.textContent = '❌ Scoring Failed';
+                setTimeout(() => {
+                    scoreAllBtn.textContent = '🧮 Score All Applications';
+                    scoreAllBtn.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // Load analytics for the selected job
+        async function loadAnalytics() {
+            if (!selectedJobId) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/jobs/${selectedJobId}/analytics`);
+                const data = await response.json();
+                
+                const analyticsSection = document.getElementById('analyticsSection');
+                const analyticsGrid = document.getElementById('analyticsGrid');
+                
+                if (data.analytics) {
+                    const analytics = data.analytics;
+                    
+                    analyticsGrid.innerHTML = `
+                        <div class="analytics-card">
+                            <div class="analytics-number">${analytics.totalApplications}</div>
+                            <div class="analytics-label">Total Applications</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number">${Math.round(analytics.averageScore * 10) / 10}</div>
+                            <div class="analytics-label">Average Score</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number">${analytics.scoreDistribution.excellent}</div>
+                            <div class="analytics-label">Excellent (90+)</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number">${analytics.scoreDistribution.strong}</div>
+                            <div class="analytics-label">Strong (80-89)</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number">${analytics.scoreDistribution.good}</div>
+                            <div class="analytics-label">Good (70-79)</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-number">${analytics.scoreDistribution.fair + analytics.scoreDistribution.weak}</div>
+                            <div class="analytics-label">Below Threshold</div>
+                        </div>
+                    `;
+                    
+                    analyticsSection.style.display = 'block';
+                } else {
+                    analyticsSection.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+        
+        // Display applications with scoring
+        function displayApplications() {
+            const applicationsList = document.getElementById('applicationsList');
+            
+            if (applications.length === 0) {
+                applicationsList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No applications found</h3>
+                        <p>No one has applied to this job yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by score if available, otherwise by application date
+            const sortedApplications = [...applications].sort((a, b) => {
+                if (a.scoring && b.scoring) {
+                    return b.scoring.totalScore - a.scoring.totalScore;
+                }
+                return new Date(b.appliedAt) - new Date(a.appliedAt);
+            });
+            
+            applicationsList.innerHTML = sortedApplications.map((app, index) => {
+                const scoring = app.scoring;
+                const rank = app.rank || (index + 1);
+                
+                return `
+                    <div class="application-item">
+                        <div class="application-header">
+                            <div class="applicant-info">
+                                <div class="applicant-name">
+                                    #${rank} ${app.fullName}
+                                    ${scoring ? `<span class="rank-badge rank-${scoring.recommendation.action.replace('_', '-')}">${app.rankCategory || scoring.recommendation.action.replace('_', ' ').toUpperCase()}</span>` : ''}
+                                </div>
+                                <div class="applicant-meta">
+                                    Applied ${new Date(app.appliedAt).toLocaleDateString()} • 
+                                    Experience: ${app.experience || 'Not specified'} years
+                                </div>
+                                <div class="applicant-contact">
+                                    <span>📧 ${app.email}</span>
+                                    ${app.phone ? `<span>📞 ${app.phone}</span>` : ''}
+                                    ${app.portfolio ? `<span>🔗 <a href="${app.portfolio}" target="_blank">Portfolio</a></span>` : ''}
+                                </div>
+                            </div>
+                            
+                            ${scoring ? `
+                                <div class="scoring-section">
+                                    <div class="score-display">
+                                        <div class="total-score score-${getScoreClass(scoring.totalScore)}">${scoring.totalScore}</div>
+                                        <div class="score-label">Overall Score</div>
+                                    </div>
+                                    
+                                    <div class="score-breakdown">
+                                        ${Object.entries(scoring.scores).map(([key, value]) => `
+                                            <div class="score-item">
+                                                <span>${formatScoreLabel(key)}</span>
+                                                <div class="score-bar">
+                                                    <div class="score-fill" style="width: ${value}%"></div>
+                                                </div>
+                                                <span>${Math.round(value)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="scoring-section">
+                                    <div style="text-align: center; color: #6c757d;">
+                                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⏳</div>
+                                        <div>Not scored yet</div>
+                                        <button class="btn btn-small" onclick="scoreApplication('${app.id}')" style="margin-top: 1rem;">
+                                            Score Application
+                                        </button>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                        
+                        <div class="application-content">
+                            <div class="content-section">
+                                <div class="content-label">Cover Letter</div>
+                                <div class="content-text">${app.coverLetter.substring(0, 300)}${app.coverLetter.length > 300 ? '...' : ''}</div>
+                            </div>
+                        </div>
+                        
+                        ${scoring && scoring.recommendation ? `
+                            <div class="recommendation-box recommendation-${scoring.recommendation.action.replace('_', '-')}">
+                                <strong>💡 ${scoring.recommendation.action.replace('_', ' ').toUpperCase()}:</strong> ${scoring.recommendation.message}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="application-actions">
+                            <button class="btn btn-small btn-success">✅ Accept</button>
+                            <button class="btn btn-small btn-warning">📞 Interview</button>
+                            <button class="btn btn-small">❌ Reject</button>
+                            <button class="btn btn-small" onclick="viewFullApplication('${app.id}')">👁️ View Details</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Score individual application
+        async function scoreApplication(applicationId) {
+            try {
+                const response = await fetch(`${API_URL}/applications/${applicationId}/score`);
+                const data = await response.json();
+                
+                // Refresh applications to show new scoring
+                await loadJobApplications();
+            } catch (error) {
+                console.error('Error scoring application:', error);
+            }
+        }
+        
+        // Helper functions
+        function getScoreClass(score) {
+            if (score >= 90) return 'excellent';
+            if (score >= 80) return 'strong';
+            if (score >= 70) return 'good';
+            if (score >= 60) return 'fair';
+            return 'weak';
+        }
+        
+        function formatScoreLabel(key) {
+            const labels = {
+                experienceMatch: 'Experience',
+                skillsMatch: 'Skills',
+                educationMatch: 'Education',
+                portfolioQuality: 'Portfolio',
+                coverLetterQuality: 'Cover Letter',
+                responseTime: 'Response Time'
+            };
+            return labels[key] || key;
+        }
+        
+        function updateApplicationsStats() {
+            const totalCount = document.getElementById('totalCount');
+            totalCount.textContent = `${applications.length} application${applications.length !== 1 ? 's' : ''}`;
+        }
+        
+        function resetApplicationsView() {
+            selectedJobId = null;
+            applications = [];
+            
+            document.getElementById('scoreAllBtn').disabled = true;
+            document.getElementById('exportBtn').disabled = true;
+            document.getElementById('refreshBtn').disabled = true;
+            document.getElementById('analyticsSection').style.display = 'none';
+            
+            document.getElementById('applicationsList').innerHTML = `
+                <div class="empty-state">
+                    <h3>Select a job to view applications</h3>
+                    <p>Choose a job from the dropdown above to see applications and their intelligent scoring.</p>
+                </div>
+            `;
+            
+            updateApplicationsStats();
+        }
+        
+        function refreshApplications() {
+            if (selectedJobId) {
+                loadJobApplications();
+            }
+        }
+        
+        function exportApplicationData() {
+            if (!applications.length) return;
+            
+            const csvContent = generateApplicationsCSV(applications);
+            downloadCSV(csvContent, `applications_ranking_${selectedJobId}_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+        
+        function generateApplicationsCSV(applications) {
+            const headers = ['Rank', 'Name', 'Email', 'Score', 'Recommendation', 'Experience', 'Applied Date', 'Skills Score', 'Experience Score', 'Portfolio Score'];
+            const csvRows = [headers.join(',')];
+            
+            applications.forEach((app, index) => {
+                const scoring = app.scoring;
+                const row = [
+                    `"${app.rank || index + 1}"`,
+                    `"${app.fullName}"`,
+                    `"${app.email}"`,
+                    `"${scoring ? scoring.totalScore : 'N/A'}"`,
+                    `"${scoring ? scoring.recommendation.action : 'N/A'}"`,
+                    `"${app.experience || 'Not specified'}"`,
+                    `"${new Date(app.appliedAt).toLocaleDateString()}"`,
+                    `"${scoring ? Math.round(scoring.scores.skillsMatch) : 'N/A'}"`,
+                    `"${scoring ? Math.round(scoring.scores.experienceMatch) : 'N/A'}"`,
+                    `"${scoring ? Math.round(scoring.scores.portfolioQuality) : 'N/A'}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\\n');
+        }
+        
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        function viewFullApplication(applicationId) {
+            // This would open a detailed view modal or new page
+            alert(`Full application view for ${applicationId} would open here`);
+        }
+        
+        // Initialize page
+        loadJobs();
+    </script>
+</body>
+</html>
