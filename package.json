@@ -1,0 +1,21 @@
+{
+  "name": "job-board",
+  "version": "1.0.0",
+  "description": "A modern job board application built with Cloudflare Workers and Node.js.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler build",
+    "deploy": "wrangler publish",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.20.0"
+  }
+}

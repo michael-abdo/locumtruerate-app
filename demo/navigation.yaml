@@ -1,0 +1,256 @@
+name: "ContractCalc Pro - Healthcare Contract Calculator & Job Board Demo"
+description: "Automated testing workflow for comprehensive healthcare contract analysis and job matching platform"
+version: "1.0.0"
+
+config:
+  headless: true
+  timeout: 15000
+  viewport:
+    width: 1280
+    height: 720
+
+steps:
+  # Landing Page Navigation and Testing
+  - type: navigate
+    description: "Navigate to demo homepage"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/index.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for main content to load"
+    selector: ".main-content"
+    
+  - type: assertText
+    description: "Verify main heading loaded"
+    selector: "h1"
+    expected: "Smart Contract Analysis for Healthcare Professionals"
+    
+  # Test Interactive Calculator on Landing Page
+  - type: click
+    description: "Test contract calculator tab"
+    selector: ".calc-tab:first-child"
+    
+  - type: type
+    description: "Enter hourly rate in calculator"
+    selector: "#hourlyRate"
+    text: "400"
+    
+  - type: evaluate
+    description: "Verify calculator calculations work"
+    script: |
+      const totalContract = document.getElementById('totalContract').textContent;
+      return totalContract.includes('$') && totalContract !== '$0';
+    
+  - type: screenshot
+    description: "Capture calculator preview functionality"
+    
+  # Job Board Navigation and Testing
+  - type: click
+    description: "Navigate to job board"
+    selector: "a[href='job-board.html']"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for job board to load"
+    selector: ".jobs-grid"
+    
+  - type: assertText
+    description: "Verify job board page title"
+    selector: "h1"
+    expected: "Healthcare Job Board"
+    
+  - type: click
+    description: "Test view toggle functionality"
+    selector: ".view-btn:last-child"
+    
+  - type: evaluate
+    description: "Verify list view toggle works"
+    script: |
+      return document.querySelector('.jobs-grid').classList.contains('list-view');
+    
+  - type: type
+    description: "Test job search functionality"
+    selector: "#searchInput"
+    text: "Emergency"
+    
+  - type: click
+    description: "View job details modal"
+    selector: ".job-card:first-child"
+    
+  - type: wait-for-selector
+    description: "Wait for job modal to appear"
+    selector: ".modal.active"
+    
+  - type: screenshot
+    description: "Capture job detail modal"
+    
+  # Paycheck Calculator Testing
+  - type: navigate
+    description: "Navigate to paycheck calculator"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/paycheck-calculator.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for calculator form to load"
+    selector: ".calculator-form"
+    
+  - type: assertText
+    description: "Verify paycheck calculator title"
+    selector: "h1"
+    expected: "Paycheck Calculator"
+    
+  - type: click
+    description: "Test period tabs - switch to biweekly"
+    selector: ".period-tab:nth-child(2)"
+    
+  - type: type
+    description: "Update regular hours"
+    selector: "#regularHours"
+    text: "48"
+    
+  - type: type
+    description: "Update overtime hours"
+    selector: "#overtimeHours"
+    text: "12"
+    
+  - type: evaluate
+    description: "Verify paycheck calculations update"
+    script: |
+      const netPay = document.getElementById('netPay').textContent;
+      return netPay.includes('$') && netPay !== '$0';
+    
+  - type: screenshot
+    description: "Capture paycheck calculator results"
+    
+  # Contract Calculator Testing
+  - type: navigate
+    description: "Navigate to contract calculator"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/contract-calculator.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for contract form to load"
+    selector: ".calculator-form"
+    
+  - type: assertText
+    description: "Verify contract calculator title"
+    selector: "h1"
+    expected: "Contract Calculator"
+    
+  - type: type
+    description: "Update contract length"
+    selector: "#contractWeeks"
+    text: "26"
+    
+  - type: type
+    description: "Update housing stipend"
+    selector: "#housingStipend"
+    text: "2000"
+    
+  - type: evaluate
+    description: "Verify contract value calculations"
+    script: |
+      const totalValue = document.getElementById('totalContractValue').textContent;
+      const trueRate = document.getElementById('trueHourlyRate').textContent;
+      return totalValue.includes('$') && trueRate.includes('$');
+    
+  - type: click
+    description: "Test save contract functionality"
+    selector: "button[onclick='saveContract()']"
+    
+  - type: screenshot
+    description: "Capture contract analysis results"
+    
+  # Recruiter Dashboard Testing
+  - type: navigate
+    description: "Navigate to recruiter dashboard"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/recruiter-dashboard.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for dashboard to load"
+    selector: ".stats-grid"
+    
+  - type: assertText
+    description: "Verify recruiter dashboard heading"
+    selector: "h1"
+    expected: "Welcome back, Sarah Johnson"
+    
+  - type: click
+    description: "Test job management functionality"
+    selector: ".action-btn.view:first-child"
+    
+  - type: screenshot
+    description: "Capture recruiter dashboard interface"
+    
+  # Locum Dashboard Testing
+  - type: navigate
+    description: "Navigate to locum dashboard"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/locum-dashboard.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for locum dashboard to load"
+    selector: ".contracts-grid"
+    
+  - type: assertText
+    description: "Verify locum dashboard heading"
+    selector: "h1"
+    expected: "Welcome back, Dr. Emily Chen"
+    
+  - type: click
+    description: "Test contract management"
+    selector: ".action-btn.primary:first-child"
+    
+  - type: screenshot
+    description: "Capture locum dashboard with contracts"
+    
+  # Admin Dashboard Testing
+  - type: navigate
+    description: "Navigate to admin dashboard"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/admin-dashboard.html"
+    screenshot: true
+    
+  - type: wait-for-selector
+    description: "Wait for admin dashboard to load"
+    selector: ".stats-grid"
+    
+  - type: assertText
+    description: "Verify admin dashboard title"
+    selector: "h1"
+    expected: "Admin Dashboard"
+    
+  - type: click
+    description: "Test user management functionality"
+    selector: ".btn-small.secondary:first-child"
+    
+  - type: screenshot
+    description: "Capture admin dashboard analytics"
+    
+  # Final Navigation Test - Return to Homepage
+  - type: navigate
+    description: "Return to homepage for final verification"
+    url: "file:///Users/Mike/Desktop/programming/2_proposals/upwork/021932213797238218657/index.html"
+    
+  - type: wait-for-selector
+    description: "Ensure homepage loads successfully"
+    selector: ".hero"
+    
+  - type: evaluate
+    description: "Final functionality verification"
+    script: |
+      // Verify all main navigation links are present
+      const navLinks = document.querySelectorAll('.nav-link');
+      const hasJobBoard = Array.from(navLinks).some(link => link.textContent.includes('Job Board'));
+      const hasCalculators = Array.from(navLinks).some(link => link.textContent.includes('Calculator'));
+      const hasDashboards = Array.from(navLinks).some(link => link.textContent.includes('Dashboards'));
+      
+      // Verify key features are present
+      const hasFeatures = document.querySelector('.features-grid') !== null;
+      const hasStats = document.querySelector('.stats-grid') !== null;
+      const hasCalculatorPreview = document.querySelector('.calculator-preview') !== null;
+      
+      return hasJobBoard && hasCalculators && hasDashboards && hasFeatures && hasStats && hasCalculatorPreview;
+    
+  - type: screenshot
+    description: "Final homepage verification screenshot"

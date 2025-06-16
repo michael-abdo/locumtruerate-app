@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContractCalc Pro - Healthcare Contract Calculator & Job Board</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            padding: 1rem 2rem;
+            border: 2px solid white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-feature {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-feature:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Stats Section */
+        .stats {
+            background-color: var(--surface-color);
+            padding: 4rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Calculator Preview */
+        .calculator-preview {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .calculator-preview h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+        }
+
+        .calculator-demo {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .calc-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .calc-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .calc-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .calc-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .calc-inputs {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .calc-results {
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .calc-content { grid-template-columns: 1fr; }
+            .nav-menu { flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-color); display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>ContractCalc Pro</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link active">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="container">
+                    <h1>Smart Contract Analysis for Healthcare Professionals</h1>
+                    <p>Calculate true hourly rates, compare opportunities, and find the perfect locum positions with our advanced contract analysis tools.</p>
+                    <div class="hero-buttons">
+                        <a href="contract-calculator.html" class="btn-primary">Try Calculator</a>
+                        <a href="job-board.html" class="btn-secondary">Browse Jobs</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features">
+                <div class="container">
+                    <h2>Powerful Tools for Healthcare Professionals</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">💰</div>
+                            <h3>Contract Calculator</h3>
+                            <p>Calculate your true hourly rate including overtime, stipends, and benefits. Get detailed compensation breakdowns.</p>
+                            <a href="contract-calculator.html" class="btn-feature">Calculate Now</a>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3>Paycheck Calculator</h3>
+                            <p>Plan your finances with weekly, biweekly, and monthly paycheck calculations including taxes and deductions.</p>
+                            <a href="paycheck-calculator.html" class="btn-feature">Calculate Paycheck</a>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔍</div>
+                            <h3>Job Board</h3>
+                            <p>Find opportunities with advanced filtering, compare compensation packages, and connect with top recruiters.</p>
+                            <a href="job-board.html" class="btn-feature">Browse Jobs</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="stats">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <h3>15,000+</h3>
+                            <p>Healthcare Professionals</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>5,200+</h3>
+                            <p>Active Job Listings</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>98%</h3>
+                            <p>Calculation Accuracy</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>$2.5M</h3>
+                            <p>Total Earnings Optimized</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calculator Preview -->
+            <section class="calculator-preview">
+                <div class="container">
+                    <h2>Interactive Calculator Preview</h2>
+                    <div class="calculator-demo">
+                        <div class="calc-tabs">
+                            <button class="calc-tab active" onclick="showCalcTab('contract')">Contract Calculator</button>
+                            <button class="calc-tab" onclick="showCalcTab('paycheck')">Paycheck Calculator</button>
+                        </div>
+                        
+                        <div id="contract-calc" class="calc-content">
+                            <div class="calc-inputs">
+                                <div class="form-group">
+                                    <label class="form-label">Hourly Rate ($)</label>
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Hours per Week</label>
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="40" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Contract Length (weeks)</label>
+                                    <input type="number" class="form-input" id="contractWeeks" value="13" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Housing Stipend ($/week)</label>
+                                    <input type="number" class="form-input" id="housingStipend" value="1200" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Travel Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="travelReimbursement" value="1000" oninput="calculateContract()">
+                                </div>
+                            </div>
+                            <div class="calc-results">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Contract Analysis</h3>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Weekly Pay</span>
+                                    <span class="result-value" id="weeklyPay">$4,600</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Total Stipends</span>
+                                    <span class="result-value" id="totalStipends">$16,600</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Total Contract Value</span>
+                                    <span class="result-value" id="totalContract">$76,400</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">True Hourly Rate</span>
+                                    <span class="result-value" id="trueHourlyRate">$147.31</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="paycheck-calc" class="calc-content" style="display: none;">
+                            <div class="calc-inputs">
+                                <div class="form-group">
+                                    <label class="form-label">Regular Hours</label>
+                                    <input type="number" class="form-input" id="regularHours" value="40" oninput="calculatePaycheck()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Overtime Hours</label>
+                                    <input type="number" class="form-input" id="overtimeHours" value="8" oninput="calculatePaycheck()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Regular Rate ($/hour)</label>
+                                    <input type="number" class="form-input" id="regularRate" value="85" oninput="calculatePaycheck()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Overtime Rate ($/hour)</label>
+                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" oninput="calculatePaycheck()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Weekly Stipends ($)</label>
+                                    <input type="number" class="form-input" id="weeklyStipends" value="1200" oninput="calculatePaycheck()">
+                                </div>
+                            </div>
+                            <div class="calc-results">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Weekly Paycheck</h3>
+                                <div class="result-item">
+                                    <span class="result-label">Regular Pay</span>
+                                    <span class="result-value" id="regularPay">$3,400</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Overtime Pay</span>
+                                    <span class="result-value" id="overtimePay">$1,020</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Stipends</span>
+                                    <span class="result-value" id="stipendPay">$1,200</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Weekly Pay</span>
+                                    <span class="result-value" id="grossWeeklyPay">$5,620</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>ContractCalc Pro</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Calculator functionality
+        function showCalcTab(tabName) {
+            // Hide all tabs
+            document.getElementById('contract-calc').style.display = 'none';
+            document.getElementById('paycheck-calc').style.display = 'none';
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.calc-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab and add active class
+            if (tabName === 'contract') {
+                document.getElementById('contract-calc').style.display = 'grid';
+                document.querySelector('.calc-tab:first-child').classList.add('active');
+                calculateContract();
+            } else {
+                document.getElementById('paycheck-calc').style.display = 'grid';
+                document.querySelector('.calc-tab:last-child').classList.add('active');
+                calculatePaycheck();
+            }
+        }
+
+        function calculateContract() {
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
+            const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
+            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
+            const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
+
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = (housingStipend * contractWeeks) + travelReimbursement;
+            const totalContract = (weeklyPay * contractWeeks) + totalStipends;
+            const totalHours = hoursPerWeek * contractWeeks;
+            const trueHourlyRate = totalHours > 0 ? totalContract / totalHours : 0;
+
+            document.getElementById('weeklyPay').textContent = '$' + weeklyPay.toLocaleString();
+            document.getElementById('totalStipends').textContent = '$' + totalStipends.toLocaleString();
+            document.getElementById('totalContract').textContent = '$' + totalContract.toLocaleString();
+            document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toFixed(2);
+        }
+
+        function calculatePaycheck() {
+            const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
+            const overtimeHours = parseFloat(document.getElementById('overtimeHours').value) || 0;
+            const regularRate = parseFloat(document.getElementById('regularRate').value) || 0;
+            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
+            const weeklyStipends = parseFloat(document.getElementById('weeklyStipends').value) || 0;
+
+            const regularPay = regularHours * regularRate;
+            const overtimePay = overtimeHours * overtimeRate;
+            const grossWeeklyPay = regularPay + overtimePay + weeklyStipends;
+
+            document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString();
+            document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString();
+            document.getElementById('stipendPay').textContent = '$' + weeklyStipends.toLocaleString();
+            document.getElementById('grossWeeklyPay').textContent = '$' + grossWeeklyPay.toLocaleString();
+        }
+
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateContract();
+            calculatePaycheck();
+        });
+    </script>
+</body>
+</html>

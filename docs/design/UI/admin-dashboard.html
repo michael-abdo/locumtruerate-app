@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ContractCalc Pro</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--error-color) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-info p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--surface-color);
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--border-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--border-color);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.error {
+            border-left-color: var(--error-color);
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            opacity: 0.1;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--error-color);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-section {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-small.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-small.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-small.warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        /* Analytics Chart */
+        .analytics-chart {
+            height: 300px;
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        /* Users Table */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .users-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .users-table tr:hover {
+            background-color: var(--background-color);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.inactive {
+            background-color: rgba(100, 116, 139, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .status-badge.suspended {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.user {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .activity-icon.job {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .activity-icon.calculation {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .activity-icon.system {
+            background-color: rgba(100, 116, 139, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .activity-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* System Health */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .health-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .health-item.healthy {
+            border-color: var(--success-color);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .health-item.warning {
+            border-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .health-item.critical {
+            border-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .health-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .health-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .users-table {
+                font-size: 0.9rem;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 0.5rem;
+            }
+
+            .health-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>ContractCalc Pro</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link active">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Dashboard Header -->
+        <section class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1>Admin Dashboard</h1>
+                        <p>System Overview & User Management • ContractCalc Pro Administration</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="generateReport()">Generate Report</button>
+                        <button class="btn-secondary" onclick="systemSettings()">System Settings</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Key Metrics -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">15,247</div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-change positive">↗ +342 this month</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">💼</div>
+                        <div class="stat-value">5,189</div>
+                        <div class="stat-label">Active Jobs</div>
+                        <div class="stat-change positive">↗ +67 this week</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">142K</div>
+                        <div class="stat-label">Calculations Run</div>
+                        <div class="stat-change positive">↗ +2.1K today</div>
+                    </div>
+                    <div class="stat-card error">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-value">$2.5M</div>
+                        <div class="stat-label">Platform Revenue</div>
+                        <div class="stat-change positive">↗ +12% vs last quarter</div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-icon">🏥</div>
+                        <div class="stat-value">1,834</div>
+                        <div class="stat-label">Healthcare Facilities</div>
+                        <div class="stat-change positive">↗ +28 this month</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">🔗</div>
+                        <div class="stat-value">8,925</div>
+                        <div class="stat-label">Successful Matches</div>
+                        <div class="stat-change positive">↗ +156 this week</div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Analytics & Reports -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Platform Analytics</h2>
+                            <div class="section-actions">
+                                <button class="btn-small secondary" onclick="changeTimeframe('week')">This Week</button>
+                                <button class="btn-small secondary" onclick="changeTimeframe('month')">This Month</button>
+                                <button class="btn-small primary" onclick="changeTimeframe('quarter')">This Quarter</button>
+                            </div>
+                        </div>
+
+                        <div class="analytics-chart">
+                            📈 Platform Usage Analytics
+                            <br><small>User activity, calculations, and job postings over time</small>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">89.2%</div>
+                                <div style="color: var(--text-secondary);">User Satisfaction</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--success-color);">94.7%</div>
+                                <div style="color: var(--text-secondary);">System Uptime</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--warning-color);">12.8%</div>
+                                <div style="color: var(--text-secondary);">Conversion Rate</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-color);">2.3s</div>
+                                <div style="color: var(--text-secondary);">Avg Response Time</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Recent Activity</h2>
+                            <div class="section-actions">
+                                <button class="btn-small secondary" onclick="viewAllActivity()">View All</button>
+                            </div>
+                        </div>
+
+                        <div class="activity-feed">
+                            <div class="activity-item">
+                                <div class="activity-icon user">👤</div>
+                                <div class="activity-content">
+                                    <h4>New user registration</h4>
+                                    <p>Dr. Sarah Johnson joined as Emergency Medicine physician</p>
+                                    <div class="activity-time">5 minutes ago</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon job">💼</div>
+                                <div class="activity-content">
+                                    <h4>Job posting approved</h4>
+                                    <p>Metropolitan General - Emergency Medicine position</p>
+                                    <div class="activity-time">12 minutes ago</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon calculation">📊</div>
+                                <div class="activity-content">
+                                    <h4>High-value calculation completed</h4>
+                                    <p>$2.3M contract analysis for Surgery position</p>
+                                    <div class="activity-time">18 minutes ago</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon system">⚙️</div>
+                                <div class="activity-content">
+                                    <h4>System maintenance completed</h4>
+                                    <p>Database optimization improved response times by 15%</p>
+                                    <div class="activity-time">1 hour ago</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon user">👤</div>
+                                <div class="activity-content">
+                                    <h4>Premium upgrade</h4>
+                                    <p>MedStaff Solutions upgraded to Enterprise plan</p>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </div>
+
+                            <div class="activity-item">
+                                <div class="activity-icon job">💼</div>
+                                <div class="activity-content">
+                                    <h4>Contract match successful</h4>
+                                    <p>Dr. Michael Chen matched with Houston Medical Center</p>
+                                    <div class="activity-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">User Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterUsers('all')">All Users</button>
+                            <button class="btn-small secondary" onclick="filterUsers('locums')">Locums</button>
+                            <button class="btn-small secondary" onclick="filterUsers('recruiters')">Recruiters</button>
+                            <button class="btn-small warning" onclick="filterUsers('suspended')">Suspended</button>
+                            <button class="btn-small success" onclick="exportUsers()">Export Data</button>
+                        </div>
+                    </div>
+
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Joined</th>
+                                <th>Last Active</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">DR</div>
+                                        <div class="user-details">
+                                            <h4>Dr. Rachel Martinez</h4>
+                                            <p>Emergency Medicine • Los Angeles, CA</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Locum Physician</td>
+                                <td>Jan 15, 2024</td>
+                                <td>2 hours ago</td>
+                                <td>$847,250</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <button class="btn-small secondary" onclick="viewUser(1)">View</button>
+                                    <button class="btn-small warning" onclick="suspendUser(1)">Suspend</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">SJ</div>
+                                        <div class="user-details">
+                                            <h4>Sarah Johnson</h4>
+                                            <p>Metropolitan Staffing Solutions</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Recruiter</td>
+                                <td>Nov 8, 2023</td>
+                                <td>1 hour ago</td>
+                                <td>$125,400</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <button class="btn-small secondary" onclick="viewUser(2)">View</button>
+                                    <button class="btn-small warning" onclick="suspendUser(2)">Suspend</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">MC</div>
+                                        <div class="user-details">
+                                            <h4>Dr. Michael Chen</h4>
+                                            <p>Internal Medicine • Houston, TX</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Locum Physician</td>
+                                <td>Sep 22, 2023</td>
+                                <td>1 day ago</td>
+                                <td>$692,100</td>
+                                <td><span class="status-badge inactive">Inactive</span></td>
+                                <td>
+                                    <button class="btn-small secondary" onclick="viewUser(3)">View</button>
+                                    <button class="btn-small primary" onclick="reactivateUser(3)">Reactivate</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">AP</div>
+                                        <div class="user-details">
+                                            <h4>Amanda Parker</h4>
+                                            <p>HealthForce Recruiting</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Recruiter</td>
+                                <td>Dec 3, 2023</td>
+                                <td>3 days ago</td>
+                                <td>$89,750</td>
+                                <td><span class="status-badge suspended">Suspended</span></td>
+                                <td>
+                                    <button class="btn-small secondary" onclick="viewUser(4)">View</button>
+                                    <button class="btn-small success" onclick="reinstateUser(4)">Reinstate</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- System Health -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">System Health</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="refreshHealth()">Refresh</button>
+                            <button class="btn-small warning" onclick="runDiagnostics()">Run Diagnostics</button>
+                        </div>
+                    </div>
+
+                    <div class="health-grid">
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">99.7%</div>
+                            <div class="health-label">Server Uptime</div>
+                        </div>
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">1.2s</div>
+                            <div class="health-label">Response Time</div>
+                        </div>
+                        <div class="health-item warning">
+                            <div class="health-value" style="color: var(--warning-color);">78%</div>
+                            <div class="health-label">Database Usage</div>
+                        </div>
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">15.2%</div>
+                            <div class="health-label">CPU Usage</div>
+                        </div>
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">42%</div>
+                            <div class="health-label">Memory Usage</div>
+                        </div>
+                        <div class="health-item critical">
+                            <div class="health-value" style="color: var(--error-color);">3</div>
+                            <div class="health-label">Failed Requests</div>
+                        </div>
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">245</div>
+                            <div class="health-label">Active Sessions</div>
+                        </div>
+                        <div class="health-item healthy">
+                            <div class="health-value" style="color: var(--success-color);">32ms</div>
+                            <div class="health-label">API Latency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>ContractCalc Pro</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Admin Dashboard functionality
+        function generateReport() {
+            alert('Generating comprehensive platform report...\n\n📊 Report includes:\n• User growth and engagement metrics\n• Revenue and conversion analytics\n• Job posting and matching statistics\n• System performance data\n• Financial summary\n• Compliance and security status\n\nReport will be exported as PDF.');
+        }
+
+        function systemSettings() {
+            alert('Opening system settings...\n\n⚙️ Configure:\n• Platform-wide settings\n• User management policies\n• Payment processing\n• Email and notification templates\n• Security and compliance rules\n• API rate limits\n• Feature flags and toggles');
+        }
+
+        function changeTimeframe(period) {
+            const buttons = document.querySelectorAll('.section-actions .btn-small.secondary');
+            buttons.forEach(btn => btn.classList.remove('primary'));
+            event.target.classList.add('primary');
+            
+            alert(`Analytics updated for ${period} timeframe.\n\n📈 Showing:\n• Platform usage trends\n• User activity patterns\n• Revenue performance\n• System health metrics\n• Growth indicators`);
+        }
+
+        function viewAllActivity() {
+            alert('Loading complete activity log...\n\n📋 Activity includes:\n• User registrations and logins\n• Job postings and applications\n• Calculations and analyses\n• System events and maintenance\n• Financial transactions\n• Security events');
+        }
+
+        function filterUsers(filter) {
+            const buttons = document.querySelectorAll('.section-actions .btn-small.secondary');
+            buttons.forEach(btn => btn.classList.remove('primary'));
+            event.target.classList.add('primary');
+            
+            alert(`Filtering users by: ${filter}\n\nThis would update the table to show only ${filter} users with relevant filtering and sorting options.`);
+        }
+
+        function viewUser(userId) {
+            alert(`Viewing detailed user profile ${userId}...\n\n👤 Profile includes:\n• Complete user information\n• Activity and usage history\n• Revenue and transaction data\n• Support tickets and communications\n• Login and security logs\n• Account settings and permissions`);
+        }
+
+        function suspendUser(userId) {
+            if (confirm('Are you sure you want to suspend this user?')) {
+                alert(`User ${userId} has been suspended.\n\n🚫 Actions taken:\n• Account access disabled\n• Active listings removed\n• Pending transactions frozen\n• User notified via email\n• Incident logged for review`);
+            }
+        }
+
+        function reactivateUser(userId) {
+            alert(`Reactivating user ${userId}...\n\n✅ Actions:\n• Account access restored\n• Previous listings reactivated\n• Transaction processing resumed\n• Welcome back email sent\n• Activity logged`);
+        }
+
+        function reinstateUser(userId) {
+            if (confirm('Reinstate this suspended user?')) {
+                alert(`User ${userId} has been reinstated.\n\n✅ Actions:\n• Suspension lifted\n• Full account access restored\n• Compliance review completed\n• User notified of reinstatement\n• Case closed and logged`);
+            }
+        }
+
+        function exportUsers() {
+            alert('Exporting user data...\n\n📊 Export includes:\n• Complete user database\n• Activity and engagement metrics\n• Revenue and financial data\n• Compliance and verification status\n• Anonymized analytics data\n\nFile will be downloaded as Excel spreadsheet.');
+        }
+
+        function refreshHealth() {
+            alert('Refreshing system health metrics...\n\n🔄 Updated:\n• Server performance indicators\n• Database usage statistics\n• API response times\n• Error rates and logs\n• Resource utilization\n• Security status');
+        }
+
+        function runDiagnostics() {
+            alert('Running comprehensive system diagnostics...\n\n🔍 Checking:\n• Database integrity\n• API endpoint health\n• File system status\n• Security vulnerabilities\n• Performance bottlenecks\n• Backup systems\n\nDiagnostics will complete in 2-3 minutes.');
+        }
+
+        // Simulate real-time updates
+        function updateDashboard() {
+            console.log('Admin dashboard updated with latest data');
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(updateDashboard, 30000);
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin dashboard loaded');
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
