@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        .job-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .jobs-container {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .job-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .job-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .job-company {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .job-location {
+            color: #3498db;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .job-description {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        
+        .job-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #95a5a6;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Job Board</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="message"></div>
+        
+        <div class="job-form">
+            <h2>Post a New Job</h2>
+            <form id="jobForm">
+                <div class="form-group">
+                    <label for="title">Job Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="company">Company</label>
+                    <input type="text" id="company" name="company" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="type">Job Type</label>
+                    <select id="type" name="type" required>
+                        <option value="">Select Type</option>
+                        <option value="full-time">Full Time</option>
+                        <option value="part-time">Part Time</option>
+                        <option value="contract">Contract</option>
+                        <option value="remote">Remote</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="salary">Salary Range</label>
+                    <input type="text" id="salary" name="salary" placeholder="e.g., $60,000 - $80,000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Job Description</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                
+                <button type="submit">Post Job</button>
+            </form>
+        </div>
+        
+        <h2>Available Jobs</h2>
+        <div id="jobsList" class="jobs-container">
+            <div class="loading">Loading jobs...</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api/jobs';
+        const messageDiv = document.getElementById('message');
+        const jobsList = document.getElementById('jobsList');
+        const jobForm = document.getElementById('jobForm');
+        
+        function showMessage(message, type) {
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        async function loadJobs() {
+            try {
+                const response = await fetch(API_URL);
+                const jobs = await response.json();
+                
+                if (jobs.length === 0) {
+                    jobsList.innerHTML = '<p class="loading">No jobs available yet.</p>';
+                    return;
+                }
+                
+                jobsList.innerHTML = jobs.map(job => `
+                    <div class="job-card">
+                        <div class="job-title">${job.title}</div>
+                        <div class="job-company">${job.company}</div>
+                        <div class="job-location">${job.location}</div>
+                        <div class="job-description">${job.description}</div>
+                        <div class="job-meta">
+                            <span>${job.type} ${job.salary ? `• ${job.salary}` : ''}</span>
+                            <span>Posted ${new Date(job.createdAt).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                jobsList.innerHTML = '<p class="error">Failed to load jobs. Please try again later.</p>';
+                console.error('Error loading jobs:', error);
+            }
+        }
+        
+        jobForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(jobForm);
+            const jobData = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jobData),
+                });
+                
+                if (response.ok) {
+                    showMessage('Job posted successfully!', 'success');
+                    jobForm.reset();
+                    loadJobs();
+                } else {
+                    showMessage('Failed to post job. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check your connection.', 'error');
+                console.error('Error posting job:', error);
+            }
+        });
+        
+        // Load jobs on page load
+        loadJobs();
+        
+        // Refresh jobs every 30 seconds
+        setInterval(loadJobs, 30000);
+    </script>
+</body>
+</html>
