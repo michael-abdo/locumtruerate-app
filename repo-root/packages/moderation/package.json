@@ -1,0 +1,62 @@
+{
+  "name": "@locumtruerate/moderation",
+  "version": "0.1.0",
+  "description": "Content moderation and spam prevention for LocumTrueRate platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "@locumtruerate/shared": "workspace:*",
+    "bad-words": "^3.0.4",
+    "compromise": "^14.10.0",
+    "natural": "^6.8.0",
+    "sentiment": "^5.0.2",
+    "string-similarity": "^4.0.4",
+    "profanity-check": "^1.0.4",
+    "axios": "^1.6.2",
+    "node-cache": "^5.1.2",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/natural": "^5.1.5",
+    "@types/node": "^20.10.6",
+    "@types/string-similarity": "^4.0.2",
+    "@types/uuid": "^9.0.7",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./spam": {
+      "types": "./dist/spam.d.ts",
+      "default": "./dist/spam.js"
+    },
+    "./content": {
+      "types": "./dist/content.d.ts",
+      "default": "./dist/content.js"
+    },
+    "./filters": {
+      "types": "./dist/filters.d.ts",
+      "default": "./dist/filters.js"
+    },
+    "./ai": {
+      "types": "./dist/ai.d.ts",
+      "default": "./dist/ai.js"
+    }
+  }
+}
