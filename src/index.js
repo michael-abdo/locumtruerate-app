@@ -1,3 +1,5 @@
+import { EmailService } from './emailService.js';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -65,6 +67,29 @@ export default {
       return handleVerifyToken(request, env);
     }
     
+    if (url.pathname.startsWith('/api/applications/') && url.pathname.endsWith('/status') && request.method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return handleUpdateApplicationStatus(id, request, env);
+    }
+    
+    if (url.pathname === '/api/notifications' && request.method === 'GET') {
+      return handleGetNotifications(request, env);
+    }
+    
+    if (url.pathname.startsWith('/api/jobs/') && url.pathname.endsWith('/status') && request.method === 'PUT') {
+      const id = url.pathname.split('/')[3];
+      return handleUpdateJobStatus(id, request, env);
+    }
+    
+    if (url.pathname === '/api/jobs/expired' && request.method === 'GET') {
+      return handleGetExpiredJobs(env);
+    }
+    
+    if (url.pathname.startsWith('/api/jobs/') && url.pathname.endsWith('/extend') && request.method === 'POST') {
+      const id = url.pathname.split('/')[3];
+      return handleExtendJob(id, request, env);
+    }
+    
     return new Response('Not Found', { status: 404 });
   },
 };
@@ -72,11 +97,23 @@ export default {
 async function handleGetJobs(env) {
   const jobs = await env.JOBS.list();
   const jobList = [];
+  const now = new Date();
   
   for (const key of jobs.keys) {
     const job = await env.JOBS.get(key.name);
     if (job) {
-      jobList.push(JSON.parse(job));
+      const jobData = JSON.parse(job);
+      
+      // Check if job is expired and update status
+      if (jobData.expiresAt && new Date(jobData.expiresAt) < now && jobData.status === 'active') {
+        jobData.status = 'expired';
+        await env.JOBS.put(key.name, JSON.stringify(jobData));
+      }
+      
+      // Only return active jobs for public listings
+      if (jobData.status === 'active') {
+        jobList.push(jobData);
+      }
     }
   }
   
@@ -92,7 +129,20 @@ async function handleCreateJob(request, env) {
   try {
     const job = await request.json();
     const id = crypto.randomUUID();
-    const jobWithId = { ...job, id, createdAt: new Date().toISOString() };
+    
+    // Calculate expiration date (default: 30 days from now)
+    const expirationDays = job.expirationDays || 30;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expirationDays);
+    
+    const jobWithId = { 
+      ...job, 
+      id, 
+      createdAt: new Date().toISOString(),
+      expiresAt: expiresAt.toISOString(),
+      status: 'active',
+      viewCount: 0
+    };
     
     await env.JOBS.put(id, JSON.stringify(jobWithId));
     
@@ -121,7 +171,22 @@ async function handleGetJob(id, env) {
     });
   }
   
-  return new Response(job, {
+  const jobData = JSON.parse(job);
+  
+  // Increment view count
+  jobData.viewCount = (jobData.viewCount || 0) + 1;
+  jobData.lastViewedAt = new Date().toISOString();
+  
+  // Check expiration status
+  const now = new Date();
+  if (jobData.expiresAt && new Date(jobData.expiresAt) < now && jobData.status === 'active') {
+    jobData.status = 'expired';
+  }
+  
+  // Update the job with new view count and status
+  await env.JOBS.put(id, JSON.stringify(jobData));
+  
+  return new Response(JSON.stringify(jobData), {
     headers: { 
       'content-type': 'application/json',
       ...corsHeaders 
@@ -214,6 +279,9 @@ async function handleCreateApplication(request, env) {
     
     await env.APPLICATIONS.put(id, JSON.stringify(applicationWithId));
     
+    // Send email notifications asynchronously
+    ctx.waitUntil(sendApplicationNotifications(applicationWithId, env));
+    
     return new Response(JSON.stringify(applicationWithId), {
       status: 201,
       headers: { 
@@ -226,6 +294,32 @@ async function handleCreateApplication(request, env) {
       status: 400,
       headers: corsHeaders 
     });
+  }
+}
+
+// Send email notifications for new applications
+async function sendApplicationNotifications(application, env) {
+  try {
+    const emailService = new EmailService(env);
+    
+    // Get job details
+    const jobData = await env.JOBS.get(application.jobId);
+    if (!jobData) return;
+    
+    const job = JSON.parse(jobData);
+    
+    // Send confirmation to applicant
+    await emailService.confirmApplicationSubmission(application, job);
+    
+    // For demo purposes, we'll skip employer notification
+    // In production, you would:
+    // 1. Get employer details from job or separate lookup
+    // 2. Send notification to employer
+    // const employer = await getEmployerForJob(job, env);
+    // await emailService.notifyNewApplication(application, job, employer);
+    
+  } catch (error) {
+    console.error('Failed to send application notifications:', error);
   }
 }
 
@@ -409,6 +503,229 @@ async function handleVerifyToken(request, env) {
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: 'Token verification failed' }), {
+      status: 400,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  }
+}
+
+// Update application status and send notifications
+async function handleUpdateApplicationStatus(applicationId, request, env) {
+  try {
+    const { status, message = '' } = await request.json();
+    
+    // Get existing application
+    const applicationData = await env.APPLICATIONS.get(applicationId);
+    if (!applicationData) {
+      return new Response(JSON.stringify({ error: 'Application not found' }), {
+        status: 404,
+        headers: { 
+          'content-type': 'application/json',
+          ...corsHeaders 
+        },
+      });
+    }
+    
+    const application = JSON.parse(applicationData);
+    
+    // Update application status
+    const updatedApplication = {
+      ...application,
+      status,
+      statusUpdatedAt: new Date().toISOString(),
+      statusMessage: message
+    };
+    
+    await env.APPLICATIONS.put(applicationId, JSON.stringify(updatedApplication));
+    
+    // Send status update notification asynchronously
+    if (status !== application.status) {
+      try {
+        const emailService = new EmailService(env);
+        const jobData = await env.JOBS.get(application.jobId);
+        
+        if (jobData) {
+          const job = JSON.parse(jobData);
+          await emailService.notifyApplicationStatusChange(updatedApplication, job, status, message);
+        }
+      } catch (emailError) {
+        console.error('Failed to send status update notification:', emailError);
+      }
+    }
+    
+    return new Response(JSON.stringify(updatedApplication), {
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to update application status' }), {
+      status: 400,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  }
+}
+
+// Get notification history
+async function handleGetNotifications(request, env) {
+  try {
+    const url = new URL(request.url);
+    const filters = {
+      type: url.searchParams.get('type'),
+      status: url.searchParams.get('status'),
+      recipientId: url.searchParams.get('recipientId')
+    };
+    
+    // Remove null values
+    Object.keys(filters).forEach(key => filters[key] === null && delete filters[key]);
+    
+    const emailService = new EmailService(env);
+    const notifications = await emailService.getNotificationHistory(filters);
+    
+    return new Response(JSON.stringify(notifications), {
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to get notifications' }), {
+      status: 500,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  }
+}
+
+// Update job status (active, inactive, expired)
+async function handleUpdateJobStatus(jobId, request, env) {
+  try {
+    const { status } = await request.json();
+    
+    if (!['active', 'inactive', 'expired'].includes(status)) {
+      return new Response(JSON.stringify({ error: 'Invalid status' }), {
+        status: 400,
+        headers: { 
+          'content-type': 'application/json',
+          ...corsHeaders 
+        },
+      });
+    }
+    
+    const jobData = await env.JOBS.get(jobId);
+    if (!jobData) {
+      return new Response(JSON.stringify({ error: 'Job not found' }), {
+        status: 404,
+        headers: { 
+          'content-type': 'application/json',
+          ...corsHeaders 
+        },
+      });
+    }
+    
+    const job = JSON.parse(jobData);
+    job.status = status;
+    job.statusUpdatedAt = new Date().toISOString();
+    
+    await env.JOBS.put(jobId, JSON.stringify(job));
+    
+    return new Response(JSON.stringify(job), {
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to update job status' }), {
+      status: 400,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  }
+}
+
+// Get expired jobs for management
+async function handleGetExpiredJobs(env) {
+  try {
+    const jobs = await env.JOBS.list();
+    const expiredJobs = [];
+    const now = new Date();
+    
+    for (const key of jobs.keys) {
+      const job = await env.JOBS.get(key.name);
+      if (job) {
+        const jobData = JSON.parse(job);
+        
+        if (jobData.expiresAt && new Date(jobData.expiresAt) < now) {
+          expiredJobs.push(jobData);
+        }
+      }
+    }
+    
+    return new Response(JSON.stringify(expiredJobs), {
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to get expired jobs' }), {
+      status: 500,
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  }
+}
+
+// Extend job expiration date
+async function handleExtendJob(jobId, request, env) {
+  try {
+    const { days = 30 } = await request.json();
+    
+    const jobData = await env.JOBS.get(jobId);
+    if (!jobData) {
+      return new Response(JSON.stringify({ error: 'Job not found' }), {
+        status: 404,
+        headers: { 
+          'content-type': 'application/json',
+          ...corsHeaders 
+        },
+      });
+    }
+    
+    const job = JSON.parse(jobData);
+    
+    // Extend expiration date
+    const newExpirationDate = new Date();
+    newExpirationDate.setDate(newExpirationDate.getDate() + days);
+    
+    job.expiresAt = newExpirationDate.toISOString();
+    job.extendedAt = new Date().toISOString();
+    job.status = 'active'; // Reactivate if expired
+    
+    await env.JOBS.put(jobId, JSON.stringify(job));
+    
+    return new Response(JSON.stringify(job), {
+      headers: { 
+        'content-type': 'application/json',
+        ...corsHeaders 
+      },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Failed to extend job' }), {
       status: 400,
       headers: { 
         'content-type': 'application/json',

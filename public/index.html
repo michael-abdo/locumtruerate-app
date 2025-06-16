@@ -381,6 +381,17 @@
                     <textarea id="description" name="description" required></textarea>
                 </div>
                 
+                <div class="form-group">
+                    <label for="expirationDays">Job Posting Duration (days)</label>
+                    <select id="expirationDays" name="expirationDays">
+                        <option value="7">7 days</option>
+                        <option value="14">14 days</option>
+                        <option value="30" selected>30 days (recommended)</option>
+                        <option value="60">60 days</option>
+                        <option value="90">90 days</option>
+                    </select>
+                </div>
+                
                 <button type="submit">Post Job</button>
             </form>
         </div>
@@ -576,6 +587,8 @@
                         <div class="job-meta">
                             <span>${job.type} ${job.salary ? `• ${job.salary}` : ''}</span>
                             <span>Posted ${new Date(job.createdAt).toLocaleDateString()}</span>
+                            ${job.viewCount ? `<span>👁️ ${job.viewCount} views</span>` : ''}
+                            ${job.expiresAt ? `<span>⏰ Expires ${new Date(job.expiresAt).toLocaleDateString()}</span>` : ''}
                         </div>
                         <div class="job-actions">
                             <button onclick="applyForJob('${job.id}')" class="apply-btn">Apply Now</button>
