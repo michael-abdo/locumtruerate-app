@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Locum True Rate™ Paycheck Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { font-family:'Inter',sans-serif; background:#eef2f7; margin:0; padding:2rem; color:#2c3e50; }
+    .banner { display:flex; align-items:center; justify-content:center; gap:0.75rem; background:linear-gradient(90deg,#6a11cb,#2575fc); color:#fff; padding:1rem 2rem; border-radius:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.1); margin-bottom:1rem; }
+    .login-bar { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; }
+    .login-bar a { text-decoration:none; padding:0.5rem 1rem; border:2px solid #2575fc; border-radius:1rem; color:#2575fc; font-weight:500; background:#fff; transition:all .3s; }
+    .login-bar a:hover { background:#2575fc; color:#fff; transform:translateY(-2px); }
+    .calculator-form { background:#fff; border-radius:1.5rem; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.05); border-top:6px solid #2575fc; max-width:800px; margin:0 auto 2rem; }
+    .header { text-align:center; margin-bottom:1.5rem; }
+    .header i { font-size:2.5rem; color:#2575fc; }
+    .header h1 { margin:0; font-size:1.75rem; color:#2575fc; font-weight:600; }
+    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+    label { display:flex; flex-direction:column; font-weight:500; font-size:0.95rem; }
+    select,input { margin-top:0.5rem; padding:0.75rem 1rem; border:none; border-radius:2rem; background:#f6f9fc; font-size:0.95rem; transition:box-shadow .3s; }
+    select:focus,input:focus { box-shadow:0 0 0 3px rgba(37,117,252,0.2); outline:none; }
+    .calculate-btn { display:block; margin:2rem auto 0; padding:1rem; max-width:400px; width:100%; background:linear-gradient(90deg,#2575fc,#6a11cb); color:#fff; font-weight:600; border:none; border-radius:2rem; cursor:pointer; box-shadow:0 6px 20px rgba(37,117,252,0.3); transition:transform .3s; }
+    .calculate-btn:hover { transform:translateY(-3px); }
+    .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:2rem; border-radius:1.5rem; box-shadow:0 12px 36px rgba(0,0,0,0.2); z-index:1000; max-width:500px; }
+    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; }
+    .popup h2 { color:#2575fc; text-align:center; margin-top:0; }
+    .popup p { background:#f6f9fc; padding:1rem; border-radius:1rem; box-shadow:inset 0 2px 6px rgba(0,0,0,0.05); margin:1rem 0; font-weight:500; }
+    .close-btn { display:block; margin:1.5rem auto 0; padding:1rem; width:100%; background:#dc3545; color:#fff; border:none; border-radius:1rem; cursor:pointer; }
+    .close-btn:hover { background:#c82333; }
+  </style>
+</head>
+<body>
+  <div class="banner"><i class="fas fa-wallet"></i><span>Locum Paycheck Calculator</span></div>
+  <div class="login-bar">
+    <a href="main.html">Rate Calculator</a>
+    <a href="jobs">Job Board</a>
+    <a href="LocumDashboard">Locum Dashboard</a>
+    <a href="RecruiterDashboard">Recruiter Dashboard</a>
+    <a href="paycheckcalculator">Paycheck Calculator</a>
+  </div>
+
+  <div class="calculator-form">
+    <div class="header"><i class="fas fa-calculator"></i><h1>Calculate Your Paycheck</h1></div>
+    <div class="grid">
+      <label>Pay Frequency<select id="payFrequency">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Biweekly</option>
+        </select></label>
+      <label>Hourly Base Rate<input id="hourly" type="number" /></label>
+      <label>Overtime Rate<input id="otRate" type="number" /></label>
+      <label>Hourly Beeper Call Rate<input id="beeperRate" type="number" /></label>
+      <label>How many hours of beeper call this period?<input id="beeperHoursPerPeriod" type="number" /></label>
+      <label>Weekly Housing Stipend<input id="weeklyStipend" type="number" /></label>
+      <label>Daily Food Stipend<input id="dailyStipend" type="number" /></label>
+      <label>Regular Hours Worked Per Week (exclude Call Back hours)<input id="hoursPerWeek" type="number" /></label>
+      <label>How many regular shifts per week (exclude call shifts)?<input id="shiftsPerWeek" type="number" /></label>
+      <label>Round-trip Miles per Day<input id="dailyMiles" type="number" /></label>
+      <label>Hours Called Back<input id="callbackHours" type="number" /></label>
+      <label>Call Back Rate<input id="callbackRate" type="number" /></label>
+    </div>
+    <button class="calculate-btn" onclick="calculatePaycheck()">Calculate Paycheck</button>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="resultsPopup">
+    <h2>Paycheck Summary</h2>
+    <p id="payPeriodAmount"></p>
+    <p id="breakdownWages"></p>
+    <p id="breakdownStipends"></p>
+    <p id="breakdownMileage"></p>
+    <p id="breakdownBeeper"></p>
+    <p id="breakdownCallback"></p>
+    <button class="close-btn" onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    function val(id){ return parseFloat(document.getElementById(id).value)||0; }
+    function calculatePaycheck(){
+      const freq=document.getElementById('payFrequency').value;
+      const h=val('hourly');
+      const ot=val('otRate');
+      const beeperRate=val('beeperRate');
+      const beeperHours=val('beeperHoursPerPeriod');
+      const ws=val('weeklyStipend');
+      const ds=val('dailyStipend');
+      const hpw=val('hoursPerWeek');
+      const spw=val('shiftsPerWeek');
+      const dm=val('dailyMiles');
+      const cbHours=val('callbackHours');
+      const cbRate=val('callbackRate');
+
+      const weeks = freq === 'biweekly' ? 2 : 1;
+      // Wages for period
+      const wages = (Math.min(hpw, 40) * h + Math.max(hpw - 40, 0) * ot) * weeks;
+      // Stipends for period
+      const stipend = (ws + (ds * spw)) * weeks;
+      // Mileage reimbursement for period
+      const mileage = dm * spw * 0.67 * weeks;
+      // Beeper pay for period input is direct
+      const beeperPay = beeperHours * beeperRate;
+      // Callback pay for period input is direct
+      const callbackPay = cbHours * cbRate;
+      // Total pay for period
+      const totalPay = wages + stipend + mileage + beeperPay + callbackPay;
+
+      // Display results (all values correspond to selected period)
+      document.getElementById('payPeriodAmount').textContent = `Paycheck Amount (${freq.charAt(0).toUpperCase() + freq.slice(1)}): $${totalPay.toFixed(2)}`;
+      document.getElementById('breakdownWages').textContent = `Wages (for period): $${wages.toFixed(2)}`;
+      document.getElementById('breakdownStipends').textContent = `Stipends (for period): $${stipend.toFixed(2)}`;
+      document.getElementById('breakdownMileage').textContent = `Mileage Reimbursement (for period): $${mileage.toFixed(2)}`;
+      document.getElementById('breakdownBeeper').textContent = `Beeper Pay (for period): $${beeperPay.toFixed(2)}`;
+      document.getElementById('breakdownCallback').textContent = `Call Back Pay (for period): $${callbackPay.toFixed(2)}`;
+
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('resultsPopup').style.display = 'block';
+    }
+    function closePopup(){
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('resultsPopup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
