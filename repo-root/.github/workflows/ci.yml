@@ -1,0 +1,671 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+
+jobs:
+  # Dependency and security scanning
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Audit npm packages for vulnerabilities
+      - name: Audit dependencies
+        run: pnpm audit --audit-level moderate
+        continue-on-error: true
+
+      # Snyk security scanning
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --fail-on=upgradable
+        continue-on-error: true
+
+      # CodeQL analysis for code security
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript,typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      # Dependency review for PRs
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        if: github.event_name == 'pull_request'
+
+  # Lint and format checking
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+      - name: Check Prettier formatting
+        run: pnpm run format:check
+
+      - name: TypeScript type checking
+        run: pnpm run type-check
+
+  # Build and test
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: locumtruerate_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Setup test environment
+      - name: Setup test database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/locumtruerate_test
+          REDIS_URL: redis://localhost:6379
+        run: |
+          pnpm run db:push
+          pnpm run db:seed:test
+
+      # Run tests
+      - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/locumtruerate_test
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+        run: pnpm run test:unit
+
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/locumtruerate_test
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+        run: pnpm run test:integration
+
+      # Generate test coverage
+      - name: Generate coverage report
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/locumtruerate_test
+          REDIS_URL: redis://localhost:6379
+          NODE_ENV: test
+        run: pnpm run test:coverage
+
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+      # Build all packages
+      - name: Build packages
+        run: pnpm run build
+
+      # Cache build artifacts
+      - name: Cache build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+  # E2E testing
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [test]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Restore build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      # Install Playwright
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      # Start application
+      - name: Start application
+        run: |
+          pnpm run start:test &
+          sleep 30
+
+      # Run E2E tests
+      - name: Run Playwright tests
+        run: pnpm run test:e2e
+
+      # Upload test results
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # OWASP ZAP security testing
+  zap-scan:
+    name: OWASP ZAP Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [test]
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Restore build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      # Start application for testing
+      - name: Start application
+        run: |
+          pnpm run start:test &
+          sleep 30
+
+      # Run OWASP ZAP baseline scan
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      # Upload ZAP results
+      - name: Upload ZAP results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: zap-report
+          path: report_html.html
+          retention-days: 7
+
+  # Performance testing
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Restore build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      # Start application
+      - name: Start application
+        run: |
+          pnpm run start:prod &
+          sleep 30
+
+      # Run Lighthouse CI
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      # Run load testing with Artillery
+      - name: Run load tests
+        run: pnpm run test:load
+
+      # Upload performance results
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-report
+          path: |
+            lighthouse-report.html
+            load-test-report.json
+          retention-days: 7
+
+  # Container security scanning
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Build Docker image
+      - name: Build Docker image
+        run: docker build -t locumtruerate:latest .
+
+      # Scan with Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'locumtruerate:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      # Upload Trivy results
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # License compliance check
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Check for license compatibility
+      - name: License compatibility check
+        run: pnpm run license:check
+
+      # Generate license report
+      - name: Generate license report
+        run: pnpm run license:report
+
+      # Upload license report
+      - name: Upload license report
+        uses: actions/upload-artifact@v3
+        with:
+          name: license-report
+          path: license-report.json
+          retention-days: 30
+
+  # Deployment to staging (on main branch)
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [security-scan, lint, test, zap-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Restore build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      # Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: locumtruerate-staging
+          directory: apps/web/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      # Deploy database migrations
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: pnpm run db:deploy
+
+      # Health check
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f https://staging.locumtruerate.com/health || exit 1
+
+      # Notify deployment
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "Staging deployment successful"
+          # Add Slack/Discord notification here
+
+  # Deployment to production (manual trigger)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [security-scan, lint, test, performance-test, container-scan]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Manual approval required for production
+      - name: Manual approval gate
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ secrets.PRODUCTION_APPROVERS }}
+          minimum-approvals: 2
+          issue-title: "Production Deployment Approval Required"
+
+      # Restore build cache
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/dist
+            **/build
+            **/.next
+          key: ${{ runner.os }}-build-${{ github.sha }}
+
+      # Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: locumtruerate-production
+          directory: apps/web/dist
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      # Deploy database migrations with backup
+      - name: Backup production database
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: pnpm run db:backup
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: pnpm run db:deploy
+
+      # Smoke tests
+      - name: Production smoke tests
+        env:
+          BASE_URL: https://locumtruerate.com
+        run: pnpm run test:smoke
+
+      # Notify deployment
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "Production deployment successful"
+          # Add comprehensive notification here
+
+      # Rollback on failure
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, initiating rollback"
+          # Add rollback logic here
+
+  # Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+      - name: Cleanup artifacts
+        run: |
+          echo "Cleaning up temporary artifacts"
+          # Add cleanup logic for temporary resources
+
+  # Nightly comprehensive scan
+  nightly-scan:
+    name: Nightly Security Scan
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 2 * * *'
+    timeout-minutes: 60
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Comprehensive security scanning
+      - name: Deep security scan
+        run: |
+          pnpm run security:scan:deep
+          pnpm run security:dependency:audit
+          pnpm run security:secrets:scan
+
+      # Generate security report
+      - name: Generate security report
+        run: pnpm run security:report
+
+      # Upload to security dashboard
+      - name: Upload security report
+        uses: actions/upload-artifact@v3
+        with:
+          name: nightly-security-report
+          path: security-report.json
+          retention-days: 90

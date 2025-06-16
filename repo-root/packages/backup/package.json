@@ -1,0 +1,34 @@
+{
+  "name": "@locumtruerate/backup",
+  "version": "0.1.0",
+  "description": "Automated backup and disaster recovery system for LocumTrueRate",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@locumtruerate/shared": "workspace:*",
+    "@locumtruerate/database": "workspace:*",
+    "aws-sdk": "^2.1520.0",
+    "node-cron": "^3.0.3",
+    "pg-dump": "^1.0.0",
+    "archiver": "^6.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/archiver": "^6.0.2",
+    "@types/node-cron": "^3.0.11",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
