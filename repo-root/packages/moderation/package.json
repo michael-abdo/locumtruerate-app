@@ -20,7 +20,7 @@
     "natural": "^6.8.0",
     "sentiment": "^5.0.2",
     "string-similarity": "^4.0.4",
-    "profanity-check": "^1.0.4",
+    "profanity-check": "^0.0.3",
     "axios": "^1.6.2",
     "node-cache": "^5.1.2",
     "uuid": "^9.0.1",

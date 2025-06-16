@@ -597,3 +597,41 @@ model Lead {
   @@index([status])
   @@index([createdAt])
 }
+
+// Analytics and metrics tracking
+model Analytics {
+  id                String   @id @default(cuid())
+  
+  // Event tracking
+  eventType         String   // 'page_view', 'job_view', 'application_submit', etc.
+  eventName         String
+  entityType        String?  // 'job', 'user', 'application', etc.
+  entityId          String?
+  
+  // User tracking
+  userId            String?
+  sessionId         String
+  ipAddress         String?
+  userAgent         String?
+  
+  // Location and context
+  page              String?
+  referrer          String?
+  utmSource         String?
+  utmMedium         String?
+  utmCampaign       String?
+  
+  // Metadata
+  properties        Json?    // Additional event properties
+  timestamp         DateTime @default(now())
+  
+  // Performance metrics
+  loadTime          Int?     // Page load time in ms
+  ttfb              Int?     // Time to first byte
+  
+  @@index([eventType])
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([timestamp])
+}

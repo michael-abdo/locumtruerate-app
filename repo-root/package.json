@@ -37,6 +37,16 @@
     "license:report": "license-checker --json --out license-report.json",
     "test:load": "echo 'Load test placeholder - would run Artillery'",
     "test:smoke": "echo 'Smoke test placeholder'",
+    "deploy:production": "./scripts/deploy-production.sh",
+    "deploy:staging": "./scripts/deploy-staging.sh",
+    "deploy:dry-run": "node packages/cloudflare-pages/bin/deploy.js --dry-run --config cloudflare-pages.config.json",
+    "cf-pages:init": "node packages/cloudflare-pages/bin/deploy.js init",
+    "cf-pages:status": "node packages/cloudflare-pages/bin/deploy.js status",
+    "cf-pages:security": "node packages/cloudflare-pages/bin/security.js",
+    "secrets:init": "node packages/secrets/dist/cli.js init",
+    "secrets:validate": "echo 'Secrets validation placeholder - would validate all secrets'",
+    "secrets:generate": "node packages/secrets/dist/cli.js generate",
+    "lighthouse": "lhci autorun --config=lighthouserc.json",
     "prepare": "husky install"
   },
   "devDependencies": {

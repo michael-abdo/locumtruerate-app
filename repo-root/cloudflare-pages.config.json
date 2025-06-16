@@ -1,0 +1,49 @@
+{
+  "projectName": "locumtruerate",
+  "accountId": "${CLOUDFLARE_ACCOUNT_ID}",
+  "buildCommand": "pnpm turbo run build --filter=web",
+  "buildOutput": "apps/web/out",
+  "environment": "production",
+  "domains": {
+    "main": "locumtruerate.com",
+    "api": "api.locumtruerate.com",
+    "cdn": "cdn.locumtruerate.com",
+    "assets": "assets.locumtruerate.com"
+  },
+  "environmentVariables": {
+    "NODE_ENV": "production",
+    "ENVIRONMENT": "production",
+    "NEXT_PUBLIC_ENVIRONMENT": "production",
+    "LOG_LEVEL": "warn",
+    "ENABLE_ANALYTICS": "true",
+    "ENABLE_MONITORING": "true",
+    "ROBOTS_NOINDEX": "false",
+    "NEXT_PUBLIC_DOMAIN": "locumtruerate.com",
+    "NEXT_PUBLIC_API_URL": "https://api.locumtruerate.com",
+    "NEXT_PUBLIC_CDN_URL": "https://cdn.locumtruerate.com"
+  },
+  "buildOptimization": {
+    "minify": true,
+    "treeshake": true,
+    "splitChunks": true,
+    "compressionLevel": 9
+  },
+  "security": {
+    "enableCSP": true,
+    "enableHSTS": true,
+    "enableCORS": false,
+    "environment": "production",
+    "domains": {
+      "main": "locumtruerate.com",
+      "api": "api.locumtruerate.com",
+      "cdn": "cdn.locumtruerate.com",
+      "assets": "assets.locumtruerate.com"
+    },
+    "features": {
+      "analytics": true,
+      "monitoring": true,
+      "webGL": false,
+      "geolocation": true
+    }
+  }
+}
