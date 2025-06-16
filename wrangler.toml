@@ -12,5 +12,10 @@ binding = "APPLICATIONS"
 id = "your-applications-kv-namespace-id"
 preview_id = "your-applications-preview-kv-namespace-id"
 
+[[kv_namespaces]]
+binding = "EMPLOYERS"
+id = "your-employers-kv-namespace-id"
+preview_id = "your-employers-preview-kv-namespace-id"
+
 [env.production]
 vars = { ENVIRONMENT = "production" }
