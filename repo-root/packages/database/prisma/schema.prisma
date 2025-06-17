@@ -119,6 +119,7 @@ model User {
   sessions          Session[]
   apiKeys           ApiKey[]
   comments          ApplicationComment[]
+  analyticsEvents   AnalyticsEvent[]
   
   @@index([email])
   @@index([role])
@@ -634,4 +635,26 @@ model Analytics {
   @@index([userId])
   @@index([sessionId])
   @@index([timestamp])
+}
+
+// Modern analytics events for enhanced tracking
+model AnalyticsEvent {
+  id            String   @id @default(cuid())
+  userId        String?  // Null for anonymous events
+  sessionId     String
+  event         String   // Event name (page_view, job_view, application_submit, etc.)
+  properties    Json?    // Event properties (flexible data)
+  page          String?  // Page URL
+  referrer      String?  // Referrer URL
+  userAgent     String?  // User agent string
+  ip            String?  // IP address
+  createdAt     DateTime @default(now())
+  
+  user          User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([sessionId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([page])
 }

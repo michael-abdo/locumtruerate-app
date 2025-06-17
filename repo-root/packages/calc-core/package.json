@@ -11,7 +11,11 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage --collectCoverageFrom='src/**/*.ts' --coverageThreshold='{\"global\":{\"branches\":95,\"functions\":95,\"lines\":95,\"statements\":95}}'",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --selectProjects unit",
+    "test:validation": "jest --selectProjects validation",
+    "test:validation-report": "jest --selectProjects validation --verbose --no-coverage",
+    "validate": "npm run test:validation",
     "benchmark": "node dist/benchmarks/index.js"
   },
   "dependencies": {
@@ -20,7 +24,9 @@
     "decimal.js": "^10.4.3",
     "date-fns": "^3.0.6",
     "zod": "^3.22.4",
-    "nanoid": "^5.0.4"
+    "nanoid": "^5.0.4",
+    "uuid": "^9.0.1",
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",

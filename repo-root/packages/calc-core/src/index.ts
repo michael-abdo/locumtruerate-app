@@ -6,6 +6,21 @@ export { ContractComparisonEngine } from './engines/comparison';
 export { TaxCalculator } from './engines/tax-calculator';
 export { LocationDataProvider } from './engines/location-data';
 
+// Export functionality
+export * from './export';
+
+// History functionality
+export * from './history';
+
+// React hooks
+export { useExport, useExportStatus } from './hooks/use-export';
+export { 
+  useCalculationHistory, 
+  useRecentCalculations, 
+  useFavoriteCalculations,
+  useCalculationAnalytics 
+} from './hooks/use-calculation-history';
+
 // Re-export Decimal for convenience
 export { Decimal } from 'decimal.js';
 

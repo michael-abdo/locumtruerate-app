@@ -134,7 +134,7 @@ export const PaycheckInputSchema = z.object({
   ytdStateDisability: z.number().nonnegative().default(0),
   
   // Deductions
-  preeTaxDeductions: z.number().nonnegative().default(0),
+  preTaxDeductions: z.number().nonnegative().default(0),
   rothDeductions: z.number().nonnegative().default(0),
   afterTaxDeductions: z.number().nonnegative().default(0),
   

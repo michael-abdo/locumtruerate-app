@@ -78,7 +78,11 @@ const contact = {
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer 
+      className="bg-gray-900 text-white"
+      role="contentinfo"
+      id="footer"
+    >
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
@@ -86,7 +90,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">LT</span>
+                <span className="text-white font-bold text-sm" aria-hidden="true">LT</span>
               </div>
               <span className="text-xl font-bold">LocumTrueRate</span>
             </div>
@@ -99,20 +103,28 @@ export function Footer() {
             {/* Contact info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-gray-300">
-                <Phone className="h-4 w-4 flex-shrink-0" />
-                <a href={`tel:${contact.phone}`} className="hover:text-white transition-colors">
+                <Phone className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                <a 
+                  href={`tel:${contact.phone}`} 
+                  className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-sm"
+                  aria-label={`Call us at ${contact.phone}`}
+                >
                   {contact.phone}
                 </a>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
-                <Mail className="h-4 w-4 flex-shrink-0" />
-                <a href={`mailto:${contact.email}`} className="hover:text-white transition-colors">
+                <Mail className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                <a 
+                  href={`mailto:${contact.email}`} 
+                  className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-sm"
+                  aria-label={`Email us at ${contact.email}`}
+                >
                   {contact.email}
                 </a>
               </div>
               <div className="flex items-start space-x-3 text-sm text-gray-300">
-                <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                <span>{contact.address}</span>
+                <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <address className="not-italic">{contact.address}</address>
               </div>
             </div>
           </div>
@@ -122,18 +134,20 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-white tracking-wider uppercase mb-4">
               Platform
             </h3>
-            <ul className="space-y-3">
-              {navigation.main.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <nav aria-label="Platform navigation">
+              <ul className="space-y-3">
+                {navigation.main.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className="text-sm text-gray-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 rounded-sm"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
 
           <div>

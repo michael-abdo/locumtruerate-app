@@ -13,6 +13,25 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { trpc } from '@/providers/trpc-provider'
 import { Button } from '@locumtruerate/ui'
+import { usePageAnalytics } from '@/hooks/use-analytics'
+import { generateSearchSEO } from '@/lib/seo'
+import { Metadata } from 'next'
+
+// Generate metadata for search results SEO
+export async function generateMetadata({ searchParams }: { 
+  searchParams: { [key: string]: string | string[] | undefined } 
+}): Promise<Metadata> {
+  const query = typeof searchParams.query === 'string' ? searchParams.query : undefined
+  const location = typeof searchParams.location === 'string' ? searchParams.location : undefined
+  const category = typeof searchParams.category === 'string' ? searchParams.category : undefined
+  
+  return generateSearchSEO({
+    query,
+    location,
+    category,
+    resultCount: 0 // Will be updated with real count in component
+  })
+}
 
 type ViewMode = 'list' | 'map' | 'grid'
 type SortBy = 'relevance' | 'date' | 'salary' | 'location'
@@ -35,6 +54,9 @@ export default function JobSearchPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set())
+  
+  // Analytics
+  const { trackSearchUsage, trackUserEngagement } = usePageAnalytics()
   
   // Search state
   const [searchFilters, setSearchFilters] = useState({
@@ -60,6 +82,23 @@ export default function JobSearchPage() {
     sortBy: sortBy as any,
     sortOrder: 'desc'
   })
+  
+  // Track search usage when results change
+  useEffect(() => {
+    if (jobsData && searchFilters.query) {
+      trackSearchUsage(
+        searchFilters.query, 
+        jobsData.pagination.total,
+        {
+          location: searchFilters.location,
+          category: searchFilters.category,
+          type: searchFilters.type,
+          page,
+          sortBy
+        }
+      )
+    }
+  }, [jobsData, searchFilters, page, sortBy, trackSearchUsage])
 
   const { data: featuredJobs } = trpc.jobs.getAll.useQuery({
     status: 'ACTIVE',

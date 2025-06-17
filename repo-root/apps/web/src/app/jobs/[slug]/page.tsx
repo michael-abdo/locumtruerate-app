@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -14,8 +14,30 @@ import { Button } from '@locumtruerate/ui'
 import { Badge } from '@/components/ui/badge'
 import { SimilarJobs, ApplicationForm, JobMap } from '@/components/placeholder'
 import { trpc } from '@/providers/trpc-provider'
+import { useJobAnalytics } from '@/hooks/use-analytics'
+import { generateJobSEO, generateJobStructuredData } from '@/lib/seo'
+import { Metadata } from 'next'
 
-export default function JobDetailPage() {
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  try {
+    // In a real implementation, you'd fetch the job data here
+    // For now, we'll create a placeholder
+    const mockJob = {
+      title: 'Emergency Medicine Physician',
+      company: { name: 'Metro General Hospital' },
+      location: 'Dallas, TX',
+      description: 'Seeking an experienced Emergency Medicine physician for a busy Level 1 trauma center. Excellent compensation package and benefits.',
+      category: 'Emergency Medicine',
+      salaryMin: 300000,
+      salaryMax: 450000,
+      slug: params.slug,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }\n    
+    return generateJobSEO(mockJob)
+  } catch (error) {
+    return {\n      title: 'Job Not Found | LocumTrueRate',\n      description: 'The requested job posting could not be found.'\n    }\n  }\n}\n\nexport default function JobDetailPage() {
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
@@ -23,6 +45,9 @@ export default function JobDetailPage() {
   const [showApplication, setShowApplication] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [showMap, setShowMap] = useState(false)
+  
+  // Analytics
+  const { trackJobInteraction, trackJobApplication, trackJobSave, trackJobShare } = useJobAnalytics()
 
   // API calls
   const { data: job, isLoading, error } = trpc.jobs.getBySlug.useQuery({ slug })
@@ -34,12 +59,31 @@ export default function JobDetailPage() {
   }, {
     enabled: !!job?.category && !!job?.id
   })
+  
+  // Track job view when job data loads
+  useEffect(() => {
+    if (job) {
+      trackJobInteraction('view', job.id, job.title, {
+        category: job.category,
+        location: job.location,
+        salaryRange: job.salaryMin && job.salaryMax ? `${job.salaryMin}-${job.salaryMax}` : null
+      })
+    }
+  }, [job, trackJobInteraction])
 
   const handleApply = () => {
+    if (job) {
+      trackJobApplication(job.id, job.title, {
+        source: 'job_detail_page'
+      })
+    }
     setShowApplication(true)
   }
 
   const handleSave = () => {
+    if (job) {
+      trackJobSave(job.id, job.title, !isSaved)
+    }
     setIsSaved(!isSaved)
     // Implement save/unsave job API call
   }
@@ -52,12 +96,18 @@ export default function JobDetailPage() {
           text: job?.description?.substring(0, 100),
           url: window.location.href,
         })
+        if (job) {
+          trackJobShare(job.id, job.title, 'native_share')
+        }
       } catch (err) {
         // Handle sharing error
       }
     } else {
       // Fallback: Copy to clipboard
       navigator.clipboard.writeText(window.location.href)
+      if (job) {
+        trackJobShare(job.id, job.title, 'clipboard')
+      }
     }
   }
 

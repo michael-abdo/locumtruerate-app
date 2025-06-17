@@ -5,6 +5,10 @@ import { TRPCProvider } from '@/providers/trpc-provider'
 import { ThemeProvider } from '@/providers/theme-provider'
 import { ToastProvider } from '@/providers/toast-provider'
 import { AnalyticsProvider } from '@/providers/analytics-provider'
+import { OfflineProvider } from '@/providers/offline-provider'
+import { AccessibilityProvider } from '@/hooks/use-accessibility'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
 import './globals.css'
 
 const inter = Inter({ 
@@ -129,23 +133,90 @@ export default function RootLayout({
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="msapplication-TileColor" content="#2563eb" />
           <meta name="msapplication-config" content="/browserconfig.xml" />
+          
+          {/* SEO and Performance */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="//www.google-analytics.com" />
+          <link rel="dns-prefetch" href="//analytics.google.com" />
+          
+          {/* Organization Structured Data */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                name: 'LocumTrueRate',
+                description: 'Healthcare staffing platform connecting medical professionals with locum tenens opportunities',
+                url: process.env.NEXT_PUBLIC_APP_URL || 'https://locumtruerate.com',
+                logo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://locumtruerate.com'}/logo.png`,
+                industry: 'Healthcare Staffing',
+                foundingDate: '2024',
+                sameAs: [
+                  'https://twitter.com/locumtruerate',
+                  'https://linkedin.com/company/locumtruerate'
+                ],
+                contactPoint: {
+                  '@type': 'ContactPoint',
+                  contactType: 'customer service',
+                  email: 'support@locumtruerate.com'
+                }
+              }, null, 2)
+            }}
+          />
         </head>
-        <body className={`${inter.className} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <TRPCProvider>
-              <AnalyticsProvider>
-                <div className="relative min-h-screen bg-background">
-                  {children}
-                </div>
-                <ToastProvider />
-              </AnalyticsProvider>
-            </TRPCProvider>
-          </ThemeProvider>
+        <body className={`${inter.className} antialiased min-h-screen bg-background`}>
+          <AccessibilityProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TRPCProvider>
+                <AnalyticsProvider>
+                  <OfflineProvider>
+                    <ToastProvider>
+                      <div className="relative flex min-h-screen flex-col">
+                        <Header />
+                        
+                        <main 
+                          id="main-content"
+                          className="flex-1"
+                          role="main"
+                          tabIndex={-1}
+                        >
+                          {children}
+                        </main>
+                        
+                        <Footer />
+                      </div>
+                      
+                      {/* Skip to content for screen readers */}
+                      <div id="skip-nav-target" />
+                      
+                      {/* Live region for global announcements */}
+                      <div
+                        id="global-live-region"
+                        aria-live="polite"
+                        aria-atomic="true"
+                        className="sr-only"
+                      />
+                      
+                      {/* Assertive live region for urgent announcements */}
+                      <div
+                        id="global-alert-region"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                        className="sr-only"
+                      />
+                    </ToastProvider>
+                  </OfflineProvider>
+                </AnalyticsProvider>
+              </TRPCProvider>
+            </ThemeProvider>
+          </AccessibilityProvider>
         </body>
       </html>
     </ClerkProvider>

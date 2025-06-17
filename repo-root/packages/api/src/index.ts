@@ -4,10 +4,11 @@ import { jobsRouter } from './routers/jobs';
 import { applicationsRouter } from './routers/applications';
 import { usersRouter } from './routers/users';
 import { searchRouter } from './routers/search';
+import { adminRouter } from './routers/admin';
+import { analyticsRouter } from './routers/analytics';
 // import { companiesRouter } from './routers/companies';
 // import { organizationsRouter } from './routers/organizations';
 // import { notificationsRouter } from './routers/notifications';
-// import { analyticsRouter } from './routers/analytics';
 // import { billingRouter } from './routers/billing';
 // import { supportRouter } from './routers/support';
 
@@ -17,10 +18,11 @@ export const appRouter = createTRPCRouter({
   applications: applicationsRouter,
   users: usersRouter,
   search: searchRouter,
+  admin: adminRouter,
+  analytics: analyticsRouter,
   // companies: companiesRouter,
   // organizations: organizationsRouter,
   // notifications: notificationsRouter,
-  // analytics: analyticsRouter,
   // billing: billingRouter,
   // support: supportRouter,
 });

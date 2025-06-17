@@ -29,4 +29,23 @@ export const protectedProcedure = t.procedure
   .use(analyticsMiddleware)
   .use(authMiddleware);
 
+// Admin procedure that requires admin role
+export const adminProcedure = t.procedure
+  .use(rateLimitMiddleware)
+  .use(analyticsMiddleware)
+  .use(authMiddleware)
+  .use(async (opts) => {
+    const { ctx } = opts;
+    
+    // Check if user has admin role
+    if (ctx.user?.role !== 'admin' && ctx.user?.role !== 'super_admin') {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Admin access required'
+      });
+    }
+    
+    return opts.next();
+  });
+
 export const createCallerFactory = t.createCallerFactory;
