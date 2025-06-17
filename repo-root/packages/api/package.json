@@ -11,7 +11,11 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:regression": "jest regression.test.ts",
+    "test:endpoints": "ts-node scripts/test-endpoints.ts",
+    "docs:generate": "ts-node scripts/generate-docs.ts",
+    "docs:serve": "npx serve docs"
   },
   "dependencies": {
     "@locumtruerate/shared": "workspace:*",

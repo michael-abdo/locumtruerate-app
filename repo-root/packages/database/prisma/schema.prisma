@@ -121,6 +121,14 @@ model User {
   comments          ApplicationComment[]
   analyticsEvents   AnalyticsEvent[]
   
+  // Support system relations
+  supportTickets    SupportTicket[]
+  supportMessages   SupportMessage[]
+  knowledgeSearches KnowledgeSearch[]
+  supportFeedback   SupportFeedback[]
+  knowledgeAuthored KnowledgeArticle[] @relation("KnowledgeAuthor")
+  knowledgeReviewed KnowledgeArticle[] @relation("KnowledgeReviewer")
+  
   @@index([email])
   @@index([role])
   @@index([createdAt])
@@ -657,4 +665,173 @@ model AnalyticsEvent {
   @@index([event])
   @@index([createdAt])
   @@index([page])
+}
+
+// ==================== SUPPORT SYSTEM ====================
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketCategory {
+  BILLING
+  TECHNICAL
+  ACCOUNT
+  JOB_POSTING
+  APPLICATION
+  PAYMENT
+  FEATURE_REQUEST
+  BUG_REPORT
+  OTHER
+}
+
+// Support tickets
+model SupportTicket {
+  id              String         @id @default(cuid())
+  ticketNumber    String         @unique
+  userId          String
+  email           String
+  name            String
+  
+  subject         String
+  description     String         @db.Text
+  category        TicketCategory
+  priority        TicketPriority
+  status          TicketStatus   @default(OPEN)
+  
+  assignedTo      String?        // Support agent ID
+  tags            String[]       @default([])
+  attachments     String[]       @default([])
+  metadata        Json?          // Additional data
+  
+  internalNotes   String?        @db.Text
+  resolution      String?        @db.Text
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  resolvedAt      DateTime?
+  closedAt        DateTime?
+  
+  // Relations
+  user            User           @relation(fields: [userId], references: [id])
+  messages        SupportMessage[]
+  feedback        SupportFeedback[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@index([ticketNumber])
+}
+
+// Support ticket messages/thread
+model SupportMessage {
+  id              String          @id @default(cuid())
+  ticketId        String
+  authorId        String
+  authorType      String          // 'user' or 'support'
+  
+  message         String          @db.Text
+  attachments     String[]        @default([])
+  isInternal      Boolean         @default(false)
+  
+  createdAt       DateTime        @default(now())
+  
+  // Relations
+  ticket          SupportTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author          User            @relation(fields: [authorId], references: [id])
+  
+  @@index([ticketId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+// Knowledge base articles
+model KnowledgeArticle {
+  id                String   @id @default(cuid())
+  title             String
+  content           String   @db.Text
+  category          String
+  tags              String[] @default([])
+  difficulty        String   @default("beginner") // beginner, intermediate, advanced
+  
+  estimatedReadTime Int      @default(5) // in minutes
+  helpful           Int      @default(0)
+  notHelpful        Int      @default(0)
+  views             Int      @default(0)
+  
+  published         Boolean  @default(false)
+  
+  authorId          String?
+  reviewerId        String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  publishedAt       DateTime?
+  
+  // Relations
+  author            User?    @relation("KnowledgeAuthor", fields: [authorId], references: [id])
+  reviewer          User?    @relation("KnowledgeReviewer", fields: [reviewerId], references: [id])
+  
+  @@index([category])
+  @@index([published])
+  @@index([views])
+  @@index([helpful])
+  @@index([tags])
+  @@fulltext([title, content])
+}
+
+// Knowledge base search tracking
+model KnowledgeSearch {
+  id            String   @id @default(cuid())
+  query         String
+  category      String?
+  tags          String[] @default([])
+  resultsCount  Int      @default(0)
+  userId        String?
+  
+  createdAt     DateTime @default(now())
+  
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id])
+  
+  @@index([query])
+  @@index([category])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Customer feedback and satisfaction
+model SupportFeedback {
+  id              String        @id @default(cuid())
+  ticketId        String
+  userId          String
+  
+  rating          Int           // 1-5 star rating
+  feedback        String?       @db.Text
+  category        String?       // What aspect they're rating
+  
+  createdAt       DateTime      @default(now())
+  
+  // Relations
+  ticket          SupportTicket @relation(fields: [ticketId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+  
+  @@index([ticketId])
+  @@index([userId])
+  @@index([rating])
+  @@index([createdAt])
 }
