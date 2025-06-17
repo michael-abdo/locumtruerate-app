@@ -2,14 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Menu, X, User, Calculator, Search, Briefcase, 
-  Settings, Bell, LogOut, Sun, Moon
+  Settings, Bell, LogOut, Sun, Moon, LogIn
 } from 'lucide-react'
 import { Button } from '@locumtruerate/ui'
 import { useTheme } from 'next-themes'
+import { useClerkUser } from '@/hooks/use-clerk-user'
 
 const navigation = [
   { name: 'Find Jobs', href: '/search/jobs', icon: Search },
@@ -27,15 +28,9 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const { theme, setTheme } = useTheme()
-
-  // Mock user data - in real app, get from auth
-  const user = {
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@example.com',
-    avatar: '/placeholder-avatar.jpg',
-    initials: 'SJ'
-  }
+  const { user, displayName, initials, email, avatar, isSignedIn, isLoaded, signOut } = useClerkUser()
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/'
@@ -92,20 +87,31 @@ export function Header() {
             </button>
 
             {/* User menu */}
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    {user.initials}
-                  </span>
-                </div>
-                <span className="hidden lg:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {user.name.split(' ')[0]}
-                </span>
-              </button>
+            {isLoaded && (
+              <>
+                {isSignedIn ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {avatar ? (
+                        <img 
+                          src={avatar} 
+                          alt={displayName}
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                            {initials}
+                          </span>
+                        </div>
+                      )}
+                      <span className="hidden lg:block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {displayName.split(' ')[0]}
+                      </span>
+                    </button>
 
               {/* User dropdown */}
               <AnimatePresence>
@@ -119,10 +125,10 @@ export function Header() {
                   >
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {user.name}
+                        {displayName}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {user.email}
+                        {email}
                       </p>
                     </div>
                     
@@ -142,7 +148,10 @@ export function Header() {
                     })}
                     
                     <div className="border-t border-gray-200 dark:border-gray-700">
-                      <button className="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <button 
+                        onClick={() => signOut()}
+                        className="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
                         <LogOut className="mr-3 h-4 w-4" />
                         Sign out
                       </button>
@@ -150,7 +159,26 @@ export function Header() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => router.push('/sign-in')}
+                    >
+                      Sign in
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => router.push('/sign-up')}
+                    >
+                      Sign up
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Mobile menu button */}
             <button

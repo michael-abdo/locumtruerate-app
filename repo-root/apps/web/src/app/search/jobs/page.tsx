@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Search, Filter, MapPin, Clock, DollarSign, Star, Bookmark } from 'lucide-react'
-import { SearchBar } from '@/components/search/search-bar'
+import { AdvancedSearch } from '@/components/search/advanced-search'
 import { 
   JobFilters, JobCard, JobMap, SortOptions, 
   Pagination, SavedSearches, JobAlerts 
@@ -37,31 +37,27 @@ export default function JobSearchPage() {
   const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set())
   
   // Search state
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
-  const [location, setLocation] = useState(searchParams.get('location') || '')
+  const [searchFilters, setSearchFilters] = useState({
+    query: searchParams.get('query') || '',
+    location: searchParams.get('location') || '',
+    category: searchParams.get('category') || '',
+    type: searchParams.get('type') || '',
+    salaryMin: searchParams.get('salaryMin') ? parseInt(searchParams.get('salaryMin')!) : undefined,
+    salaryMax: searchParams.get('salaryMax') ? parseInt(searchParams.get('salaryMax')!) : undefined,
+    remote: searchParams.get('remote') === 'true',
+    urgent: searchParams.get('urgent') === 'true',
+    startDate: searchParams.get('startDate') || '',
+    duration: searchParams.get('duration') || ''
+  })
   const [sortBy, setSortBy] = useState<SortBy>('relevance')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
-  
-  // Filters state
-  const [filters, setFilters] = useState({
-    jobType: searchParams.get('type') || '',
-    category: searchParams.get('category') || '',
-    salaryMin: searchParams.get('salaryMin') || '',
-    salaryMax: searchParams.get('salaryMax') || '',
-    remote: searchParams.get('remote') === 'true',
-    experienceLevel: searchParams.get('experience') || '',
-    benefits: [] as string[],
-    schedule: searchParams.get('schedule') || ''
-  })
 
-  // API calls
-  const { data: jobsData, isLoading, error } = trpc.jobs.getAll.useQuery({
-    search: searchQuery,
-    location,
-    ...filters,
+  // API calls using full-text search
+  const { data: jobsData, isLoading, error } = trpc.search.jobs.useQuery({
+    ...searchFilters,
     page,
     limit: 20,
-    sortBy: sortBy === 'salary' ? 'applicationCount' : 'createdAt',
+    sortBy: sortBy as any,
     sortOrder: 'desc'
   })
 
@@ -108,13 +104,15 @@ export default function JobSearchPage() {
 
   const handleQuickFilter = (filterValue: string) => {
     if (filterValue === 'remote') {
-      setFilters(prev => ({ ...prev, remote: !prev.remote }))
+      setSearchFilters(prev => ({ ...prev, remote: !prev.remote }))
     } else if (filterValue === 'high-demand') {
-      setLocation('TX,CA,FL,NY') // High demand states
-    } else if (filterValue === 'entry-level') {
-      setFilters(prev => ({ ...prev, experienceLevel: 'entry' }))
+      setSearchFilters(prev => ({ ...prev, urgent: true }))
+    } else if (filterValue === 'travel') {
+      setSearchFilters(prev => ({ ...prev, query: 'travel opportunities' }))
+    } else if (filterValue === 'emergency' || filterValue === 'family') {
+      setSearchFilters(prev => ({ ...prev, category: filterValue === 'emergency' ? 'Emergency Medicine' : 'Family Medicine' }))
     } else {
-      setSearchQuery(prev => prev ? `${prev} ${filterValue}` : filterValue)
+      setSearchFilters(prev => ({ ...prev, query: prev.query ? `${prev.query} ${filterValue}` : filterValue }))
     }
   }
 
@@ -131,12 +129,12 @@ export default function JobSearchPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <SearchBar
-                initialQuery={searchQuery}
-                initialLocation={location}
-                onSearch={handleSearch}
-                placeholder="Search jobs by title, specialty, or keyword..."
-                locationPlaceholder="City, state, or ZIP code"
+              <AdvancedSearch
+                initialFilters={searchFilters}
+                onSearch={(filters) => {
+                  setSearchFilters(filters)
+                  setPage(1)
+                }}
               />
             </motion.div>
 
