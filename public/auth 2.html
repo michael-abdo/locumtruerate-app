@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Login - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #7f8c8d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .auth-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Employer Portal</h1>
+            <p>Manage your job postings and applications</p>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="auth-tabs">
+            <button class="tab-button active" onclick="switchTab('login')">Login</button>
+            <button class="tab-button" onclick="switchTab('register')">Register</button>
+        </div>
+        
+        <form id="loginForm" class="auth-form active">
+            <div class="form-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" required>
+            </div>
+            
+            <button type="submit">
+                <span class="login-text">Sign In</span>
+            </button>
+        </form>
+        
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" name="companyName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="contactName">Contact Name</label>
+                <input type="text" id="contactName" name="contactName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email Address</label>
+                <input type="email" id="registerEmail" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" name="password" required 
+                       minlength="8" placeholder="Minimum 8 characters">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <button type="submit">
+                <span class="register-text">Create Account</span>
+            </button>
+        </form>
+        
+        <div class="auth-links">
+            <a href="index.html">← Back to Job Board</a>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        const messageDiv = document.getElementById('message');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        function showMessage(message, type) {
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            
+            // Auto-hide after delay (except for persistent errors)
+            if (type !== 'error' || !message.includes('Network')) {
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+            } else {
+                registerForm.classList.add('active');
+            }
+            
+            // Clear any messages
+            messageDiv.innerHTML = '';
+        }
+        
+        function setLoading(form, isLoading) {
+            const button = form.querySelector('button[type="submit"]');
+            const text = button.querySelector('span');
+            
+            if (isLoading) {
+                button.disabled = true;
+                text.innerHTML = '<span class="loading"></span>Processing...';
+            } else {
+                button.disabled = false;
+                if (form.id === 'loginForm') {
+                    text.textContent = 'Sign In';
+                } else {
+                    text.textContent = 'Create Account';
+                }
+            }
+        }
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(loginForm, true);
+            
+            const formData = new FormData(loginForm);
+            const loginData = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData),
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Store auth token
+                    localStorage.setItem('employerToken', result.token);
+                    localStorage.setItem('employerData', JSON.stringify(result.employer));
+                    
+                    showMessage('Login successful! Redirecting to dashboard...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    // Handle specific error cases
+                    let errorMessage = result.error || 'Login failed';
+                    if (response.status === 429) {
+                        errorMessage = 'Too many login attempts. Please wait and try again.';
+                    } else if (response.status === 401) {
+                        errorMessage = 'Invalid email or password';
+                    }
+                    showMessage(errorMessage, 'error');
+                }
+            } catch (error) {
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    showMessage('Unable to connect to server. Please check your internet connection.', 'error');
+                } else {
+                    showMessage('Network error. Please try again.', 'error');
+                }
+                console.error('Login error:', error);
+            } finally {
+                setLoading(loginForm, false);
+            }
+        });
+        
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(registerForm, true);
+            
+            const formData = new FormData(registerForm);
+            const registerData = Object.fromEntries(formData);
+            
+            // Validate password confirmation
+            if (registerData.password !== registerData.confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                setLoading(registerForm, false);
+                return;
+            }
+            
+            // Remove confirmPassword from data
+            delete registerData.confirmPassword;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(registerData),
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Account created successfully! Please sign in.', 'success');
+                    registerForm.reset();
+                    
+                    // Switch to login tab
+                    setTimeout(() => {
+                        switchTab('login');
+                        document.getElementById('loginEmail').value = registerData.email;
+                    }, 1500);
+                } else {
+                    // Handle specific error cases
+                    let errorMessage = result.error || 'Registration failed';
+                    if (response.status === 429) {
+                        errorMessage = 'Too many registration attempts. Please wait and try again.';
+                    } else if (response.status === 400) {
+                        if (result.details && Array.isArray(result.details)) {
+                            errorMessage = result.details.join('. ');
+                        }
+                    }
+                    showMessage(errorMessage, 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Registration error:', error);
+            } finally {
+                setLoading(registerForm, false);
+            }
+        });
+        
+        // Check if already logged in
+        if (localStorage.getItem('employerToken')) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

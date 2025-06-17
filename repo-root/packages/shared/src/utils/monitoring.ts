@@ -243,14 +243,10 @@ export function createErrorBoundary() {
     
     render() {
       if (this.state.hasError) {
-        return (
-          <div className="error-boundary">
-            <h2>Something went wrong</h2>
-            <p>We've been notified and are working on a fix.</p>
-            <button onClick={() => window.location.reload()}>
-              Reload Page
-            </button>
-          </div>
+        return React.createElement('div', { className: 'error-boundary' },
+          React.createElement('h2', null, 'Something went wrong'),
+          React.createElement('p', null, 'We\'ve been notified and are working on a fix.'),
+          React.createElement('button', { onClick: () => window.location.reload() }, 'Reload Page')
         );
       }
       

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            padding: 1.5rem 0;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+        
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .company-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .company-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        
+        .company-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .company-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            flex-shrink: 0;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .company-location {
+            color: #6c757d;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .company-description {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .company-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag {
+            background: #e9ecef;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #495057;
+        }
+        
+        .company-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .job-count {
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .view-profile {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: gap 0.3s;
+        }
+        
+        .view-profile:hover {
+            gap: 0.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .page-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">🏢 Job Board</a>
+            <nav class="nav-links">
+                <a href="index.html">Jobs</a>
+                <a href="companies.html" style="text-decoration: underline;">Companies</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="auth.html">Login</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="hero">
+        <h1>Explore Companies</h1>
+        <p>Discover amazing companies and find your perfect workplace</p>
+    </div>
+    
+    <div class="container">
+        <div class="filters">
+            <div class="filter-group">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput" 
+                        placeholder="Search companies..."
+                        onkeyup="handleSearch()"
+                    >
+                </div>
+                <select class="filter-select" id="industryFilter" onchange="applyFilters()">
+                    <option value="">All Industries</option>
+                    <option value="technology">Technology</option>
+                    <option value="finance">Finance</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="retail">Retail</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="education">Education</option>
+                    <option value="consulting">Consulting</option>
+                </select>
+                <select class="filter-select" id="sizeFilter" onchange="applyFilters()">
+                    <option value="">All Sizes</option>
+                    <option value="startup">Startup (1-50)</option>
+                    <option value="small">Small (51-200)</option>
+                    <option value="medium">Medium (201-1000)</option>
+                    <option value="large">Large (1001-5000)</option>
+                    <option value="enterprise">Enterprise (5000+)</option>
+                </select>
+                <select class="filter-select" id="locationFilter" onchange="applyFilters()">
+                    <option value="">All Locations</option>
+                    <option value="remote">Remote</option>
+                    <option value="san francisco">San Francisco</option>
+                    <option value="new york">New York</option>
+                    <option value="london">London</option>
+                    <option value="berlin">Berlin</option>
+                    <option value="tokyo">Tokyo</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="companiesContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading companies...</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination" style="display: none;">
+            <!-- Pagination buttons will be inserted here -->
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        let currentPage = 1;
+        let searchTimeout;
+        
+        async function loadCompanies(page = 1) {
+            const search = document.getElementById('searchInput').value;
+            const industry = document.getElementById('industryFilter').value;
+            const location = document.getElementById('locationFilter').value;
+            
+            const params = new URLSearchParams({
+                page: page,
+                limit: 12
+            });
+            
+            if (search) params.append('search', search);
+            if (industry) params.append('industry', industry);
+            if (location) params.append('location', location);
+            
+            try {
+                const response = await fetch(`${API_URL}/companies?${params}`);
+                const data = await response.json();
+                
+                displayCompanies(data);
+                updatePagination(data);
+                currentPage = page;
+            } catch (error) {
+                console.error('Error loading companies:', error);
+                document.getElementById('companiesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Failed to Load Companies</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayCompanies(data) {
+            const container = document.getElementById('companiesContainer');
+            
+            if (!data.companies || data.companies.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏢</div>
+                        <h3>No Companies Found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const companiesHTML = data.companies.map(company => {
+                const logo = company.logo || company.name.substring(0, 2).toUpperCase();
+                const benefits = company.benefits && company.benefits.length > 0 
+                    ? company.benefits.slice(0, 3).map(b => `<span class="tag">${b}</span>`).join('')
+                    : '';
+                
+                return `
+                    <div class="company-card" onclick="window.location.href='company-profile.html?id=${company.id}'">
+                        <div class="company-header">
+                            <div class="company-logo">${logo}</div>
+                            <div class="company-info">
+                                <h3 class="company-name">${company.name}</h3>
+                                <div class="company-location">
+                                    📍 ${company.location || 'Multiple Locations'}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="company-description">${company.description || 'No description available'}</p>
+                        <div class="company-meta">
+                            <div class="company-meta-item">
+                                🏭 ${company.industry || 'Technology'}
+                            </div>
+                            <div class="company-meta-item">
+                                👥 ${company.size || 'Not specified'}
+                            </div>
+                        </div>
+                        ${benefits ? `<div class="company-tags">${benefits}</div>` : ''}
+                        <div class="company-footer">
+                            <span class="job-count">${company.activeJobCount} Open Position${company.activeJobCount !== 1 ? 's' : ''}</span>
+                            <a href="company-profile.html?id=${company.id}" class="view-profile" onclick="event.stopPropagation()">
+                                View Profile →
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = `<div class="companies-grid">${companiesHTML}</div>`;
+        }
+        
+        function updatePagination(data) {
+            const pagination = document.getElementById('pagination');
+            
+            if (data.total <= data.limit) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'flex';
+            
+            const totalPages = Math.ceil(data.total / data.limit);
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button class="page-btn" onclick="loadCompanies(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    ← Previous
+                </button>
+            `;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadCompanies(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += '<span style="padding: 0.5rem;">...</span>';
+                }
+            }
+            
+            // Next button
+            paginationHTML += `
+                <button class="page-btn" onclick="loadCompanies(${currentPage + 1})" ${!data.hasMore ? 'disabled' : ''}>
+                    Next →
+                </button>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+        
+        function handleSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadCompanies(1);
+            }, 500);
+        }
+        
+        function applyFilters() {
+            loadCompanies(1);
+        }
+        
+        // Load companies on page load
+        loadCompanies();
+    </script>
+</body>
+</html>

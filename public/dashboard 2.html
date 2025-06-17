@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-name {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-tab {
+            background: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #7f8c8d;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .dashboard-section {
+            display: none;
+        }
+        
+        .dashboard-section.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .job-list, .application-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .job-item, .application-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .job-header, .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .job-meta {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-closed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .success {
+            background-color: #27ae60;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .bulk-actions {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            display: none;
+        }
+        
+        .bulk-actions.active {
+            display: block;
+        }
+        
+        .bulk-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .bulk-select {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .bulk-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox {
+            margin-right: 1rem;
+        }
+        
+        .job-item.selected {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+        }
+        
+        .select-all-container {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .operation-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .log-success {
+            color: #27ae60;
+        }
+        
+        .log-error {
+            color: #e74c3c;
+        }
+        
+        .log-info {
+            color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .dashboard-nav {
+                flex-wrap: wrap;
+            }
+            
+            .job-header, .application-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .job-actions {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Job Board Dashboard</div>
+            <div class="user-info">
+                <span class="user-name" id="userName">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="message"></div>
+        
+        <nav class="dashboard-nav">
+            <button class="nav-tab active" onclick="switchSection('overview')">Overview</button>
+            <button class="nav-tab" onclick="switchSection('jobs')">My Jobs</button>
+            <button class="nav-tab" onclick="switchSection('applications')">Applications</button>
+            <button class="nav-tab" onclick="switchSection('post-job')">Post New Job</button>
+            <button class="nav-tab" onclick="window.open('applications-manager.html', '_blank')">🧠 AI Scoring</button>
+            <button class="nav-tab" onclick="window.open('analytics.html', '_blank')">📊 Analytics</button>
+            <button class="nav-tab" onclick="window.open('enterprise-dashboard.html', '_blank')">🏢 Enterprise</button>
+        </nav>
+        
+        <section id="overview" class="dashboard-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalJobs">-</div>
+                    <div class="stat-label">Total Jobs Posted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeJobs">-</div>
+                    <div class="stat-label">Active Jobs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalApplications">-</div>
+                    <div class="stat-label">Total Applications</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="newApplications">-</div>
+                    <div class="stat-label">New Applications</div>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                </div>
+                <div id="recentActivity" class="loading">Loading recent activity...</div>
+            </div>
+        </section>
+        
+        <section id="jobs" class="dashboard-section">
+            <div class="content-card">
+                <div class="section-header">
+                    <h2 class="section-title">My Job Postings</h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" onclick="toggleBulkMode()" id="bulkModeBtn">
+                            📋 Bulk Actions
+                        </button>
+                        <button class="btn" onclick="switchSection('post-job')">
+                            ➕ Post New Job
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="select-all-container">
+                    <label class="bulk-select">
+                        <input type="checkbox" id="selectAllJobs" onchange="toggleSelectAll()">
+                        Select All Jobs
+                    </label>
+                </div>
+                
+                <div class="bulk-actions" id="bulkActions">
+                    <div class="bulk-controls">
+                        <div class="bulk-select">
+                            <span id="selectedCount">0</span> job(s) selected
+                        </div>
+                        <div class="bulk-buttons">
+                            <button class="btn btn-small" onclick="bulkActivateJobs()">
+                                ✅ Activate Selected
+                            </button>
+                            <button class="btn btn-warning btn-small" onclick="bulkDeactivateJobs()">
+                                ⏸️ Deactivate Selected
+                            </button>
+                            <button class="btn btn-small" onclick="bulkExtendJobs()">
+                                ⏰ Extend Expiry
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="bulkDeleteJobs()">
+                                🗑️ Delete Selected
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="exportSelectedJobs()">
+                                📊 Export Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="jobsList" class="job-list loading">Loading your jobs...</div>
+            </div>
+        </section>
+        
+        <section id="applications" class="dashboard-section">
+            <div class="content-card">
+                <div class="section-header">
+                    <h2 class="section-title">Job Applications</h2>
+                </div>
+                <div id="applicationsList" class="application-list loading">Loading applications...</div>
+            </div>
+        </section>
+        
+        <section id="post-job" class="dashboard-section">
+            <div class="content-card">
+                <div class="section-header">
+                    <h2 class="section-title">Post a New Job</h2>
+                </div>
+                <p style="margin-bottom: 2rem; color: #7f8c8d;">
+                    <a href="index.html" target="_blank" style="color: #3498db;">Open the main job board</a> to post a new job using the public form.
+                </p>
+                <div style="background: #e8f4f8; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">Quick Post</h3>
+                    <p style="color: #7f8c8d; margin-bottom: 1rem;">You can also post jobs directly from this dashboard in a future update.</p>
+                    <button class="btn" onclick="window.open('index.html', '_blank')">
+                        🔗 Open Job Board
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Bulk Operations Modal -->
+    <div class="modal" id="bulkOperationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Bulk Operation</h3>
+                <button class="close-btn" onclick="closeBulkModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <p id="modalMessage">Processing...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="operation-log" id="operationLog"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-secondary" onclick="closeBulkModal()" id="modalCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api';
+        const messageDiv = document.getElementById('message');
+        let currentUser = null;
+        let bulkModeActive = false;
+        let selectedJobs = new Set();
+        let allJobs = [];
+        
+        function showMessage(message, type) {
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function toggleBulkMode() {
+            bulkModeActive = !bulkModeActive;
+            const bulkActions = document.getElementById('bulkActions');
+            const bulkModeBtn = document.getElementById('bulkModeBtn');
+            
+            if (bulkModeActive) {
+                bulkActions.classList.add('active');
+                bulkModeBtn.textContent = '❌ Exit Bulk Mode';
+                bulkModeBtn.classList.remove('btn-secondary');
+                bulkModeBtn.classList.add('btn-danger');
+            } else {
+                bulkActions.classList.remove('active');
+                bulkModeBtn.textContent = '📋 Bulk Actions';
+                bulkModeBtn.classList.remove('btn-danger');
+                bulkModeBtn.classList.add('btn-secondary');
+                selectedJobs.clear();
+                updateSelectedCount();
+                updateJobSelections();
+            }
+        }
+        
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllJobs');
+            const isChecked = selectAllCheckbox.checked;
+            
+            if (isChecked) {
+                allJobs.forEach(job => selectedJobs.add(job.id));
+            } else {
+                selectedJobs.clear();
+            }
+            
+            updateSelectedCount();
+            updateJobSelections();
+        }
+        
+        function toggleJobSelection(jobId, checked) {
+            if (checked) {
+                selectedJobs.add(jobId);
+            } else {
+                selectedJobs.delete(jobId);
+            }
+            
+            updateSelectedCount();
+            updateSelectAllCheckbox();
+        }
+        
+        function updateSelectedCount() {
+            const countElement = document.getElementById('selectedCount');
+            if (countElement) {
+                countElement.textContent = selectedJobs.size;
+            }
+        }
+        
+        function updateSelectAllCheckbox() {
+            const selectAllCheckbox = document.getElementById('selectAllJobs');
+            if (selectAllCheckbox) {
+                if (selectedJobs.size === 0) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = false;
+                } else if (selectedJobs.size === allJobs.length) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = true;
+                } else {
+                    selectAllCheckbox.indeterminate = true;
+                }
+            }
+        }
+        
+        function updateJobSelections() {
+            allJobs.forEach(job => {
+                const checkbox = document.getElementById(`job-${job.id}`);
+                const jobItem = document.querySelector(`[data-job-id="${job.id}"]`);
+                
+                if (checkbox) {
+                    checkbox.checked = selectedJobs.has(job.id);
+                }
+                
+                if (jobItem) {
+                    if (selectedJobs.has(job.id)) {
+                        jobItem.classList.add('selected');
+                    } else {
+                        jobItem.classList.remove('selected');
+                    }
+                }
+            });
+        }
+        
+        function switchSection(sectionName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Load section data
+            switch(sectionName) {
+                case 'overview':
+                    loadOverview();
+                    break;
+                case 'jobs':
+                    loadJobs();
+                    break;
+                case 'applications':
+                    loadApplications();
+                    break;
+            }
+            
+            // Exit bulk mode when switching sections
+            if (bulkModeActive && sectionName !== 'jobs') {
+                bulkModeActive = false;
+                selectedJobs.clear();
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('employerToken');
+            localStorage.removeItem('employerData');
+            window.location.href = 'auth.html';
+        }
+        
+        async function loadOverview() {
+            try {
+                // Load stats (mock data for now)
+                document.getElementById('totalJobs').textContent = '5';
+                document.getElementById('activeJobs').textContent = '3';
+                document.getElementById('totalApplications').textContent = '12';
+                document.getElementById('newApplications').textContent = '4';
+                
+                // Load recent activity
+                document.getElementById('recentActivity').innerHTML = `
+                    <div style="color: #7f8c8d; font-style: italic;">
+                        📈 Dashboard analytics will be implemented in the next update
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading overview:', error);
+            }
+        }
+        
+        async function loadJobs() {
+            const jobsList = document.getElementById('jobsList');
+            
+            try {
+                const response = await fetch(`${API_URL}/jobs`);
+                const jobs = await response.json();
+                
+                // Filter jobs by current user (mock filtering for now)
+                allJobs = jobs.slice(0, 5); // Mock user jobs - expanded for demo
+                
+                if (allJobs.length === 0) {
+                    jobsList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No jobs posted yet</h3>
+                            <p>Start by posting your first job to attract candidates.</p>
+                            <button class="btn" onclick="switchSection('post-job')">Post Your First Job</button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                jobsList.innerHTML = allJobs.map(job => {
+                    const status = job.status || 'active';
+                    const statusClass = status === 'active' ? 'status-active' : status === 'expired' ? 'status-closed' : 'status-pending';
+                    const applicationCount = Math.floor(Math.random() * 15) + 1;
+                    const viewCount = job.viewCount || Math.floor(Math.random() * 100) + 10;
+                    
+                    return `
+                        <div class="job-item" data-job-id="${job.id}">
+                            ${bulkModeActive ? `
+                                <div class="checkbox">
+                                    <input type="checkbox" id="job-${job.id}" onchange="toggleJobSelection('${job.id}', this.checked)">
+                                </div>
+                            ` : ''}
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">${job.title}</div>
+                                    <div class="job-meta">
+                                        📍 ${job.location} • 💼 ${job.type} • 📅 Posted ${new Date(job.createdAt).toLocaleDateString()}
+                                        ${job.expiresAt ? ` • ⏰ Expires ${new Date(job.expiresAt).toLocaleDateString()}` : ''}
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <span class="status-badge ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                                    <button class="btn btn-small" onclick="editJob('${job.id}')">Edit</button>
+                                    <button class="btn btn-danger btn-small" onclick="deleteJob('${job.id}')">Delete</button>
+                                </div>
+                            </div>
+                            <p style="color: #7f8c8d; margin-bottom: 1rem;">${job.description.substring(0, 150)}...</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <div style="color: #27ae60; font-weight: 500;">
+                                        📊 ${applicationCount} applications
+                                    </div>
+                                    <div style="color: #3498db; font-weight: 500;">
+                                        👁️ ${viewCount} views
+                                    </div>
+                                    ${job.salary ? `<div style="color: #6c757d;">💰 ${job.salary}</div>` : ''}
+                                </div>
+                                <button class="btn btn-small" onclick="viewApplications('${job.id}')">
+                                    View Applications
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                updateSelectedCount();
+                updateSelectAllCheckbox();
+                
+            } catch (error) {
+                jobsList.innerHTML = '<p class="error">Failed to load jobs. Please try again.</p>';
+                console.error('Error loading jobs:', error);
+            }
+        }
+        
+        async function loadApplications() {
+            const applicationsList = document.getElementById('applicationsList');
+            
+            try {
+                const response = await fetch(`${API_URL}/applications`);
+                const applications = await response.json();
+                
+                if (applications.length === 0) {
+                    applicationsList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>No applications yet</h3>
+                            <p>Applications will appear here once candidates start applying to your jobs.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                applicationsList.innerHTML = applications.map(app => `
+                    <div class="application-item">
+                        <div class="application-header">
+                            <div>
+                                <div class="job-title">${app.fullName}</div>
+                                <div class="job-meta">
+                                    📧 ${app.email} • 📞 ${app.phone || 'Not provided'} • 🕒 Applied ${new Date(app.appliedAt).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <div class="job-actions">
+                                <span class="status-badge status-pending">Pending</span>
+                                <button class="btn btn-small" onclick="viewApplication('${app.id}')">View Details</button>
+                            </div>
+                        </div>
+                        <p style="color: #7f8c8d; margin-bottom: 1rem;">
+                            <strong>Job:</strong> Job ID ${app.jobId}<br>
+                            <strong>Experience:</strong> ${app.experience || 'Not specified'}<br>
+                            <strong>Cover Letter:</strong> ${app.coverLetter.substring(0, 100)}...
+                        </p>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                applicationsList.innerHTML = '<p class="error">Failed to load applications. Please try again.</p>';
+                console.error('Error loading applications:', error);
+            }
+        }
+        
+        function editJob(jobId) {
+            showMessage('Job editing feature will be implemented soon!', 'success');
+        }
+        
+        async function deleteJob(jobId) {
+            if (confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        showMessage('Job deleted successfully!', 'success');
+                        loadJobs(); // Reload the jobs list
+                    } else {
+                        showMessage('Failed to delete job. Please try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting job:', error);
+                    showMessage('Network error. Please try again.', 'error');
+                }
+            }
+        }
+        
+        function viewApplications(jobId) {
+            switchSection('applications');
+            showMessage(`Showing applications for job ${jobId}`, 'success');
+        }
+        
+        function viewApplication(applicationId) {
+            showMessage('Application details viewer will be implemented soon!', 'success');
+        }
+        
+        // Initialize dashboard
+        function initDashboard() {
+            // Check authentication
+            const token = localStorage.getItem('employerToken');
+            const userData = localStorage.getItem('employerData');
+            
+            if (!token || !userData) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            try {
+                currentUser = JSON.parse(userData);
+                document.getElementById('userName').textContent = currentUser.contactName || currentUser.companyName;
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                logout();
+                return;
+            }
+            
+            // Load initial data
+            loadOverview();
+        }
+        
+        // Bulk operation functions
+        async function bulkActivateJobs() {
+            if (selectedJobs.size === 0) {
+                showMessage('Please select jobs to activate.', 'error');
+                return;
+            }
+            
+            await performBulkOperation('Activate Jobs', 'activate', Array.from(selectedJobs));
+        }
+        
+        async function bulkDeactivateJobs() {
+            if (selectedJobs.size === 0) {
+                showMessage('Please select jobs to deactivate.', 'error');
+                return;
+            }
+            
+            await performBulkOperation('Deactivate Jobs', 'deactivate', Array.from(selectedJobs));
+        }
+        
+        async function bulkExtendJobs() {
+            if (selectedJobs.size === 0) {
+                showMessage('Please select jobs to extend.', 'error');
+                return;
+            }
+            
+            const days = prompt('How many days to extend? (default: 30)', '30');
+            if (days === null) return;
+            
+            const extendDays = parseInt(days) || 30;
+            await performBulkOperation('Extend Jobs', 'extend', Array.from(selectedJobs), { days: extendDays });
+        }
+        
+        async function bulkDeleteJobs() {
+            if (selectedJobs.size === 0) {
+                showMessage('Please select jobs to delete.', 'error');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to delete ${selectedJobs.size} job(s)? This action cannot be undone.`)) {
+                return;
+            }
+            
+            await performBulkOperation('Delete Jobs', 'delete', Array.from(selectedJobs));
+        }
+        
+        async function exportSelectedJobs() {
+            if (selectedJobs.size === 0) {
+                showMessage('Please select jobs to export.', 'error');
+                return;
+            }
+            
+            const selectedJobData = allJobs.filter(job => selectedJobs.has(job.id));
+            const csvContent = generateJobsCSV(selectedJobData);
+            downloadCSV(csvContent, `jobs_export_${new Date().toISOString().split('T')[0]}.csv`);
+            showMessage(`Exported ${selectedJobs.size} job(s) successfully!`, 'success');
+        }
+        
+        function generateJobsCSV(jobs) {
+            const headers = ['Title', 'Company', 'Location', 'Type', 'Status', 'Created Date', 'Expires Date', 'View Count', 'Description'];
+            const csvRows = [headers.join(',')];
+            
+            jobs.forEach(job => {
+                const row = [
+                    `"${job.title || ''}",`,
+                    `"${job.company || ''}",`,
+                    `"${job.location || ''}",`,
+                    `"${job.type || ''}",`,
+                    `"${job.status || 'active'}",`,
+                    `"${new Date(job.createdAt).toLocaleDateString()}",`,
+                    `"${job.expiresAt ? new Date(job.expiresAt).toLocaleDateString() : ''}",`,
+                    `"${job.viewCount || 0}",`,
+                    `"${(job.description || '').replace(/"/g, '""').substring(0, 200)}..."`
+                ].join('');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+        
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        async function performBulkOperation(title, operation, jobIds, params = {}) {
+            openBulkModal(title, `Processing ${jobIds.length} job(s)...`);
+            
+            const log = document.getElementById('operationLog');
+            const progressFill = document.getElementById('progressFill');
+            let completed = 0;
+            let errors = 0;
+            
+            log.innerHTML = `<div class="log-item log-info">🚀 Starting ${operation} operation for ${jobIds.length} job(s)...</div>`;
+            
+            for (let i = 0; i < jobIds.length; i++) {
+                const jobId = jobIds[i];
+                const job = allJobs.find(j => j.id === jobId);
+                const jobTitle = job ? job.title : `Job ${jobId}`;
+                
+                try {
+                    let response;
+                    
+                    switch (operation) {
+                        case 'activate':
+                            response = await fetch(`${API_URL}/jobs/${jobId}/status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'active' })
+                            });
+                            break;
+                            
+                        case 'deactivate':
+                            response = await fetch(`${API_URL}/jobs/${jobId}/status`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'inactive' })
+                            });
+                            break;
+                            
+                        case 'extend':
+                            response = await fetch(`${API_URL}/jobs/${jobId}/extend`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ days: params.days || 30 })
+                            });
+                            break;
+                            
+                        case 'delete':
+                            response = await fetch(`${API_URL}/jobs/${jobId}`, {
+                                method: 'DELETE'
+                            });
+                            break;
+                            
+                        default:
+                            throw new Error(`Unknown operation: ${operation}`);
+                    }
+                    
+                    if (response.ok) {
+                        completed++;
+                        log.innerHTML += `<div class="log-item log-success">✅ ${jobTitle} - Success</div>`;
+                    } else {
+                        errors++;
+                        log.innerHTML += `<div class="log-item log-error">❌ ${jobTitle} - Failed (${response.status})</div>`;
+                    }
+                } catch (error) {
+                    errors++;
+                    log.innerHTML += `<div class="log-item log-error">❌ ${jobTitle} - Error: ${error.message}</div>`;
+                }
+                
+                // Update progress
+                const progress = ((i + 1) / jobIds.length) * 100;
+                progressFill.style.width = `${progress}%`;
+                
+                // Scroll log to bottom
+                log.scrollTop = log.scrollHeight;
+                
+                // Small delay to show progress
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Final summary
+            const summary = `\n<div class="log-item log-info">📊 Operation completed: ${completed} successful, ${errors} failed</div>`;
+            log.innerHTML += summary;
+            log.scrollTop = log.scrollHeight;
+            
+            // Update modal message
+            document.getElementById('modalMessage').textContent = 
+                `Operation completed! ${completed} successful, ${errors} failed.`;
+            
+            // Reload jobs and reset selections
+            if (completed > 0) {
+                await loadJobs();
+                selectedJobs.clear();
+                updateSelectedCount();
+                updateSelectAllCheckbox();
+            }
+        }
+        
+        function openBulkModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('operationLog').innerHTML = '';
+            document.getElementById('bulkOperationModal').classList.add('active');
+        }
+        
+        function closeBulkModal() {
+            document.getElementById('bulkOperationModal').classList.remove('active');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('bulkOperationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBulkModal();
+            }
+        });
+        
+        // Initialize on page load
+        initDashboard();
+    </script>
+</body>
+</html>

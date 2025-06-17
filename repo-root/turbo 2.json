@@ -1,0 +1,61 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "build/**"
+      ]
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "clean": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false,
+      "inputs": ["prisma/schema.prisma", "prisma/migrations/**"]
+    },
+    "db:push": {
+      "cache": false,
+      "inputs": ["prisma/schema.prisma"]
+    },
+    "db:seed": {
+      "dependsOn": ["db:push"],
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL_URL",
+    "DATABASE_URL",
+    "CLERK_SECRET_KEY",
+    "STRIPE_SECRET_KEY",
+    "SENTRY_DSN"
+  ],
+  "remoteCache": {
+    "enabled": false
+  }
+}

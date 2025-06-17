@@ -1,0 +1,48 @@
+{
+  "projectName": "locumtruerate-dev",
+  "accountId": "${CLOUDFLARE_ACCOUNT_ID}",
+  "buildCommand": "pnpm turbo run build --filter=web",
+  "buildOutput": "apps/web/out",
+  "environment": "development",
+  "domains": {
+    "main": "localhost:3000",
+    "api": "localhost:3001",
+    "cdn": "localhost:3002",
+    "assets": "localhost:3003"
+  },
+  "environmentVariables": {
+    "NODE_ENV": "development",
+    "ENVIRONMENT": "development",
+    "NEXT_PUBLIC_ENVIRONMENT": "development",
+    "LOG_LEVEL": "debug",
+    "ENABLE_ANALYTICS": "false",
+    "ENABLE_MONITORING": "true",
+    "NEXT_PUBLIC_DOMAIN": "localhost:3000",
+    "NEXT_PUBLIC_API_URL": "http://localhost:3001",
+    "NEXT_PUBLIC_CDN_URL": "http://localhost:3002"
+  },
+  "buildOptimization": {
+    "minify": false,
+    "treeshake": true,
+    "splitChunks": true,
+    "compressionLevel": 6
+  },
+  "security": {
+    "enableCSP": true,
+    "enableHSTS": false,
+    "enableCORS": true,
+    "environment": "development",
+    "domains": {
+      "main": "localhost:3000",
+      "api": "localhost:3001",
+      "cdn": "localhost:3002",
+      "assets": "localhost:3003"
+    },
+    "features": {
+      "analytics": false,
+      "monitoring": true,
+      "webGL": false,
+      "geolocation": false
+    }
+  }
+}

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Dashboard - Job Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 1.5rem 0;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .enterprise-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .organization-selector {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .org-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .org-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .org-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            color: #1e3c72;
+        }
+        
+        .org-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .plan-badge {
+            background: #27ae60;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card.blue::before { background: #3498db; }
+        .stat-card.green::before { background: #27ae60; }
+        .stat-card.purple::before { background: #9b59b6; }
+        .stat-card.orange::before { background: #e67e22; }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .stat-change {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .stat-change.positive { color: #27ae60; }
+        .stat-change.negative { color: #e74c3c; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .section-content {
+            padding: 1.5rem;
+        }
+        
+        .company-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .company-item {
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .company-item:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+        }
+        
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            background: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #6c757d;
+        }
+        
+        .company-details h4 {
+            margin-bottom: 0.25rem;
+            color: #2c3e50;
+        }
+        
+        .company-meta {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .company-stats {
+            display: flex;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .company-stat {
+            font-size: 0.9rem;
+        }
+        
+        .company-stat-number {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .company-stat-label {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .user-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+        
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .user-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name-title {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-email {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .user-role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .role-owner { background: #e8f5e9; color: #2e7d32; }
+        .role-admin { background: #e3f2fd; color: #1565c0; }
+        .role-manager { background: #f3e5f5; color: #6a1b9a; }
+        .role-recruiter { background: #fff3e0; color: #e65100; }
+        .role-viewer { background: #f5f5f5; color: #616161; }
+        
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            margin-bottom: 0.25rem;
+            color: #2c3e50;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .organization-selector {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .company-stats {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                🏢 Enterprise Portal
+                <span class="enterprise-badge">Enterprise</span>
+            </div>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="currentUserName">Loading...</div>
+                    <div class="user-role" id="currentUserRole">Organization Owner</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="organization-selector">
+            <div class="org-info">
+                <div class="org-logo" id="orgLogo">TC</div>
+                <div class="org-details">
+                    <h2 id="orgName">Tech Corp International</h2>
+                    <div class="org-meta">
+                        <span id="orgCompanyCount">5 companies</span> • 
+                        <span id="orgUserCount">24 users</span> • 
+                        <span class="plan-badge" id="orgPlan">Enterprise</span>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-secondary" onclick="showAddCompanyModal()">
+                    ➕ Add Company
+                </button>
+                <button class="btn" onclick="showInviteUserModal()">
+                    👥 Invite User
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-icon">💼</div>
+                <div class="stat-number" id="totalJobs">127</div>
+                <div class="stat-label">Total Jobs</div>
+                <div class="stat-change positive">+12%</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-number" id="activeJobs">89</div>
+                <div class="stat-label">Active Jobs</div>
+                <div class="stat-change positive">+8%</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number" id="totalApplications">1,234</div>
+                <div class="stat-label">Applications</div>
+                <div class="stat-change positive">+24%</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" id="totalHires">45</div>
+                <div class="stat-label">Hires This Month</div>
+                <div class="stat-change negative">-3%</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">Companies</h3>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
+                </div>
+                <div class="section-content">
+                    <div class="company-list" id="companyList">
+                        <div class="company-item">
+                            <div class="company-info">
+                                <div class="company-logo">HQ</div>
+                                <div class="company-details">
+                                    <h4>Tech Corp HQ</h4>
+                                    <div class="company-meta">San Francisco, CA • Headquarters</div>
+                                </div>
+                            </div>
+                            <div class="company-stats">
+                                <div class="company-stat">
+                                    <div class="company-stat-number">45</div>
+                                    <div class="company-stat-label">Jobs</div>
+                                </div>
+                                <div class="company-stat">
+                                    <div class="company-stat-number">523</div>
+                                    <div class="company-stat-label">Applications</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="company-item">
+                            <div class="company-info">
+                                <div class="company-logo">EU</div>
+                                <div class="company-details">
+                                    <h4>Tech Corp Europe</h4>
+                                    <div class="company-meta">London, UK</div>
+                                </div>
+                            </div>
+                            <div class="company-stats">
+                                <div class="company-stat">
+                                    <div class="company-stat-number">32</div>
+                                    <div class="company-stat-label">Jobs</div>
+                                </div>
+                                <div class="company-stat">
+                                    <div class="company-stat-number">287</div>
+                                    <div class="company-stat-label">Applications</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="company-item">
+                            <div class="company-info">
+                                <div class="company-logo">AP</div>
+                                <div class="company-details">
+                                    <h4>Tech Corp Asia Pacific</h4>
+                                    <div class="company-meta">Singapore</div>
+                                </div>
+                            </div>
+                            <div class="company-stats">
+                                <div class="company-stat">
+                                    <div class="company-stat-number">28</div>
+                                    <div class="company-stat-label">Jobs</div>
+                                </div>
+                                <div class="company-stat">
+                                    <div class="company-stat-number">198</div>
+                                    <div class="company-stat-label">Applications</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3 class="section-title">Team Members</h3>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Manage</a>
+                </div>
+                <div class="section-content">
+                    <div class="user-list" id="userList">
+                        <div class="user-item">
+                            <div class="user-avatar">JD</div>
+                            <div class="user-details">
+                                <div class="user-name-title">John Doe</div>
+                                <div class="user-email">john.doe@techcorp.com</div>
+                            </div>
+                            <span class="user-role-badge role-owner">Owner</span>
+                        </div>
+                        <div class="user-item">
+                            <div class="user-avatar">SM</div>
+                            <div class="user-details">
+                                <div class="user-name-title">Sarah Miller</div>
+                                <div class="user-email">sarah.miller@techcorp.com</div>
+                            </div>
+                            <span class="user-role-badge role-admin">Admin</span>
+                        </div>
+                        <div class="user-item">
+                            <div class="user-avatar">RJ</div>
+                            <div class="user-details">
+                                <div class="user-name-title">Robert Johnson</div>
+                                <div class="user-email">robert.j@techcorp.com</div>
+                            </div>
+                            <span class="user-role-badge role-manager">Hiring Manager</span>
+                        </div>
+                        <div class="user-item">
+                            <div class="user-avatar">EC</div>
+                            <div class="user-details">
+                                <div class="user-name-title">Emily Chen</div>
+                                <div class="user-email">emily.chen@techcorp.com</div>
+                            </div>
+                            <span class="user-role-badge role-recruiter">Recruiter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h3 class="section-title">Recent Activity</h3>
+                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</a>
+            </div>
+            <div class="section-content">
+                <div class="activity-feed" id="activityFeed">
+                    <div class="activity-item">
+                        <div class="activity-icon">💼</div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Sarah Miller</strong> posted a new job: Senior Software Engineer</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">👥</div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Robert Johnson</strong> invited Emily Chen to Tech Corp HQ</div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">🏢</div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>John Doe</strong> added new company: Tech Corp Asia Pacific</div>
+                            <div class="activity-time">1 day ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">✅</div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Emily Chen</strong> changed application status to Accepted for Michael Brown</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Company Modal -->
+    <div class="modal" id="addCompanyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Company</h3>
+                <button class="close-btn" onclick="closeAddCompanyModal()">&times;</button>
+            </div>
+            <form id="addCompanyForm">
+                <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input" id="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="companyLocation" placeholder="e.g., New York, NY">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Website</label>
+                    <input type="url" class="form-input" id="companyWebsite" placeholder="https://">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="companyDescription" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddCompanyModal()">Cancel</button>
+                    <button type="submit" class="btn">Add Company</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Invite User Modal -->
+    <div class="modal" id="inviteUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Invite Team Member</h3>
+                <button class="close-btn" onclick="closeInviteUserModal()">&times;</button>
+            </div>
+            <form id="inviteUserForm">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="userRole" required>
+                        <option value="">Select Role</option>
+                        <option value="COMPANY_ADMIN">Company Admin</option>
+                        <option value="HIRING_MANAGER">Hiring Manager</option>
+                        <option value="RECRUITER">Recruiter</option>
+                        <option value="VIEWER">Viewer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign to Companies</label>
+                    <select class="form-select" id="userCompanies" multiple style="height: 120px;">
+                        <option value="company1">Tech Corp HQ</option>
+                        <option value="company2">Tech Corp Europe</option>
+                        <option value="company3">Tech Corp Asia Pacific</option>
+                    </select>
+                    <small style="color: #6c757d;">Hold Ctrl/Cmd to select multiple</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeInviteUserModal()">Cancel</button>
+                    <button type="submit" class="btn">Send Invitation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8787/api/enterprise';
+        let currentOrganization = null;
+        let currentUser = null;
+        
+        // Initialize dashboard
+        async function initDashboard() {
+            // In a real app, get organization ID from auth/session
+            const organizationId = localStorage.getItem('organizationId') || 'demo-org-id';
+            
+            try {
+                await loadOrganizationData(organizationId);
+                await loadDashboardData(organizationId);
+            } catch (error) {
+                console.error('Failed to initialize dashboard:', error);
+            }
+        }
+        
+        async function loadOrganizationData(organizationId) {
+            try {
+                const response = await fetch(`${API_URL}/organizations/${organizationId}`);
+                if (response.ok) {
+                    currentOrganization = await response.json();
+                    updateOrganizationDisplay();
+                }
+            } catch (error) {
+                console.error('Error loading organization:', error);
+            }
+        }
+        
+        async function loadDashboardData(organizationId) {
+            try {
+                const response = await fetch(`${API_URL}/organizations/${organizationId}/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('enterpriseToken') || 'demo-token'}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const dashboard = await response.json();
+                    updateDashboardDisplay(dashboard);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+        
+        function updateOrganizationDisplay() {
+            if (!currentOrganization) return;
+            
+            // Update organization info
+            document.getElementById('orgName').textContent = currentOrganization.name;
+            document.getElementById('orgLogo').textContent = currentOrganization.name.substring(0, 2).toUpperCase();
+            document.getElementById('orgPlan').textContent = currentOrganization.plan.charAt(0).toUpperCase() + currentOrganization.plan.slice(1);
+        }
+        
+        function updateDashboardDisplay(dashboard) {
+            // Update stats
+            document.getElementById('totalJobs').textContent = dashboard.stats.totalJobs;
+            document.getElementById('activeJobs').textContent = dashboard.stats.activeJobs;
+            document.getElementById('totalApplications').textContent = dashboard.stats.totalApplications.toLocaleString();
+            document.getElementById('totalHires').textContent = dashboard.stats.applicationsThisMonth;
+            
+            // Update company count
+            document.getElementById('orgCompanyCount').textContent = `${dashboard.companies.length} companies`;
+            document.getElementById('orgUserCount').textContent = `${Object.values(dashboard.usersByRole).reduce((a, b) => a + b, 0)} users`;
+            
+            // Update recent activity
+            if (dashboard.recentActivity && dashboard.recentActivity.length > 0) {
+                updateActivityFeed(dashboard.recentActivity);
+            }
+        }
+        
+        function updateActivityFeed(activities) {
+            const activityFeed = document.getElementById('activityFeed');
+            
+            activityFeed.innerHTML = activities.map(activity => {
+                const icon = getActivityIcon(activity.type);
+                const text = getActivityText(activity);
+                const timeAgo = getTimeAgo(activity.timestamp);
+                
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon">${icon}</div>
+                        <div class="activity-content">
+                            <div class="activity-text">${text}</div>
+                            <div class="activity-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getActivityIcon(type) {
+            const icons = {
+                'organization_created': '🏢',
+                'company_added': '🏢',
+                'user_invited': '👥',
+                'job_created': '💼',
+                'job_updated': '✏️',
+                'application_status_changed': '✅'
+            };
+            return icons[type] || '📌';
+        }
+        
+        function getActivityText(activity) {
+            const templates = {
+                'company_added': `<strong>Admin</strong> added new company: ${activity.metadata.companyName}`,
+                'user_invited': `<strong>Admin</strong> invited ${activity.metadata.invitedUserEmail} as ${activity.metadata.role}`,
+                'job_created': `<strong>User</strong> posted a new job: ${activity.metadata.jobTitle}`
+            };
+            return templates[activity.type] || 'Activity occurred';
+        }
+        
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diff = now - time;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 60) return `${minutes} minutes ago`;
+            if (hours < 24) return `${hours} hours ago`;
+            return `${days} days ago`;
+        }
+        
+        // Modal functions
+        function showAddCompanyModal() {
+            document.getElementById('addCompanyModal').classList.add('active');
+        }
+        
+        function closeAddCompanyModal() {
+            document.getElementById('addCompanyModal').classList.remove('active');
+            document.getElementById('addCompanyForm').reset();
+        }
+        
+        function showInviteUserModal() {
+            document.getElementById('inviteUserModal').classList.add('active');
+        }
+        
+        function closeInviteUserModal() {
+            document.getElementById('inviteUserModal').classList.remove('active');
+            document.getElementById('inviteUserForm').reset();
+        }
+        
+        // Form submissions
+        document.getElementById('addCompanyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const companyData = {
+                name: document.getElementById('companyName').value,
+                location: document.getElementById('companyLocation').value,
+                website: document.getElementById('companyWebsite').value,
+                description: document.getElementById('companyDescription').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/organizations/${currentOrganization.id}/companies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('enterpriseToken') || 'demo-token'}`
+                    },
+                    body: JSON.stringify(companyData)
+                });
+                
+                if (response.ok) {
+                    alert('Company added successfully!');
+                    closeAddCompanyModal();
+                    loadDashboardData(currentOrganization.id);
+                } else {
+                    alert('Failed to add company. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error adding company:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+        
+        document.getElementById('inviteUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const selectedCompanies = Array.from(document.getElementById('userCompanies').selectedOptions)
+                .map(option => option.value);
+            
+            const userData = {
+                email: document.getElementById('userEmail').value,
+                name: document.getElementById('userName').value,
+                role: document.getElementById('userRole').value,
+                companyIds: selectedCompanies
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/organizations/${currentOrganization.id}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('enterpriseToken') || 'demo-token'}`
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    alert('Invitation sent successfully!');
+                    closeInviteUserModal();
+                    loadDashboardData(currentOrganization.id);
+                } else {
+                    alert('Failed to send invitation. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error inviting user:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+        
+        function logout() {
+            localStorage.removeItem('enterpriseToken');
+            localStorage.removeItem('organizationId');
+            window.location.href = 'auth.html';
+        }
+        
+        // Initialize on load
+        initDashboard();
+    </script>
+</body>
+</html>

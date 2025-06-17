@@ -8,21 +8,12 @@ export default authMiddleware({
   // Allow signed out users to access the specified routes:
   publicRoutes: [
     '/',
-    '/simple',
-    '/test-legal',
     '/search/jobs',
     '/jobs/(.*)',
     '/tools/calculator',
-    '/legal/(.*)',
-    '/support',
     '/api/trpc/jobs.getAll',
     '/api/trpc/jobs.getBySlug',
     '/api/trpc/jobs.getFeatured',
-    '/api/trpc/support.searchKnowledge',
-    '/api/trpc/support.getArticle',
-    '/api/trpc/support.getPopularArticles',
-    '/api/trpc/support.getArticlesByCategory',
-    '/api/trpc/support.rateArticle',
     '/api/public/(.*)',
   ],
   

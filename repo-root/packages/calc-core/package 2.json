@@ -1,0 +1,83 @@
+{
+  "name": "@locumtruerate/calc-core",
+  "version": "0.1.0",
+  "description": "LocumTrueRate calculation engines for contract analysis, paycheck calculations, and healthcare locum tenens financial planning",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --selectProjects unit",
+    "test:validation": "jest --selectProjects validation",
+    "test:validation-report": "jest --selectProjects validation --verbose --no-coverage",
+    "validate": "npm run test:validation",
+    "benchmark": "node dist/benchmarks/index.js"
+  },
+  "dependencies": {
+    "@locumtruerate/shared": "workspace:*",
+    "@locumtruerate/types": "workspace:*",
+    "decimal.js": "^10.4.3",
+    "date-fns": "^3.0.6",
+    "zod": "^3.22.4",
+    "nanoid": "^5.0.4",
+    "uuid": "^9.0.1",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.10.6",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./contract": {
+      "types": "./dist/engines/contract.d.ts",
+      "default": "./dist/engines/contract.js"
+    },
+    "./paycheck": {
+      "types": "./dist/engines/paycheck.d.ts",
+      "default": "./dist/engines/paycheck.js"
+    },
+    "./comparison": {
+      "types": "./dist/engines/comparison.d.ts",
+      "default": "./dist/engines/comparison.js"
+    },
+    "./optimization": {
+      "types": "./dist/engines/optimization.d.ts",
+      "default": "./dist/engines/optimization.js"
+    },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "default": "./dist/export/index.js"
+    },
+    "./history": {
+      "types": "./dist/history/index.d.ts",
+      "default": "./dist/history/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/types/index.js"
+    }
+  },
+  "keywords": [
+    "locum-tenens",
+    "healthcare",
+    "contract-calculation",
+    "paycheck-calculator",
+    "medical-staffing",
+    "financial-planning",
+    "tax-calculation",
+    "compensation-analysis"
+  ]
+}
