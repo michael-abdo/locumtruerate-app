@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-const { withSuperjson } = require('next-superjson')
 
 const nextConfig = {
   experimental: {
@@ -166,4 +165,4 @@ const nextConfig = {
   },
 }
 
-module.exports = withSuperjson()(nextConfig)
+module.exports = nextConfig

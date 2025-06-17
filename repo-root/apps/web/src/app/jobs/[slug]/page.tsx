@@ -1,0 +1,420 @@
+'use client'
+
+import { useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { 
+  MapPin, Clock, DollarSign, Star, Bookmark, Share2, 
+  Calendar, Users, Building, Stethoscope, AlertCircle,
+  CheckCircle, ArrowLeft, ExternalLink
+} from 'lucide-react'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
+import { Button } from '@locumtruerate/ui'
+import { Badge } from '@/components/ui/badge'
+import { SimilarJobs, ApplicationForm, JobMap } from '@/components/placeholder'
+import { trpc } from '@/providers/trpc-provider'
+
+export default function JobDetailPage() {
+  const params = useParams()
+  const router = useRouter()
+  const slug = params.slug as string
+  
+  const [showApplication, setShowApplication] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
+  const [showMap, setShowMap] = useState(false)
+
+  // API calls
+  const { data: job, isLoading, error } = trpc.jobs.getBySlug.useQuery({ slug })
+  const { data: similarJobs } = trpc.jobs.getAll.useQuery({
+    category: job?.category,
+    excludeId: job?.id,
+    limit: 3,
+    status: 'ACTIVE'
+  }, {
+    enabled: !!job?.category && !!job?.id
+  })
+
+  const handleApply = () => {
+    setShowApplication(true)
+  }
+
+  const handleSave = () => {
+    setIsSaved(!isSaved)
+    // Implement save/unsave job API call
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: job?.title,
+          text: job?.description?.substring(0, 100),
+          url: window.location.href,
+        })
+      } catch (err) {
+        // Handle sharing error
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(window.location.href)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="lg:col-span-1">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  if (error || !job) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Job Not Found
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              The job you're looking for doesn't exist or has been removed.
+            </p>
+            <Button onClick={() => router.push('/search/jobs')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Jobs
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Back Navigation */}
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to search
+            </button>
+          </div>
+        </div>
+
+        {/* Job Header */}
+        <section className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Badge variant={job.remote ? 'success' : 'secondary'}>
+                      {job.remote ? 'Remote' : 'On-site'}
+                    </Badge>
+                    <Badge variant="outline">{job.category}</Badge>
+                    {job.urgent && (
+                      <Badge variant="destructive">Urgent</Badge>
+                    )}
+                  </div>
+                  
+                  <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    {job.title}
+                  </h1>
+                  
+                  <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <Building className="h-5 w-5" />
+                      <span className="font-medium">{job.company.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      <span>{job.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      <span>Posted {new Date(job.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      <span>{job.applicationCount || 0} applications</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleShare}
+                    className="flex items-center gap-2"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Share
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSave}
+                    className={`flex items-center gap-2 ${
+                      isSaved ? 'text-blue-600 border-blue-300' : ''
+                    }`}
+                  >
+                    <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                    {isSaved ? 'Saved' : 'Save'}
+                  </Button>
+                  <Button onClick={handleApply} size="lg">
+                    Apply Now
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Job Details */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Job Description */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Job Description
+                </h2>
+                <div 
+                  className="prose dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: job.description }}
+                />
+              </motion.div>
+
+              {/* Requirements */}
+              {job.requirements && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Requirements
+                  </h2>
+                  <div 
+                    className="prose dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: job.requirements }}
+                  />
+                </motion.div>
+              )}
+
+              {/* Benefits */}
+              {job.benefits && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+                >
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Benefits & Perks
+                  </h2>
+                  <div 
+                    className="prose dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: job.benefits }}
+                  />
+                </motion.div>
+              )}
+
+              {/* Company Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  About {job.company.name}
+                </h2>
+                <div className="flex items-start gap-4">
+                  {job.company.logo && (
+                    <img
+                      src={job.company.logo}
+                      alt={`${job.company.name} logo`}
+                      className="w-16 h-16 rounded-lg object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {job.company.description || 'A leading healthcare organization committed to providing exceptional patient care and professional development opportunities.'}
+                    </p>
+                    {job.company.website && (
+                      <a
+                        href={job.company.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-3 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        Visit website
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Job Summary */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-6"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Job Summary
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Salary Range</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      ${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Job Type</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {job.type}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Experience</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {job.experienceRequired || 'Not specified'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Start Date</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {job.startDate ? new Date(job.startDate).toLocaleDateString() : 'ASAP'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Duration</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {job.duration || 'Ongoing'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <Button onClick={handleApply} className="w-full" size="lg">
+                    Apply for this position
+                  </Button>
+                  
+                  <button
+                    onClick={() => setShowMap(!showMap)}
+                    className="w-full mt-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {showMap ? 'Hide Map' : 'View on Map'}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Map */}
+              {showMap && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 300 }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="overflow-hidden rounded-lg"
+                >
+                  <JobMap 
+                    jobs={[job]} 
+                    onJobSelect={() => {}}
+                    height={300}
+                  />
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Similar Jobs */}
+        {similarJobs && similarJobs.jobs.length > 0 && (
+          <section className="bg-white dark:bg-gray-800 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <SimilarJobs jobs={similarJobs.jobs} />
+            </div>
+          </section>
+        )}
+
+        {/* Application Modal */}
+        {showApplication && (
+          <ApplicationForm
+            job={job}
+            onClose={() => setShowApplication(false)}
+            onSubmit={(data) => {
+              // Handle application submission
+              setShowApplication(false)
+            }}
+          />
+        )}
+      </main>
+      <Footer />
+    </>
+  )
+}

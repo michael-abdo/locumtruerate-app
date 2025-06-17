@@ -56,8 +56,6 @@
     "SENTRY_DSN"
   ],
   "remoteCache": {
-    "enabled": true,
-    "apiUrl": "https://api.cloudflare.com/client/v4/accounts/{account_id}/r2/buckets/{bucket_name}",
-    "token": "${TURBO_REMOTE_CACHE_TOKEN}"
+    "enabled": false
   }
 }

@@ -1,10 +1,9 @@
 import { Metadata } from 'next'
 import { HeroSection } from '@/components/sections/hero-section'
-import { FeaturesSection } from '@/components/sections/features-section'
-import { CalculatorPreview } from '@/components/sections/calculator-preview'
-import { JobsPreview } from '@/components/sections/jobs-preview'
-import { TestimonialsSection } from '@/components/sections/testimonials-section'
-import { CTASection } from '@/components/sections/cta-section'
+import { 
+  FeaturesSection, CalculatorPreview, JobsPreview,
+  TestimonialsSection, CTASection
+} from '@/components/placeholder'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 

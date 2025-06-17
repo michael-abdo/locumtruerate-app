@@ -13,7 +13,9 @@ This monorepo uses TurboRepo to manage multiple applications and shared packages
 ### Packages
 - **`packages/ui`** - Shared UI components (85%+ code reuse)
 - **`packages/api`** - tRPC API with all business logic
+- **`packages/calc-core`** - Healthcare contract calculation engines
 - **`packages/database`** - Prisma ORM and database schemas
+- **`packages/shared`** - Shared utilities and error handling
 - **`packages/config`** - Shared configuration files
 - **`packages/types`** - Shared TypeScript types and Zod schemas
 
@@ -137,11 +139,11 @@ repo-root/
 This new architecture is being built to replace the existing Cloudflare Workers + vanilla HTML/CSS/JS implementation. The migration follows an incremental blue-green strategy to ensure zero downtime and no functionality loss.
 
 ### Migration Progress
-- [x] Week 1-A: Analysis and documentation
-- [ ] Week 1-B: TurboRepo setup (IN PROGRESS)
-- [ ] Week 1-C: Database migration
-- [ ] Week 1-D: Infrastructure setup
-- [ ] Week 1-E: CI/CD and testing
+- [x] Week 1: Complete infrastructure, security, and testing setup
+- [x] Week 2-A: API migration to tRPC with type safety
+- [x] Week 2-B: Next.js 14 frontend with mobile-first design
+- [x] Week 2-C: Healthcare calculation engines implementation
+- [ ] Week 2-D: Production features and admin tools (IN PROGRESS)
 
 See `/docs/migration/` for detailed migration documentation.
 

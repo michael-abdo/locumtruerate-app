@@ -1,0 +1,377 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { Search, Filter, MapPin, Clock, DollarSign, Star, Bookmark } from 'lucide-react'
+import { SearchBar } from '@/components/search/search-bar'
+import { 
+  JobFilters, JobCard, JobMap, SortOptions, 
+  Pagination, SavedSearches, JobAlerts 
+} from '@/components/placeholder'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
+import { trpc } from '@/providers/trpc-provider'
+import { Button } from '@locumtruerate/ui'
+
+type ViewMode = 'list' | 'map' | 'grid'
+type SortBy = 'relevance' | 'date' | 'salary' | 'location'
+
+const quickFilters = [
+  { label: 'Remote', value: 'remote', count: 245 },
+  { label: 'High Demand', value: 'high-demand', count: 189 },
+  { label: 'No Experience Required', value: 'entry-level', count: 156 },
+  { label: 'Travel Opportunities', value: 'travel', count: 234 },
+  { label: 'Emergency Medicine', value: 'emergency', count: 98 },
+  { label: 'Family Medicine', value: 'family', count: 167 }
+]
+
+export default function JobSearchPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  // State management
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [showFilters, setShowFilters] = useState(false)
+  const [showMap, setShowMap] = useState(false)
+  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set())
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
+  const [location, setLocation] = useState(searchParams.get('location') || '')
+  const [sortBy, setSortBy] = useState<SortBy>('relevance')
+  const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
+  
+  // Filters state
+  const [filters, setFilters] = useState({
+    jobType: searchParams.get('type') || '',
+    category: searchParams.get('category') || '',
+    salaryMin: searchParams.get('salaryMin') || '',
+    salaryMax: searchParams.get('salaryMax') || '',
+    remote: searchParams.get('remote') === 'true',
+    experienceLevel: searchParams.get('experience') || '',
+    benefits: [] as string[],
+    schedule: searchParams.get('schedule') || ''
+  })
+
+  // API calls
+  const { data: jobsData, isLoading, error } = trpc.jobs.getAll.useQuery({
+    search: searchQuery,
+    location,
+    ...filters,
+    page,
+    limit: 20,
+    sortBy: sortBy === 'salary' ? 'applicationCount' : 'createdAt',
+    sortOrder: 'desc'
+  })
+
+  const { data: featuredJobs } = trpc.jobs.getAll.useQuery({
+    status: 'ACTIVE',
+    page: 1,
+    limit: 3,
+    sortBy: 'viewCount',
+    sortOrder: 'desc'
+  })
+
+  // Update URL when search changes
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (searchQuery) params.set('q', searchQuery)
+    if (location) params.set('location', location)
+    if (filters.jobType) params.set('type', filters.jobType)
+    if (filters.category) params.set('category', filters.category)
+    if (page > 1) params.set('page', page.toString())
+    
+    router.push(`/search/jobs?${params.toString()}`, { scroll: false })
+  }, [searchQuery, location, filters, page, router])
+
+  const handleSearch = (query: string, loc: string) => {
+    setSearchQuery(query)
+    setLocation(loc)
+    setPage(1)
+  }
+
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters)
+    setPage(1)
+  }
+
+  const toggleSaveJob = (jobId: string) => {
+    const newSavedJobs = new Set(savedJobs)
+    if (newSavedJobs.has(jobId)) {
+      newSavedJobs.delete(jobId)
+    } else {
+      newSavedJobs.add(jobId)
+    }
+    setSavedJobs(newSavedJobs)
+  }
+
+  const handleQuickFilter = (filterValue: string) => {
+    if (filterValue === 'remote') {
+      setFilters(prev => ({ ...prev, remote: !prev.remote }))
+    } else if (filterValue === 'high-demand') {
+      setLocation('TX,CA,FL,NY') // High demand states
+    } else if (filterValue === 'entry-level') {
+      setFilters(prev => ({ ...prev, experienceLevel: 'entry' }))
+    } else {
+      setSearchQuery(prev => prev ? `${prev} ${filterValue}` : filterValue)
+    }
+  }
+
+  return (
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Search Header */}
+        <section className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <SearchBar
+                initialQuery={searchQuery}
+                initialLocation={location}
+                onSearch={handleSearch}
+                placeholder="Search jobs by title, specialty, or keyword..."
+                locationPlaceholder="City, state, or ZIP code"
+              />
+            </motion.div>
+
+            {/* Quick Filters */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mt-6"
+            >
+              <div className="flex flex-wrap gap-2">
+                {quickFilters.map((filter) => (
+                  <button
+                    key={filter.value}
+                    onClick={() => handleQuickFilter(filter.value)}
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300 rounded-full text-sm font-medium transition-colors"
+                  >
+                    {filter.label} ({filter.count})
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Search Stats & Controls */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <p className="text-gray-600 dark:text-gray-400">
+                  {isLoading ? 'Searching...' : `${jobsData?.pagination.total || 0} jobs found`}
+                  {searchQuery && ` for "${searchQuery}"`}
+                  {location && ` in ${location}`}
+                </p>
+                
+                <button 
+                  onClick={() => setShowMap(!showMap)}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    showMap 
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' 
+                      : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {showMap ? 'Hide Map' : 'Show Map'}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <SortOptions
+                  value={sortBy}
+                  onChange={setSortBy}
+                />
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar Filters */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="lg:col-span-1"
+              >
+                <JobFilters
+                  filters={filters}
+                  onFiltersChange={handleFilterChange}
+                  onClose={() => setShowFilters(false)}
+                />
+              </motion.div>
+            )}
+
+            {/* Results Content */}
+            <div className={showFilters ? 'lg:col-span-3' : 'lg:col-span-4'}>
+              {/* Map View */}
+              {showMap && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 400 }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="mb-8 overflow-hidden rounded-lg"
+                >
+                  <JobMap 
+                    jobs={jobsData?.jobs || []} 
+                    onJobSelect={(job) => router.push(`/jobs/${job.slug}`)}
+                  />
+                </motion.div>
+              )}
+
+              {/* Results Grid */}
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : error ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-8 w-8 text-red-600 dark:text-red-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Search Error
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Unable to search jobs at this time. Please try again later.
+                  </p>
+                </div>
+              ) : jobsData?.jobs.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    No Jobs Found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Try adjusting your search criteria or location.
+                  </p>
+                  <Button onClick={() => {
+                    setSearchQuery('')
+                    setLocation('')
+                    setFilters({
+                      jobType: '',
+                      category: '',
+                      salaryMin: '',
+                      salaryMax: '',
+                      remote: false,
+                      experienceLevel: '',
+                      benefits: [],
+                      schedule: ''
+                    })
+                  }}>
+                    Clear All Filters
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {/* Job Results */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6 }}
+                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8"
+                  >
+                    {jobsData?.jobs.map((job, index) => (
+                      <motion.div
+                        key={job.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                      >
+                        <JobCard
+                          job={job}
+                          isSaved={savedJobs.has(job.id)}
+                          onSave={() => toggleSaveJob(job.id)}
+                          onViewDetails={() => router.push(`/jobs/${job.slug}`)}
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+
+                  {/* Pagination */}
+                  {jobsData && jobsData.pagination.totalPages > 1 && (
+                    <Pagination
+                      currentPage={page}
+                      totalPages={jobsData.pagination.totalPages}
+                      onPageChange={setPage}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Jobs Section */}
+        {featuredJobs && featuredJobs.jobs.length > 0 && (
+          <section className="bg-white dark:bg-gray-800 py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  Featured Opportunities
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-300">
+                  High-demand positions from top healthcare organizations
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {featuredJobs.jobs.map((job) => (
+                  <div key={job.id} className="relative">
+                    <div className="absolute -top-2 -right-2 z-10">
+                      <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-semibold">
+                        <Star className="inline h-4 w-4 mr-1" />
+                        Featured
+                      </div>
+                    </div>
+                    <JobCard
+                      job={job}
+                      isSaved={savedJobs.has(job.id)}
+                      onSave={() => toggleSaveJob(job.id)}
+                      onViewDetails={() => router.push(`/jobs/${job.slug}`)}
+                      featured
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
+      <Footer />
+    </>
+  )
+}
