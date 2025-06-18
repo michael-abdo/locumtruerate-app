@@ -1,0 +1,829 @@
+{
+  "overall": {
+    "totalComponents": 6,
+    "averageReusePercentage": 73.98657628920786,
+    "targetMet": false,
+    "componentsAboveTarget": 3,
+    "componentsBelowTarget": 3
+  },
+  "byComponent": [
+    {
+      "filePath": "support-widget.tsx",
+      "componentName": "SupportWidget",
+      "totalLines": 486,
+      "totalStatements": 57,
+      "platformSpecific": {
+        "web": {
+          "lines": 8,
+          "statements": 8,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 410,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 410,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 410,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 410,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 413,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 413,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 413,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 413,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 461,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 461,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 461,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 471,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 471,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 471,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 472,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 472,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 472,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific pattern detected"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 49,
+        "statements": 49,
+        "percentage": 85.96491228070175
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 14,
+        "cognitiveComplexity": 2,
+        "dependencies": 4,
+        "hooks": 9,
+        "props": 9
+      },
+      "recommendations": [
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "support-dashboard.tsx",
+      "componentName": "SupportDashboard",
+      "totalLines": 458,
+      "totalStatements": 66,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 63,
+        "statements": 63,
+        "percentage": 95.45454545454545
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 45,
+        "cognitiveComplexity": 20,
+        "dependencies": 1,
+        "hooks": 9,
+        "props": 4
+      },
+      "recommendations": [
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "modal.tsx",
+      "componentName": "Modal",
+      "totalLines": 66,
+      "totalStatements": 7,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 13,
+              "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 13,
+              "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 13,
+              "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 13,
+              "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 19,
+              "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 19,
+              "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 19,
+              "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 19,
+              "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 30,
+              "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 30,
+              "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 30,
+              "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 30,
+              "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 4,
+        "statements": 4,
+        "percentage": 57.14285714285714
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 4,
+        "cognitiveComplexity": 2,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 5
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (57.1%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "input.tsx",
+      "componentName": "Input",
+      "totalLines": 35,
+      "totalStatements": 7,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 10,
+              "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 10,
+              "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<input[^>]*>",
+              "line": 10,
+              "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 15,
+              "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 15,
+              "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<input[^>]*>",
+              "line": 15,
+              "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 19,
+              "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 19,
+              "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<input[^>]*>",
+              "line": 19,
+              "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+              "reason": "Web-specific pattern detected"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 4,
+        "statements": 4,
+        "percentage": 57.14285714285714
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 4,
+        "cognitiveComplexity": 0,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 4
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (57.1%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "floating-support-button.tsx",
+      "componentName": "FloatingSupportButton",
+      "totalLines": 175,
+      "totalStatements": 21,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 18,
+        "statements": 18,
+        "percentage": 85.71428571428571
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 8,
+        "cognitiveComplexity": 0,
+        "dependencies": 2,
+        "hooks": 2,
+        "props": 6
+      },
+      "recommendations": [
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "button.tsx",
+      "componentName": "Button",
+      "totalLines": 41,
+      "totalStatements": 8,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 11,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 11,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 17,
+              "code": "{\n  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-c",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 33,
+              "code": "return <button className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${classNam",
+              "reason": "Web-specific pattern detected"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 5,
+        "statements": 5,
+        "percentage": 62.5
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 1,
+        "cognitiveComplexity": 0,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 5
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (62.5%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    }
+  ],
+  "summary": {
+    "totalLines": 1261,
+    "reusableLines": 143,
+    "webSpecificLines": 23,
+    "nativeSpecificLines": 0,
+    "reusePercentage": 11.34020618556701
+  },
+  "trends": {
+    "historicalData": [],
+    "trend": "stable"
+  }
+}

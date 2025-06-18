@@ -20,6 +20,7 @@
     "validate:reuse": "node bin/validate-reuse.js",
     "validate:compatibility": "node bin/test-compatibility.js",
     "validate:all": "npm run validate:reuse && npm run validate:compatibility",
+    "check:baseline": "node check-baseline.js",
     "extract:demo": "node bin/extract-components.js --source=../../demo/week2-showcase/src/components --target=../../packages/ui/src/extracted",
     "setup:mobile": "node bin/setup-mobile-env.js",
     "report:generate": "node bin/generate-report.js"

@@ -229,6 +229,11 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
+      # Run cross-platform analyzer baseline check
+      - name: Check cross-platform reusability baseline
+        run: pnpm run analyze:baseline
+        continue-on-error: false
+
       # Cache build artifacts
       - name: Cache build artifacts
         uses: actions/cache@v3
