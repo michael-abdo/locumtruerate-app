@@ -103,12 +103,52 @@ A comprehensive job board platform built with Cloudflare Workers, featuring AI-p
 - `GET /api/renewals/status` - Get renewal status
 - `POST /api/renewals/process` - Process auto-renewals
 
+## Directory Structure
+
+The project has been organized with the following structure:
+
+```
+.
+├── README.md                    # Project documentation
+├── CLAUDE.md                   # Project instructions and navigation
+├── .env.example               # Environment variable template
+├── deploy.sh                  # Deployment script
+├── wrangler.toml             # Cloudflare configuration
+├── .gitignore                # Git ignore rules
+├── .secrets/                 # Environment files (gitignored)
+│   ├── .env                  # Production environment variables
+│   └── .dev.vars            # Development environment variables
+├── .development-tools/       # Development utilities
+│   ├── .tmux_session_info.json
+│   └── package-lock.json    # Orphaned lock file
+├── .backup-duplicates/       # Backup of cleaned duplicate files
+├── docs/                     # Documentation and prototypes
+│   ├── archives/            # Archived files and zips
+│   ├── demo/                # Demo assets and configuration
+│   │   ├── assets/          # PDFs and demo files
+│   │   ├── config/          # JSON and YAML configuration
+│   │   └── screenshots_simple/  # Demo screenshots
+│   ├── design/              # Design documentation and UI specs
+│   │   └── UI/              # HTML UI prototypes
+│   ├── implementation/      # Implementation guides and plans
+│   ├── migration/           # Migration strategies and documentation
+│   ├── prototypes/          # HTML prototypes
+│   ├── specifications/      # Requirements and analysis documents
+│   └── stages/              # Project stage documentation
+└── repo-root/               # Main project directory
+    ├── packages/            # Shared packages
+    ├── apps/               # Applications
+    ├── tools/              # Development tools
+    └── ... (main project structure)
+```
+
 ## Setup
 
 1. Clone the repository
-2. Install Wrangler CLI: `npm install -g wrangler`
-3. Configure your KV namespaces in `wrangler.toml`
-4. Deploy with: `wrangler publish`
+2. Navigate to the `repo-root` directory for development
+3. Install Wrangler CLI: `npm install -g wrangler`
+4. Configure your KV namespaces in `wrangler.toml`
+5. Deploy with: `wrangler publish`
 
 ## Environment Configuration
 

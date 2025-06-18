@@ -1,0 +1,114 @@
+{
+  "filePath": "modal.tsx",
+  "componentName": "Modal",
+  "totalLines": 66,
+  "totalStatements": 7,
+  "platformSpecific": {
+    "web": {
+      "lines": 3,
+      "statements": 3,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 13,
+          "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 13,
+          "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 13,
+          "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 13,
+          "code": "export function Modal({\n  isOpen,\n  onClose,\n  title,\n  children,\n  maxWidth = 'lg'\n}: ModalProps) {",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 19,
+          "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 19,
+          "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 19,
+          "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 19,
+          "code": "{\n  if (!isOpen) return null;\n  const maxWidthClasses = {\n    sm: 'max-w-sm',\n    md: 'max-w-md',\n  ",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 30,
+          "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 30,
+          "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 30,
+          "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 30,
+          "code": "return <>\n      {/* Backdrop */}\n      <div className=\"fixed inset-0 bg-black bg-opacity-50 z-50\" on",
+          "reason": "Web event handler"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 4,
+    "statements": 4,
+    "percentage": 57.14285714285714
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 4,
+    "cognitiveComplexity": 2,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 5
+  },
+  "recommendations": [
+    "Component is below 85% reuse target (57.1%)",
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

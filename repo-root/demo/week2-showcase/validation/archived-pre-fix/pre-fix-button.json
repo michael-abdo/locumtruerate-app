@@ -1,0 +1,45 @@
+{
+  "filePath": "button.tsx",
+  "componentName": "Button",
+  "totalLines": 41,
+  "totalStatements": 8,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 15,
+          "code": "className = '',",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 8,
+    "statements": 8,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 1,
+    "cognitiveComplexity": 0,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 5
+  },
+  "recommendations": []
+}

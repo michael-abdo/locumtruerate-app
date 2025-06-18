@@ -1,0 +1,1869 @@
+{
+  "timestamp": "2025-06-17T23:02:04.090Z",
+  "nodeVersion": "v23.7.0",
+  "platform": "darwin",
+  "arch": "x64",
+  "totalMemory": 17179869184,
+  "freeMemory": 1108815872,
+  "components": [
+    {
+      "name": "Button (Small)",
+      "path": "../../demo/week2-showcase/src/components/button.tsx",
+      "category": "small",
+      "lines": 41,
+      "fileSize": 1227,
+      "iterations": [
+        {
+          "startTime": 423.461271,
+          "memoryBefore": {
+            "rss": 65933312,
+            "heapTotal": 51118080,
+            "heapUsed": 15270096,
+            "external": 1742934,
+            "arrayBuffers": 58381
+          },
+          "phases": {
+            "initialization": 0.008151999999995496,
+            "analysis": 2.7863080000000195
+          },
+          "endTime": 426.372203,
+          "totalTime": 2.9109320000000025,
+          "memoryAfter": {
+            "rss": 66183168,
+            "heapTotal": 51118080,
+            "heapUsed": 14939784,
+            "external": 1744161,
+            "arrayBuffers": 59608
+          },
+          "memoryPeak": 15270096,
+          "memoryDelta": -330312,
+          "analysisMetadata": {
+            "totalLines": 41,
+            "totalStatements": 8,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 1
+          }
+        },
+        {
+          "startTime": 426.501434,
+          "memoryBefore": {
+            "rss": 66187264,
+            "heapTotal": 51118080,
+            "heapUsed": 14951168,
+            "external": 1744161,
+            "arrayBuffers": 59608
+          },
+          "phases": {
+            "initialization": 0.005858999999986736,
+            "analysis": 2.103281000000038
+          },
+          "endTime": 428.637067,
+          "totalTime": 2.1356329999999843,
+          "memoryAfter": {
+            "rss": 66265088,
+            "heapTotal": 51118080,
+            "heapUsed": 15538000,
+            "external": 1745388,
+            "arrayBuffers": 60835
+          },
+          "memoryPeak": 14951168,
+          "memoryDelta": 586832,
+          "analysisMetadata": {
+            "totalLines": 41,
+            "totalStatements": 8,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 1
+          }
+        },
+        {
+          "startTime": 428.705347,
+          "memoryBefore": {
+            "rss": 66265088,
+            "heapTotal": 51118080,
+            "heapUsed": 15540936,
+            "external": 1745388,
+            "arrayBuffers": 60835
+          },
+          "phases": {
+            "initialization": 0.005798000000027059,
+            "analysis": 1.9565269999999941
+          },
+          "endTime": 430.689618,
+          "totalTime": 1.9842709999999784,
+          "memoryAfter": {
+            "rss": 66412544,
+            "heapTotal": 51118080,
+            "heapUsed": 16121376,
+            "external": 1746615,
+            "arrayBuffers": 62062
+          },
+          "memoryPeak": 15540936,
+          "memoryDelta": 580440,
+          "analysisMetadata": {
+            "totalLines": 41,
+            "totalStatements": 8,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 1
+          }
+        },
+        {
+          "startTime": 430.751265,
+          "memoryBefore": {
+            "rss": 66412544,
+            "heapTotal": 51118080,
+            "heapUsed": 16124064,
+            "external": 1746615,
+            "arrayBuffers": 62062
+          },
+          "phases": {
+            "initialization": 0.005840000000034706,
+            "analysis": 1.6256070000000022
+          },
+          "endTime": 432.403374,
+          "totalTime": 1.6521089999999958,
+          "memoryAfter": {
+            "rss": 66433024,
+            "heapTotal": 51118080,
+            "heapUsed": 16660824,
+            "external": 1747842,
+            "arrayBuffers": 63289
+          },
+          "memoryPeak": 16124064,
+          "memoryDelta": 536760,
+          "analysisMetadata": {
+            "totalLines": 41,
+            "totalStatements": 8,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 1
+          }
+        },
+        {
+          "startTime": 432.457866,
+          "memoryBefore": {
+            "rss": 66433024,
+            "heapTotal": 51118080,
+            "heapUsed": 16663504,
+            "external": 1747842,
+            "arrayBuffers": 63289
+          },
+          "phases": {
+            "initialization": 0.006088000000033844,
+            "analysis": 1.76075000000003
+          },
+          "endTime": 434.244242,
+          "totalTime": 1.7863759999999616,
+          "memoryAfter": {
+            "rss": 66465792,
+            "heapTotal": 51118080,
+            "heapUsed": 17211896,
+            "external": 1749069,
+            "arrayBuffers": 64516
+          },
+          "memoryPeak": 16663504,
+          "memoryDelta": 548392,
+          "analysisMetadata": {
+            "totalLines": 41,
+            "totalStatements": 8,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 1
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 2.0938641999999845,
+        "initialization": 0.006347400000015569,
+        "analysis": 2.046494600000017,
+        "memoryDelta": 384422.4,
+        "memoryPeak": 15709953.6,
+        "standardDeviation": 0.4406930318947271
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 384422.4,
+        "peakMemory": 16663504,
+        "minMemoryDelta": -330312,
+        "maxMemoryDelta": 586832
+      }
+    },
+    {
+      "name": "Input (Small)",
+      "path": "../../demo/week2-showcase/src/components/input.tsx",
+      "category": "small",
+      "lines": 35,
+      "fileSize": 928,
+      "iterations": [
+        {
+          "startTime": 438.940844,
+          "memoryBefore": {
+            "rss": 66666496,
+            "heapTotal": 51118080,
+            "heapUsed": 18348736,
+            "external": 1750925,
+            "arrayBuffers": 66372
+          },
+          "phases": {
+            "initialization": 0.01104099999997743,
+            "analysis": 1.534242000000006
+          },
+          "endTime": 440.513243,
+          "totalTime": 1.5723989999999617,
+          "memoryAfter": {
+            "rss": 66686976,
+            "heapTotal": 51118080,
+            "heapUsed": 18820472,
+            "external": 1751853,
+            "arrayBuffers": 67300
+          },
+          "memoryPeak": 18348736,
+          "memoryDelta": 471736,
+          "analysisMetadata": {
+            "totalLines": 35,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 440.576473,
+          "memoryBefore": {
+            "rss": 66723840,
+            "heapTotal": 51118080,
+            "heapUsed": 18823552,
+            "external": 1751853,
+            "arrayBuffers": 67300
+          },
+          "phases": {
+            "initialization": 0.004961000000037075,
+            "analysis": 1.143952000000013
+          },
+          "endTime": 441.743528,
+          "totalTime": 1.1670550000000048,
+          "memoryAfter": {
+            "rss": 66785280,
+            "heapTotal": 51118080,
+            "heapUsed": 19299184,
+            "external": 1752781,
+            "arrayBuffers": 68228
+          },
+          "memoryPeak": 18823552,
+          "memoryDelta": 475632,
+          "analysisMetadata": {
+            "totalLines": 35,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 441.793028,
+          "memoryBefore": {
+            "rss": 66785280,
+            "heapTotal": 51118080,
+            "heapUsed": 19302024,
+            "external": 1752781,
+            "arrayBuffers": 68228
+          },
+          "phases": {
+            "initialization": 0.0019340000000056534,
+            "analysis": 1.2741149999999948
+          },
+          "endTime": 443.084973,
+          "totalTime": 1.2919449999999983,
+          "memoryAfter": {
+            "rss": 67264512,
+            "heapTotal": 51118080,
+            "heapUsed": 19758088,
+            "external": 1753709,
+            "arrayBuffers": 69156
+          },
+          "memoryPeak": 19302024,
+          "memoryDelta": 456064,
+          "analysisMetadata": {
+            "totalLines": 35,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 443.141401,
+          "memoryBefore": {
+            "rss": 67264512,
+            "heapTotal": 51118080,
+            "heapUsed": 19760816,
+            "external": 1753709,
+            "arrayBuffers": 69156
+          },
+          "phases": {
+            "initialization": 0.0022470000000112123,
+            "analysis": 1.3180409999999938
+          },
+          "endTime": 444.63025,
+          "totalTime": 1.488849000000016,
+          "memoryAfter": {
+            "rss": 67321856,
+            "heapTotal": 51118080,
+            "heapUsed": 20286600,
+            "external": 1754637,
+            "arrayBuffers": 70084
+          },
+          "memoryPeak": 19760816,
+          "memoryDelta": 525784,
+          "analysisMetadata": {
+            "totalLines": 35,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 444.722925,
+          "memoryBefore": {
+            "rss": 67325952,
+            "heapTotal": 51118080,
+            "heapUsed": 20296024,
+            "external": 1754637,
+            "arrayBuffers": 70084
+          },
+          "phases": {
+            "initialization": 0.0019760000000133005,
+            "analysis": 1.01789100000002
+          },
+          "endTime": 445.82073,
+          "totalTime": 1.0978050000000508,
+          "memoryAfter": {
+            "rss": 67334144,
+            "heapTotal": 51118080,
+            "heapUsed": 20751192,
+            "external": 1755565,
+            "arrayBuffers": 71012
+          },
+          "memoryPeak": 20296024,
+          "memoryDelta": 455168,
+          "analysisMetadata": {
+            "totalLines": 35,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 1.3236106000000063,
+        "initialization": 0.004431800000008934,
+        "analysis": 1.2576482000000055,
+        "memoryDelta": 476876.8,
+        "memoryPeak": 19306230.4,
+        "standardDeviation": 0.18204391333695388
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 476876.8,
+        "peakMemory": 20296024,
+        "minMemoryDelta": 455168,
+        "maxMemoryDelta": 525784
+      }
+    },
+    {
+      "name": "Modal (Medium)",
+      "path": "../../demo/week2-showcase/src/components/modal.tsx",
+      "category": "medium",
+      "lines": 66,
+      "fileSize": 1581,
+      "iterations": [
+        {
+          "startTime": 452.257184,
+          "memoryBefore": {
+            "rss": 68673536,
+            "heapTotal": 51118080,
+            "heapUsed": 22326784,
+            "external": 1758727,
+            "arrayBuffers": 74174
+          },
+          "phases": {
+            "initialization": 0.0020920000000046457,
+            "analysis": 3.339179999999999
+          },
+          "endTime": 455.620208,
+          "totalTime": 3.363023999999996,
+          "memoryAfter": {
+            "rss": 70529024,
+            "heapTotal": 51642368,
+            "heapUsed": 23104312,
+            "external": 1760308,
+            "arrayBuffers": 75755
+          },
+          "memoryPeak": 22326784,
+          "memoryDelta": 777528,
+          "analysisMetadata": {
+            "totalLines": 66,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 455.740299,
+          "memoryBefore": {
+            "rss": 70541312,
+            "heapTotal": 51642368,
+            "heapUsed": 23107192,
+            "external": 1760308,
+            "arrayBuffers": 75755
+          },
+          "phases": {
+            "initialization": 0.0026760000000081163,
+            "analysis": 3.678698000000054
+          },
+          "endTime": 459.446205,
+          "totalTime": 3.7059060000000272,
+          "memoryAfter": {
+            "rss": 71614464,
+            "heapTotal": 51642368,
+            "heapUsed": 23882304,
+            "external": 1761889,
+            "arrayBuffers": 77336
+          },
+          "memoryPeak": 23107192,
+          "memoryDelta": 775112,
+          "analysisMetadata": {
+            "totalLines": 66,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 459.514389,
+          "memoryBefore": {
+            "rss": 71643136,
+            "heapTotal": 51642368,
+            "heapUsed": 23885032,
+            "external": 1761889,
+            "arrayBuffers": 77336
+          },
+          "phases": {
+            "initialization": 0.0026429999999777465,
+            "analysis": 2.761932999999999
+          },
+          "endTime": 462.292954,
+          "totalTime": 2.7785650000000146,
+          "memoryAfter": {
+            "rss": 72425472,
+            "heapTotal": 51642368,
+            "heapUsed": 24587144,
+            "external": 1763470,
+            "arrayBuffers": 78917
+          },
+          "memoryPeak": 23885032,
+          "memoryDelta": 702112,
+          "analysisMetadata": {
+            "totalLines": 66,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 462.352681,
+          "memoryBefore": {
+            "rss": 72429568,
+            "heapTotal": 51642368,
+            "heapUsed": 24589872,
+            "external": 1763470,
+            "arrayBuffers": 78917
+          },
+          "phases": {
+            "initialization": 0.002307000000030257,
+            "analysis": 2.9597739999999817
+          },
+          "endTime": 465.32717,
+          "totalTime": 2.9744890000000055,
+          "memoryAfter": {
+            "rss": 73076736,
+            "heapTotal": 51642368,
+            "heapUsed": 25241816,
+            "external": 1765051,
+            "arrayBuffers": 80498
+          },
+          "memoryPeak": 24589872,
+          "memoryDelta": 651944,
+          "analysisMetadata": {
+            "totalLines": 66,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        },
+        {
+          "startTime": 465.413216,
+          "memoryBefore": {
+            "rss": 73080832,
+            "heapTotal": 51642368,
+            "heapUsed": 25244544,
+            "external": 1765051,
+            "arrayBuffers": 80498
+          },
+          "phases": {
+            "initialization": 0.0024240000000190776,
+            "analysis": 4.234393000000011
+          },
+          "endTime": 469.665366,
+          "totalTime": 4.252150000000029,
+          "memoryAfter": {
+            "rss": 73781248,
+            "heapTotal": 51904512,
+            "heapUsed": 25980752,
+            "external": 1766632,
+            "arrayBuffers": 82079
+          },
+          "memoryPeak": 25244544,
+          "memoryDelta": 736208,
+          "analysisMetadata": {
+            "totalLines": 66,
+            "totalStatements": 7,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 4
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 3.4148268000000144,
+        "initialization": 0.0024284000000079687,
+        "analysis": 3.394795600000009,
+        "memoryDelta": 728580.8,
+        "memoryPeak": 23830684.8,
+        "standardDeviation": 0.5267347013947042
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 728580.8,
+        "peakMemory": 25244544,
+        "minMemoryDelta": 651944,
+        "maxMemoryDelta": 777528
+      }
+    },
+    {
+      "name": "FloatingSupportButton (Medium)",
+      "path": "../../demo/week2-showcase/src/components/floating-support-button.tsx",
+      "category": "medium",
+      "lines": 175,
+      "fileSize": 6029,
+      "iterations": [
+        {
+          "startTime": 491.480147,
+          "memoryBefore": {
+            "rss": 75833344,
+            "heapTotal": 51904512,
+            "heapUsed": 18397208,
+            "external": 1701185,
+            "arrayBuffers": 16632
+          },
+          "phases": {
+            "initialization": 0.0033600000000433283,
+            "analysis": 5.828026000000023
+          },
+          "endTime": 497.330405,
+          "totalTime": 5.850257999999997,
+          "memoryAfter": {
+            "rss": 76578816,
+            "heapTotal": 51904512,
+            "heapUsed": 19674024,
+            "external": 1707214,
+            "arrayBuffers": 22661
+          },
+          "memoryPeak": 18397208,
+          "memoryDelta": 1276816,
+          "analysisMetadata": {
+            "totalLines": 175,
+            "totalStatements": 21,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 8
+          }
+        },
+        {
+          "startTime": 497.422931,
+          "memoryBefore": {
+            "rss": 76578816,
+            "heapTotal": 51904512,
+            "heapUsed": 19677048,
+            "external": 1707214,
+            "arrayBuffers": 22661
+          },
+          "phases": {
+            "initialization": 0.0036050000000500404,
+            "analysis": 6.605145999999991
+          },
+          "endTime": 504.052246,
+          "totalTime": 6.62931500000002,
+          "memoryAfter": {
+            "rss": 78991360,
+            "heapTotal": 51904512,
+            "heapUsed": 20967064,
+            "external": 1713243,
+            "arrayBuffers": 28690
+          },
+          "memoryPeak": 19677048,
+          "memoryDelta": 1290016,
+          "analysisMetadata": {
+            "totalLines": 175,
+            "totalStatements": 21,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 8
+          }
+        },
+        {
+          "startTime": 504.14968,
+          "memoryBefore": {
+            "rss": 78995456,
+            "heapTotal": 51904512,
+            "heapUsed": 20969824,
+            "external": 1713243,
+            "arrayBuffers": 28690
+          },
+          "phases": {
+            "initialization": 0.0035330000000044492,
+            "analysis": 5.395840000000021
+          },
+          "endTime": 509.63461,
+          "totalTime": 5.48493000000002,
+          "memoryAfter": {
+            "rss": 80158720,
+            "heapTotal": 51904512,
+            "heapUsed": 22169680,
+            "external": 1719272,
+            "arrayBuffers": 34719
+          },
+          "memoryPeak": 20969824,
+          "memoryDelta": 1199856,
+          "analysisMetadata": {
+            "totalLines": 175,
+            "totalStatements": 21,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 8
+          }
+        },
+        {
+          "startTime": 509.707979,
+          "memoryBefore": {
+            "rss": 80158720,
+            "heapTotal": 51904512,
+            "heapUsed": 22172408,
+            "external": 1719272,
+            "arrayBuffers": 34719
+          },
+          "phases": {
+            "initialization": 0.0028300000000172076,
+            "analysis": 5.325574000000017
+          },
+          "endTime": 515.055558,
+          "totalTime": 5.347578999999996,
+          "memoryAfter": {
+            "rss": 81440768,
+            "heapTotal": 52039680,
+            "heapUsed": 23475968,
+            "external": 1725301,
+            "arrayBuffers": 40748
+          },
+          "memoryPeak": 22172408,
+          "memoryDelta": 1303560,
+          "analysisMetadata": {
+            "totalLines": 175,
+            "totalStatements": 21,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 8
+          }
+        },
+        {
+          "startTime": 515.182279,
+          "memoryBefore": {
+            "rss": 81457152,
+            "heapTotal": 52039680,
+            "heapUsed": 23491400,
+            "external": 1725301,
+            "arrayBuffers": 40748
+          },
+          "phases": {
+            "initialization": 0.003266000000053282,
+            "analysis": 5.1632079999999405
+          },
+          "endTime": 520.367748,
+          "totalTime": 5.185469000000012,
+          "memoryAfter": {
+            "rss": 82599936,
+            "heapTotal": 52039680,
+            "heapUsed": 24681976,
+            "external": 1731330,
+            "arrayBuffers": 46777
+          },
+          "memoryPeak": 23491400,
+          "memoryDelta": 1190576,
+          "analysisMetadata": {
+            "totalLines": 175,
+            "totalStatements": 21,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 8
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 5.699510200000009,
+        "initialization": 0.0033188000000336617,
+        "analysis": 5.663558799999999,
+        "memoryDelta": 1252164.8,
+        "memoryPeak": 20941577.6,
+        "standardDeviation": 0.5140817935641793
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 1252164.8,
+        "peakMemory": 23491400,
+        "minMemoryDelta": 1190576,
+        "maxMemoryDelta": 1303560
+      }
+    },
+    {
+      "name": "SupportDashboard (Large)",
+      "path": "../../demo/week2-showcase/src/components/support-dashboard.tsx",
+      "category": "large",
+      "lines": 458,
+      "fileSize": 17719,
+      "iterations": [
+        {
+          "startTime": 554.87991,
+          "memoryBefore": {
+            "rss": 88080384,
+            "heapTotal": 52826112,
+            "heapUsed": 26467200,
+            "external": 1712875,
+            "arrayBuffers": 28322
+          },
+          "phases": {
+            "initialization": 0.0035290000000713917,
+            "analysis": 12.609039000000053
+          },
+          "endTime": 567.514074,
+          "totalTime": 12.634164000000055,
+          "memoryAfter": {
+            "rss": 88662016,
+            "heapTotal": 53354496,
+            "heapUsed": 30880352,
+            "external": 1730594,
+            "arrayBuffers": 46041
+          },
+          "memoryPeak": 26467200,
+          "memoryDelta": 4413152,
+          "analysisMetadata": {
+            "totalLines": 458,
+            "totalStatements": 66,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 45
+          }
+        },
+        {
+          "startTime": 567.612559,
+          "memoryBefore": {
+            "rss": 88662016,
+            "heapTotal": 53354496,
+            "heapUsed": 30883320,
+            "external": 1730594,
+            "arrayBuffers": 46041
+          },
+          "phases": {
+            "initialization": 0.004008999999996377,
+            "analysis": 12.601394000000028
+          },
+          "endTime": 580.235912,
+          "totalTime": 12.623352999999952,
+          "memoryAfter": {
+            "rss": 91308032,
+            "heapTotal": 53354496,
+            "heapUsed": 34994200,
+            "external": 1748313,
+            "arrayBuffers": 63760
+          },
+          "memoryPeak": 30883320,
+          "memoryDelta": 4110880,
+          "analysisMetadata": {
+            "totalLines": 458,
+            "totalStatements": 66,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 45
+          }
+        },
+        {
+          "startTime": 580.324783,
+          "memoryBefore": {
+            "rss": 91312128,
+            "heapTotal": 53354496,
+            "heapUsed": 34996936,
+            "external": 1748313,
+            "arrayBuffers": 63760
+          },
+          "phases": {
+            "initialization": 0.003271000000040658,
+            "analysis": 14.804078000000004
+          },
+          "endTime": 595.153433,
+          "totalTime": 14.828649999999925,
+          "memoryAfter": {
+            "rss": 95989760,
+            "heapTotal": 58073088,
+            "heapUsed": 32272632,
+            "external": 1712875,
+            "arrayBuffers": 28322
+          },
+          "memoryPeak": 34996936,
+          "memoryDelta": -2724304,
+          "analysisMetadata": {
+            "totalLines": 458,
+            "totalStatements": 66,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 45
+          }
+        },
+        {
+          "startTime": 595.234697,
+          "memoryBefore": {
+            "rss": 95989760,
+            "heapTotal": 58073088,
+            "heapUsed": 32275368,
+            "external": 1712875,
+            "arrayBuffers": 28322
+          },
+          "phases": {
+            "initialization": 0.0031340000000454893,
+            "analysis": 10.698714999999993
+          },
+          "endTime": 605.953393,
+          "totalTime": 10.718696000000023,
+          "memoryAfter": {
+            "rss": 96120832,
+            "heapTotal": 58073088,
+            "heapUsed": 36380408,
+            "external": 1730594,
+            "arrayBuffers": 46041
+          },
+          "memoryPeak": 32275368,
+          "memoryDelta": 4105040,
+          "analysisMetadata": {
+            "totalLines": 458,
+            "totalStatements": 66,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 45
+          }
+        },
+        {
+          "startTime": 606.03894,
+          "memoryBefore": {
+            "rss": 96120832,
+            "heapTotal": 58073088,
+            "heapUsed": 36383144,
+            "external": 1730594,
+            "arrayBuffers": 46041
+          },
+          "phases": {
+            "initialization": 0.0033899999999675856,
+            "analysis": 15.987006000000065
+          },
+          "endTime": 622.046572,
+          "totalTime": 16.007631999999944,
+          "memoryAfter": {
+            "rss": 103550976,
+            "heapTotal": 63315968,
+            "heapUsed": 34104632,
+            "external": 1748313,
+            "arrayBuffers": 28322
+          },
+          "memoryPeak": 36383144,
+          "memoryDelta": -2278512,
+          "analysisMetadata": {
+            "totalLines": 458,
+            "totalStatements": 66,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 45
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 13.36249899999998,
+        "initialization": 0.0034666000000243002,
+        "analysis": 13.340046400000029,
+        "memoryDelta": 1525251.2,
+        "memoryPeak": 32201193.6,
+        "standardDeviation": 1.855415335003964
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 1525251.2,
+        "peakMemory": 36383144,
+        "minMemoryDelta": -2724304,
+        "maxMemoryDelta": 4413152
+      }
+    },
+    {
+      "name": "SupportWidget (Large)",
+      "path": "../../demo/week2-showcase/src/components/support-widget.tsx",
+      "category": "large",
+      "lines": 486,
+      "fileSize": 17840,
+      "iterations": [
+        {
+          "startTime": 644.771318,
+          "memoryBefore": {
+            "rss": 104304640,
+            "heapTotal": 63844352,
+            "heapUsed": 42294856,
+            "external": 1748555,
+            "arrayBuffers": 64002
+          },
+          "phases": {
+            "initialization": 0.0029879999999593565,
+            "analysis": 14.436111000000096
+          },
+          "endTime": 659.229292,
+          "totalTime": 14.457974000000036,
+          "memoryAfter": {
+            "rss": 109604864,
+            "heapTotal": 69611520,
+            "heapUsed": 39383392,
+            "external": 1766395,
+            "arrayBuffers": 28443
+          },
+          "memoryPeak": 42294856,
+          "memoryDelta": -2911464,
+          "analysisMetadata": {
+            "totalLines": 486,
+            "totalStatements": 57,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 14
+          }
+        },
+        {
+          "startTime": 659.319931,
+          "memoryBefore": {
+            "rss": 109604864,
+            "heapTotal": 69611520,
+            "heapUsed": 39386280,
+            "external": 1766395,
+            "arrayBuffers": 28443
+          },
+          "phases": {
+            "initialization": 0.0038669999999001448,
+            "analysis": 10.109138999999914
+          },
+          "endTime": 669.45047,
+          "totalTime": 10.130538999999999,
+          "memoryAfter": {
+            "rss": 109776896,
+            "heapTotal": 69873664,
+            "heapUsed": 43225400,
+            "external": 1730836,
+            "arrayBuffers": 46283
+          },
+          "memoryPeak": 39386280,
+          "memoryDelta": 3839120,
+          "analysisMetadata": {
+            "totalLines": 486,
+            "totalStatements": 57,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 14
+          }
+        },
+        {
+          "startTime": 669.543164,
+          "memoryBefore": {
+            "rss": 109776896,
+            "heapTotal": 69873664,
+            "heapUsed": 43228136,
+            "external": 1730836,
+            "arrayBuffers": 46283
+          },
+          "phases": {
+            "initialization": 0.0040340000000469445,
+            "analysis": 9.870358999999894
+          },
+          "endTime": 679.435386,
+          "totalTime": 9.892221999999947,
+          "memoryAfter": {
+            "rss": 109907968,
+            "heapTotal": 69873664,
+            "heapUsed": 47035088,
+            "external": 1748676,
+            "arrayBuffers": 64123
+          },
+          "memoryPeak": 43228136,
+          "memoryDelta": 3806952,
+          "analysisMetadata": {
+            "totalLines": 486,
+            "totalStatements": 57,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 14
+          }
+        },
+        {
+          "startTime": 679.515834,
+          "memoryBefore": {
+            "rss": 109907968,
+            "heapTotal": 69873664,
+            "heapUsed": 47037816,
+            "external": 1748676,
+            "arrayBuffers": 64123
+          },
+          "phases": {
+            "initialization": 0.0031840000000329383,
+            "analysis": 9.52174100000002
+          },
+          "endTime": 689.059847,
+          "totalTime": 9.54401299999995,
+          "memoryAfter": {
+            "rss": 109998080,
+            "heapTotal": 69873664,
+            "heapUsed": 50850576,
+            "external": 1766516,
+            "arrayBuffers": 81963
+          },
+          "memoryPeak": 47037816,
+          "memoryDelta": 3812760,
+          "analysisMetadata": {
+            "totalLines": 486,
+            "totalStatements": 57,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 14
+          }
+        },
+        {
+          "startTime": 689.14448,
+          "memoryBefore": {
+            "rss": 109998080,
+            "heapTotal": 69873664,
+            "heapUsed": 50853304,
+            "external": 1766516,
+            "arrayBuffers": 81963
+          },
+          "phases": {
+            "initialization": 0.003567999999972926,
+            "analysis": 13.36122899999998
+          },
+          "endTime": 702.526298,
+          "totalTime": 13.381817999999953,
+          "memoryAfter": {
+            "rss": 115011584,
+            "heapTotal": 74854400,
+            "heapUsed": 48262240,
+            "external": 1712996,
+            "arrayBuffers": 28443
+          },
+          "memoryPeak": 50853304,
+          "memoryDelta": -2591064,
+          "analysisMetadata": {
+            "totalLines": 486,
+            "totalStatements": 57,
+            "reusabilityPercentage": 100,
+            "dependencies": 1,
+            "complexity": 14
+          }
+        }
+      ],
+      "averages": {
+        "totalTime": 11.481313199999978,
+        "initialization": 0.003528199999982462,
+        "analysis": 11.45971579999998,
+        "memoryDelta": 1191260.8,
+        "memoryPeak": 44560078.4,
+        "standardDeviation": 2.02856411578748
+      },
+      "memoryUsage": {
+        "averageMemoryDelta": 1191260.8,
+        "peakMemory": 50853304,
+        "minMemoryDelta": -2911464,
+        "maxMemoryDelta": 3839120
+      }
+    }
+  ],
+  "summary": {
+    "totalComponents": 6,
+    "totalTime": 37.37562399999997,
+    "averageTime": 6.229270666666662,
+    "totalLines": 1261,
+    "averageTimePerLine": 0.029639670103092763,
+    "byCategory": {
+      "small": {
+        "count": 2,
+        "averageTime": 1.7087373999999955,
+        "averageLines": 38,
+        "timePerLine": 0.044966773684210405
+      },
+      "medium": {
+        "count": 2,
+        "averageTime": 4.557168500000012,
+        "averageLines": 120.5,
+        "timePerLine": 0.037818825726141175
+      },
+      "large": {
+        "count": 2,
+        "averageTime": 12.42190609999998,
+        "averageLines": 472,
+        "timePerLine": 0.02631759766949148
+      }
+    },
+    "performance": {
+      "fastestComponent": {
+        "name": "Input (Small)",
+        "path": "../../demo/week2-showcase/src/components/input.tsx",
+        "category": "small",
+        "lines": 35,
+        "fileSize": 928,
+        "iterations": [
+          {
+            "startTime": 438.940844,
+            "memoryBefore": {
+              "rss": 66666496,
+              "heapTotal": 51118080,
+              "heapUsed": 18348736,
+              "external": 1750925,
+              "arrayBuffers": 66372
+            },
+            "phases": {
+              "initialization": 0.01104099999997743,
+              "analysis": 1.534242000000006
+            },
+            "endTime": 440.513243,
+            "totalTime": 1.5723989999999617,
+            "memoryAfter": {
+              "rss": 66686976,
+              "heapTotal": 51118080,
+              "heapUsed": 18820472,
+              "external": 1751853,
+              "arrayBuffers": 67300
+            },
+            "memoryPeak": 18348736,
+            "memoryDelta": 471736,
+            "analysisMetadata": {
+              "totalLines": 35,
+              "totalStatements": 7,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 4
+            }
+          },
+          {
+            "startTime": 440.576473,
+            "memoryBefore": {
+              "rss": 66723840,
+              "heapTotal": 51118080,
+              "heapUsed": 18823552,
+              "external": 1751853,
+              "arrayBuffers": 67300
+            },
+            "phases": {
+              "initialization": 0.004961000000037075,
+              "analysis": 1.143952000000013
+            },
+            "endTime": 441.743528,
+            "totalTime": 1.1670550000000048,
+            "memoryAfter": {
+              "rss": 66785280,
+              "heapTotal": 51118080,
+              "heapUsed": 19299184,
+              "external": 1752781,
+              "arrayBuffers": 68228
+            },
+            "memoryPeak": 18823552,
+            "memoryDelta": 475632,
+            "analysisMetadata": {
+              "totalLines": 35,
+              "totalStatements": 7,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 4
+            }
+          },
+          {
+            "startTime": 441.793028,
+            "memoryBefore": {
+              "rss": 66785280,
+              "heapTotal": 51118080,
+              "heapUsed": 19302024,
+              "external": 1752781,
+              "arrayBuffers": 68228
+            },
+            "phases": {
+              "initialization": 0.0019340000000056534,
+              "analysis": 1.2741149999999948
+            },
+            "endTime": 443.084973,
+            "totalTime": 1.2919449999999983,
+            "memoryAfter": {
+              "rss": 67264512,
+              "heapTotal": 51118080,
+              "heapUsed": 19758088,
+              "external": 1753709,
+              "arrayBuffers": 69156
+            },
+            "memoryPeak": 19302024,
+            "memoryDelta": 456064,
+            "analysisMetadata": {
+              "totalLines": 35,
+              "totalStatements": 7,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 4
+            }
+          },
+          {
+            "startTime": 443.141401,
+            "memoryBefore": {
+              "rss": 67264512,
+              "heapTotal": 51118080,
+              "heapUsed": 19760816,
+              "external": 1753709,
+              "arrayBuffers": 69156
+            },
+            "phases": {
+              "initialization": 0.0022470000000112123,
+              "analysis": 1.3180409999999938
+            },
+            "endTime": 444.63025,
+            "totalTime": 1.488849000000016,
+            "memoryAfter": {
+              "rss": 67321856,
+              "heapTotal": 51118080,
+              "heapUsed": 20286600,
+              "external": 1754637,
+              "arrayBuffers": 70084
+            },
+            "memoryPeak": 19760816,
+            "memoryDelta": 525784,
+            "analysisMetadata": {
+              "totalLines": 35,
+              "totalStatements": 7,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 4
+            }
+          },
+          {
+            "startTime": 444.722925,
+            "memoryBefore": {
+              "rss": 67325952,
+              "heapTotal": 51118080,
+              "heapUsed": 20296024,
+              "external": 1754637,
+              "arrayBuffers": 70084
+            },
+            "phases": {
+              "initialization": 0.0019760000000133005,
+              "analysis": 1.01789100000002
+            },
+            "endTime": 445.82073,
+            "totalTime": 1.0978050000000508,
+            "memoryAfter": {
+              "rss": 67334144,
+              "heapTotal": 51118080,
+              "heapUsed": 20751192,
+              "external": 1755565,
+              "arrayBuffers": 71012
+            },
+            "memoryPeak": 20296024,
+            "memoryDelta": 455168,
+            "analysisMetadata": {
+              "totalLines": 35,
+              "totalStatements": 7,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 4
+            }
+          }
+        ],
+        "averages": {
+          "totalTime": 1.3236106000000063,
+          "initialization": 0.004431800000008934,
+          "analysis": 1.2576482000000055,
+          "memoryDelta": 476876.8,
+          "memoryPeak": 19306230.4,
+          "standardDeviation": 0.18204391333695388
+        },
+        "memoryUsage": {
+          "averageMemoryDelta": 476876.8,
+          "peakMemory": 20296024,
+          "minMemoryDelta": 455168,
+          "maxMemoryDelta": 525784
+        }
+      },
+      "slowestComponent": {
+        "name": "SupportDashboard (Large)",
+        "path": "../../demo/week2-showcase/src/components/support-dashboard.tsx",
+        "category": "large",
+        "lines": 458,
+        "fileSize": 17719,
+        "iterations": [
+          {
+            "startTime": 554.87991,
+            "memoryBefore": {
+              "rss": 88080384,
+              "heapTotal": 52826112,
+              "heapUsed": 26467200,
+              "external": 1712875,
+              "arrayBuffers": 28322
+            },
+            "phases": {
+              "initialization": 0.0035290000000713917,
+              "analysis": 12.609039000000053
+            },
+            "endTime": 567.514074,
+            "totalTime": 12.634164000000055,
+            "memoryAfter": {
+              "rss": 88662016,
+              "heapTotal": 53354496,
+              "heapUsed": 30880352,
+              "external": 1730594,
+              "arrayBuffers": 46041
+            },
+            "memoryPeak": 26467200,
+            "memoryDelta": 4413152,
+            "analysisMetadata": {
+              "totalLines": 458,
+              "totalStatements": 66,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 45
+            }
+          },
+          {
+            "startTime": 567.612559,
+            "memoryBefore": {
+              "rss": 88662016,
+              "heapTotal": 53354496,
+              "heapUsed": 30883320,
+              "external": 1730594,
+              "arrayBuffers": 46041
+            },
+            "phases": {
+              "initialization": 0.004008999999996377,
+              "analysis": 12.601394000000028
+            },
+            "endTime": 580.235912,
+            "totalTime": 12.623352999999952,
+            "memoryAfter": {
+              "rss": 91308032,
+              "heapTotal": 53354496,
+              "heapUsed": 34994200,
+              "external": 1748313,
+              "arrayBuffers": 63760
+            },
+            "memoryPeak": 30883320,
+            "memoryDelta": 4110880,
+            "analysisMetadata": {
+              "totalLines": 458,
+              "totalStatements": 66,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 45
+            }
+          },
+          {
+            "startTime": 580.324783,
+            "memoryBefore": {
+              "rss": 91312128,
+              "heapTotal": 53354496,
+              "heapUsed": 34996936,
+              "external": 1748313,
+              "arrayBuffers": 63760
+            },
+            "phases": {
+              "initialization": 0.003271000000040658,
+              "analysis": 14.804078000000004
+            },
+            "endTime": 595.153433,
+            "totalTime": 14.828649999999925,
+            "memoryAfter": {
+              "rss": 95989760,
+              "heapTotal": 58073088,
+              "heapUsed": 32272632,
+              "external": 1712875,
+              "arrayBuffers": 28322
+            },
+            "memoryPeak": 34996936,
+            "memoryDelta": -2724304,
+            "analysisMetadata": {
+              "totalLines": 458,
+              "totalStatements": 66,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 45
+            }
+          },
+          {
+            "startTime": 595.234697,
+            "memoryBefore": {
+              "rss": 95989760,
+              "heapTotal": 58073088,
+              "heapUsed": 32275368,
+              "external": 1712875,
+              "arrayBuffers": 28322
+            },
+            "phases": {
+              "initialization": 0.0031340000000454893,
+              "analysis": 10.698714999999993
+            },
+            "endTime": 605.953393,
+            "totalTime": 10.718696000000023,
+            "memoryAfter": {
+              "rss": 96120832,
+              "heapTotal": 58073088,
+              "heapUsed": 36380408,
+              "external": 1730594,
+              "arrayBuffers": 46041
+            },
+            "memoryPeak": 32275368,
+            "memoryDelta": 4105040,
+            "analysisMetadata": {
+              "totalLines": 458,
+              "totalStatements": 66,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 45
+            }
+          },
+          {
+            "startTime": 606.03894,
+            "memoryBefore": {
+              "rss": 96120832,
+              "heapTotal": 58073088,
+              "heapUsed": 36383144,
+              "external": 1730594,
+              "arrayBuffers": 46041
+            },
+            "phases": {
+              "initialization": 0.0033899999999675856,
+              "analysis": 15.987006000000065
+            },
+            "endTime": 622.046572,
+            "totalTime": 16.007631999999944,
+            "memoryAfter": {
+              "rss": 103550976,
+              "heapTotal": 63315968,
+              "heapUsed": 34104632,
+              "external": 1748313,
+              "arrayBuffers": 28322
+            },
+            "memoryPeak": 36383144,
+            "memoryDelta": -2278512,
+            "analysisMetadata": {
+              "totalLines": 458,
+              "totalStatements": 66,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 45
+            }
+          }
+        ],
+        "averages": {
+          "totalTime": 13.36249899999998,
+          "initialization": 0.0034666000000243002,
+          "analysis": 13.340046400000029,
+          "memoryDelta": 1525251.2,
+          "memoryPeak": 32201193.6,
+          "standardDeviation": 1.855415335003964
+        },
+        "memoryUsage": {
+          "averageMemoryDelta": 1525251.2,
+          "peakMemory": 36383144,
+          "minMemoryDelta": -2724304,
+          "maxMemoryDelta": 4413152
+        }
+      },
+      "memoryEfficient": {
+        "name": "Button (Small)",
+        "path": "../../demo/week2-showcase/src/components/button.tsx",
+        "category": "small",
+        "lines": 41,
+        "fileSize": 1227,
+        "iterations": [
+          {
+            "startTime": 423.461271,
+            "memoryBefore": {
+              "rss": 65933312,
+              "heapTotal": 51118080,
+              "heapUsed": 15270096,
+              "external": 1742934,
+              "arrayBuffers": 58381
+            },
+            "phases": {
+              "initialization": 0.008151999999995496,
+              "analysis": 2.7863080000000195
+            },
+            "endTime": 426.372203,
+            "totalTime": 2.9109320000000025,
+            "memoryAfter": {
+              "rss": 66183168,
+              "heapTotal": 51118080,
+              "heapUsed": 14939784,
+              "external": 1744161,
+              "arrayBuffers": 59608
+            },
+            "memoryPeak": 15270096,
+            "memoryDelta": -330312,
+            "analysisMetadata": {
+              "totalLines": 41,
+              "totalStatements": 8,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 1
+            }
+          },
+          {
+            "startTime": 426.501434,
+            "memoryBefore": {
+              "rss": 66187264,
+              "heapTotal": 51118080,
+              "heapUsed": 14951168,
+              "external": 1744161,
+              "arrayBuffers": 59608
+            },
+            "phases": {
+              "initialization": 0.005858999999986736,
+              "analysis": 2.103281000000038
+            },
+            "endTime": 428.637067,
+            "totalTime": 2.1356329999999843,
+            "memoryAfter": {
+              "rss": 66265088,
+              "heapTotal": 51118080,
+              "heapUsed": 15538000,
+              "external": 1745388,
+              "arrayBuffers": 60835
+            },
+            "memoryPeak": 14951168,
+            "memoryDelta": 586832,
+            "analysisMetadata": {
+              "totalLines": 41,
+              "totalStatements": 8,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 1
+            }
+          },
+          {
+            "startTime": 428.705347,
+            "memoryBefore": {
+              "rss": 66265088,
+              "heapTotal": 51118080,
+              "heapUsed": 15540936,
+              "external": 1745388,
+              "arrayBuffers": 60835
+            },
+            "phases": {
+              "initialization": 0.005798000000027059,
+              "analysis": 1.9565269999999941
+            },
+            "endTime": 430.689618,
+            "totalTime": 1.9842709999999784,
+            "memoryAfter": {
+              "rss": 66412544,
+              "heapTotal": 51118080,
+              "heapUsed": 16121376,
+              "external": 1746615,
+              "arrayBuffers": 62062
+            },
+            "memoryPeak": 15540936,
+            "memoryDelta": 580440,
+            "analysisMetadata": {
+              "totalLines": 41,
+              "totalStatements": 8,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 1
+            }
+          },
+          {
+            "startTime": 430.751265,
+            "memoryBefore": {
+              "rss": 66412544,
+              "heapTotal": 51118080,
+              "heapUsed": 16124064,
+              "external": 1746615,
+              "arrayBuffers": 62062
+            },
+            "phases": {
+              "initialization": 0.005840000000034706,
+              "analysis": 1.6256070000000022
+            },
+            "endTime": 432.403374,
+            "totalTime": 1.6521089999999958,
+            "memoryAfter": {
+              "rss": 66433024,
+              "heapTotal": 51118080,
+              "heapUsed": 16660824,
+              "external": 1747842,
+              "arrayBuffers": 63289
+            },
+            "memoryPeak": 16124064,
+            "memoryDelta": 536760,
+            "analysisMetadata": {
+              "totalLines": 41,
+              "totalStatements": 8,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 1
+            }
+          },
+          {
+            "startTime": 432.457866,
+            "memoryBefore": {
+              "rss": 66433024,
+              "heapTotal": 51118080,
+              "heapUsed": 16663504,
+              "external": 1747842,
+              "arrayBuffers": 63289
+            },
+            "phases": {
+              "initialization": 0.006088000000033844,
+              "analysis": 1.76075000000003
+            },
+            "endTime": 434.244242,
+            "totalTime": 1.7863759999999616,
+            "memoryAfter": {
+              "rss": 66465792,
+              "heapTotal": 51118080,
+              "heapUsed": 17211896,
+              "external": 1749069,
+              "arrayBuffers": 64516
+            },
+            "memoryPeak": 16663504,
+            "memoryDelta": 548392,
+            "analysisMetadata": {
+              "totalLines": 41,
+              "totalStatements": 8,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 1
+            }
+          }
+        ],
+        "averages": {
+          "totalTime": 2.0938641999999845,
+          "initialization": 0.006347400000015569,
+          "analysis": 2.046494600000017,
+          "memoryDelta": 384422.4,
+          "memoryPeak": 15709953.6,
+          "standardDeviation": 0.4406930318947271
+        },
+        "memoryUsage": {
+          "averageMemoryDelta": 384422.4,
+          "peakMemory": 16663504,
+          "minMemoryDelta": -330312,
+          "maxMemoryDelta": 586832
+        }
+      },
+      "memoryHeavy": {
+        "name": "SupportWidget (Large)",
+        "path": "../../demo/week2-showcase/src/components/support-widget.tsx",
+        "category": "large",
+        "lines": 486,
+        "fileSize": 17840,
+        "iterations": [
+          {
+            "startTime": 644.771318,
+            "memoryBefore": {
+              "rss": 104304640,
+              "heapTotal": 63844352,
+              "heapUsed": 42294856,
+              "external": 1748555,
+              "arrayBuffers": 64002
+            },
+            "phases": {
+              "initialization": 0.0029879999999593565,
+              "analysis": 14.436111000000096
+            },
+            "endTime": 659.229292,
+            "totalTime": 14.457974000000036,
+            "memoryAfter": {
+              "rss": 109604864,
+              "heapTotal": 69611520,
+              "heapUsed": 39383392,
+              "external": 1766395,
+              "arrayBuffers": 28443
+            },
+            "memoryPeak": 42294856,
+            "memoryDelta": -2911464,
+            "analysisMetadata": {
+              "totalLines": 486,
+              "totalStatements": 57,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 14
+            }
+          },
+          {
+            "startTime": 659.319931,
+            "memoryBefore": {
+              "rss": 109604864,
+              "heapTotal": 69611520,
+              "heapUsed": 39386280,
+              "external": 1766395,
+              "arrayBuffers": 28443
+            },
+            "phases": {
+              "initialization": 0.0038669999999001448,
+              "analysis": 10.109138999999914
+            },
+            "endTime": 669.45047,
+            "totalTime": 10.130538999999999,
+            "memoryAfter": {
+              "rss": 109776896,
+              "heapTotal": 69873664,
+              "heapUsed": 43225400,
+              "external": 1730836,
+              "arrayBuffers": 46283
+            },
+            "memoryPeak": 39386280,
+            "memoryDelta": 3839120,
+            "analysisMetadata": {
+              "totalLines": 486,
+              "totalStatements": 57,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 14
+            }
+          },
+          {
+            "startTime": 669.543164,
+            "memoryBefore": {
+              "rss": 109776896,
+              "heapTotal": 69873664,
+              "heapUsed": 43228136,
+              "external": 1730836,
+              "arrayBuffers": 46283
+            },
+            "phases": {
+              "initialization": 0.0040340000000469445,
+              "analysis": 9.870358999999894
+            },
+            "endTime": 679.435386,
+            "totalTime": 9.892221999999947,
+            "memoryAfter": {
+              "rss": 109907968,
+              "heapTotal": 69873664,
+              "heapUsed": 47035088,
+              "external": 1748676,
+              "arrayBuffers": 64123
+            },
+            "memoryPeak": 43228136,
+            "memoryDelta": 3806952,
+            "analysisMetadata": {
+              "totalLines": 486,
+              "totalStatements": 57,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 14
+            }
+          },
+          {
+            "startTime": 679.515834,
+            "memoryBefore": {
+              "rss": 109907968,
+              "heapTotal": 69873664,
+              "heapUsed": 47037816,
+              "external": 1748676,
+              "arrayBuffers": 64123
+            },
+            "phases": {
+              "initialization": 0.0031840000000329383,
+              "analysis": 9.52174100000002
+            },
+            "endTime": 689.059847,
+            "totalTime": 9.54401299999995,
+            "memoryAfter": {
+              "rss": 109998080,
+              "heapTotal": 69873664,
+              "heapUsed": 50850576,
+              "external": 1766516,
+              "arrayBuffers": 81963
+            },
+            "memoryPeak": 47037816,
+            "memoryDelta": 3812760,
+            "analysisMetadata": {
+              "totalLines": 486,
+              "totalStatements": 57,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 14
+            }
+          },
+          {
+            "startTime": 689.14448,
+            "memoryBefore": {
+              "rss": 109998080,
+              "heapTotal": 69873664,
+              "heapUsed": 50853304,
+              "external": 1766516,
+              "arrayBuffers": 81963
+            },
+            "phases": {
+              "initialization": 0.003567999999972926,
+              "analysis": 13.36122899999998
+            },
+            "endTime": 702.526298,
+            "totalTime": 13.381817999999953,
+            "memoryAfter": {
+              "rss": 115011584,
+              "heapTotal": 74854400,
+              "heapUsed": 48262240,
+              "external": 1712996,
+              "arrayBuffers": 28443
+            },
+            "memoryPeak": 50853304,
+            "memoryDelta": -2591064,
+            "analysisMetadata": {
+              "totalLines": 486,
+              "totalStatements": 57,
+              "reusabilityPercentage": 100,
+              "dependencies": 1,
+              "complexity": 14
+            }
+          }
+        ],
+        "averages": {
+          "totalTime": 11.481313199999978,
+          "initialization": 0.003528199999982462,
+          "analysis": 11.45971579999998,
+          "memoryDelta": 1191260.8,
+          "memoryPeak": 44560078.4,
+          "standardDeviation": 2.02856411578748
+        },
+        "memoryUsage": {
+          "averageMemoryDelta": 1191260.8,
+          "peakMemory": 50853304,
+          "minMemoryDelta": -2911464,
+          "maxMemoryDelta": 3839120
+        }
+      }
+    }
+  }
+}

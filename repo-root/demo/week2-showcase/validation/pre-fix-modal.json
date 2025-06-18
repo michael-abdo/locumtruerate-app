@@ -1,0 +1,95 @@
+{
+  "filePath": "modal.tsx",
+  "componentName": "Modal",
+  "totalLines": 66,
+  "totalStatements": 7,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 34,
+          "code": "className=\"fixed inset-0 bg-black bg-opacity-50 z-50\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 35,
+          "code": "onClick={onClose}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 39,
+          "code": "<div className=\"fixed inset-0 z-50 flex items-center justify-center p-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 42,
+          "code": "onClick={(e) => e.stopPropagation()}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 46,
+          "code": "<div className=\"flex items-center justify-between px-6 py-4 border-b border-gray-200\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 47,
+          "code": "<h2 className=\"text-lg font-semibold text-gray-900\">{title}</h2>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 49,
+          "code": "onClick={onClose}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 50,
+          "code": "className=\"text-gray-400 hover:text-gray-600 text-2xl leading-none\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 59,
+          "code": "<div className={title ? '' : 'pt-6'}>",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 7,
+    "statements": 7,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 4,
+    "cognitiveComplexity": 2,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 5
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

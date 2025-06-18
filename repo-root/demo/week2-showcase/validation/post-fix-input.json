@@ -1,0 +1,96 @@
+{
+  "filePath": "input.tsx",
+  "componentName": "Input",
+  "totalLines": 35,
+  "totalStatements": 7,
+  "platformSpecific": {
+    "web": {
+      "lines": 3,
+      "statements": 3,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 10,
+          "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 10,
+          "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<input[^>]*>",
+          "line": 10,
+          "code": "export function Input({\n  label,\n  error,\n  className = '',\n  ...props\n}: InputProps) {\n  const base",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 15,
+          "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 15,
+          "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<input[^>]*>",
+          "line": 15,
+          "code": "{\n  const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 19,
+          "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 19,
+          "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<input[^>]*>",
+          "line": 19,
+          "code": "return <div className=\"space-y-1\">\n      {label && <label className=\"block text-sm font-medium text-",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 4,
+    "statements": 4,
+    "percentage": 57.14285714285714
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 4,
+    "cognitiveComplexity": 0,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 4
+  },
+  "recommendations": [
+    "Component is below 85% reuse target (57.1%)",
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

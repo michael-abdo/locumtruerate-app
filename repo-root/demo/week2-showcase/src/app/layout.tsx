@@ -1,9 +1,7 @@
-import './globals.css'
+'use client'
 
-export const metadata = {
-  title: 'Week 2 Showcase - LocumTrueRate',
-  description: 'Legal Compliance & Support System Demo',
-}
+import './globals.css'
+import FloatingSupportButton from '@/components/floating-support-button'
 
 export default function RootLayout({
   children,
@@ -14,6 +12,8 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script src="https://cdn.tailwindcss.com"></script>
+        <title>Week 2 Showcase - LocumTrueRate</title>
+        <meta name="description" content="Legal Compliance & Support System Demo" />
       </head>
       <body className="min-h-screen bg-gray-50">
         <nav className="bg-white shadow-sm border-b border-gray-200">
@@ -42,6 +42,13 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
+
+        {/* Floating Support Widget - Available on all pages */}
+        <FloatingSupportButton 
+          position="bottom-right" 
+          theme="blue" 
+          size="md"
+        />
       </body>
     </html>
   )

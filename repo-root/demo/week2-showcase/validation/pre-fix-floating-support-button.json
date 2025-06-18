@@ -1,0 +1,113 @@
+{
+  "filePath": "floating-support-button.tsx",
+  "componentName": "FloatingSupportButton",
+  "totalLines": 175,
+  "totalStatements": 21,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "<div[^>]*>",
+          "line": 117,
+          "code": "<div className={`fixed ${positionClasses[position]} z-50`}>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 119,
+          "code": "onClick={() => setIsWidgetOpen(true)}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 129,
+          "code": "<span className=\"flex items-center justify-center\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 136,
+          "code": "<div className=\"absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 137,
+          "code": "<div className=\"w-2 h-2 bg-white rounded-full animate-ping\" />",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 142,
+          "code": "<div className=\"absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-20\" />",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 146,
+          "code": "<div className=\"absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 147,
+          "code": "<div className=\"bg-gray-900 text-white text-sm py-1 px-3 rounded whitespace-nowrap\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 149,
+          "code": "<div className=\"absolute top-full left-1/2 transform -translate-x-1/2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 150,
+          "code": "<div className=\"border-4 border-transparent border-t-gray-900\" />",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 167,
+          "code": "className=\"fixed inset-0 bg-black bg-opacity-30 z-40\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 168,
+          "code": "onClick={() => setIsWidgetOpen(false)}",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 21,
+    "statements": 21,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 8,
+    "cognitiveComplexity": 0,
+    "dependencies": 2,
+    "hooks": 2,
+    "props": 6
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

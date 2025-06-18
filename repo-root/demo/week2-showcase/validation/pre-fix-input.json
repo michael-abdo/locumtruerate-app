@@ -1,0 +1,65 @@
+{
+  "filePath": "input.tsx",
+  "componentName": "Input",
+  "totalLines": 35,
+  "totalStatements": 7,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 13,
+          "code": "className = '',",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 20,
+          "code": "<div className=\"space-y-1\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 22,
+          "code": "<label className=\"block text-sm font-medium text-gray-700\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 31,
+          "code": "<p className=\"text-sm text-red-600\">{error}</p>",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 7,
+    "statements": 7,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 4,
+    "cognitiveComplexity": 0,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 4
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

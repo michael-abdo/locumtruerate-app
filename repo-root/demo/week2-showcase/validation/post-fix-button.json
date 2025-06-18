@@ -1,0 +1,66 @@
+{
+  "filePath": "button.tsx",
+  "componentName": "Button",
+  "totalLines": 41,
+  "totalStatements": 8,
+  "platformSpecific": {
+    "web": {
+      "lines": 3,
+      "statements": 3,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 11,
+          "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 11,
+          "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 17,
+          "code": "{\n  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-c",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 33,
+          "code": "return <button className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${classNam",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 5,
+    "statements": 5,
+    "percentage": 62.5
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 1,
+    "cognitiveComplexity": 0,
+    "dependencies": 1,
+    "hooks": 0,
+    "props": 5
+  },
+  "recommendations": [
+    "Component is below 85% reuse target (62.5%)",
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

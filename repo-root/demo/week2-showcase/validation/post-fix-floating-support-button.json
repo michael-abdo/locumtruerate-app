@@ -1,0 +1,131 @@
+{
+  "filePath": "floating-support-button.tsx",
+  "componentName": "FloatingSupportButton",
+  "totalLines": 175,
+  "totalStatements": 21,
+  "platformSpecific": {
+    "web": {
+      "lines": 3,
+      "statements": 3,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 15,
+          "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 15,
+          "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 15,
+          "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 15,
+          "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 15,
+          "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 22,
+          "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 22,
+          "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 22,
+          "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 22,
+          "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 22,
+          "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 114,
+          "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 114,
+          "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 114,
+          "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 114,
+          "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 114,
+          "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+          "reason": "Web event handler"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 18,
+    "statements": 18,
+    "percentage": 85.71428571428571
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 8,
+    "cognitiveComplexity": 0,
+    "dependencies": 2,
+    "hooks": 2,
+    "props": 6
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

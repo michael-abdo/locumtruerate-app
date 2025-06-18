@@ -1,0 +1,131 @@
+{
+  "filePath": "support-dashboard.tsx",
+  "componentName": "SupportDashboard",
+  "totalLines": 458,
+  "totalStatements": 66,
+  "platformSpecific": {
+    "web": {
+      "lines": 3,
+      "statements": 3,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 47,
+          "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 47,
+          "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 47,
+          "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 47,
+          "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 47,
+          "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 52,
+          "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 52,
+          "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 52,
+          "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 52,
+          "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 52,
+          "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+          "reason": "Web event handler"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 154,
+          "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+          "reason": "Web-specific className attribute"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 154,
+          "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 154,
+          "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<button[^>]*>",
+          "line": 154,
+          "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 154,
+          "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+          "reason": "Web event handler"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 63,
+    "statements": 63,
+    "percentage": 95.45454545454545
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 45,
+    "cognitiveComplexity": 20,
+    "dependencies": 1,
+    "hooks": 9,
+    "props": 4
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

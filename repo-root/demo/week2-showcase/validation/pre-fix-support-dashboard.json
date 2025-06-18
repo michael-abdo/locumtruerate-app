@@ -1,0 +1,509 @@
+{
+  "filePath": "support-dashboard.tsx",
+  "componentName": "SupportDashboard",
+  "totalLines": 458,
+  "totalStatements": 66,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 155,
+          "code": "<div className=\"max-w-7xl mx-auto p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 157,
+          "code": "<div className=\"mb-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 158,
+          "code": "<h1 className=\"text-2xl font-bold text-gray-900 mb-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 161,
+          "code": "<p className=\"text-gray-600\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 170,
+          "code": "<div className=\"border-b border-gray-200 mb-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 171,
+          "code": "<nav className=\"flex space-x-8\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 173,
+          "code": "onClick={() => setActiveTab('tickets')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 186,
+          "code": "onClick={() => setActiveTab('stats')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 196,
+          "code": "onClick={() => setActiveTab('knowledge')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 212,
+          "code": "<div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 214,
+          "code": "<div className=\"lg:col-span-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 216,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-4 mb-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 217,
+          "code": "<div className=\"grid grid-cols-1 md:grid-cols-4 gap-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 221,
+          "code": "className=\"border border-gray-300 rounded-md px-3 py-2\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 234,
+          "code": "className=\"border border-gray-300 rounded-md px-3 py-2\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 246,
+          "code": "className=\"border border-gray-300 rounded-md px-3 py-2\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 260,
+          "code": "onClick={loadTickets}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 262,
+          "code": "className=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 270,
+          "code": "<div className=\"space-y-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 274,
+          "code": "onClick={() => setSelectedTicket(ticket)}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 281,
+          "code": "<div className=\"flex justify-between items-start mb-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 282,
+          "code": "<div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 283,
+          "code": "<h3 className=\"font-medium text-gray-900\">{ticket.subject}</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 284,
+          "code": "<p className=\"text-sm text-gray-500\">#{ticket.ticketNumber}</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 286,
+          "code": "<div className=\"flex gap-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 287,
+          "code": "<span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 290,
+          "code": "<span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 296,
+          "code": "<div className=\"flex justify-between items-center text-sm text-gray-500\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 297,
+          "code": "<span>{ticket.category.replace('_', ' ')}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 298,
+          "code": "<span>{new Date(ticket.createdAt).toLocaleDateString()}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 302,
+          "code": "<div className=\"mt-2 text-sm text-gray-600\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 310,
+          "code": "<div className=\"text-center py-8 text-gray-500\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 311,
+          "code": "<span className=\"text-4xl mb-4 block\">📭</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 319,
+          "code": "<div className=\"lg:col-span-1\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 321,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 322,
+          "code": "<div className=\"mb-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 323,
+          "code": "<h3 className=\"font-medium text-gray-900 mb-2\">{selectedTicket.subject}</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 324,
+          "code": "<div className=\"flex flex-wrap gap-2 mb-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 325,
+          "code": "<span className={`px-2 py-1 rounded text-xs ${getPriorityColor(selectedTicket.priority)}`}>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 328,
+          "code": "<span className={`px-2 py-1 rounded text-xs ${getStatusColor(selectedTicket.status)}`}>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 335,
+          "code": "<div className=\"flex gap-2 mb-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 339,
+          "code": "className=\"text-xs border border-gray-300 rounded px-2 py-1\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 352,
+          "code": "<div className=\"space-y-3 mb-4 max-h-64 overflow-y-auto\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 362,
+          "code": "<div className=\"text-xs text-gray-500 mb-1\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 366,
+          "code": "<p className=\"text-sm\">{message.message}</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 369,
+          "code": "<p className=\"text-sm text-gray-500\">No messages yet</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 374,
+          "code": "<div className=\"space-y-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 380,
+          "code": "className=\"w-full px-3 py-2 border border-gray-300 rounded-md text-sm\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 383,
+          "code": "onClick={handleAddMessage}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 385,
+          "code": "className=\"w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 392,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 393,
+          "code": "<span className=\"text-4xl mb-4 block\">📋</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 402,
+          "code": "<div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 404,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 405,
+          "code": "<div className=\"text-3xl font-bold text-blue-600\">{stats.totalTickets}</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 406,
+          "code": "<div className=\"text-sm text-gray-600\">Total Tickets</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 409,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 410,
+          "code": "<div className=\"text-3xl font-bold text-orange-600\">{stats.openTickets}</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 411,
+          "code": "<div className=\"text-sm text-gray-600\">Open Tickets</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 414,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 415,
+          "code": "<div className=\"text-3xl font-bold text-green-600\">{stats.resolvedTickets}</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 416,
+          "code": "<div className=\"text-sm text-gray-600\">Resolved</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 419,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 420,
+          "code": "<div className=\"text-3xl font-bold text-purple-600\">{stats.resolutionRate}%</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 421,
+          "code": "<div className=\"text-sm text-gray-600\">Resolution Rate</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 425,
+          "code": "<div className=\"md:col-span-2 lg:col-span-4 bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 426,
+          "code": "<h3 className=\"font-medium text-gray-900 mb-4\">Tickets by Category</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 427,
+          "code": "<div className=\"grid grid-cols-2 md:grid-cols-4 gap-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 429,
+          "code": "<div key={item.category} className=\"text-center\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 430,
+          "code": "<div className=\"text-2xl font-bold text-gray-900\">{item._count.category}</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 431,
+          "code": "<div className=\"text-sm text-gray-600 capitalize\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 442,
+          "code": "<div className=\"bg-white rounded-lg border border-gray-200 p-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 443,
+          "code": "<div className=\"text-center py-8 text-gray-500\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 444,
+          "code": "<span className=\"text-4xl mb-4 block\">📚</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 445,
+          "code": "<h3 className=\"text-lg font-medium mb-2\">Knowledge Base Management</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 446,
+          "code": "<p className=\"mb-4\">Create and manage help articles for customers</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 448,
+          "code": "className=\"px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 449,
+          "code": "onClick={() => alert('Demo: Create article functionality would be here')}",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 66,
+    "statements": 66,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 45,
+    "cognitiveComplexity": 20,
+    "dependencies": 1,
+    "hooks": 9,
+    "props": 4
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

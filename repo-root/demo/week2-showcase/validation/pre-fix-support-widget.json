@@ -1,0 +1,527 @@
+{
+  "filePath": "support-widget.tsx",
+  "componentName": "SupportWidget",
+  "totalLines": 486,
+  "totalStatements": 57,
+  "platformSpecific": {
+    "web": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": [
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 116,
+          "code": "<div className=\"flex flex-col h-[600px] max-h-[80vh]\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 118,
+          "code": "<div className=\"flex border-b border-gray-200\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 122,
+          "code": "onClick={() => setActiveTab(tab.id)}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 129,
+          "code": "<span className=\"mr-2\">{tab.icon}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 130,
+          "code": "<span className=\"hidden sm:inline\">{tab.label}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 131,
+          "code": "<span className=\"sm:hidden\">{tab.label.split(' ')[1]}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 137,
+          "code": "<div className=\"flex-1 overflow-hidden\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 139,
+          "code": "<div className=\"h-full flex flex-col\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 141,
+          "code": "<div className=\"p-4 border-b bg-gray-50\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 142,
+          "code": "<div className=\"relative\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 148,
+          "code": "className=\"pl-10\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 150,
+          "code": "<div className=\"absolute left-3 top-1/2 transform -translate-y-1/2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 152,
+          "code": "<div className=\"animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full\" />",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 154,
+          "code": "<span className=\"text-gray-400\">🔍</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 161,
+          "code": "<div className=\"flex-1 overflow-y-auto p-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 163,
+          "code": "<div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 164,
+          "code": "<h3 className=\"font-semibold text-gray-900 mb-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 168,
+          "code": "<div className=\"text-center py-8 text-gray-500\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 169,
+          "code": "<span className=\"text-4xl mb-4 block\">🤔</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 171,
+          "code": "<p className=\"text-sm mt-2\">Try different keywords or contact support</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 174,
+          "code": "<div className=\"space-y-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 182,
+          "code": "<div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 183,
+          "code": "<h3 className=\"font-semibold text-gray-900 mb-3\">Popular Help Topics</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 184,
+          "code": "<div className=\"space-y-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 227,
+          "code": "<div className=\"p-4 border-t bg-gray-50\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 228,
+          "code": "<div className=\"flex gap-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 232,
+          "code": "onClick={() => setActiveTab('contact')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 233,
+          "code": "className=\"flex-1\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 240,
+          "code": "onClick={() => setActiveTab('status')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 241,
+          "code": "className=\"flex-1\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 251,
+          "code": "<div className=\"h-full overflow-y-auto p-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 253,
+          "code": "<div className=\"text-center py-8\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 254,
+          "code": "<div className=\"text-6xl mb-4\">✅</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 255,
+          "code": "<h3 className=\"text-xl font-semibold text-green-600 mb-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 258,
+          "code": "<p className=\"text-gray-600 mb-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 262,
+          "code": "onClick={() => {",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 266,
+          "code": "className=\"mr-2\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 272,
+          "code": "onClick={() => setSubmitSuccess(false)}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 278,
+          "code": "<form onSubmit={handleTicketSubmit} className=\"space-y-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<div[^>]*>",
+          "line": 279,
+          "code": "<div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 280,
+          "code": "<h3 className=\"font-semibold text-gray-900 mb-4\">Contact Support</h3>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 281,
+          "code": "<p className=\"text-sm text-gray-600 mb-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 286,
+          "code": "<div className=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 303,
+          "code": "<div className=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 307,
+          "code": "className=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 323,
+          "code": "className=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 346,
+          "code": "className=\"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 350,
+          "code": "<div className=\"flex gap-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 354,
+          "code": "className=\"flex-1\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 357,
+          "code": "<div className=\"flex items-center gap-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 358,
+          "code": "<div className=\"animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full\" />",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 368,
+          "code": "onClick={() => setActiveTab('help')}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 374,
+          "code": "<div className=\"text-xs text-gray-500 bg-gray-50 p-3 rounded\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 384,
+          "code": "<div className=\"h-full overflow-y-auto p-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 385,
+          "code": "<div className=\"text-center py-8\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 386,
+          "code": "<div className=\"text-6xl mb-4\">🔐</div>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 387,
+          "code": "<h3 className=\"text-xl font-semibold text-gray-900 mb-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 390,
+          "code": "<p className=\"text-gray-600 mb-6\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 393,
+          "code": "<div className=\"space-y-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 394,
+          "code": "<Button className=\"w-full\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 397,
+          "code": "<Button variant=\"outline\" className=\"w-full\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 414,
+          "code": "<div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 416,
+          "code": "className=\"cursor-pointer\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "onClick\\s*=",
+          "line": 417,
+          "code": "onClick={() => setIsExpanded(!isExpanded)}",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 419,
+          "code": "<div className=\"flex justify-between items-start\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 420,
+          "code": "<h4 className=\"font-medium text-gray-900 mb-1\">{article.title}</h4>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 421,
+          "code": "<span className=\"text-gray-400 ml-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 426,
+          "code": "<div className=\"flex items-center gap-4 text-sm text-gray-500 mb-2\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 427,
+          "code": "<span>📖 {article.estimatedReadTime} min read</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "<span[^>]*>",
+          "line": 428,
+          "code": "<span>👍 {article.helpful}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 429,
+          "code": "<span className=\"capitalize bg-blue-100 text-blue-700 px-2 py-1 rounded\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 436,
+          "code": "<div className=\"mt-3 pt-3 border-t border-gray-100\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 438,
+          "code": "className=\"prose prose-sm max-w-none text-gray-700\"",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 444,
+          "code": "<div className=\"flex gap-2 mt-4\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 473,
+          "code": "<div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 474,
+          "code": "<div className=\"flex items-start gap-3\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 475,
+          "code": "<span className=\"text-2xl\">{icon}</span>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 476,
+          "code": "<div className=\"flex-1\">",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 477,
+          "code": "<h4 className=\"font-medium text-gray-900 mb-1\">{title}</h4>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 478,
+          "code": "<p className=\"text-sm text-gray-600\">{description}</p>",
+          "reason": "Web-specific pattern detected"
+        },
+        {
+          "pattern": "className\\s*=\\s*[\"'`]",
+          "line": 480,
+          "code": "<span className=\"text-gray-400\">→</span>",
+          "reason": "Web-specific pattern detected"
+        }
+      ]
+    },
+    "native": {
+      "lines": 0,
+      "statements": 0,
+      "imports": [],
+      "apiCalls": [],
+      "patterns": []
+    }
+  },
+  "reusable": {
+    "lines": 57,
+    "statements": 57,
+    "percentage": 100
+  },
+  "dependencies": [
+    "react"
+  ],
+  "complexity": {
+    "cyclomaticComplexity": 14,
+    "cognitiveComplexity": 2,
+    "dependencies": 4,
+    "hooks": 9,
+    "props": 9
+  },
+  "recommendations": [
+    "High number of web-specific patterns detected. Consider platform abstraction."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-06-17T23:09:25.159Z",
+  "analyzer": "pre-fix",
+  "components": 6,
+  "averageReuse": 100,
+  "allResults": [
+    {
+      "component": "Button",
+      "reuse": 100,
+      "totalLines": 41,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 8
+    },
+    {
+      "component": "FloatingSupportButton",
+      "reuse": 100,
+      "totalLines": 175,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 21
+    },
+    {
+      "component": "Input",
+      "reuse": 100,
+      "totalLines": 35,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 7
+    },
+    {
+      "component": "Modal",
+      "reuse": 100,
+      "totalLines": 66,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 7
+    },
+    {
+      "component": "SupportDashboard",
+      "reuse": 100,
+      "totalLines": 458,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 66
+    },
+    {
+      "component": "SupportWidget",
+      "reuse": 100,
+      "totalLines": 486,
+      "webSpecific": 0,
+      "nativeSpecific": 0,
+      "shared": 57
+    }
+  ]
+}
