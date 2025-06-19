@@ -29,52 +29,54 @@ export function JobAlerts(props: any) {
   return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Job Alerts - Coming Soon</div>
 }
 
+// Simplified calculator components to reduce DOM elements
 export function ContractCalculator(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Contract Calculator - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Contract Calculator - Coming Soon</p>
 }
 
 export function PaycheckCalculator(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Paycheck Calculator - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Paycheck Calculator - Coming Soon</p>
 }
 
 export function ComparisonTool(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Comparison Tool - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Comparison Tool - Coming Soon</p>
 }
 
 export function CalculatorTabs(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Calculator Tabs - Coming Soon</div>
+  return <div className="border-b mb-4"><p className="p-2 text-gray-600">Calculator Tabs - Coming Soon</p></div>
 }
 
 export function CalculatorResults(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Calculator Results - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Calculator Results - Coming Soon</p>
 }
 
 export function SavedCalculations(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Saved Calculations - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Saved Calculations - Coming Soon</p>
 }
 
 export function ExportOptions(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">Export Options - Coming Soon</div>
+  return <p className="p-4 text-gray-600">Export Options - Coming Soon</p>
 }
 
+// Consolidated homepage sections to reduce DOM elements
 export function FeaturesSection(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-8">Features Section - Coming Soon</div>
+  return <section className="py-4"><p className="text-center text-gray-600">Features Section - Coming Soon</p></section>
 }
 
 export function CalculatorPreview(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-8">Calculator Preview - Coming Soon</div>
+  return <section className="py-4"><p className="text-center text-gray-600">Calculator Preview - Coming Soon</p></section>
 }
 
 export function JobsPreview(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-8">Jobs Preview - Coming Soon</div>
+  return <section className="py-4"><p className="text-center text-gray-600">Jobs Preview - Coming Soon</p></section>
 }
 
 export function TestimonialsSection(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-8">Testimonials Section - Coming Soon</div>
+  return <section className="py-4"><p className="text-center text-gray-600">Testimonials Section - Coming Soon</p></section>
 }
 
 export function CTASection(props: any) {
-  return <div className="bg-white dark:bg-gray-800 p-8">CTA Section - Coming Soon</div>
+  return <section className="py-4"><p className="text-center text-gray-600">CTA Section - Coming Soon</p></section>
 }
 
 export function SimilarJobs(props: any) {
