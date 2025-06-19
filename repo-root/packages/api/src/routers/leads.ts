@@ -3,6 +3,8 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure, protectedProcedure, adminProcedure } from '../trpc';
 import { nanoid } from 'nanoid';
 import * as crypto from 'crypto';
+import { LeadScoringService } from '../services/lead-scoring';
+import { CronJobService } from '../services/cron-jobs';
 
 // Validation schemas
 const createLeadSchema = z.object({
@@ -755,15 +757,21 @@ export const leadsRouter = createTRPCRouter({
         });
       }
 
-      const { score, breakdown } = calculateLeadScore(lead);
+      const scoring = LeadScoringService.calculateLeadScore(lead, {
+        includeTimeFactor: true,
+        industryBoost: true,
+        engagementDepth: true,
+      });
 
       const updatedLead = await ctx.db.lead.update({
         where: { id: input.id },
         data: {
-          score,
+          score: scoring.score,
           metadata: {
             ...(lead.metadata as any),
-            scoreBreakdown: breakdown,
+            scoreBreakdown: scoring.breakdown,
+            confidence: scoring.confidence,
+            recommendations: scoring.recommendations,
             lastRescored: new Date().toISOString(),
             rescoredBy: ctx.user?.id,
           },
@@ -771,14 +779,23 @@ export const leadsRouter = createTRPCRouter({
         },
       });
 
-      ctx.logger.info('Lead rescored', {
+      ctx.logger.info('Lead rescored with enhanced algorithm', {
         leadId: input.id,
         oldScore: lead.score,
-        newScore: score,
+        newScore: scoring.score,
+        confidence: scoring.confidence,
         userId: ctx.user?.id,
       });
 
-      return updatedLead;
+      return {
+        lead: updatedLead,
+        scoring: {
+          score: scoring.score,
+          breakdown: scoring.breakdown,
+          confidence: scoring.confidence,
+          recommendations: scoring.recommendations,
+        }
+      };
     }),
 
   // Bulk update leads
@@ -846,5 +863,129 @@ export const leadsRouter = createTRPCRouter({
       });
 
       return result;
+    }),
+
+  // Automated scoring endpoints
+  runAutomatedScoring: adminProcedure
+    .mutation(async ({ ctx }) => {
+      try {
+        const results = await LeadScoringService.scoreAllUnprocessedLeads();
+        
+        ctx.logger.info('Automated scoring completed', {
+          processed: results.processed,
+          updated: results.updated,
+          errors: results.errors,
+          userId: ctx.user?.id,
+        });
+
+        return {
+          success: true,
+          results,
+          message: `Processed ${results.processed} leads, updated ${results.updated} scores`,
+        };
+      } catch (error) {
+        ctx.logger.error('Automated scoring failed', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to run automated scoring',
+        });
+      }
+    }),
+
+  getScoringStatistics: adminProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const stats = await LeadScoringService.getScoringStatistics();
+        return stats;
+      } catch (error) {
+        ctx.logger.error('Failed to get scoring statistics', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to get scoring statistics',
+        });
+      }
+    }),
+
+  // Cron job management
+  getCronJobStatus: adminProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const stats = await CronJobService.getJobStatistics();
+        return stats;
+      } catch (error) {
+        ctx.logger.error('Failed to get cron job status', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to get cron job status',
+        });
+      }
+    }),
+
+  triggerCronJob: adminProcedure
+    .input(z.object({
+      jobName: z.enum(['lead_scoring', 'age_scoring', 'cleanup', 'auto_listing']),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const result = await CronJobService.triggerJob(input.jobName);
+        
+        ctx.logger.info('Manual job trigger', {
+          jobName: input.jobName,
+          success: result.success,
+          userId: ctx.user?.id,
+        });
+
+        return result;
+      } catch (error) {
+        ctx.logger.error('Failed to trigger job', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to trigger job',
+        });
+      }
+    }),
+
+  startAutomatedJobs: adminProcedure
+    .mutation(async ({ ctx }) => {
+      try {
+        CronJobService.startAutomatedJobs();
+        
+        ctx.logger.info('Automated jobs started', {
+          userId: ctx.user?.id,
+        });
+
+        return {
+          success: true,
+          message: 'Automated jobs started successfully',
+        };
+      } catch (error) {
+        ctx.logger.error('Failed to start automated jobs', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to start automated jobs',
+        });
+      }
+    }),
+
+  stopAutomatedJobs: adminProcedure
+    .mutation(async ({ ctx }) => {
+      try {
+        CronJobService.stopAutomatedJobs();
+        
+        ctx.logger.info('Automated jobs stopped', {
+          userId: ctx.user?.id,
+        });
+
+        return {
+          success: true,
+          message: 'Automated jobs stopped successfully',
+        };
+      } catch (error) {
+        ctx.logger.error('Failed to stop automated jobs', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to stop automated jobs',
+        });
+      }
     }),
 });

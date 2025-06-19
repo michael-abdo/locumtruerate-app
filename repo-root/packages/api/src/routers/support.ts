@@ -88,6 +88,20 @@ export const supportRouter = createTRPCRouter({
       }
       
       const ticketId = await ticketSystem.createTicket(ticketData)
+      
+      // Send support ticket creation email
+      try {
+        const { EmailService } = await import('../services/email-service')
+        await EmailService.sendTemplateEmail('support_ticket_created', ticketData.email, {
+          ticketNumber: ticketId,
+          subject: input.subject,
+          userName: ticketData.name,
+          priority: input.priority,
+        })
+      } catch (error) {
+        console.error('Failed to send ticket creation email:', error)
+      }
+      
       return { ticketId, success: true }
     }),
 
@@ -195,7 +209,26 @@ export const supportRouter = createTRPCRouter({
       }
       
       const { ticketId, ...updates } = input
+      
+      // Get ticket before update to check status change
+      const ticket = await ticketSystem.getTicketWithMessages(ticketId)
+      
       await ticketSystem.updateTicket(ticketId, updates)
+      
+      // Send notification if ticket was resolved
+      if (updates.status === 'resolved' && ticket && ticket.status !== 'resolved') {
+        try {
+          const { EmailService } = await import('../services/email-service')
+          await EmailService.sendTemplateEmail('support_ticket_resolved', ticket.email, {
+            ticketNumber: ticketId,
+            subject: ticket.subject,
+            userName: ticket.name,
+            resolution: updates.internalNotes || 'Your ticket has been resolved.',
+          })
+        } catch (error) {
+          console.error('Failed to send ticket resolution email:', error)
+        }
+      }
       
       return { success: true }
     }),

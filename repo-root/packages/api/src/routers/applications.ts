@@ -237,8 +237,8 @@ export const applicationsRouter = createTRPCRouter({
           userId: ctx.user?.id
         });
 
-        // TODO: Send notification emails to employer and applicant
-        // await sendApplicationNotificationEmails(application);
+        // Send notification emails to employer and applicant
+        await sendApplicationNotificationEmails(application);
 
         return {
           id: application.id,
@@ -542,8 +542,8 @@ export const applicationsRouter = createTRPCRouter({
         userId: ctx.user.id
       });
 
-      // TODO: Send status update notification to applicant
-      // await sendApplicationStatusEmail(updatedApplication, status);
+      // Send status update notification to applicant
+      await sendApplicationStatusEmail(updatedApplication, status);
 
       return updatedApplication;
     }),
@@ -696,3 +696,46 @@ export const applicationsRouter = createTRPCRouter({
       };
     })
 });
+
+// Email notification helpers
+async function sendApplicationNotificationEmails(application: any): Promise<void> {
+  try {
+    const { EmailService } = await import('../services/email-service');
+    
+    // Send confirmation email to applicant
+    await EmailService.sendTemplateEmail('job_application_received', application.email, {
+      jobTitle: application.job.title,
+      companyName: application.job.company.name,
+      applicantName: application.name,
+      applicationDate: application.appliedAt,
+    });
+
+    // Find job owner to send notification
+    const jobOwner = await application.job.user;
+    if (jobOwner) {
+      await EmailService.sendTemplateEmail('job_application_received', jobOwner.email, {
+        jobTitle: application.job.title,
+        applicantName: application.name,
+        applicantEmail: application.email,
+        applicationDate: application.appliedAt,
+      });
+    }
+  } catch (error) {
+    console.error('Failed to send application notification emails:', error);
+  }
+}
+
+async function sendApplicationStatusEmail(application: any, status: string): Promise<void> {
+  try {
+    const { EmailService } = await import('../services/email-service');
+    
+    await EmailService.sendTemplateEmail('job_application_status', application.email, {
+      jobTitle: application.job.title,
+      status,
+      applicantName: application.name,
+      companyName: application.job.company?.name || 'LocumTrueRate Partner',
+    });
+  } catch (error) {
+    console.error('Failed to send application status email:', error);
+  }
+}

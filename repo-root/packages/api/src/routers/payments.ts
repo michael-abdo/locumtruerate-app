@@ -504,6 +504,27 @@ export const paymentsRouter = createTRPCRouter({
           userId: ctx.user.id
         })
 
+        // Send confirmation email
+        try {
+          const user = await ctx.db.user.findUnique({
+            where: { id: ctx.user.id },
+            select: { email: true, name: true }
+          })
+          
+          if (user) {
+            const { EmailService } = await import('../services/email-service')
+            
+            await EmailService.sendTemplateEmail('job_boost_confirmation', user.email, {
+              jobTitle: updatedJob.title,
+              boostType: input.packageId,
+              amount: 2999, // Default amount - could be passed from frontend
+              expiresAt: boostExpiresAt,
+            })
+          }
+        } catch (error) {
+          console.error('Failed to send boost confirmation email:', error)
+        }
+
         return {
           success: true,
           jobId: updatedJob.id,

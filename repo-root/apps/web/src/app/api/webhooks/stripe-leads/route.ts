@@ -88,8 +88,9 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
       })
     }
 
-    // Send notification email
+    // Send notification emails
     await sendPurchaseConfirmationEmail(purchase, paymentIntent.amount)
+    await sendInternalPurchaseNotification(purchase, paymentIntent.amount)
   } catch (error) {
     console.error('Error updating lead purchase:', error)
     throw error
@@ -170,20 +171,56 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   }
 }
 
-// Email notification helper
+// Email notification helpers
 async function sendPurchaseConfirmationEmail(purchase: any, amount: number) {
-  // TODO: Implement email notification using SendGrid, AWS SES, or another email service
+  try {
+    const { EmailService } = await import('@/services/email-service')
+    
+    const buyer = await db.user.findUnique({
+      where: { id: purchase.buyerId },
+      select: { email: true, name: true }
+    })
 
-  // Example implementation:
-  /*
-  await emailService.send({
-    to: purchase.buyer.email,
-    template: 'lead-purchase-confirmation',
-    data: {
+    if (!buyer) return
+
+    await EmailService.sendTemplateEmail('lead_purchase_confirmation', buyer.email, {
       purchaseId: purchase.id,
-      amount: amount / 100,
-      leadPreview: purchase.lead.preview,
-    },
-  })
-  */
+      amount,
+      leadPreview: {
+        industry: purchase.lead?.metadata?.industry || 'Healthcare',
+        location: purchase.lead?.metadata?.location || 'United States',
+        source: purchase.leadSource,
+        score: purchase.leadScore,
+      },
+      purchaseDate: purchase.createdAt,
+    })
+  } catch (error) {
+    console.error('Failed to send purchase confirmation email:', error)
+  }
+}
+
+async function sendInternalPurchaseNotification(purchase: any, amount: number) {
+  try {
+    const { EmailService } = await import('@/services/email-service')
+    
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@locumtruerate.com'
+    
+    const buyer = await db.user.findUnique({
+      where: { id: purchase.buyerId },
+      select: { email: true, name: true }
+    })
+
+    await EmailService.sendTemplateEmail('lead_purchase_notification', adminEmail, {
+      purchaseId: purchase.id,
+      amount,
+      buyerInfo: buyer,
+      leadInfo: {
+        id: purchase.leadId,
+        source: purchase.leadSource,
+        score: purchase.leadScore,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to send internal purchase notification:', error)
+  }
 }

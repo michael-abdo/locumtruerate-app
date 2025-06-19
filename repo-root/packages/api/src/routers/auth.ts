@@ -118,6 +118,18 @@ export const authRouter = createTRPCRouter({
           role: user.role
         });
 
+        // Send welcome email
+        try {
+          const { EmailService } = await import('../services/email-service');
+          await EmailService.sendTemplateEmail('welcome', user.email, {
+            name: user.contactName,
+            userType: user.role === 'EMPLOYER' ? 'recruiter' : 'user',
+          });
+        } catch (error) {
+          console.error('Failed to send welcome email:', error);
+          // Don't fail registration if email fails
+        }
+
         return {
           user: {
             id: user.id,
@@ -354,8 +366,28 @@ export const authRouter = createTRPCRouter({
         expiresAt: resetTokenExpiry
       });
 
-      // TODO: Send email with reset link
-      // await sendPasswordResetEmail(user.email, resetToken);
+      // Store reset token and send email
+      await ctx.db.user.update({
+        where: { id: user.id },
+        data: {
+          resetToken,
+          resetTokenExpiry,
+        },
+      });
+
+      // Send password reset email
+      try {
+        const { EmailService } = await import('../services/email-service');
+        const resetLink = `${process.env.API_URL}/reset-password?token=${resetToken}`;
+        
+        await EmailService.sendTemplateEmail('password_reset', user.email, {
+          resetLink,
+          userName: user.contactName,
+        });
+      } catch (error) {
+        console.error('Failed to send password reset email:', error);
+        // Don't fail the request if email fails
+      }
 
       return { success: true };
     }),
@@ -365,12 +397,47 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { token, password } = input;
 
-      // In a real implementation, you'd validate the token from a secure store
-      // For now, this is a placeholder
-      throw new TRPCError({
-        code: 'NOT_IMPLEMENTED',
-        message: 'Password reset not yet implemented'
+      // Find user with valid reset token
+      const user = await ctx.db.user.findFirst({
+        where: {
+          resetToken: token,
+          resetTokenExpiry: { gt: new Date() }
+        }
       });
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Invalid or expired reset token'
+        });
+      }
+
+      // Hash new password
+      const passwordHash = await hashPassword(password);
+
+      // Update user password and clear reset token
+      await ctx.db.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash,
+          resetToken: null,
+          resetTokenExpiry: null,
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+        }
+      });
+
+      // Invalidate all existing sessions
+      await ctx.db.session.deleteMany({
+        where: { userId: user.id }
+      });
+
+      ctx.logger.info('Password reset completed', {
+        userId: user.id,
+        email: user.email
+      });
+
+      return { success: true };
     }),
 
   verifyEmail: publicProcedure
