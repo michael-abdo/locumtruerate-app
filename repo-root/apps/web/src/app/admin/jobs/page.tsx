@@ -8,10 +8,15 @@ import {
   Trash2, CheckCircle, XCircle, Clock, AlertTriangle,
   Briefcase, MapPin, DollarSign, Calendar, Building
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@locumtruerate/ui'
-import { Input } from '@/components/ui/input'
+import { 
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Button,
+  Input
+} from '@locumtruerate/ui'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { trpc } from '@/providers/trpc-provider'

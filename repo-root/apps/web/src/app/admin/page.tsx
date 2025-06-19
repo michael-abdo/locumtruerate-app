@@ -251,30 +251,30 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <Button variant="outline" className="justify-start" asChild>
-                        <Link href="/admin/jobs/new">
+                      <Link href="/admin/jobs/new">
+                        <Button variant="outline" className="justify-start">
                           <Briefcase className="mr-2 h-4 w-4" />
                           Post New Job
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="justify-start" asChild>
-                        <Link href="/admin/users/new">
+                        </Button>
+                      </Link>
+                      <Link href="/admin/users/new">
+                        <Button variant="outline" className="justify-start">
                           <Users className="mr-2 h-4 w-4" />
                           Add User
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="justify-start" asChild>
-                        <Link href="/admin/moderation">
+                        </Button>
+                      </Link>
+                      <Link href="/admin/moderation">
+                        <Button variant="outline" className="justify-start">
                           <Shield className="mr-2 h-4 w-4" />
                           Review Queue
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="justify-start" asChild>
-                        <Link href="/admin/analytics">
+                        </Button>
+                      </Link>
+                      <Link href="/admin/analytics">
+                        <Button variant="outline" className="justify-start">
                           <BarChart3 className="mr-2 h-4 w-4" />
                           View Analytics
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
                     </div>
 
                     {/* Pending Items */}

@@ -1,0 +1,160 @@
+{
+  "timestamp": "2025-06-19T18-53-00-836Z",
+  "session": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z",
+  "pages": [
+    {
+      "name": "homepage",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-06-19T18:53:02.124Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/homepage-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/homepage-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/homepage-mobile.png"
+      },
+      "metrics": {
+        "domElements": 365,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 1,
+          "buttons": 8,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 49
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "dashboard",
+      "url": "http://localhost:3000/dashboard",
+      "timestamp": "2025-06-19T18:53:09.534Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/dashboard-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/dashboard-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/dashboard-mobile.png"
+      },
+      "metrics": {
+        "domElements": 522,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 1,
+          "buttons": 14,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "calculator",
+      "url": "http://localhost:3000/tools/calculator",
+      "timestamp": "2025-06-19T18:53:16.310Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/calculator-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/calculator-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/calculator-mobile.png"
+      },
+      "metrics": {
+        "domElements": 470,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 9,
+          "buttons": 18,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "search-jobs",
+      "url": "http://localhost:3000/search/jobs",
+      "timestamp": "2025-06-19T18:53:23.171Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/search-jobs-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/search-jobs-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-53-00-836Z/search-jobs-mobile.png"
+      },
+      "metrics": {
+        "domElements": 291,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 3,
+          "buttons": 7,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  }
+}

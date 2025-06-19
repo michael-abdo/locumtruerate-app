@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { trpc } from '@/providers/trpc-provider'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Progress } from '@/components/ui/progress'
-import { toast } from '@/components/ui/use-toast'
+import { 
+  Card,
+  Button,
+  Badge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Progress
+} from '@locumtruerate/ui'
+import { toast } from 'sonner'
 
 // Types
 interface ScoringStats {
@@ -145,17 +150,14 @@ const ManualScoring = () => {
 
   const runScoringMutation = trpc.leads.runAutomatedScoring.useMutation({
     onSuccess: (data) => {
-      toast({
-        title: 'Scoring Complete',
+      toast.success('Scoring Complete', {
         description: data.message,
       })
       setIsRunning(false)
     },
     onError: (error) => {
-      toast({
-        title: 'Scoring Failed',
+      toast.error('Scoring Failed', {
         description: error.message,
-        variant: 'destructive',
       })
       setIsRunning(false)
     },
@@ -220,31 +222,31 @@ const AutomatedJobs = () => {
   
   const startJobsMutation = trpc.leads.startAutomatedJobs.useMutation({
     onSuccess: () => {
-      toast({ title: 'Success', description: 'Automated jobs started' })
+      toast.success('Success', { description: 'Automated jobs started' })
       refetch()
     },
     onError: (error) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' })
+      toast.error('Error', { description: error.message })
     },
   })
 
   const stopJobsMutation = trpc.leads.stopAutomatedJobs.useMutation({
     onSuccess: () => {
-      toast({ title: 'Success', description: 'Automated jobs stopped' })
+      toast.success('Success', { description: 'Automated jobs stopped' })
       refetch()
     },
     onError: (error) => {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' })
+      toast.error('Error', { description: error.message })
     },
   })
 
   const triggerJobMutation = trpc.leads.triggerCronJob.useMutation({
     onSuccess: (data) => {
-      toast({ title: 'Job Complete', description: data.message })
+      toast.success('Job Complete', { description: data.message })
       refetch()
     },
     onError: (error) => {
-      toast({ title: 'Job Failed', description: error.message, variant: 'destructive' })
+      toast.error('Job Failed', { description: error.message })
     },
   })
 

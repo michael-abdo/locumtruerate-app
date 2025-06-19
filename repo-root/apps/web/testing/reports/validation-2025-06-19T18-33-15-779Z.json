@@ -1,0 +1,83 @@
+{
+  "timestamp": "2025-06-19T18-33-15-779Z",
+  "session": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T18-33-15-779Z",
+  "pages": [
+    {
+      "name": "homepage",
+      "url": "http://localhost:3001/",
+      "timestamp": "2025-06-19T18:33:16.628Z",
+      "status": "failed",
+      "screenshots": {},
+      "metrics": {},
+      "errors": [
+        "net::ERR_CONNECTION_REFUSED at http://localhost:3001/",
+        "[REQUEST FAILED] http://localhost:3001/: net::ERR_CONNECTION_REFUSED"
+      ],
+      "validation": {
+        "content": false,
+        "css": false,
+        "functionality": false,
+        "responsive": false
+      }
+    },
+    {
+      "name": "dashboard",
+      "url": "http://localhost:3001/dashboard",
+      "timestamp": "2025-06-19T18:33:16.673Z",
+      "status": "failed",
+      "screenshots": {},
+      "metrics": {},
+      "errors": [
+        "net::ERR_CONNECTION_REFUSED at http://localhost:3001/dashboard",
+        "[REQUEST FAILED] http://localhost:3001/dashboard: net::ERR_CONNECTION_REFUSED"
+      ],
+      "validation": {
+        "content": false,
+        "css": false,
+        "functionality": false,
+        "responsive": false
+      }
+    },
+    {
+      "name": "calculator",
+      "url": "http://localhost:3001/tools/calculator",
+      "timestamp": "2025-06-19T18:33:16.721Z",
+      "status": "failed",
+      "screenshots": {},
+      "metrics": {},
+      "errors": [
+        "net::ERR_CONNECTION_REFUSED at http://localhost:3001/tools/calculator",
+        "[REQUEST FAILED] http://localhost:3001/tools/calculator: net::ERR_CONNECTION_REFUSED"
+      ],
+      "validation": {
+        "content": false,
+        "css": false,
+        "functionality": false,
+        "responsive": false
+      }
+    },
+    {
+      "name": "search-jobs",
+      "url": "http://localhost:3001/search/jobs",
+      "timestamp": "2025-06-19T18:33:16.753Z",
+      "status": "failed",
+      "screenshots": {},
+      "metrics": {},
+      "errors": [
+        "net::ERR_CONNECTION_REFUSED at http://localhost:3001/search/jobs",
+        "[REQUEST FAILED] http://localhost:3001/search/jobs: net::ERR_CONNECTION_REFUSED"
+      ],
+      "validation": {
+        "content": false,
+        "css": false,
+        "functionality": false,
+        "responsive": false
+      }
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 0,
+    "failed": 4
+  }
+}

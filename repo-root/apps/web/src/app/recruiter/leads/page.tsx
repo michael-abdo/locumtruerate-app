@@ -2,14 +2,27 @@
 
 import { useState, useEffect } from 'react'
 import { trpc } from '@/providers/trpc-provider'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { toast } from '@/components/ui/use-toast'
+import { 
+  Card,
+  Button,
+  Badge,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '@locumtruerate/ui'
+import { toast } from 'sonner'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
@@ -340,10 +353,8 @@ export default function LeadMarketplacePage() {
       setPaymentDialog(true)
     },
     onError: (error) => {
-      toast({
-        title: 'Purchase Failed',
+      toast.error('Purchase Failed', {
         description: error.message,
-        variant: 'destructive',
       })
     },
   })
@@ -360,8 +371,7 @@ export default function LeadMarketplacePage() {
     setPaymentDialog(false)
     setSelectedLead(null)
     setClientSecret(null)
-    toast({
-      title: 'Payment Successful',
+    toast.success('Payment Successful', {
       description: 'Lead purchased successfully! Check your purchased leads tab.',
     })
     // Refresh the data
@@ -369,10 +379,8 @@ export default function LeadMarketplacePage() {
   }
 
   const handlePaymentError = (error: string) => {
-    toast({
-      title: 'Payment Failed',
+    toast.error('Payment Failed', {
       description: error,
-      variant: 'destructive',
     })
   }
 
