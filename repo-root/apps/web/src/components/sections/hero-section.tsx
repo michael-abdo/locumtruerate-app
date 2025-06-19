@@ -65,28 +65,30 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Button 
-              size="lg" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group"
-              asChild
-            >
-              <Link href="/search/jobs">
-                Explore Jobs
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
+            <Link href="/search/jobs">
+              <Button 
+                size="lg" 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 group"
+              >
+                <span className="flex items-center">
+                  Explore Jobs
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Button>
+            </Link>
             
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-gray-300 hover:border-blue-500 text-gray-700 dark:text-gray-200 hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-200 group"
-              asChild
-            >
-              <Link href="/tools/calculator">
-                <Calculator className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                Try Calculator
-              </Link>
-            </Button>
+            <Link href="/tools/calculator">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 border-gray-300 hover:border-blue-500 text-gray-700 dark:text-gray-200 hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-200 group"
+              >
+                <span className="flex items-center">
+                  <Calculator className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  Try Calculator
+                </span>
+              </Button>
+            </Link>
           </motion.div>
 
           {/* Video Preview */}

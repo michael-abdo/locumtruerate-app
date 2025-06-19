@@ -5,7 +5,7 @@ import { ContractCalculator } from '@/components/calculator/contract-calculator'
 
 // Mock the calc-core package
 const mockCalculateContract = jest.fn()
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   calculateContract: mockCalculateContract,
   ContractType: {
     HOURLY: 'HOURLY',

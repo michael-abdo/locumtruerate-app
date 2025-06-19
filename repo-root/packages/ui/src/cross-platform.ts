@@ -14,7 +14,6 @@
 // Core cross-platform components
 export {
   Button,
-  ButtonProps,
   createButtonStyle,
   createTextStyle,
   buttonTheme,
@@ -22,36 +21,42 @@ export {
   isNative
 } from './components/ui/button-unified'
 
+export type { CrossPlatformButtonProps as ButtonProps } from './components/ui/button-unified'
+
 export {
   Input,
-  InputProps,
   createInputStyle,
   inputTheme
 } from './components/ui/input-unified'
+
+export type { CrossPlatformInputProps as InputProps } from './components/ui/input-unified'
 
 export {
   Card,
   CardHeader,
   CardContent,
   CardFooter,
-  CardProps,
   createCardStyle,
   cardTheme
 } from './components/ui/card-unified'
 
+export type { CrossPlatformCardProps as CardProps } from './components/ui/card-unified'
+
 export {
   Text,
-  TextProps,
   createTextStyle as createUnifiedTextStyle,
   textTheme
 } from './components/ui/text-unified'
 
+export type { CrossPlatformTextProps as TextProps } from './components/ui/text-unified'
+
 export {
   Modal,
-  ModalProps,
   createModalStyle,
   modalTheme
 } from './components/ui/modal-unified'
+
+export type { CrossPlatformModalProps as ModalProps } from './components/ui/modal-unified'
 
 // Platform detection utilities
 export { isWeb as isPlatformWeb, isNative as isPlatformNative } from './components/ui/button-cross-platform'

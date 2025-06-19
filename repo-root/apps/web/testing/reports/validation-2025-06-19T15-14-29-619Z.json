@@ -1,0 +1,181 @@
+{
+  "timestamp": "2025-06-19T15-14-29-619Z",
+  "session": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z",
+  "pages": [
+    {
+      "name": "homepage",
+      "url": "http://localhost:3000/",
+      "timestamp": "2025-06-19T15:14:31.552Z",
+      "status": "failed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-mobile.png"
+      },
+      "metrics": {
+        "domElements": 21,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": false,
+        "formElements": {
+          "inputs": 0,
+          "buttons": 0,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 0
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[PAGE ERROR] React.Children.only expected to receive a single React element child.",
+        "[CONSOLE ERROR] The above error occurred in the <NotFoundErrorBoundary> component:\n\n    at NotFoundErrorBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/not-found-boundary.js:54:9)\n    at NotFoundBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/not-found-boundary.js:62:11)\n    at DevRootNotFoundBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/dev-root-not-found-boundary.js:32:11)\n    at ReactDevOverlay (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/internal/ReactDevOverlay.js:66:9)\n    at HotReload (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/hot-reloader-client.js:295:11)\n    at Router (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/app-router.js:159:11)\n    at ErrorBoundaryHandler (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/error-boundary.js:100:9)\n    at ErrorBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/error-boundary.js:130:11)\n    at AppRouter (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/app-router.js:436:13)\n    at ServerRoot (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/app-index.js:128:11)\n    at RSCComponent\n    at Root (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/app-index.js:144:11)\n    at ReactDevOverlay (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/internal/ReactDevOverlay.js:66:9)\n\nReact will try to recreate this component tree from scratch using the error boundary you provided, ReactDevOverlay.",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[REQUEST FAILED] data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0ic3ZnIj48dGV4dCB4PSIxMCIgeT0iMjAiIGlkPSJzdmctbGluay10ZXh0Ij50ZXh0PC90ZXh0Pjwvc3ZnPg==: net::ERR_ABORTED",
+        "[REQUEST FAILED] data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0ic3ZnIj48dGV4dCB4PSIxMCIgeT0iMjAiIGlkPSJzdmctbGluay10ZXh0Ij50ZXh0PC90ZXh0Pjwvc3ZnPg==: net::ERR_ABORTED"
+      ],
+      "validation": {
+        "content": false,
+        "css": false,
+        "functionality": false,
+        "responsive": true
+      },
+      "httpStatus": 500
+    },
+    {
+      "name": "dashboard",
+      "url": "http://localhost:3000/dashboard",
+      "timestamp": "2025-06-19T15:14:41.927Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-mobile.png"
+      },
+      "metrics": {
+        "domElements": 726,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 2,
+          "buttons": 19,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 90
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "calculator",
+      "url": "http://localhost:3000/tools/calculator",
+      "timestamp": "2025-06-19T15:14:50.367Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-mobile.png"
+      },
+      "metrics": {
+        "domElements": 673,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 10,
+          "buttons": 23,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 90
+      },
+      "errors": [
+        "[REQUEST FAILED] http://localhost:3000/api/trpc/users.getProfile,applications.getByUser,jobs.getSaved?batch=1&input=%7B%220%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%2C%221%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%2C%222%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%7D: net::ERR_ABORTED",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] JSHandle@error",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "search-jobs",
+      "url": "http://localhost:3000/search/jobs",
+      "timestamp": "2025-06-19T15:15:01.561Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-mobile.png"
+      },
+      "metrics": {
+        "domElements": 482,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 2,
+          "buttons": 11,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 90
+      },
+      "errors": [
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] JSHandle@error"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1
+  }
+}

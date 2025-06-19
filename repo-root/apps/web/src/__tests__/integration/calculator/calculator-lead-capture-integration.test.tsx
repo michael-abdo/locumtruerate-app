@@ -10,7 +10,7 @@ import { CalculatorLayout } from '@/components/calculator/calculator-layout'
 const mockCalculateContract = jest.fn()
 const mockCalculatePaycheck = jest.fn()
 
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   calculateContract: mockCalculateContract,
   calculatePaycheck: mockCalculatePaycheck,
   ContractType: {

@@ -19,17 +19,20 @@ let TouchableOpacity: any
 let Text: any
 let View: any
 
-if (!isWeb) {
+// Prevent React Native imports in web environments
+TouchableOpacity = 'div'
+Text = 'span'
+View = 'div'
+
+// Only dynamically load React Native in actual React Native environments
+if (typeof navigator === 'undefined' && !isWeb) {
   try {
     const RN = require('react-native')
     TouchableOpacity = RN.TouchableOpacity
     Text = RN.Text
     View = RN.View
   } catch (e) {
-    // Fallback for when React Native is not available
-    TouchableOpacity = 'div'
-    Text = 'span'
-    View = 'div'
+    // Keep web fallbacks
   }
 }
 

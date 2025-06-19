@@ -1,9 +1,15 @@
 import { inferAsyncReturnType } from '@trpc/server';
 import { PrismaClient } from '@locumtruerate/database';
-import { BaseLogger } from '@locumtruerate/shared';
+// Simple logger to avoid complex shared logger issues
+const logger = {
+  debug: console.debug,
+  info: console.log,
+  warn: console.warn,
+  error: console.error,
+  fatal: console.error,
+};
 
 const db = new PrismaClient();
-const logger = new BaseLogger('api');
 
 export interface CreateContextOptions {
   userId?: string;

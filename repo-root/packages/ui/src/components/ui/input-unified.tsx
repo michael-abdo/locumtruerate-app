@@ -52,7 +52,8 @@ let TextInput: any
 let Text: any
 let View: any
 
-if (!isWeb) {
+// Only import React Native in non-web environments
+if (!isWeb && typeof window === 'undefined') {
   try {
     const RN = require('react-native')
     TextInput = RN.TextInput
@@ -64,6 +65,11 @@ if (!isWeb) {
     Text = 'span'
     View = 'div'
   }
+} else {
+  // Web fallbacks
+  TextInput = 'input'
+  Text = 'span'
+  View = 'div'
 }
 
 // Theme configuration for cross-platform styling

@@ -10,10 +10,10 @@ import {
   TaxFilingStatus,
   type ContractInput,
   type PaycheckInput 
-} from '@locum-calc/calc-core'
+} from '@locumtruerate/calc-core'
 
 // Mock calc-core calculations
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   calculateContract: jest.fn(),
   calculatePaycheck: jest.fn(),
   ContractType: {

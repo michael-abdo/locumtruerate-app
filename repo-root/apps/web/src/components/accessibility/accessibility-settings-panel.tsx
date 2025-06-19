@@ -353,7 +353,7 @@ export function AccessibilityButton({ onClick, className }: AccessibilityButtonP
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className={cn(
-        'fixed bottom-6 right-6 z-40 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors',
+        'fixed bottom-4 right-4 z-50 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
         hasCustomSettings && 'ring-2 ring-blue-300',
         className

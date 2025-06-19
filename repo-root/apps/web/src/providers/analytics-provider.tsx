@@ -2,7 +2,15 @@
 
 import { createContext, useContext, useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useUser } from '@clerk/nextjs'
+// Safe useUser hook that doesn't fail if Clerk isn't initialized
+const useSafeUser = () => {
+  try {
+    const { useUser } = require('@clerk/nextjs')
+    return useUser()
+  } catch {
+    return { user: null }
+  }
+}
 import { trpc } from './trpc-provider'
 
 interface AnalyticsContextType {
@@ -20,7 +28,7 @@ interface AnalyticsProviderProps {
 export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { user } = useUser()
+  const { user } = useSafeUser()
   const trackMutation = trpc.analytics.track.useMutation()
   const pageViewMutation = trpc.analytics.pageView.useMutation()
   

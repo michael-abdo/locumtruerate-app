@@ -4,6 +4,8 @@ const nextConfig = {
   experimental: {
     // Enable experimental features for better performance
     optimizePackageImports: ['lucide-react', '@locumtruerate/ui'],
+    // Handle ESM packages
+    esmExternals: 'loose',
     // Disable turbo temporarily to fix CSS processing
     // turbo: {
     //   resolveAlias: {
@@ -123,11 +125,18 @@ const nextConfig = {
     '@locumtruerate/shared',
     '@locumtruerate/types',
     '@locumtruerate/ui',
-    '@locumtruerate/database'
+    '@locumtruerate/database',
+    '@locumtruerate/support'
   ],
 
-  // Webpack configuration for better tree shaking
+  // Webpack configuration for better tree shaking and ESM support
   webpack: (config, { dev, isServer }) => {
+    // Handle ESM packages like nanoid
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts'],
+      '.jsx': ['.jsx', '.tsx'],
+    }
+
     if (!dev && !isServer) {
       config.optimization.splitChunks.cacheGroups = {
         ...config.optimization.splitChunks.cacheGroups,

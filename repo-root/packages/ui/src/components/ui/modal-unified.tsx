@@ -38,7 +38,8 @@ let TouchableOpacity: any
 let Text: any
 let Dimensions: any
 
-if (!isWeb) {
+// Only import React Native in non-web environments
+if (!isWeb && typeof window === 'undefined') {
   try {
     const RN = require('react-native')
     Modal = RN.Modal
@@ -54,6 +55,13 @@ if (!isWeb) {
     Text = 'span'
     Dimensions = { get: () => ({ width: 375, height: 812 }) }
   }
+} else {
+  // Web fallbacks
+  Modal = 'div'
+  View = 'div'
+  TouchableOpacity = 'button'
+  Text = 'span'
+  Dimensions = { get: () => ({ width: 375, height: 812 }) }
 }
 
 // Theme configuration for cross-platform styling

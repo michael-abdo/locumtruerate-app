@@ -9,7 +9,7 @@ import {
   ExportFormat,
   ContractCalculationResult,
   PaycheckCalculationResult
-} from '@locum-calc/calc-core'
+} from '@locumtruerate/calc-core'
 
 export interface UseCalculatorPersistenceOptions {
   onSaveSuccess?: (calculation: any) => void

@@ -7,7 +7,7 @@ import {
   ContractCalculationResult,
   ContractComparisonResult,
   CalculationHistoryItem
-} from '@locum-calc/calc-core'
+} from '@locumtruerate/calc-core'
 
 export interface ComparisonItem {
   id: string

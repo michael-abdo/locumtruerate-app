@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { 
-  Facebook, Twitter, LinkedIn, Instagram,
+  Facebook, Twitter, Linkedin, Instagram,
   Mail, Phone, MapPin, ExternalLink
 } from 'lucide-react'
 
@@ -61,7 +61,7 @@ const social = [
   {
     name: 'LinkedIn',
     href: 'https://linkedin.com/company/locumtruerate',
-    icon: LinkedIn,
+    icon: Linkedin,
   },
   {
     name: 'Instagram',

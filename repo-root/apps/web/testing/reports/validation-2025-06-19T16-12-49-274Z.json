@@ -1,0 +1,153 @@
+{
+  "timestamp": "2025-06-19T16-12-49-274Z",
+  "session": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z",
+  "pages": [
+    {
+      "name": "homepage",
+      "url": "http://localhost:3001/",
+      "timestamp": "2025-06-19T16:12:51.010Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/homepage-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/homepage-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/homepage-mobile.png"
+      },
+      "metrics": {
+        "domElements": 358,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 1,
+          "buttons": 8,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 49
+      },
+      "errors": [
+        "[PAGE ERROR] Invalid or unexpected token",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "dashboard",
+      "url": "http://localhost:3001/dashboard",
+      "timestamp": "2025-06-19T16:12:58.794Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/dashboard-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/dashboard-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/dashboard-mobile.png"
+      },
+      "metrics": {
+        "domElements": 520,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 1,
+          "buttons": 14,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[PAGE ERROR] Invalid or unexpected token"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "calculator",
+      "url": "http://localhost:3001/tools/calculator",
+      "timestamp": "2025-06-19T16:13:05.350Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/calculator-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/calculator-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/calculator-mobile.png"
+      },
+      "metrics": {
+        "domElements": 467,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 9,
+          "buttons": 18,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[PAGE ERROR] Invalid or unexpected token"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    },
+    {
+      "name": "search-jobs",
+      "url": "http://localhost:3001/search/jobs",
+      "timestamp": "2025-06-19T16:13:12.503Z",
+      "status": "passed",
+      "screenshots": {
+        "full": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/search-jobs-full.png",
+        "fold": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/search-jobs-fold.png",
+        "mobile": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T16-12-49-274Z/search-jobs-mobile.png"
+      },
+      "metrics": {
+        "domElements": 275,
+        "stylesheetCount": 1,
+        "bodyBackgroundColor": "rgb(214, 219, 220)",
+        "bodyColor": "rgb(0, 0, 0)",
+        "hasTailwindClasses": true,
+        "formElements": {
+          "inputs": 1,
+          "buttons": 6,
+          "selects": 0
+        },
+        "images": 0,
+        "links": 47
+      },
+      "errors": [
+        "[PAGE ERROR] Invalid or unexpected token"
+      ],
+      "validation": {
+        "content": true,
+        "css": true,
+        "functionality": true,
+        "responsive": true
+      },
+      "httpStatus": 200
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  }
+}

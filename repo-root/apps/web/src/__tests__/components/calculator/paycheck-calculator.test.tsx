@@ -5,7 +5,7 @@ import { PaycheckCalculator } from '@/components/calculator/paycheck-calculator'
 
 // Mock the calc-core package
 const mockCalculatePaycheck = jest.fn()
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   calculatePaycheck: mockCalculatePaycheck,
   PayPeriod: {
     WEEKLY: 'WEEKLY',

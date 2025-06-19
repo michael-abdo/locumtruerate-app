@@ -4,8 +4,6 @@ import {
   FeaturesSection, CalculatorPreview, JobsPreview,
   TestimonialsSection, CTASection
 } from '@/components/placeholder'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 
 export const metadata: Metadata = {
   title: 'LocumTrueRate - Find Your Perfect Healthcare Opportunity',
@@ -28,27 +26,23 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <Header />
-      <main className="min-h-screen">
-        {/* Hero Section */}
-        <HeroSection />
-        
-        {/* Features Overview */}
-        <FeaturesSection />
-        
-        {/* Interactive Calculator Preview */}
-        <CalculatorPreview />
-        
-        {/* Featured Jobs */}
-        <JobsPreview />
-        
-        {/* Social Proof */}
-        <TestimonialsSection />
-        
-        {/* Call to Action */}
-        <CTASection />
-      </main>
-      <Footer />
+      {/* Hero Section */}
+      <HeroSection />
+      
+      {/* Features Overview */}
+      <FeaturesSection />
+      
+      {/* Interactive Calculator Preview */}
+      <CalculatorPreview />
+      
+      {/* Featured Jobs */}
+      <JobsPreview />
+      
+      {/* Social Proof */}
+      <TestimonialsSection />
+      
+      {/* Call to Action */}
+      <CTASection />
     </>
   )
 }

@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocumTrueRate Visual Validation Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f0f9ff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .summary { background: #ecfdf5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .page { border: 1px solid #e5e7eb; margin: 20px 0; padding: 20px; border-radius: 8px; }
+        .passed { border-left: 4px solid #10b981; }
+        .failed { border-left: 4px solid #ef4444; }
+        .screenshots { display: flex; gap: 10px; margin: 15px 0; }
+        .screenshot { border: 1px solid #d1d5db; border-radius: 4px; }
+        .metrics { background: #f9fafb; padding: 10px; border-radius: 4px; font-family: monospace; }
+        .validation { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .validation-item { text-align: center; padding: 8px; border-radius: 4px; }
+        .validation-pass { background: #dcfce7; color: #16a34a; }
+        .validation-fail { background: #fee2e2; color: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 LocumTrueRate Visual Validation Report</h1>
+        <p><strong>Session:</strong> 2025-06-19T15-14-29-619Z</p>
+        <p><strong>Screenshots Location:</strong> /Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z</p>
+    </div>
+    
+    <div class="summary">
+        <h2>📊 Summary</h2>
+        <p><strong>Total Pages:</strong> 4</p>
+        <p><strong>Passed:</strong> 3 ✅</p>
+        <p><strong>Failed:</strong> 1 ❌</p>
+        <p><strong>Success Rate:</strong> 75.0%</p>
+    </div>
+    
+    
+    <div class="page failed">
+        <h3>📄 HOMEPAGE - FAILED</h3>
+        <p><strong>URL:</strong> <a href="http://localhost:3000/" target="_blank">http://localhost:3000/</a></p>
+        <p><strong>HTTP Status:</strong> 500</p>
+        
+        <div class="validation">
+            <div class="validation-item validation-fail">
+                Content ❌
+            </div>
+            <div class="validation-item validation-fail">
+                CSS ❌
+            </div>
+            <div class="validation-item validation-fail">
+                Functionality ❌
+            </div>
+            <div class="validation-item validation-pass">
+                Responsive ✅
+            </div>
+        </div>
+        
+        <div class="screenshots">
+            
+                <div>
+                    <h4>Full</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-full.png" alt="homepage full" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Fold</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-fold.png" alt="homepage fold" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Mobile</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/homepage-mobile.png" alt="homepage mobile" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+        </div>
+        
+        <div class="metrics">
+            <strong>Page Metrics:</strong><br>
+            DOM Elements: 21<br>
+            Stylesheets: 1<br>
+            Form Elements: 0 inputs, 0 buttons<br>
+            Images: 0<br>
+            Links: 0
+        </div>
+        
+        
+        <div style="background: #fef2f2; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>Errors:</strong>
+            <ul>
+                <li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error)</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[PAGE ERROR] React.Children.only expected to receive a single React element child.</li><li>[CONSOLE ERROR] The above error occurred in the <NotFoundErrorBoundary> component:
+
+    at NotFoundErrorBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/not-found-boundary.js:54:9)
+    at NotFoundBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/not-found-boundary.js:62:11)
+    at DevRootNotFoundBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/dev-root-not-found-boundary.js:32:11)
+    at ReactDevOverlay (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/internal/ReactDevOverlay.js:66:9)
+    at HotReload (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/hot-reloader-client.js:295:11)
+    at Router (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/app-router.js:159:11)
+    at ErrorBoundaryHandler (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/error-boundary.js:100:9)
+    at ErrorBoundary (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/error-boundary.js:130:11)
+    at AppRouter (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/app-router.js:436:13)
+    at ServerRoot (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/app-index.js:128:11)
+    at RSCComponent
+    at Root (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/app-index.js:144:11)
+    at ReactDevOverlay (webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.0.4_@babel+core@7.27.4_react-dom@18.3.1_react@18.2.0/node_modules/next/dist/client/components/react-dev-overlay/internal/ReactDevOverlay.js:66:9)
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ReactDevOverlay.</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[REQUEST FAILED] data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0ic3ZnIj48dGV4dCB4PSIxMCIgeT0iMjAiIGlkPSJzdmctbGluay10ZXh0Ij50ZXh0PC90ZXh0Pjwvc3ZnPg==: net::ERR_ABORTED</li><li>[REQUEST FAILED] data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBpZD0ic3ZnIj48dGV4dCB4PSIxMCIgeT0iMjAiIGlkPSJzdmctbGluay10ZXh0Ij50ZXh0PC90ZXh0Pjwvc3ZnPg==: net::ERR_ABORTED</li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    <div class="page passed">
+        <h3>📄 DASHBOARD - PASSED</h3>
+        <p><strong>URL:</strong> <a href="http://localhost:3000/dashboard" target="_blank">http://localhost:3000/dashboard</a></p>
+        <p><strong>HTTP Status:</strong> 200</p>
+        
+        <div class="validation">
+            <div class="validation-item validation-pass">
+                Content ✅
+            </div>
+            <div class="validation-item validation-pass">
+                CSS ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Functionality ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Responsive ✅
+            </div>
+        </div>
+        
+        <div class="screenshots">
+            
+                <div>
+                    <h4>Full</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-full.png" alt="dashboard full" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Fold</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-fold.png" alt="dashboard fold" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Mobile</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/dashboard-mobile.png" alt="dashboard mobile" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+        </div>
+        
+        <div class="metrics">
+            <strong>Page Metrics:</strong><br>
+            DOM Elements: 726<br>
+            Stylesheets: 1<br>
+            Form Elements: 2 inputs, 19 buttons<br>
+            Images: 0<br>
+            Links: 90
+        </div>
+        
+        
+        <div style="background: #fef2f2; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>Errors:</strong>
+            <ul>
+                <li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] JSHandle@error</li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    <div class="page passed">
+        <h3>📄 CALCULATOR - PASSED</h3>
+        <p><strong>URL:</strong> <a href="http://localhost:3000/tools/calculator" target="_blank">http://localhost:3000/tools/calculator</a></p>
+        <p><strong>HTTP Status:</strong> 200</p>
+        
+        <div class="validation">
+            <div class="validation-item validation-pass">
+                Content ✅
+            </div>
+            <div class="validation-item validation-pass">
+                CSS ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Functionality ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Responsive ✅
+            </div>
+        </div>
+        
+        <div class="screenshots">
+            
+                <div>
+                    <h4>Full</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-full.png" alt="calculator full" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Fold</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-fold.png" alt="calculator fold" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Mobile</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/calculator-mobile.png" alt="calculator mobile" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+        </div>
+        
+        <div class="metrics">
+            <strong>Page Metrics:</strong><br>
+            DOM Elements: 673<br>
+            Stylesheets: 1<br>
+            Form Elements: 10 inputs, 23 buttons<br>
+            Images: 0<br>
+            Links: 90
+        </div>
+        
+        
+        <div style="background: #fef2f2; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>Errors:</strong>
+            <ul>
+                <li>[REQUEST FAILED] http://localhost:3000/api/trpc/users.getProfile,applications.getByUser,jobs.getSaved?batch=1&input=%7B%220%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%2C%221%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%2C%222%22%3A%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D%7D: net::ERR_ABORTED</li><li>[CONSOLE ERROR] JSHandle@error</li><li>[CONSOLE ERROR] JSHandle@error</li><li>[CONSOLE ERROR] JSHandle@error</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] JSHandle@error</li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    <div class="page passed">
+        <h3>📄 SEARCH-JOBS - PASSED</h3>
+        <p><strong>URL:</strong> <a href="http://localhost:3000/search/jobs" target="_blank">http://localhost:3000/search/jobs</a></p>
+        <p><strong>HTTP Status:</strong> 200</p>
+        
+        <div class="validation">
+            <div class="validation-item validation-pass">
+                Content ✅
+            </div>
+            <div class="validation-item validation-pass">
+                CSS ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Functionality ✅
+            </div>
+            <div class="validation-item validation-pass">
+                Responsive ✅
+            </div>
+        </div>
+        
+        <div class="screenshots">
+            
+                <div>
+                    <h4>Full</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-full.png" alt="search-jobs full" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Fold</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-fold.png" alt="search-jobs fold" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+                <div>
+                    <h4>Mobile</h4>
+                    <img src="/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/apps/web/testing/screenshots/2025-06-19T15-14-29-619Z/search-jobs-mobile.png" alt="search-jobs mobile" class="screenshot" style="max-width: 300px; height: auto;" />
+                </div>
+            
+        </div>
+        
+        <div class="metrics">
+            <strong>Page Metrics:</strong><br>
+            DOM Elements: 482<br>
+            Stylesheets: 1<br>
+            Form Elements: 2 inputs, 11 buttons<br>
+            Images: 0<br>
+            Links: 90
+        </div>
+        
+        
+        <div style="background: #fef2f2; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>Errors:</strong>
+            <ul>
+                <li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] Failed to load resource: the server responded with a status of 404 (Not Found)</li><li>[CONSOLE ERROR] JSHandle@error</li>
+            </ul>
+        </div>
+        
+    </div>
+    
+    
+</body>
+</html>

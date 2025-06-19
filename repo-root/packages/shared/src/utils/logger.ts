@@ -139,7 +139,7 @@ class Logger {
       environment: {
         nodeEnv: process.env.NODE_ENV,
         platform: typeof window !== 'undefined' ? 'browser' : 'node',
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        userAgent: typeof window !== 'undefined' && typeof navigator !== 'undefined' ? (navigator as any).userAgent : undefined,
       },
     };
     

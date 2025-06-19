@@ -10,7 +10,7 @@ import {
   PaycheckCalculationResult,
   ContractInput,
   PaycheckInput
-} from '@locum-calc/calc-core'
+} from '@locumtruerate/calc-core'
 
 // Mock Clerk authentication
 const mockUser = {
@@ -38,7 +38,7 @@ const mockHistoryManager = {
   getAnalytics: jest.fn()
 }
 
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   CalculationHistoryManager: jest.fn(() => mockHistoryManager),
   ContractComparisonEngine: jest.fn(() => ({
     compareContracts: jest.fn(),

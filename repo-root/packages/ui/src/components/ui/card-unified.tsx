@@ -35,7 +35,8 @@ export interface CrossPlatformCardProps {
 let TouchableOpacity: any
 let View: any
 
-if (!isWeb) {
+// Only import React Native in non-web environments
+if (!isWeb && typeof window === 'undefined') {
   try {
     const RN = require('react-native')
     TouchableOpacity = RN.TouchableOpacity
@@ -45,6 +46,10 @@ if (!isWeb) {
     TouchableOpacity = 'div'
     View = 'div'
   }
+} else {
+  // Web fallbacks
+  TouchableOpacity = 'div'
+  View = 'div'
 }
 
 // Theme configuration for cross-platform styling

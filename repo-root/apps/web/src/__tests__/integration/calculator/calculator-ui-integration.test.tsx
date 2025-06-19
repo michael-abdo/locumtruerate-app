@@ -13,7 +13,7 @@ const mockCalculatePaycheck = jest.fn()
 const mockExportToPDF = jest.fn()
 const mockExportToExcel = jest.fn()
 
-jest.mock('@locum-calc/calc-core', () => ({
+jest.mock('@locumtruerate/calc-core', () => ({
   calculateContract: mockCalculateContract,
   calculatePaycheck: mockCalculatePaycheck,
   ExportManager: jest.fn(() => ({

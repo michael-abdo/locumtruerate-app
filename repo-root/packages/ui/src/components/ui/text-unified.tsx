@@ -39,7 +39,8 @@ export interface CrossPlatformTextProps {
 // Platform-specific imports
 let Text: any
 
-if (!isWeb) {
+// Only import React Native in non-web environments
+if (!isWeb && typeof window === 'undefined') {
   try {
     const RN = require('react-native')
     Text = RN.Text
@@ -47,6 +48,9 @@ if (!isWeb) {
     // Fallback for when React Native is not available
     Text = 'span'
   }
+} else {
+  // Web fallbacks
+  Text = 'span'
 }
 
 // Theme configuration for cross-platform styling

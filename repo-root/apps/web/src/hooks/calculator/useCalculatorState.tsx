@@ -8,7 +8,7 @@ import {
   PaycheckCalculationResult,
   ContractInput,
   PaycheckInput
-} from '@locum-calc/calc-core'
+} from '@locumtruerate/calc-core'
 import { useUser } from '@clerk/nextjs'
 
 export interface CalculatorState {

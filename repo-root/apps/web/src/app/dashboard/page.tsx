@@ -7,8 +7,7 @@ import {
   Settings, FileText, Bookmark, MessageSquare,
   BarChart3, DollarSign, MapPin, Clock, Star
 } from 'lucide-react'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+// Header and Footer already included in root layout
 import { Button } from '@locumtruerate/ui'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -141,9 +140,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="bg-gray-50 dark:bg-gray-900">
         {/* Dashboard Header */}
         <section className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -442,8 +439,6 @@ export default function DashboardPage() {
             </Card>
           </motion.div>
         </section>
-      </main>
-      <Footer />
-    </>
+    </div>
   )
 }

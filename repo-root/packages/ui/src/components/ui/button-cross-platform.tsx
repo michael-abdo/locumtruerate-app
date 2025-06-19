@@ -13,7 +13,10 @@
  */
 
 import React from 'react'
-import { Platform } from 'react-native'
+
+// Platform detection helper - determine if we're running in web or React Native
+export const isWeb = typeof window !== 'undefined' && typeof document !== 'undefined'
+export const isNative = !isWeb
 
 // Cross-platform types
 export interface ButtonVariant {
@@ -52,9 +55,7 @@ export interface CrossPlatformButtonProps {
   style?: any // React Native style object
 }
 
-// Platform detection helper
-export const isWeb = Platform.OS === 'web'
-export const isNative = !isWeb
+// Platform-specific theme configuration
 
 // Theme configuration for cross-platform styling
 export const buttonTheme = {
@@ -283,10 +284,38 @@ export const LoadingSpinner = () => {
       />
     )
   } else {
-    const { ActivityIndicator } = require('react-native')
-    return <ActivityIndicator size="small" color="currentColor" />
+    // Only require React Native in non-web environments
+    if (typeof window === 'undefined') {
+      try {
+        const { ActivityIndicator } = require('react-native')
+        return React.createElement(ActivityIndicator, { size: "small", color: "currentColor" })
+      } catch (e) {
+        // Fallback if React Native is not available
+        return React.createElement('div', { 
+          style: { 
+            width: 16, 
+            height: 16, 
+            border: '2px solid currentColor',
+            borderTop: '2px solid transparent',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }
+        })
+      }
+    } else {
+      // Web fallback when isWeb is somehow false but window exists
+      return React.createElement('div', { 
+        style: { 
+          width: 16, 
+          height: 16, 
+          border: '2px solid currentColor',
+          borderTop: '2px solid transparent',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }
+      })
+    }
   }
 }
 
-// Export platform detection for use in parent components
-export { isWeb, isNative }
+// Platform detection variables are already exported above
