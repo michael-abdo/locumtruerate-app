@@ -9,6 +9,7 @@ import '@testing-library/jest-dom';
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
 process.env.REDIS_URL = 'redis://localhost:6379';
+process.env.STRIPE_SECRET_KEY = 'sk_test_mock_key_for_testing';
 
 // Global test timeout
 jest.setTimeout(30000);

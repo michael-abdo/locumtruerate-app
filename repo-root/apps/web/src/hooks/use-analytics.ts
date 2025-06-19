@@ -62,21 +62,19 @@ export function useCalculatorAnalytics() {
   const { track } = useAnalytics()
   const trackEvent = useTrackEvent()
   
-  const trackCalculatorUsage = useCallback((calculatorType: string, inputs: Record<string, any>, results?: Record<string, any>) => {
+  const trackCalculatorUsage = useCallback((data: Record<string, any>) => {
     trackEvent.trackFeatureUsage('calculator', { 
-      calculatorType, 
-      inputs, 
-      results,
+      ...data,
       timestamp: Date.now()
     })
   }, [trackEvent])
   
-  const trackCalculatorError = useCallback((calculatorType: string, error: string, inputs?: Record<string, any>) => {
-    trackEvent.trackError(error, `calculator_${calculatorType}`, { inputs })
+  const trackCalculatorError = useCallback((data: { calculatorType: string; error: string; inputs?: Record<string, any> }) => {
+    trackEvent.trackError(data.error, `calculator_${data.calculatorType}`, { inputs: data.inputs })
   }, [trackEvent])
   
-  const trackCalculatorExport = useCallback((calculatorType: string, format: string, data?: Record<string, any>) => {
-    track('calculator_export', { calculatorType, format, data })
+  const trackCalculatorExport = useCallback((data: { format: string; calculatorType: string; [key: string]: any }) => {
+    track('calculator_export', data)
   }, [track])
   
   return {

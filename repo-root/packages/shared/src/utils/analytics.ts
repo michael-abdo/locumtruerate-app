@@ -364,21 +364,6 @@ class AnalyticsService {
 // Export singleton
 export const analytics = AnalyticsService.getInstance();
 
-// React hook for analytics
-export function useAnalytics() {
-  React.useEffect(() => {
-    // Track page view on mount
-    analytics.pageView({
-      path: window.location.pathname,
-      title: document.title,
-      referrer: document.referrer,
-      searchParams: Object.fromEntries(new URLSearchParams(window.location.search)),
-    });
-  }, []);
-  
-  return analytics;
-}
-
 // Next.js analytics integration
 export function reportWebVitals(metric: {
   id: string;

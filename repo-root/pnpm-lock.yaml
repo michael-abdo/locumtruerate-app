@@ -332,6 +332,9 @@ importers:
       nanoid:
         specifier: ^5.0.4
         version: 5.1.5
+      stripe:
+        specifier: ^18.2.1
+        version: 18.2.1(@types/node@20.19.1)
       superjson:
         specifier: ^2.2.1
         version: 2.2.2
@@ -19405,6 +19408,19 @@ packages:
     dependencies:
       js-tokens: 9.0.1
     dev: true
+
+  /stripe@18.2.1(@types/node@20.19.1):
+    resolution: {integrity: sha512-GwB1B7WSwEBzW4dilgyJruUYhbGMscrwuyHsPUmSRKrGHZ5poSh2oU9XKdii5BFVJzXHn35geRvGJ6R8bYcp8w==}
+    engines: {node: '>=12.*'}
+    peerDependencies:
+      '@types/node': '>=12.x.x'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+    dependencies:
+      '@types/node': 20.19.1
+      qs: 6.14.0
+    dev: false
 
   /strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}

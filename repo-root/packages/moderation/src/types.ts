@@ -130,6 +130,9 @@ export interface ContentSubmission {
     description?: string;
     tags?: string[];
     attachments?: string[];
+    salaryMin?: number | string;
+    salaryMax?: number | string;
+    [key: string]: any; // Allow additional dynamic properties
   };
 }
 

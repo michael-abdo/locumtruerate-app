@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { Metadata } from 'next'
 import { motion } from 'framer-motion'
 import { Calculator, DollarSign, MapPin, Clock, TrendingUp } from 'lucide-react'
+import { ContractCalculator, PaycheckCalculator } from '@/components/calculator'
 import { 
-  ContractCalculator, PaycheckCalculator, ComparisonTool,
+  ComparisonTool,
   CalculatorTabs, CalculatorResults, SavedCalculations,
   ExportOptions
 } from '@/components/placeholder'

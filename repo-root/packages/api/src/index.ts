@@ -7,6 +7,10 @@ import { searchRouter } from './routers/search';
 import { adminRouter } from './routers/admin';
 import { analyticsRouter } from './routers/analytics';
 import { supportRouter } from './routers/support';
+import { calculationsRouter } from './routers/calculations';
+import { leadsRouter } from './routers/leads';
+import { paymentsRouter } from './routers/payments';
+import { leadMarketplaceRouter } from './routers/lead-marketplace';
 import { API_VERSION } from './versioning';
 // import { companiesRouter } from './routers/companies';
 // import { organizationsRouter } from './routers/organizations';
@@ -22,6 +26,10 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   analytics: analyticsRouter,
   support: supportRouter,
+  calculations: calculationsRouter,
+  leads: leadsRouter,
+  payments: paymentsRouter,
+  leadMarketplace: leadMarketplaceRouter,
   // companies: companiesRouter,
   // organizations: organizationsRouter,
   // notifications: notificationsRouter,
@@ -46,4 +54,4 @@ export { createContext, type Context } from './context';
 export { createCallerFactory } from './trpc';
 
 // Export individual routers for testing
-export { authRouter, jobsRouter, applicationsRouter, usersRouter };
+export { authRouter, jobsRouter, applicationsRouter, usersRouter, leadsRouter };

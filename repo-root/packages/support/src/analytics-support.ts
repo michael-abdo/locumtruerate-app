@@ -116,7 +116,7 @@ export class AnalyticsSupportService {
         support: { openTickets, avgResponseTime, satisfactionScore },
       };
     } catch (error) {
-      logger.error('Failed to get dashboard metrics', error);
+      logger.error('Failed to get dashboard metrics', error instanceof Error ? error : new Error(String(error)));
       throw new Error('Failed to retrieve dashboard metrics');
     }
   }
@@ -166,7 +166,7 @@ export class AnalyticsSupportService {
         topJobCategories,
       };
     } catch (error) {
-      logger.error('Failed to get user engagement analytics', error);
+      logger.error('Failed to get user engagement analytics', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -216,7 +216,7 @@ export class AnalyticsSupportService {
         lifetimeValue,
       };
     } catch (error) {
-      logger.error('Failed to get revenue analytics', error);
+      logger.error('Failed to get revenue analytics', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -259,7 +259,7 @@ export class AnalyticsSupportService {
         reopenRate,
       };
     } catch (error) {
-      logger.error('Failed to get support analytics', error);
+      logger.error('Failed to get support analytics', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -346,7 +346,7 @@ export class AnalyticsSupportService {
       
       return { users, total };
     } catch (error) {
-      logger.error('Failed to search users', error);
+      logger.error('Failed to search users', error instanceof Error ? error : new Error(String(error)));
       return { users: [], total: 0 };
     }
   }
@@ -370,7 +370,7 @@ export class AnalyticsSupportService {
           throw new Error(`Unknown metric: ${query.metric}`);
       }
     } catch (error) {
-      logger.error('Failed to generate custom report', error, { query });
+      logger.error('Failed to generate custom report', error instanceof Error ? error : new Error(String(error)), { query });
       return null;
     }
   }

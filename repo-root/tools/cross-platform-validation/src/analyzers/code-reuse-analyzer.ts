@@ -313,6 +313,7 @@ export class CodeReuseAnalyzer {
       'window\\.': 'Browser window object',
       'localStorage': 'Web storage API',
       'onClick': 'Web event handler',
+      'onChange': 'Form input handler',
       'onSubmit': 'Form submission handler',
       'createPortal': 'React DOM portal'
     };

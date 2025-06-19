@@ -58,6 +58,7 @@ export const DEFAULT_PLATFORM_PATTERNS: PlatformPatterns = {
       /<input[^>]*>/,
       /<button[^>]*>/,
       /onClick\s*=/,
+      /onChange\s*=/,
       /onSubmit\s*=/,
       /href\s*=/,
       /target\s*=\s*["']_blank["']/

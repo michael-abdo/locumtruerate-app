@@ -144,8 +144,8 @@ export function SupportWidget({
                     type="text"
                     placeholder="Search for help articles..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
+                    onChangeText={(text) => setSearchQuery(text)}
+                    style={{ paddingLeft: '40px' }}
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                     {isSearching ? (
@@ -229,16 +229,16 @@ export function SupportWidget({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setActiveTab('contact')}
-                    className="flex-1"
+                    onPress={() => setActiveTab('contact')}
+                    style={{ flex: 1 }}
                   >
                     💬 Contact Support
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setActiveTab('status')}
-                    className="flex-1"
+                    onPress={() => setActiveTab('status')}
+                    style={{ flex: 1 }}
                   >
                     📋 Check Tickets
                   </Button>
@@ -259,17 +259,17 @@ export function SupportWidget({
                     We've received your support request and will respond within 24 hours.
                   </p>
                   <Button
-                    onClick={() => {
+                    onPress={() => {
                       setSubmitSuccess(false)
                       setActiveTab('status')
                     }}
-                    className="mr-2"
+                    style={{ marginRight: 8 }}
                   >
                     Check Status
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => setSubmitSuccess(false)}
+                    onPress={() => setSubmitSuccess(false)}
                   >
                     Submit Another
                   </Button>
@@ -288,15 +288,13 @@ export function SupportWidget({
                       type="text"
                       placeholder="Your Name"
                       value={ticketForm.name}
-                      onChange={(e) => setTicketForm(prev => ({ ...prev, name: e.target.value }))}
-                      required
+                      onChangeText={(text) => setTicketForm(prev => ({ ...prev, name: text }))}
                     />
                     <Input
                       type="email"
                       placeholder="Your Email"
                       value={ticketForm.email}
-                      onChange={(e) => setTicketForm(prev => ({ ...prev, email: e.target.value }))}
-                      required
+                      onChangeText={(text) => setTicketForm(prev => ({ ...prev, email: text }))}
                     />
                   </div>
 
@@ -334,8 +332,7 @@ export function SupportWidget({
                     type="text"
                     placeholder="Subject"
                     value={ticketForm.subject}
-                    onChange={(e) => setTicketForm(prev => ({ ...prev, subject: e.target.value }))}
-                    required
+                    onChangeText={(text) => setTicketForm(prev => ({ ...prev, subject: text }))}
                   />
 
                   <textarea
@@ -349,9 +346,16 @@ export function SupportWidget({
 
                   <div className="flex gap-2">
                     <Button
-                      type="submit"
                       disabled={isSubmitting}
-                      className="flex-1"
+                      style={{ flex: 1 }}
+                      onPress={() => {
+                        // Handle form submission
+                        const form = document.querySelector('form');
+                        if (form) {
+                          const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                          form.dispatchEvent(submitEvent);
+                        }
+                      }}
                     >
                       {isSubmitting ? (
                         <div className="flex items-center gap-2">
@@ -363,9 +367,8 @@ export function SupportWidget({
                       )}
                     </Button>
                     <Button
-                      type="button"
                       variant="outline"
-                      onClick={() => setActiveTab('help')}
+                      onPress={() => setActiveTab('help')}
                     >
                       🔍 Search Help
                     </Button>
@@ -391,10 +394,10 @@ export function SupportWidget({
                   Please sign in to view your support tickets and their status.
                 </p>
                 <div className="space-y-3">
-                  <Button className="w-full">
+                  <Button style={{ width: '100%' }}>
                     🔑 Sign In to Your Account
                   </Button>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" style={{ width: '100%' }}>
                     📧 Check by Email
                   </Button>
                 </div>

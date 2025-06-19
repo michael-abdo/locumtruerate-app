@@ -102,7 +102,7 @@ export class SupportTicketSystem {
       
       return ticket.id;
     } catch (error) {
-      logger.error('Failed to create support ticket', error, { userId: data.userId });
+      logger.error('Failed to create support ticket', error instanceof Error ? error : new Error(String(error)), { userId: data.userId });
       throw new Error('Failed to create support ticket');
     }
   }
@@ -128,7 +128,7 @@ export class SupportTicketSystem {
         await this.sendStatusUpdateNotification(ticketId, updates.status);
       }
     } catch (error) {
-      logger.error('Failed to update support ticket', error, { ticketId });
+      logger.error('Failed to update support ticket', error instanceof Error ? error : new Error(String(error)), { ticketId });
       throw new Error('Failed to update ticket');
     }
   }
@@ -176,7 +176,7 @@ export class SupportTicketSystem {
         await this.sendNewMessageNotification(ticketId, authorType);
       }
     } catch (error) {
-      logger.error('Failed to add message to ticket', error, { ticketId });
+      logger.error('Failed to add message to ticket', error instanceof Error ? error : new Error(String(error)), { ticketId });
       throw new Error('Failed to add message');
     }
   }
@@ -197,7 +197,7 @@ export class SupportTicketSystem {
         },
       });
     } catch (error) {
-      logger.error('Failed to get ticket with messages', error, { ticketId });
+      logger.error('Failed to get ticket with messages', error instanceof Error ? error : new Error(String(error)), { ticketId });
       return null;
     }
   }
@@ -225,7 +225,7 @@ export class SupportTicketSystem {
         },
       });
     } catch (error) {
-      logger.error('Failed to get user tickets', error, { userId });
+      logger.error('Failed to get user tickets', error instanceof Error ? error : new Error(String(error)), { userId });
       return [];
     }
   }
@@ -273,7 +273,7 @@ export class SupportTicketSystem {
       
       return { tickets, total };
     } catch (error) {
-      logger.error('Failed to get support tickets', error);
+      logger.error('Failed to get support tickets', error instanceof Error ? error : new Error(String(error)));
       return { tickets: [], total: 0 };
     }
   }
@@ -343,7 +343,7 @@ export class SupportTicketSystem {
         resolutionRate: totalTickets > 0 ? (resolvedTickets / totalTickets * 100).toFixed(1) : '0',
       };
     } catch (error) {
-      logger.error('Failed to get ticket stats', error);
+      logger.error('Failed to get ticket stats', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }

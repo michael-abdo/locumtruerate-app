@@ -5,8 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Search, Filter, MapPin, Clock, DollarSign, Star, Bookmark } from 'lucide-react'
 import { AdvancedSearch } from '@/components/search/advanced-search'
+import { JobCard, JobFilters, type JobFiltersState } from '@/components/jobs'
 import { 
-  JobFilters, JobCard, JobMap, SortOptions, 
+  JobMap, SortOptions, 
   Pagination, SavedSearches, JobAlerts 
 } from '@/components/placeholder'
 import { Header } from '@/components/layout/header'
@@ -54,29 +55,44 @@ export default function JobSearchPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set())
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('query') || '')
+  const [location, setLocation] = useState(searchParams.get('location') || '')
   
   // Analytics
   const { trackSearchUsage, trackUserEngagement } = usePageAnalytics()
   
-  // Search state
-  const [searchFilters, setSearchFilters] = useState({
-    query: searchParams.get('query') || '',
+  // Search state - matching JobFiltersState interface
+  const [searchFilters, setSearchFilters] = useState<JobFiltersState>({
     location: searchParams.get('location') || '',
-    category: searchParams.get('category') || '',
-    type: searchParams.get('type') || '',
+    remote: searchParams.get('remote') as JobFiltersState['remote'] || '',
+    specialty: searchParams.get('specialty') || searchParams.get('category') || '',
+    experience: searchParams.get('experience') as JobFiltersState['experience'] || '',
+    jobType: searchParams.get('type') as JobFiltersState['jobType'] || '',
     salaryMin: searchParams.get('salaryMin') ? parseInt(searchParams.get('salaryMin')!) : undefined,
     salaryMax: searchParams.get('salaryMax') ? parseInt(searchParams.get('salaryMax')!) : undefined,
-    remote: searchParams.get('remote') === 'true',
     urgent: searchParams.get('urgent') === 'true',
+    featured: searchParams.get('featured') === 'true'
+  })
+  
+  // Legacy search filters for API compatibility
+  const apiSearchFilters = {
+    query: searchParams.get('query') || '',
+    location: searchFilters.location,
+    category: searchFilters.specialty,
+    type: searchFilters.jobType,
+    salaryMin: searchFilters.salaryMin,
+    salaryMax: searchFilters.salaryMax,
+    remote: searchFilters.remote === 'remote',
+    urgent: searchFilters.urgent,
     startDate: searchParams.get('startDate') || '',
     duration: searchParams.get('duration') || ''
-  })
+  }
   const [sortBy, setSortBy] = useState<SortBy>('relevance')
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'))
 
   // API calls using full-text search
   const { data: jobsData, isLoading, error } = trpc.search.jobs.useQuery({
-    ...searchFilters,
+    ...apiSearchFilters,
     page,
     limit: 20,
     sortBy: sortBy as any,
@@ -85,20 +101,20 @@ export default function JobSearchPage() {
   
   // Track search usage when results change
   useEffect(() => {
-    if (jobsData && searchFilters.query) {
+    if (jobsData && apiSearchFilters.query) {
       trackSearchUsage(
-        searchFilters.query, 
+        apiSearchFilters.query, 
         jobsData.pagination.total,
         {
-          location: searchFilters.location,
-          category: searchFilters.category,
-          type: searchFilters.type,
+          location: apiSearchFilters.location,
+          category: apiSearchFilters.category,
+          type: apiSearchFilters.type,
           page,
           sortBy
         }
       )
     }
-  }, [jobsData, searchFilters, page, sortBy, trackSearchUsage])
+  }, [jobsData, apiSearchFilters, page, sortBy, trackSearchUsage])
 
   const { data: featuredJobs } = trpc.jobs.getAll.useQuery({
     status: 'ACTIVE',
@@ -111,23 +127,31 @@ export default function JobSearchPage() {
   // Update URL when search changes
   useEffect(() => {
     const params = new URLSearchParams()
-    if (searchQuery) params.set('q', searchQuery)
-    if (location) params.set('location', location)
-    if (filters.jobType) params.set('type', filters.jobType)
-    if (filters.category) params.set('category', filters.category)
+    if (apiSearchFilters.query) params.set('q', apiSearchFilters.query)
+    if (searchFilters.location) params.set('location', searchFilters.location)
+    if (searchFilters.jobType) params.set('type', searchFilters.jobType)
+    if (searchFilters.specialty) params.set('specialty', searchFilters.specialty)
+    if (searchFilters.remote) params.set('remote', searchFilters.remote)
+    if (searchFilters.experience) params.set('experience', searchFilters.experience)
+    if (searchFilters.salaryMin) params.set('salaryMin', searchFilters.salaryMin.toString())
+    if (searchFilters.salaryMax) params.set('salaryMax', searchFilters.salaryMax.toString())
+    if (searchFilters.urgent) params.set('urgent', 'true')
+    if (searchFilters.featured) params.set('featured', 'true')
     if (page > 1) params.set('page', page.toString())
     
     router.push(`/search/jobs?${params.toString()}`, { scroll: false })
-  }, [searchQuery, location, filters, page, router])
+  }, [searchFilters, apiSearchFilters, page, router])
 
   const handleSearch = (query: string, loc: string) => {
+    // Update search query in searchParams (will be handled by AdvancedSearch)
     setSearchQuery(query)
     setLocation(loc)
+    setSearchFilters(prev => ({ ...prev, location: loc }))
     setPage(1)
   }
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters)
+  const handleFilterChange = (newFilters: JobFiltersState) => {
+    setSearchFilters(prev => ({ ...prev, ...newFilters }))
     setPage(1)
   }
 
@@ -143,15 +167,23 @@ export default function JobSearchPage() {
 
   const handleQuickFilter = (filterValue: string) => {
     if (filterValue === 'remote') {
-      setSearchFilters(prev => ({ ...prev, remote: !prev.remote }))
+      setSearchFilters(prev => ({ 
+        ...prev, 
+        remote: prev.remote === 'remote' ? '' : 'remote' 
+      }))
     } else if (filterValue === 'high-demand') {
       setSearchFilters(prev => ({ ...prev, urgent: true }))
     } else if (filterValue === 'travel') {
-      setSearchFilters(prev => ({ ...prev, query: 'travel opportunities' }))
+      setSearchQuery('travel opportunities')
     } else if (filterValue === 'emergency' || filterValue === 'family') {
-      setSearchFilters(prev => ({ ...prev, category: filterValue === 'emergency' ? 'Emergency Medicine' : 'Family Medicine' }))
+      setSearchFilters(prev => ({ 
+        ...prev, 
+        specialty: filterValue === 'emergency' ? 'Emergency Medicine' : 'Family Medicine' 
+      }))
+    } else if (filterValue === 'entry-level') {
+      setSearchFilters(prev => ({ ...prev, experience: 'entry' }))
     } else {
-      setSearchFilters(prev => ({ ...prev, query: prev.query ? `${prev.query} ${filterValue}` : filterValue }))
+      setSearchQuery(prev => prev ? `${prev} ${filterValue}` : filterValue)
     }
   }
 
@@ -169,9 +201,21 @@ export default function JobSearchPage() {
               transition={{ duration: 0.6 }}
             >
               <AdvancedSearch
-                initialFilters={searchFilters}
+                initialFilters={apiSearchFilters}
                 onSearch={(filters) => {
-                  setSearchFilters(filters)
+                  // Convert back to JobFiltersState format
+                  const newJobFilters: JobFiltersState = {
+                    ...searchFilters,
+                    location: filters.location || '',
+                    specialty: filters.category || '',
+                    jobType: filters.type as JobFiltersState['jobType'] || '',
+                    salaryMin: filters.salaryMin,
+                    salaryMax: filters.salaryMax,
+                    remote: filters.remote ? 'remote' : '',
+                    urgent: filters.urgent || false
+                  }
+                  setSearchFilters(newJobFilters)
+                  setSearchQuery(filters.query || '')
                   setPage(1)
                 }}
               />
@@ -206,9 +250,9 @@ export default function JobSearchPage() {
             >
               <div className="flex items-center gap-4">
                 <p className="text-gray-600 dark:text-gray-400">
-                  {isLoading ? 'Searching...' : `${jobsData?.pagination.total || 0} jobs found`}
-                  {searchQuery && ` for "${searchQuery}"`}
-                  {location && ` in ${location}`}
+                  {isLoading ? 'Searching...' : `${jobsData?.total || 0} jobs found`}
+                  {apiSearchFilters.query && ` for "${apiSearchFilters.query}"`}
+                  {searchFilters.location && ` in ${searchFilters.location}`}
                 </p>
                 
                 <button 
@@ -256,7 +300,7 @@ export default function JobSearchPage() {
                 className="lg:col-span-1"
               >
                 <JobFilters
-                  filters={filters}
+                  initialFilters={searchFilters}
                   onFiltersChange={handleFilterChange}
                   onClose={() => setShowFilters(false)}
                 />
@@ -316,18 +360,10 @@ export default function JobSearchPage() {
                     Try adjusting your search criteria or location.
                   </p>
                   <Button onClick={() => {
+                    setSearchFilters({})
                     setSearchQuery('')
                     setLocation('')
-                    setFilters({
-                      jobType: '',
-                      category: '',
-                      salaryMin: '',
-                      salaryMax: '',
-                      remote: false,
-                      experienceLevel: '',
-                      benefits: [],
-                      schedule: ''
-                    })
+                    setPage(1)
                   }}>
                     Clear All Filters
                   </Button>
@@ -349,20 +385,44 @@ export default function JobSearchPage() {
                         transition={{ duration: 0.4, delay: index * 0.1 }}
                       >
                         <JobCard
-                          job={job}
-                          isSaved={savedJobs.has(job.id)}
-                          onSave={() => toggleSaveJob(job.id)}
-                          onViewDetails={() => router.push(`/jobs/${job.slug}`)}
+                          job={{
+                            id: job.id,
+                            title: job.title,
+                            companyName: job.company?.name || 'Unknown Company',
+                            companyLogo: job.company?.logo,
+                            location: job.location,
+                            isRemote: job.type === 'REMOTE',
+                            salary: job.salary,
+                            salaryRange: undefined, // Not available in current schema
+                            type: job.type,
+                            category: job.category,
+                            tags: job.tags || [],
+                            specialty: job.category,
+                            experienceLevel: undefined, // Not available in current schema
+                            publishedAt: job.publishedAt || job.createdAt,
+                            expiresAt: job.expiresAt,
+                            isUrgent: false, // Not available in current schema
+                            isFeatured: false, // Not available in current schema
+                            applicationCount: job._count?.applications || 0,
+                            descriptionPreview: job.description ? job.description.slice(0, 200) + '...' : '',
+                            viewCount: job._count?.views || job.viewCount || 0
+                          }}
+                          onApply={(jobId) => router.push(`/jobs/${job.slug}`)}
+                          onSave={(jobId, isSaved) => toggleSaveJob(jobId)}
+                          onShare={(jobId) => {
+                            // Handle share functionality
+                            console.log('Share job:', jobId)
+                          }}
                         />
                       </motion.div>
                     ))}
                   </motion.div>
 
                   {/* Pagination */}
-                  {jobsData && jobsData.pagination.totalPages > 1 && (
+                  {jobsData && jobsData.totalPages > 1 && (
                     <Pagination
                       currentPage={page}
-                      totalPages={jobsData.pagination.totalPages}
+                      totalPages={jobsData.totalPages}
                       onPageChange={setPage}
                     />
                   )}
@@ -395,11 +455,34 @@ export default function JobSearchPage() {
                       </div>
                     </div>
                     <JobCard
-                      job={job}
-                      isSaved={savedJobs.has(job.id)}
-                      onSave={() => toggleSaveJob(job.id)}
-                      onViewDetails={() => router.push(`/jobs/${job.slug}`)}
-                      featured
+                      job={{
+                        id: job.id,
+                        title: job.title,
+                        companyName: job.company?.name || 'Unknown Company',
+                        companyLogo: job.company?.logo,
+                        location: job.location,
+                        isRemote: job.type === 'REMOTE',
+                        salary: job.salary,
+                        salaryRange: undefined, // Not available in current schema
+                        type: job.type,
+                        category: job.category,
+                        tags: job.tags || [],
+                        specialty: job.category,
+                        experienceLevel: undefined, // Not available in current schema
+                        publishedAt: job.publishedAt || job.createdAt,
+                        expiresAt: job.expiresAt,
+                        isUrgent: false, // Not available in current schema
+                        isFeatured: true, // Featured jobs section
+                        applicationCount: job._count?.applications || 0,
+                        descriptionPreview: job.description ? job.description.slice(0, 200) + '...' : '',
+                        viewCount: job._count?.views || job.viewCount || 0
+                      }}
+                      onApply={(jobId) => router.push(`/jobs/${job.slug}`)}
+                      onSave={(jobId, isSaved) => toggleSaveJob(jobId)}
+                      onShare={(jobId) => {
+                        // Handle share functionality
+                        console.log('Share job:', jobId)
+                      }}
                     />
                   </div>
                 ))}

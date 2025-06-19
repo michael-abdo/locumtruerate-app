@@ -3,6 +3,9 @@
  * Works in Node.js, browser, and React Native environments
  */
 
+// Global declaration for React Native __DEV__
+declare const __DEV__: boolean;
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,

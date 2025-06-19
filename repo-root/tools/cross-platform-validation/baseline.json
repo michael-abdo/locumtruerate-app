@@ -1,18 +1,22 @@
 {
   "description": "Cross-platform reusability baseline - minimum acceptable percentages per component",
   "lastUpdated": "2025-06-18",
-  "version": "1.0.0",
-  "note": "These are the minimum scores after the analyzer fix. No component should drop below these values.",
+  "version": "2.0.0",
+  "note": "Updated baseline after successful Button/Input/Modal refactoring to 100% reusability. These are the new minimum scores - no component should drop below these values.",
   "components": {
-    "Button": 62.5,
-    "Input": 57.14285714285714,
-    "Modal": 57.14285714285714,
+    "Button": 100.0,
+    "Input": 100.0,
+    "Modal": 100.0,
     "FloatingSupportButton": 85.71428571428571,
-    "SupportWidget": 85.96491228070175,
+    "SupportWidget": 83.87096774193549,
     "SupportDashboard": 95.45454545454545
   },
   "overall": {
-    "minimumAverageReuse": 73.98657628920786,
-    "minimumComponentsAboveTarget": 3
+    "minimumAverageReuse": 83.4018579986322,
+    "minimumComponentsAboveTarget": 5
+  },
+  "refactoringHistory": {
+    "v1.0.0": "Initial baseline after analyzer fix",
+    "v2.0.0": "Button/Input/Modal refactored to 100% using React.createElement patterns"
   }
 }

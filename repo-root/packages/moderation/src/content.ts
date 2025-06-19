@@ -4,7 +4,7 @@
  */
 
 import Filter from 'bad-words';
-import { Sentiment } from 'sentiment';
+import Sentiment from 'sentiment';
 import nlp from 'compromise';
 import { v4 as uuidv4 } from 'uuid';
 import type { 
@@ -19,7 +19,7 @@ import type {
 
 export class ContentModerator {
   private profanityFilter: Filter;
-  private sentiment: Sentiment;
+  private sentiment: typeof Sentiment;
   
   // Healthcare-specific rules
   private healthcareRules: HealthcareModerationRules = {
@@ -72,12 +72,12 @@ export class ContentModerator {
 
   constructor() {
     this.profanityFilter = new Filter();
-    this.sentiment = new Sentiment();
+    this.sentiment = Sentiment;
     
     // Add healthcare-specific profanity filters
-    this.profanityFilter.addWords([
+    this.profanityFilter.addWords(
       'quack', 'butcher', 'pill pusher', 'fake doctor'
-    ]);
+    );
   }
 
   /**
@@ -200,7 +200,7 @@ export class ContentModerator {
     }
 
     // Analyze sentiment
-    const sentimentResult = this.sentiment.analyze(content);
+    const sentimentResult = this.sentiment(content);
     if (sentimentResult.score < -3) {
       toxicityScore += Math.abs(sentimentResult.score) * 5;
     }
@@ -240,7 +240,7 @@ export class ContentModerator {
    * Analyze sentiment
    */
   private analyzeSentiment(content: string): number {
-    const result = this.sentiment.analyze(content);
+    const result = this.sentiment(content);
     // Convert sentiment score (-5 to +5) to 0-100 scale
     return ((result.score + 5) / 10) * 100;
   }
@@ -562,7 +562,7 @@ export class ContentModerator {
       healthcareRules: this.healthcareRules,
       jobPostingRules: this.jobPostingRules,
       phiPatterns: this.phiPatterns.length,
-      profanityFilterSize: this.profanityFilter.list.length
+      profanityFilterEnabled: true
     };
   }
 }

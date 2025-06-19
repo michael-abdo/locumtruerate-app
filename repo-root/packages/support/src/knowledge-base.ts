@@ -91,7 +91,7 @@ export class KnowledgeBaseService {
       
       return articles;
     } catch (error) {
-      logger.error('Failed to search knowledge base', error, { searchQuery });
+      logger.error('Failed to search knowledge base', error instanceof Error ? error : new Error(String(error)), { searchQuery });
       return [];
     }
   }
@@ -113,7 +113,7 @@ export class KnowledgeBaseService {
       
       return article;
     } catch (error) {
-      logger.error('Failed to get knowledge article', error, { articleId });
+      logger.error('Failed to get knowledge article', error instanceof Error ? error : new Error(String(error)), { articleId });
       return null;
     }
   }
@@ -129,7 +129,7 @@ export class KnowledgeBaseService {
         ],
       });
     } catch (error) {
-      logger.error('Failed to get articles by category', error, { category });
+      logger.error('Failed to get articles by category', error instanceof Error ? error : new Error(String(error)), { category });
       return [];
     }
   }
@@ -146,7 +146,7 @@ export class KnowledgeBaseService {
         take: limit,
       });
     } catch (error) {
-      logger.error('Failed to get popular articles', error);
+      logger.error('Failed to get popular articles', error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -160,7 +160,7 @@ export class KnowledgeBaseService {
         take: limit,
       });
     } catch (error) {
-      logger.error('Failed to get recent articles', error);
+      logger.error('Failed to get recent articles', error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -179,7 +179,7 @@ export class KnowledgeBaseService {
       
       logger.info('Article rated', { articleId, helpful });
     } catch (error) {
-      logger.error('Failed to rate article', error, { articleId, helpful });
+      logger.error('Failed to rate article', error instanceof Error ? error : new Error(String(error)), { articleId, helpful });
     }
   }
   
@@ -219,7 +219,7 @@ export class KnowledgeBaseService {
         recentSearches,
       };
     } catch (error) {
-      logger.error('Failed to get knowledge base stats', error);
+      logger.error('Failed to get knowledge base stats', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -239,7 +239,7 @@ export class KnowledgeBaseService {
       
       return suggestions;
     } catch (error) {
-      logger.error('Failed to suggest articles', error, { ticketContent });
+      logger.error('Failed to suggest articles', error instanceof Error ? error : new Error(String(error)), { ticketContent });
       return [];
     }
   }
@@ -274,12 +274,12 @@ export class KnowledgeBaseService {
         viewHistory,
         searchHistory,
         performance: {
-          avgViewsPerDay: viewHistory.reduce((sum, day) => sum + day.views, 0) / days,
-          peakDay: viewHistory.reduce((max, day) => day.views > max.views ? day : max, { views: 0 }),
+          avgViewsPerDay: viewHistory.reduce((sum: number, day: any) => sum + day.views, 0) / days,
+          peakDay: viewHistory.reduce((max: any, day: any) => day.views > max.views ? day : max, { views: 0 }),
         },
       };
     } catch (error) {
-      logger.error('Failed to get article analytics', error, { articleId });
+      logger.error('Failed to get article analytics', error instanceof Error ? error : new Error(String(error)), { articleId });
       return null;
     }
   }
@@ -299,7 +299,7 @@ export class KnowledgeBaseService {
         take: 20,
       });
       
-      const faqSuggestions = commonIssues.map(issue => ({
+      const faqSuggestions = commonIssues.map((issue: any) => ({
         question: issue.subject,
         category: issue.category,
         frequency: issue._count.category,
@@ -311,7 +311,7 @@ export class KnowledgeBaseService {
       
       return faqSuggestions;
     } catch (error) {
-      logger.error('Failed to generate FAQ from tickets', error);
+      logger.error('Failed to generate FAQ from tickets', error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -338,7 +338,7 @@ export class KnowledgeBaseService {
         needsArticle: true,
       }));
     } catch (error) {
-      logger.error('Failed to get content gaps', error);
+      logger.error('Failed to get content gaps', error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -356,7 +356,7 @@ export class KnowledgeBaseService {
         },
       });
     } catch (error) {
-      logger.error('Failed to log search', error, { searchQuery });
+      logger.error('Failed to log search', error instanceof Error ? error : new Error(String(error)), { searchQuery });
     }
   }
   

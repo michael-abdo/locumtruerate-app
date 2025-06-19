@@ -6,7 +6,8 @@ import { ThemeProvider } from '@/providers/theme-provider'
 import { ToastProvider } from '@/providers/toast-provider'
 import { AnalyticsProvider } from '@/providers/analytics-provider'
 import { OfflineProvider } from '@/providers/offline-provider'
-import { AccessibilityProvider } from '@/hooks/use-accessibility'
+import { AccessibilityProvider, accessibilityStyles, SkipNavigation } from '@/components/accessibility'
+import { AccessibilityManager } from '@/components/layout/accessibility-manager'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import './globals.css'
@@ -140,6 +141,9 @@ export default function RootLayout({
           <link rel="dns-prefetch" href="//www.google-analytics.com" />
           <link rel="dns-prefetch" href="//analytics.google.com" />
           
+          {/* Accessibility Styles */}
+          <style dangerouslySetInnerHTML={{ __html: accessibilityStyles }} />
+          
           {/* Organization Structured Data */}
           <script
             type="application/ld+json"
@@ -168,6 +172,7 @@ export default function RootLayout({
         </head>
         <body className={`${inter.className} antialiased min-h-screen bg-background`}>
           <AccessibilityProvider>
+            <SkipNavigation />
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -211,6 +216,9 @@ export default function RootLayout({
                         aria-atomic="true"
                         className="sr-only"
                       />
+                      
+                      {/* Accessibility Manager */}
+                      <AccessibilityManager />
                     </ToastProvider>
                   </OfflineProvider>
                 </AnalyticsProvider>

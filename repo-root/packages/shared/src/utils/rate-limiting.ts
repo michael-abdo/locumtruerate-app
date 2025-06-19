@@ -115,7 +115,7 @@ class RedisStore {
         resetTime,
       };
     } catch (error) {
-      logger.error('Redis rate limit get error', error);
+      logger.error('Redis rate limit get error', error as Error);
       return null;
     }
   }
@@ -128,7 +128,7 @@ class RedisStore {
       await this.redis.hmset(redisKey, 'count', value.count, 'resetTime', value.resetTime);
       await this.redis.expire(redisKey, ttl);
     } catch (error) {
-      logger.error('Redis rate limit set error', error);
+      logger.error('Redis rate limit set error', error as Error);
     }
   }
   
@@ -175,7 +175,7 @@ class RedisStore {
         resetTime: parseInt(result[1]),
       };
     } catch (error) {
-      logger.error('Redis rate limit increment error', error);
+      logger.error('Redis rate limit increment error', error as Error);
       // Fallback to memory store
       const memoryStore = new MemoryStore();
       return memoryStore.increment(key, windowMs);
@@ -233,7 +233,7 @@ export class RateLimiter {
         message: allowed ? undefined : this.options.message,
       };
     } catch (error) {
-      logger.error('Rate limit check failed', error, { identifier });
+      logger.error('Rate limit check failed', error as Error, { identifier });
       // Allow request on error to avoid blocking legitimate traffic
       return {
         allowed: true,

@@ -1,0 +1,70 @@
+{
+  "cli": {
+    "version": ">= 5.9.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium"
+      },
+      "android": {
+        "resourceClass": "medium"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      },
+      "android": {
+        "resourceClass": "medium",
+        "buildType": "apk"
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "ios": {
+        "resourceClass": "m1-medium",
+        "autoIncrement": "buildNumber",
+        "buildConfiguration": "Release"
+      },
+      "android": {
+        "resourceClass": "large",
+        "autoIncrement": "versionCode",
+        "buildType": "aab"
+      },
+      "channel": "production"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "your-app-store-connect-app-id",
+        "appleId": "your-apple-id",
+        "bundleIdentifier": "com.locumtruerate.app",
+        "sku": "locumtruerate-ios",
+        "language": "en-US",
+        "companyName": "LocumTrueRate",
+        "appName": "LocumTrueRate"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./service-account-key.json",
+        "track": "production",
+        "releaseStatus": "completed",
+        "applicationId": "com.locumtruerate.app"
+      }
+    }
+  },
+  "updates": {
+    "production": {
+      "channel": "production"
+    },
+    "preview": {
+      "channel": "preview"
+    }
+  }
+}

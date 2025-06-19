@@ -102,7 +102,7 @@ export class UserSupportService {
         },
       };
     } catch (error) {
-      logger.error('Failed to get user support info', error, { userId });
+      logger.error('Failed to get user support info', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to retrieve user information');
     }
   }
@@ -139,7 +139,7 @@ export class UserSupportService {
       await this.sendAccountUnlockNotification(userId);
       
     } catch (error) {
-      logger.error('Failed to unlock account', error, { userId });
+      logger.error('Failed to unlock account', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to unlock account');
     }
   }
@@ -184,7 +184,7 @@ export class UserSupportService {
       
       return resetToken;
     } catch (error) {
-      logger.error('Failed to initiate password reset', error, { userId });
+      logger.error('Failed to initiate password reset', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to initiate password reset');
     }
   }
@@ -257,7 +257,7 @@ export class UserSupportService {
       });
       
     } catch (error) {
-      logger.error('Failed to process email change', error, { userId, newEmail });
+      logger.error('Failed to process email change', error instanceof Error ? error : new Error(String(error)), { userId, newEmail });
       throw new Error('Failed to process email change');
     }
   }
@@ -321,7 +321,7 @@ export class UserSupportService {
       
       return exportData;
     } catch (error) {
-      logger.error('Failed to export user data', error, { userId });
+      logger.error('Failed to export user data', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to export user data');
     }
   }
@@ -379,7 +379,7 @@ export class UserSupportService {
       logger.info('Account deleted', { userId, performedBy, reason });
       
     } catch (error) {
-      logger.error('Failed to delete account', error, { userId });
+      logger.error('Failed to delete account', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to delete account');
     }
   }
@@ -440,13 +440,13 @@ export class UserSupportService {
         period: { days, startDate },
         loginAttempts: {
           total: loginAttempts.length,
-          successful: loginAttempts.filter(a => a.success).length,
-          failed: loginAttempts.filter(a => !a.success).length,
+          successful: loginAttempts.filter((a: any) => a.success).length,
+          failed: loginAttempts.filter((a: any) => !a.success).length,
           details: loginAttempts,
         },
         jobViews: {
           total: jobViews.length,
-          uniqueJobs: new Set(jobViews.map(v => v.jobId)).size,
+          uniqueJobs: new Set(jobViews.map((v: any) => v.jobId)).size,
           details: jobViews,
         },
         applications: {
@@ -459,7 +459,7 @@ export class UserSupportService {
         },
       };
     } catch (error) {
-      logger.error('Failed to get user activity report', error, { userId });
+      logger.error('Failed to get user activity report', error instanceof Error ? error : new Error(String(error)), { userId });
       return null;
     }
   }
@@ -484,7 +484,7 @@ export class UserSupportService {
         },
       });
     } catch (error) {
-      logger.error('Failed to log account action', error, { userId, action });
+      logger.error('Failed to log account action', error instanceof Error ? error : new Error(String(error)), { userId, action });
     }
   }
   

@@ -8,6 +8,10 @@ export { CloudflarePagesDeploy, type DeploymentConfig } from './deployment';
 export { Performance } from './performance';
 export { createDefaultConfig, validateConfig } from './config';
 
+// Import for use in functions below
+import { SecurityHeaders } from './security-headers';
+import { CloudflarePagesDeploy, DeploymentConfig } from './deployment';
+
 // Default configurations for different environments
 export const defaultConfigs = {
   development: {

@@ -12,10 +12,12 @@ import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Button } from '@locumtruerate/ui'
 import { Badge } from '@/components/ui/badge'
-import { SimilarJobs, ApplicationForm, JobMap } from '@/components/placeholder'
+import { SimilarJobs, ApplicationForm, JobMap } from '@/components/jobs'
 import { trpc } from '@/providers/trpc-provider'
+import { cn } from '@/lib/utils'
 import { useJobAnalytics } from '@/hooks/use-analytics'
 import { generateJobSEO, generateJobStructuredData } from '@/lib/seo'
+import { JobDetailPageSkeleton } from '@/components/skeletons/job-detail-skeleton'
 import { Metadata } from 'next'
 
 // Generate metadata for SEO
@@ -116,33 +118,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       <>
         <Header />
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
-                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
-                    <div className="space-y-3">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="lg:col-span-1">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-                    <div className="space-y-3">
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <JobDetailPageSkeleton />
         </main>
         <Footer />
       </>
@@ -234,28 +210,35 @@ export async function generateMetadata({ params }: { params: { slug: string } })
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleShare}
-                    className="flex items-center gap-2"
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleShare}
+                      className="flex items-center gap-2 flex-1 sm:flex-none justify-center"
+                    >
+                      <Share2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Share</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSave}
+                      className={cn(
+                        "flex items-center gap-2 flex-1 sm:flex-none justify-center",
+                        isSaved && "text-blue-600 border-blue-300"
+                      )}
+                    >
+                      <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
+                      <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
+                    </Button>
+                  </div>
+                  <Button 
+                    onClick={handleApply} 
+                    size="lg" 
+                    className="w-full sm:w-auto min-w-[140px]"
                   >
-                    <Share2 className="h-4 w-4" />
-                    Share
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSave}
-                    className={`flex items-center gap-2 ${
-                      isSaved ? 'text-blue-600 border-blue-300' : ''
-                    }`}
-                  >
-                    <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
-                    {isSaved ? 'Saved' : 'Save'}
-                  </Button>
-                  <Button onClick={handleApply} size="lg">
                     Apply Now
                   </Button>
                 </div>
@@ -265,10 +248,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         </section>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Job Details */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6 lg:space-y-8">
               {/* Job Description */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -360,13 +343,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-6 order-first lg:order-last">
               {/* Job Summary */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-6"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6 lg:sticky lg:top-6"
               >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Job Summary
@@ -410,16 +393,18 @@ export async function generateMetadata({ params }: { params: { slug: string } })
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleApply} className="w-full" size="lg">
-                    Apply for this position
-                  </Button>
-                  
-                  <button
-                    onClick={() => setShowMap(!showMap)}
-                    className="w-full mt-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    {showMap ? 'Hide Map' : 'View on Map'}
-                  </button>
+                  <div className="space-y-3">
+                    <Button onClick={handleApply} className="w-full" size="lg">
+                      Apply for this position
+                    </Button>
+                    
+                    <button
+                      onClick={() => setShowMap(!showMap)}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
+                    >
+                      {showMap ? 'Hide Map' : 'View on Map'}
+                    </button>
+                  </div>
                 </div>
               </motion.div>
 
@@ -445,9 +430,28 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
         {/* Similar Jobs */}
         {similarJobs && similarJobs.jobs.length > 0 && (
-          <section className="bg-white dark:bg-gray-800 py-16">
+          <section className="bg-white dark:bg-gray-800 py-8 sm:py-12 lg:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <SimilarJobs jobs={similarJobs.jobs} />
+              <SimilarJobs 
+                jobs={similarJobs.jobs} 
+                currentJobId={job.id}
+                onJobSelect={(selectedJob) => {
+                  // Navigate to selected job
+                  window.location.href = `/jobs/${selectedJob.slug}`
+                }}
+                onJobApply={(jobId) => {
+                  // Handle apply for similar job
+                  console.log('Apply to job:', jobId)
+                }}
+                onJobSave={(jobId, isSaved) => {
+                  // Handle save similar job
+                  console.log('Save job:', jobId, isSaved)
+                }}
+                onJobShare={(jobId) => {
+                  // Handle share similar job
+                  console.log('Share job:', jobId)
+                }}
+              />
             </div>
           </section>
         )}
@@ -457,10 +461,22 @@ export async function generateMetadata({ params }: { params: { slug: string } })
           <ApplicationForm
             job={job}
             onClose={() => setShowApplication(false)}
-            onSubmit={(data) => {
-              // Handle application submission
-              setShowApplication(false)
+            onSubmit={async (data) => {
+              try {
+                // Handle application submission
+                console.log('Application data:', data)
+                // TODO: Implement actual API call
+                // await trpc.applications.create.mutate({
+                //   jobId: job.id,
+                //   ...data
+                // })
+                setShowApplication(false)
+              } catch (error) {
+                console.error('Failed to submit application:', error)
+                throw error
+              }
             }}
+            isOpen={showApplication}
           />
         )}
       </main>

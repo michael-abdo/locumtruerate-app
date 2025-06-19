@@ -71,7 +71,7 @@ export class BillingSupportService {
         },
       };
     } catch (error) {
-      logger.error('Failed to get user billing info', error, { userId });
+      logger.error('Failed to get user billing info', error instanceof Error ? error : new Error(String(error)), { userId });
       throw new Error('Failed to retrieve billing information');
     }
   }
@@ -102,7 +102,7 @@ export class BillingSupportService {
         await this.createBillingFollowUp(issue);
       }
     } catch (error) {
-      logger.error('Failed to handle payment failure', error, issue);
+      logger.error('Failed to handle payment failure', error instanceof Error ? error : new Error(String(error)), issue);
     }
   }
   
@@ -151,7 +151,7 @@ export class BillingSupportService {
       
       return refund.id;
     } catch (error) {
-      logger.error('Failed to process refund', error, { userId, refundRequest });
+      logger.error('Failed to process refund', error instanceof Error ? error : new Error(String(error)), { userId, refundRequest });
       throw new Error('Failed to process refund');
     }
   }
@@ -237,7 +237,7 @@ export class BillingSupportService {
       await this.sendSubscriptionChangeConfirmation(userId, changeType, subscription);
       
     } catch (error) {
-      logger.error('Failed to handle subscription change', error, { userId, changeType });
+      logger.error('Failed to handle subscription change', error instanceof Error ? error : new Error(String(error)), { userId, changeType });
       throw new Error('Failed to process subscription change');
     }
   }
@@ -277,7 +277,7 @@ export class BillingSupportService {
         },
       };
     } catch (error) {
-      logger.error('Failed to generate billing report', error);
+      logger.error('Failed to generate billing report', error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -323,7 +323,7 @@ export class BillingSupportService {
       });
       
     } catch (error) {
-      logger.error('Failed to resolve billing dispute', error, { userId, disputeId });
+      logger.error('Failed to resolve billing dispute', error instanceof Error ? error : new Error(String(error)), { userId, disputeId });
       throw new Error('Failed to resolve dispute');
     }
   }

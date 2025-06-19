@@ -6,7 +6,7 @@ import { JSONExporter } from './json-exporter'
 
 export class ExportManager {
   private static instance: ExportManager
-  private exporters: Map<ExportFormat, any>
+  private exporters: Map<ExportFormat, typeof PDFExporter | typeof ExcelExporter | typeof CSVExporter | typeof JSONExporter>
 
   private constructor() {
     this.exporters = new Map([

@@ -31,6 +31,7 @@ This monorepo uses TurboRepo to manage multiple applications and shared packages
 - **API**: tRPC v10 with type-safe procedures, API versioning
 - **Database**: PostgreSQL (Neon), Prisma ORM, Full-text search
 - **Auth**: Dual system - JWT + Clerk (cross-platform)
+- **Payments**: Stripe integration for lead marketplace and job boosts
 - **Hosting**: Cloudflare Pages (web), Vercel (API)
 
 ### Development
@@ -171,7 +172,9 @@ See `/docs/migration/` for detailed migration documentation.
 ### Business Features
 - **Healthcare Calculation Engine** with accurate contract and paycheck calculations
 - **Advanced Job Search** with location-based filtering and salary ranges
-- **Admin Dashboard** for content moderation and user management
+- **Pay-Per-Lead Marketplace** - Recruiters can purchase qualified leads ($10-$100) with Stripe integration
+- **Job Boost System** - Premium job listing upgrades with payment processing
+- **Admin Dashboard** for content moderation, user management, and marketplace analytics
 - **Support System** with ticket management and knowledge base
 - **Analytics Tracking** for user behavior and conversion metrics
 - **Legal Compliance** with GDPR-compliant privacy policy and terms of service

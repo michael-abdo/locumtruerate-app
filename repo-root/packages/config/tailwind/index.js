@@ -82,6 +82,9 @@ module.exports = {
         'slide-out': 'slideOut 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'scale-out': 'scaleOut 0.2s ease-out',
+        // Skeleton loading animations
+        'shimmer': 'shimmer 2s ease-in-out infinite',
+        'wave': 'wave 1.5s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -107,6 +110,16 @@ module.exports = {
         scaleOut: {
           '0%': { transform: 'scale(1)' },
           '100%': { transform: 'scale(0.95)' },
+        },
+        // Skeleton loading keyframes
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        wave: {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(100%)' },
         },
       },
       screens: {

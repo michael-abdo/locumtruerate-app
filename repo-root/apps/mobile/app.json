@@ -1,0 +1,154 @@
+{
+  "expo": {
+    "name": "LocumTrueRate",
+    "slug": "locumtruerate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.locumtruerate.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"],
+        "NSCameraUsageDescription": "Allow LocumTrueRate to access camera for profile photos and document scanning",
+        "NSPhotoLibraryUsageDescription": "Allow LocumTrueRate to access photo library for profile photos",
+        "NSLocationWhenInUseUsageDescription": "Allow LocumTrueRate to access location for job search and mapping features",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow LocumTrueRate to access location for job alerts and location-based recommendations",
+        "NSFaceIDUsageDescription": "Allow LocumTrueRate to use Face ID for secure authentication",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "associatedDomains": [
+        "applinks:locumtruerate.com",
+        "applinks:www.locumtruerate.com"
+      ],
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2563eb"
+      },
+      "package": "com.locumtruerate.app",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "USE_FINGERPRINT",
+        "USE_BIOMETRIC",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "locumtruerate.com"
+            },
+            {
+              "scheme": "https", 
+              "host": "www.locumtruerate.com"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#2563eb",
+          "defaultChannel": "default",
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ]
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow LocumTrueRate to use your location for job search and alerts.",
+          "locationAlwaysPermission": "Allow LocumTrueRate to use your location for job alerts.",
+          "locationWhenInUsePermission": "Allow LocumTrueRate to use your location for job search.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow LocumTrueRate to access camera for profile photos and document scanning."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow LocumTrueRate to access photos for profile pictures."
+        }
+      ],
+      [
+        "@react-native-async-storage/async-storage",
+        {
+          "ios": {
+            "useNextStorage": true
+          }
+        }
+      ],
+      [
+        "expo-secure-store"
+      ],
+      [
+        "expo-font"
+      ],
+      [
+        "expo-linking",
+        {
+          "scheme": "locumtruerate"
+        }
+      ]
+    ],
+    "scheme": "locumtruerate",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-eas-project-id"
+      }
+    },
+    "owner": "locumtruerate",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/your-project-id"
+    }
+  }
+}

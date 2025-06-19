@@ -1,0 +1,1077 @@
+{
+  "overall": {
+    "totalComponents": 9,
+    "averageReusePercentage": 83.4018579986322,
+    "targetMet": false,
+    "componentsAboveTarget": 5,
+    "componentsBelowTarget": 4
+  },
+  "byComponent": [
+    {
+      "filePath": "support-widget.tsx",
+      "componentName": "SupportWidget",
+      "totalLines": 489,
+      "totalStatements": 62,
+      "platformSpecific": {
+        "web": {
+          "lines": 10,
+          "statements": 10,
+          "imports": [],
+          "apiCalls": [
+            "document.querySelector"
+          ],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "style\\s*=\\s*\\{\\{",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Inline style attribute"
+            },
+            {
+              "pattern": "document\\.",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Direct DOM access"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 36,
+              "code": "export function SupportWidget({\n  isOpen,\n  onClose,\n  onSubmitTicket,\n  onSearchKnowledge\n}: Suppor",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "style\\s*=\\s*\\{\\{",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Inline style attribute"
+            },
+            {
+              "pattern": "document\\.",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Direct DOM access"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 41,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<SupportTab>('help');\n  const [searchQuery, setSearchQ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "style\\s*=\\s*\\{\\{",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Inline style attribute"
+            },
+            {
+              "pattern": "document\\.",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Direct DOM access"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<form[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "onSubmit\\s*=",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "Form submission handler"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 114,
+              "code": "return <Modal isOpen={isOpen} onClose={onClose} title=\"LocumTrueRate Support\" maxWidth=\"2xl\">\n      ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "document\\.",
+              "line": 351,
+              "code": "{\n  // Handle form submission\n  const form = document.querySelector('form');\n  if (form) {\n    const",
+              "reason": "Direct DOM access"
+            },
+            {
+              "pattern": "document\\.",
+              "line": 353,
+              "code": "// Handle form submission\nconst form = document.querySelector('form');",
+              "reason": "Direct DOM access"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 413,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 413,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 413,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 413,
+              "code": "function ArticleCard({\n  article\n}: {\n  article: KnowledgeArticle;\n}) {\n  const [isExpanded, setIsEx",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 416,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 416,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 416,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 416,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50\">\n      <div className",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 464,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 464,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 464,
+              "code": "function QuickHelpCard({\n  title,\n  description,\n  icon,\n  category\n}: {\n  title: string;\n  descript",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 474,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 474,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 474,
+              "code": "{\n  return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer tra",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 475,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 475,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 475,
+              "code": "return <div className=\"border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transit",
+              "reason": "Web-specific pattern detected"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 52,
+        "statements": 52,
+        "percentage": 83.87096774193549
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 15,
+        "cognitiveComplexity": 4,
+        "dependencies": 4,
+        "hooks": 9,
+        "props": 9
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (83.9%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "support-dashboard.tsx",
+      "componentName": "SupportDashboard",
+      "totalLines": 458,
+      "totalStatements": 66,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 47,
+              "code": "export default function SupportDashboard({\n  userRole,\n  onTicketAction,\n  onLoadTickets,\n  onLoadSt",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 52,
+              "code": "{\n  const [activeTab, setActiveTab] = useState<'tickets' | 'stats' | 'knowledge'>('tickets');\n  cons",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 154,
+              "code": "return <div className=\"max-w-7xl mx-auto p-6\">\n      {/* Header */}\n      <div className=\"mb-6\">\n   ",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 63,
+        "statements": 63,
+        "percentage": 95.45454545454545
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 45,
+        "cognitiveComplexity": 20,
+        "dependencies": 1,
+        "hooks": 9,
+        "props": 4
+      },
+      "recommendations": [
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "modal.tsx",
+      "componentName": "Modal",
+      "totalLines": 175,
+      "totalStatements": 23,
+      "platformSpecific": {
+        "web": {
+          "lines": 7,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement"
+          ],
+          "patterns": []
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 23,
+        "statements": 23,
+        "percentage": 100
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 7,
+        "cognitiveComplexity": 6,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 7
+      },
+      "recommendations": []
+    },
+    {
+      "filePath": "input.tsx",
+      "componentName": "Input",
+      "totalLines": 113,
+      "totalStatements": 14,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [
+            "React.createElement",
+            "React.createElement",
+            "React.createElement",
+            "React.createElement"
+          ],
+          "patterns": []
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 14,
+        "statements": 14,
+        "percentage": 100
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 7,
+        "cognitiveComplexity": 2,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 12
+      },
+      "recommendations": []
+    },
+    {
+      "filePath": "floating-support-button.tsx",
+      "componentName": "FloatingSupportButton",
+      "totalLines": 175,
+      "totalStatements": 21,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 15,
+              "code": "export function FloatingSupportButton({\n  position = 'bottom-right',\n  onTicketSubmit,\n  onKnowledge",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 22,
+              "code": "{\n  const [isWidgetOpen, setIsWidgetOpen] = useState(false);\n  const [hasNewMessage, setHasNewMessag",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<span[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 114,
+              "code": "return <>\n      {/* Floating Button */}\n      <div className={`fixed ${positionClasses[position]} z-",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 18,
+        "statements": 18,
+        "percentage": 85.71428571428571
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 8,
+        "cognitiveComplexity": 0,
+        "dependencies": 2,
+        "hooks": 2,
+        "props": 6
+      },
+      "recommendations": [
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "button.tsx",
+      "componentName": "Button",
+      "totalLines": 112,
+      "totalStatements": 16,
+      "platformSpecific": {
+        "web": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [
+            "React.createElement"
+          ],
+          "patterns": []
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 16,
+        "statements": 16,
+        "percentage": 100
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 10,
+        "cognitiveComplexity": 4,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 7
+      },
+      "recommendations": []
+    },
+    {
+      "filePath": "button-original-backup.tsx",
+      "componentName": "ButtonOriginalBackup",
+      "totalLines": 41,
+      "totalStatements": 8,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "className\\s*=\\s*[\"'`]",
+              "line": 11,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+              "reason": "Web-specific className attribute"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 11,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  className = '',\n  ...pr",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 17,
+              "code": "{\n  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-c",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "<button[^>]*>",
+              "line": 33,
+              "code": "return <button className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${classNam",
+              "reason": "Web-specific pattern detected"
+            }
+          ]
+        },
+        "native": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        }
+      },
+      "reusable": {
+        "lines": 5,
+        "statements": 5,
+        "percentage": 62.5
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 1,
+        "cognitiveComplexity": 0,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 5
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (62.5%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "button-improved.tsx",
+      "componentName": "ButtonImproved",
+      "totalLines": 104,
+      "totalStatements": 13,
+      "platformSpecific": {
+        "web": {
+          "lines": 3,
+          "statements": 3,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "<div[^>]*>",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "justifyContent:",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 24,
+              "code": "{\n  // StyleSheet-like object approach (works in both web and RN)\n  const baseStyles: React.CSSPrope",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 24,
+              "code": "{\n  // StyleSheet-like object approach (works in both web and RN)\n  const baseStyles: React.CSSPrope",
+              "reason": "Web event handler"
+            },
+            {
+              "pattern": "justifyContent:",
+              "line": 24,
+              "code": "{\n  // StyleSheet-like object approach (works in both web and RN)\n  const baseStyles: React.CSSPrope",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 24,
+              "code": "{\n  // StyleSheet-like object approach (works in both web and RN)\n  const baseStyles: React.CSSPrope",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "<div[^>]*>",
+              "line": 86,
+              "code": "// Use div instead of button for cross-platform compatibility\n// In React Native, this would be a Pr",
+              "reason": "Web-specific pattern detected"
+            },
+            {
+              "pattern": "onClick\\s*=",
+              "line": 86,
+              "code": "// Use div instead of button for cross-platform compatibility\n// In React Native, this would be a Pr",
+              "reason": "Web event handler"
+            }
+          ]
+        },
+        "native": {
+          "lines": 1,
+          "statements": 1,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": [
+            {
+              "pattern": "justifyContent:",
+              "line": 27,
+              "code": "// StyleSheet-like object approach (works in both web and RN)\nconst baseStyles: React.CSSProperties ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 27,
+              "code": "// StyleSheet-like object approach (works in both web and RN)\nconst baseStyles: React.CSSProperties ",
+              "reason": "React Native-specific pattern detected"
+            }
+          ]
+        }
+      },
+      "reusable": {
+        "lines": 9,
+        "statements": 9,
+        "percentage": 69.23076923076923
+      },
+      "dependencies": [
+        "react"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 8,
+        "cognitiveComplexity": 2,
+        "dependencies": 1,
+        "hooks": 0,
+        "props": 7
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (69.2%)",
+        "High number of web-specific patterns detected. Consider platform abstraction."
+      ]
+    },
+    {
+      "filePath": "button-crossplatform.tsx",
+      "componentName": "ButtonCrossplatform",
+      "totalLines": 136,
+      "totalStatements": 13,
+      "platformSpecific": {
+        "web": {
+          "lines": 0,
+          "statements": 0,
+          "imports": [],
+          "apiCalls": [],
+          "patterns": []
+        },
+        "native": {
+          "lines": 6,
+          "statements": 6,
+          "imports": [
+            "react-native"
+          ],
+          "apiCalls": [
+            "StyleSheet.create"
+          ],
+          "patterns": [
+            {
+              "pattern": "<Text[^>]*>",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "flexDirection:",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "justifyContent:",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 16,
+              "code": "export function Button({\n  variant = 'primary',\n  size = 'md',\n  children,\n  onPress,\n  disabled = f",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "<Text[^>]*>",
+              "line": 24,
+              "code": "{\n  // Base styles that work on both platforms\n  const baseStyles: ViewStyle = {\n    flexDirection: ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 24,
+              "code": "{\n  // Base styles that work on both platforms\n  const baseStyles: ViewStyle = {\n    flexDirection: ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "flexDirection:",
+              "line": 24,
+              "code": "{\n  // Base styles that work on both platforms\n  const baseStyles: ViewStyle = {\n    flexDirection: ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "justifyContent:",
+              "line": 24,
+              "code": "{\n  // Base styles that work on both platforms\n  const baseStyles: ViewStyle = {\n    flexDirection: ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 24,
+              "code": "{\n  // Base styles that work on both platforms\n  const baseStyles: ViewStyle = {\n    flexDirection: ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "flexDirection:",
+              "line": 27,
+              "code": "// Base styles that work on both platforms\nconst baseStyles: ViewStyle = {\n  flexDirection: 'row',\n ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "justifyContent:",
+              "line": 27,
+              "code": "// Base styles that work on both platforms\nconst baseStyles: ViewStyle = {\n  flexDirection: 'row',\n ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "alignItems:",
+              "line": 27,
+              "code": "// Base styles that work on both platforms\nconst baseStyles: ViewStyle = {\n  flexDirection: 'row',\n ",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "<Text[^>]*>",
+              "line": 108,
+              "code": "return <Pressable style={({\n  pressed\n}) => [...buttonStyle, pressed && styles.pressed]} onPress={on",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "onPress\\s*=",
+              "line": 108,
+              "code": "return <Pressable style={({\n  pressed\n}) => [...buttonStyle, pressed && styles.pressed]} onPress={on",
+              "reason": "React Native-specific pattern detected"
+            },
+            {
+              "pattern": "StyleSheet\\.create",
+              "line": 127,
+              "code": "const styles = StyleSheet.create({\n  text: {\n    fontSize: 14,\n    fontWeight: '500',\n    textAlign:",
+              "reason": "React Native StyleSheet"
+            }
+          ]
+        }
+      },
+      "reusable": {
+        "lines": 7,
+        "statements": 7,
+        "percentage": 53.84615384615385
+      },
+      "dependencies": [
+        "react",
+        "react-native"
+      ],
+      "complexity": {
+        "cyclomaticComplexity": 6,
+        "cognitiveComplexity": 0,
+        "dependencies": 2,
+        "hooks": 0,
+        "props": 7
+      },
+      "recommendations": [
+        "Component is below 85% reuse target (53.8%)",
+        "Consider abstracting React Native-specific imports: react-native",
+        "High number of React Native-specific patterns detected. Consider platform abstraction."
+      ]
+    }
+  ],
+  "summary": {
+    "totalLines": 1803,
+    "reusableLines": 207,
+    "webSpecificLines": 32,
+    "nativeSpecificLines": 7,
+    "reusePercentage": 11.480865224625623
+  },
+  "trends": {
+    "historicalData": [],
+    "trend": "stable"
+  }
+}

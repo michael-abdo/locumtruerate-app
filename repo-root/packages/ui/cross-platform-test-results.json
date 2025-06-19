@@ -1,0 +1,445 @@
+{
+  "components": [
+    {
+      "name": "button 2.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/button 2.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "button.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/button.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "calculation-history.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/calculation-history.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "export-button.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/export-button.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "analytics.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/analytics.ts",
+      "crossPlatform": false,
+      "webAPIs": [
+        "window.",
+        "localStorage",
+        "navigator.",
+        "fetch"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: window.",
+        "Uses web-only API: localStorage",
+        "Uses web-only API: navigator.",
+        "Uses web-only API: fetch"
+      ]
+    },
+    {
+      "name": "flows.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/flows.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "document.",
+        "localStorage",
+        "querySelector"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: document.",
+        "Uses web-only API: localStorage",
+        "Uses web-only API: querySelector"
+      ]
+    },
+    {
+      "name": "guided-tour.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/guided-tour.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "document.",
+        "window.",
+        "addEventListener",
+        "removeEventListener",
+        "querySelector"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: document.",
+        "Uses web-only API: window.",
+        "Uses web-only API: addEventListener",
+        "Uses web-only API: removeEventListener",
+        "Uses web-only API: querySelector",
+        "Uses inline styles without StyleSheet abstraction",
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "index.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/index.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "onboarding-context.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/onboarding-context.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "localStorage"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: localStorage"
+      ]
+    },
+    {
+      "name": "onboarding-modal.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/onboarding-modal.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "document.",
+        "window.",
+        "querySelector"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: document.",
+        "Uses web-only API: window.",
+        "Uses web-only API: querySelector",
+        "Uses inline styles without StyleSheet abstraction",
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "calculator-intro.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/steps/calculator-intro.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "explore-features.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/steps/explore-features.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "first-calculation.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/steps/first-calculation.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "index.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/steps/index.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "profile-setup.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/steps/profile-setup.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "types.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/onboarding/types.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "floating-support-button.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/support/floating-support-button.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "index.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/support/index.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "support-dashboard.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/support/support-dashboard.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "support-widget.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/support/support-widget.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "types.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/support/types.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "button.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/button.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "card-skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/card-skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses inline styles without StyleSheet abstraction"
+      ]
+    },
+    {
+      "name": "form-skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/form-skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "input.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/input.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "list-skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/list-skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "modal.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/modal.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "document.",
+        "addEventListener",
+        "removeEventListener",
+        "querySelector"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: document.",
+        "Uses web-only API: addEventListener",
+        "Uses web-only API: removeEventListener",
+        "Uses web-only API: querySelector",
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "select.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/select.tsx",
+      "crossPlatform": false,
+      "webAPIs": [
+        "document.",
+        "addEventListener",
+        "removeEventListener"
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: document.",
+        "Uses web-only API: addEventListener",
+        "Uses web-only API: removeEventListener",
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "table-skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/table-skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses inline styles without StyleSheet abstraction"
+      ]
+    },
+    {
+      "name": "text-skeleton.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/text-skeleton.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses inline styles without StyleSheet abstraction"
+      ]
+    },
+    {
+      "name": "toast.tsx",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/components/ui/toast.tsx",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses onClick instead of onPress for touch handling"
+      ]
+    },
+    {
+      "name": "index 2.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/index 2.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "index.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/index.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "skeleton-utils.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/lib/skeleton-utils.ts",
+      "crossPlatform": false,
+      "webAPIs": [
+        "window."
+      ],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": [
+        "Uses web-only API: window."
+      ]
+    },
+    {
+      "name": "utils.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/lib/utils.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "utils 2.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/utils 2.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    },
+    {
+      "name": "utils.ts",
+      "path": "/Users/Mike/Desktop/programming/2_proposals/upwork/communication/jobboard_021932213797238218657/repo-root/packages/ui/src/utils.ts",
+      "crossPlatform": true,
+      "webAPIs": [],
+      "nativeAPIs": [],
+      "platformChecks": [],
+      "issues": []
+    }
+  ],
+  "summary": {
+    "total": 38,
+    "crossPlatform": 30,
+    "webOnly": 8,
+    "nativeOnly": 0,
+    "errors": 0
+  }
+}

@@ -40,6 +40,18 @@ class MonitoringService {
     return MonitoringService.instance;
   }
   
+  private async loadSentryModule(): Promise<any> {
+    try {
+      // Use eval to prevent TypeScript from checking the module at compile time
+      const modulePath = '@sentry/node';
+      const importStatement = `import('${modulePath}')`;
+      return await eval(importStatement);
+    } catch (error) {
+      console.warn('Sentry module not available:', error);
+      return null;
+    }
+  }
+  
   async initialize(config: MonitoringConfig) {
     if (this.initialized) {
       return;
@@ -50,56 +62,62 @@ class MonitoringService {
     // Initialize Sentry in production
     if (config.sentryDsn && process.env.NODE_ENV === 'production') {
       try {
-        // Dynamic import for Sentry to avoid bundling in development
-        const Sentry = await import('@sentry/node');
-        
-        Sentry.init({
-          dsn: config.sentryDsn,
-          environment: config.environment,
-          release: config.release,
-          tracesSampleRate: config.tracesSampleRate,
-          integrations: [
-            new Sentry.Integrations.Http({ tracing: true }),
-            new Sentry.Integrations.Express({ app: true }),
-          ],
-          beforeSend(event, hint) {
-            // Filter out non-operational errors
-            if (hint.originalException instanceof AppError) {
-              if (!hint.originalException.isOperational) {
-                return event;
+        // Check if Sentry is available before initializing
+        const sentryModule = await this.loadSentryModule();
+        if (sentryModule) {
+          sentryModule.init({
+            dsn: config.sentryDsn,
+            environment: config.environment,
+            release: config.release,
+            tracesSampleRate: config.tracesSampleRate,
+            integrations: [
+              new sentryModule.Integrations.Http({ tracing: true }),
+              new sentryModule.Integrations.Express({ app: true }),
+            ],
+            beforeSend(event: any, hint: any) {
+              // Filter out non-operational errors
+              if (hint.originalException instanceof AppError) {
+                if (!hint.originalException.isOperational) {
+                  return event;
+                }
+                return null; // Don't send operational errors
               }
-              return null; // Don't send operational errors
-            }
-            return event;
-          },
-        });
-        
-        this.initialized = true;
+              return event;
+            },
+          });
+          
+          this.initialized = true;
+        }
       } catch (error) {
         console.error('Failed to initialize Sentry:', error);
       }
     }
   }
   
+  private getSentryModule(): any {
+    try {
+      // Try to require Sentry if it's available
+      return require('@sentry/node');
+    } catch (error) {
+      return null;
+    }
+  }
+  
   setUserContext(user: UserContext) {
     if (!this.initialized) return;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       Sentry.setUser(user);
-    } catch (error) {
-      // Sentry not available
     }
   }
   
   clearUserContext() {
     if (!this.initialized) return;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       Sentry.setUser(null);
-    } catch (error) {
-      // Sentry not available
     }
   }
   
@@ -108,42 +126,37 @@ class MonitoringService {
     
     if (!this.initialized) return;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       Sentry.captureException(error, {
         contexts: {
           custom: context,
         },
       });
-    } catch (err) {
-      // Sentry not available
     }
   }
   
   captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info') {
     if (!this.initialized) return;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       Sentry.captureMessage(message, level);
-    } catch (error) {
-      // Sentry not available
     }
   }
   
   startTransaction(transaction: Transaction) {
     if (!this.initialized) return null;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       return Sentry.startTransaction({
         name: transaction.name,
         op: transaction.op,
         data: transaction.data,
       });
-    } catch (error) {
-      return null;
     }
+    return null;
   }
   
   addBreadcrumb(
@@ -154,8 +167,8 @@ class MonitoringService {
   ) {
     if (!this.initialized) return;
     
-    try {
-      const Sentry = require('@sentry/node');
+    const Sentry = this.getSentryModule();
+    if (Sentry) {
       Sentry.addBreadcrumb({
         message,
         category,
@@ -163,8 +176,6 @@ class MonitoringService {
         data,
         timestamp: Date.now() / 1000,
       });
-    } catch (error) {
-      // Sentry not available
     }
   }
   
@@ -218,39 +229,3 @@ class MonitoringService {
 
 // Export singleton
 export const monitoring = MonitoringService.getInstance();
-
-// React Error Boundary integration
-export function createErrorBoundary() {
-  return class ErrorBoundary extends React.Component<
-    { children: React.ReactNode },
-    { hasError: boolean; error?: Error }
-  > {
-    constructor(props: { children: React.ReactNode }) {
-      super(props);
-      this.state = { hasError: false };
-    }
-    
-    static getDerivedStateFromError(error: Error) {
-      return { hasError: true, error };
-    }
-    
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-      monitoring.captureException(error, {
-        componentStack: errorInfo.componentStack,
-        errorBoundary: true,
-      });
-    }
-    
-    render() {
-      if (this.state.hasError) {
-        return React.createElement('div', { className: 'error-boundary' },
-          React.createElement('h2', null, 'Something went wrong'),
-          React.createElement('p', null, 'We\'ve been notified and are working on a fix.'),
-          React.createElement('button', { onClick: () => window.location.reload() }, 'Reload Page')
-        );
-      }
-      
-      return this.props.children;
-    }
-  };
-}

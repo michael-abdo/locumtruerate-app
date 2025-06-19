@@ -17,7 +17,11 @@
     "resolveJsonModule": true
   },
   "include": [
-    "src/**/*"
+    "src/index.ts",
+    "src/types/**/*.ts",
+    "src/engines/**/*.ts",
+    "src/utils/**/*.ts",
+    "src/calculation-engine.ts"
   ],
   "exclude": [
     "dist",

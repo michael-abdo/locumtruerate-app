@@ -5,8 +5,8 @@
 
 export { SpamDetector } from './spam';
 export { ContentModerator } from './content';
-export { ContentFilters } from './filters';
-export { AIModeration } from './ai';
+// export { ContentFilters } from './filters'; // TODO: Implement filters.ts
+// export { AIModeration } from './ai'; // TODO: Implement ai.ts
 export { ModerationManager } from './manager';
 
 // Re-export types

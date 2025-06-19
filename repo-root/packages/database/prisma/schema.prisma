@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
 }
 
 datasource db {
@@ -128,6 +129,12 @@ model User {
   supportFeedback   SupportFeedback[]
   knowledgeAuthored KnowledgeArticle[] @relation("KnowledgeAuthor")
   knowledgeReviewed KnowledgeArticle[] @relation("KnowledgeReviewer")
+  
+  // Calculator relations
+  savedCalculations SavedCalculation[]
+  
+  // Lead marketplace relations
+  leadPurchases     LeadPurchase[] @relation("LeadPurchases")
   
   @@index([email])
   @@index([role])
@@ -314,6 +321,13 @@ model Job {
   metaDescription   String?
   lastViewedAt      DateTime?
   
+  // Boost functionality
+  isBoosted         Boolean  @default(false)
+  boostType         String?  // featured, urgent, premium, sponsored
+  boostExpiresAt    DateTime?
+  boostPaymentId    String?  // Stripe payment ID for tracking
+  boostActivatedAt  DateTime?
+  
   // Metadata
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -453,8 +467,8 @@ model ActivityLog {
   
   // Relations
   user              User @relation(fields: [userId], references: [id])
-  job               Job? @relation(fields: [entityId], references: [id])
-  application       Application? @relation(fields: [entityId], references: [id])
+  job               Job? @relation(fields: [entityId], references: [id], map: "ActivityLog_job_fkey")
+  application       Application? @relation(fields: [entityId], references: [id], map: "ActivityLog_application_fkey")
   
   @@index([organizationId])
   @@index([userId])
@@ -601,6 +615,10 @@ model Lead {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   convertedAt       DateTime?
+  
+  // Relations
+  purchases         LeadPurchase[]
+  listing           LeadListing?
   
   @@index([email])
   @@index([status])
@@ -791,7 +809,8 @@ model KnowledgeArticle {
   @@index([views])
   @@index([helpful])
   @@index([tags])
-  @@fulltext([title, content])
+  @@index([title])
+  @@index([content])
 }
 
 // Knowledge base search tracking
@@ -834,4 +853,127 @@ model SupportFeedback {
   @@index([userId])
   @@index([rating])
   @@index([createdAt])
+}
+
+// ==================== CALCULATOR ====================
+
+// Saved calculations
+model SavedCalculation {
+  id              String   @id @default(cuid())
+  userId          String
+  
+  // Calculation details
+  type            String   // 'contract', 'paycheck', 'comparison'
+  input           Json     // The input parameters
+  result          Json     // The calculation results
+  
+  // Metadata
+  name            String?  // User-provided name
+  tags            String[] @default([])
+  isFavorite      Boolean  @default(false)
+  isPublic        Boolean  @default(false)
+  
+  // Sharing
+  shareableLink   String?  @unique
+  expiresAt       DateTime?
+  
+  // Additional metadata
+  metadata        Json?    // Any additional data
+  
+  // Timestamps
+  timestamp       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([type])
+  @@index([isFavorite])
+  @@index([isPublic])
+  @@index([timestamp])
+  @@index([tags])
+}
+
+// ==================== LEAD MARKETPLACE ====================
+
+// Lead purchase tracking - when recruiters buy leads
+model LeadPurchase {
+  id                String   @id @default(cuid())
+  
+  // Purchase details
+  leadId            String
+  buyerId           String   // Recruiter who purchased the lead
+  price             Int      // Price in cents ($10.00 = 1000)
+  
+  // Payment tracking
+  stripePaymentId   String?  // Stripe payment intent ID
+  paymentStatus     String   @default("pending") // pending, completed, failed, refunded
+  
+  // Lead access
+  accessGranted     Boolean  @default(false)
+  accessGrantedAt   DateTime?
+  
+  // Metadata
+  leadSource        String?  // calculator, contact_form, etc.
+  leadScore         Int?     // Lead quality score at time of purchase
+  purchaseMetadata  Json?    // Additional purchase data
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  buyer             User     @relation("LeadPurchases", fields: [buyerId], references: [id], onDelete: Cascade)
+  
+  @@unique([leadId, buyerId]) // Prevent duplicate purchases
+  @@index([buyerId])
+  @@index([leadId])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([leadSource])
+}
+
+// Lead marketplace listing - available leads for purchase
+model LeadListing {
+  id                String   @id @default(cuid())
+  
+  // Lead details
+  leadId            String   @unique
+  
+  // Pricing
+  basePrice         Int      // Base price in cents
+  currentPrice      Int      // Current price (may vary based on demand)
+  priceCategory     String   // standard, premium, hot_lead
+  
+  // Availability
+  isAvailable       Boolean  @default(true)
+  maxPurchases      Int      @default(1) // How many recruiters can buy this lead
+  currentPurchases  Int      @default(0)
+  
+  // Lead preview (masked information)
+  industry          String?
+  location          String?
+  experience        String?
+  previewData       Json?    // Masked lead data for preview
+  
+  // Quality metrics
+  leadScore         Int      @default(0)
+  calculatorData    Json?    // Calculator inputs that generated this lead
+  engagementLevel   String   @default("medium") // low, medium, high
+  
+  // Metadata
+  listedAt          DateTime @default(now())
+  expiresAt         DateTime? // When listing expires
+  
+  // Relations
+  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  
+  @@index([isAvailable])
+  @@index([priceCategory])
+  @@index([leadScore])
+  @@index([listedAt])
+  @@index([industry])
+  @@index([location])
 }
