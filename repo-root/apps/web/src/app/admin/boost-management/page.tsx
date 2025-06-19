@@ -311,19 +311,23 @@ export default function BoostManagementPage() {
   })
 
   const handleBoostSubmit = async (data: any) => {
-    if (!selectedJobData) return
+    const currentJobData = selectedJob ? mockJobs.find(j => j.id === selectedJob) : null
+    if (!currentJobData) {
+      toast.error('Job not found')
+      return
+    }
     
     try {
       const { packageDetails } = data
       
       // Create Stripe checkout session
       await createBoostCheckout.mutateAsync({
-        jobId: selectedJobData.id,
+        jobId: currentJobData.id,
         packageId: packageDetails.id,
         packageName: packageDetails.name,
         packagePrice: packageDetails.price,
         packageDuration: packageDetails.duration,
-        successUrl: `${window.location.origin}/admin/boost-management?success=true&jobId=${selectedJobData.id}&packageId=${packageDetails.id}`,
+        successUrl: `${window.location.origin}/admin/boost-management?success=true&jobId=${currentJobData.id}&packageId=${packageDetails.id}`,
         cancelUrl: `${window.location.origin}/admin/boost-management?canceled=true`
       })
     } catch (error) {

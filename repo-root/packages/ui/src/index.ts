@@ -1,5 +1,8 @@
-// Base components
-export { Button, buttonVariants } from './button'
+// Legacy web-only components (deprecated - use cross-platform versions)
+export { Button as WebButton, buttonVariants } from './button'
+
+// Cross-platform components (recommended)
+export * from './cross-platform'
 
 // Utilities
 export { cn } from './utils'

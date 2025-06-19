@@ -364,7 +364,45 @@ export const jobsRouter = createTRPCRouter({
       }
 
       const skip = (page - 1) * limit;
-      const orderBy = { [sortBy]: sortOrder };
+
+      // Build boost-aware ordering - boosted jobs appear first
+      const buildOrderBy = () => {
+        const orderByClause: any[] = [];
+        
+        // 1. Boosted jobs first (active boosts only)
+        orderByClause.push({ 
+          isBoosted: 'desc' 
+        });
+        
+        // 2. Boost type priority (premium > sponsored > featured > urgent)
+        const boostTypePriority = {
+          'premium': 4,
+          'sponsored': 3, 
+          'featured': 2,
+          'urgent': 1
+        };
+        orderByClause.push({
+          boostType: {
+            sort: 'desc',
+            nulls: 'last'
+          }
+        });
+        
+        // 3. Boost time remaining (more time = higher priority)
+        orderByClause.push({
+          boostExpiresAt: {
+            sort: 'desc',
+            nulls: 'last'
+          }
+        });
+        
+        // 4. User's selected sorting for non-boosted jobs or as secondary sort
+        orderByClause.push({ [sortBy]: sortOrder });
+        
+        return orderByClause;
+      };
+
+      const orderBy = buildOrderBy();
 
       const [jobs, total] = await Promise.all([
         ctx.db.job.findMany({
@@ -422,7 +460,39 @@ export const jobsRouter = createTRPCRouter({
       };
 
       const skip = (page - 1) * limit;
-      const orderBy = { [sortBy]: sortOrder };
+
+      // Build boost-aware ordering - boosted jobs appear first
+      const buildOrderBy = () => {
+        const orderByClause: any[] = [];
+        
+        // 1. Boosted jobs first (active boosts only)
+        orderByClause.push({ 
+          isBoosted: 'desc' 
+        });
+        
+        // 2. Boost type priority (premium > sponsored > featured > urgent)
+        orderByClause.push({
+          boostType: {
+            sort: 'desc',
+            nulls: 'last'
+          }
+        });
+        
+        // 3. Boost time remaining (more time = higher priority)
+        orderByClause.push({
+          boostExpiresAt: {
+            sort: 'desc',
+            nulls: 'last'
+          }
+        });
+        
+        // 4. User's selected sorting for non-boosted jobs or as secondary sort
+        orderByClause.push({ [sortBy]: sortOrder });
+        
+        return orderByClause;
+      };
+
+      const orderBy = buildOrderBy();
 
       const [jobs, total] = await Promise.all([
         ctx.db.job.findMany({
@@ -672,7 +742,21 @@ export const jobsRouter = createTRPCRouter({
             @@ plainto_tsquery('english', ${query})
           )
         ORDER BY 
+          -- Boost-aware ordering: boosted jobs first
+          j."isBoosted" DESC NULLS LAST,
+          -- Boost type priority (premium=4, sponsored=3, featured=2, urgent=1)
+          CASE 
+            WHEN j."boostType" = 'premium' THEN 4
+            WHEN j."boostType" = 'sponsored' THEN 3
+            WHEN j."boostType" = 'featured' THEN 2
+            WHEN j."boostType" = 'urgent' THEN 1
+            ELSE 0
+          END DESC,
+          -- Boost time remaining (more time = higher priority)
+          j."boostExpiresAt" DESC NULLS LAST,
+          -- Text relevance ranking for search accuracy
           ts_rank(to_tsvector('english', j.title || ' ' || j.description), plainto_tsquery('english', ${query})) DESC,
+          -- Fallback to creation date
           j."createdAt" DESC
         LIMIT ${limit} OFFSET ${(page - 1) * limit}
       `;
