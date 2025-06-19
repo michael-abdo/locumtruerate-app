@@ -132,6 +132,14 @@
         {
           "scheme": "locumtruerate"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "locumtruerate-mobile",
+          "organization": "locumtruerate"
+        }
       ]
     ],
     "scheme": "locumtruerate",
@@ -141,7 +149,22 @@
       },
       "eas": {
         "projectId": "your-eas-project-id"
-      }
+      },
+      "sentryDsn": "https://your-sentry-dsn@sentry.io/your-project-id",
+      "analyticsEnabled": true,
+      "performanceMonitoring": true
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "locumtruerate",
+            "project": "locumtruerate-mobile",
+            "authToken": "your-sentry-auth-token"
+          }
+        }
+      ]
     },
     "owner": "locumtruerate",
     "runtimeVersion": {

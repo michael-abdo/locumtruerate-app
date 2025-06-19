@@ -1,12 +1,48 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Analytics, trackEvent, trackScreen, trackScreenLoadTime } from '@/services/analytics'
+import { ShareCalculationButton } from '@/components/ShareButton'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function CalculatorScreen() {
+  const params = useLocalSearchParams()
   const [activeTab, setActiveTab] = useState<'contract' | 'paycheck'>('contract')
   const [hourlyRate, setHourlyRate] = useState('')
   const [hoursPerWeek, setHoursPerWeek] = useState('')
   const [contractLength, setContractLength] = useState('')
+
+  // Handle deep link parameters
+  useEffect(() => {
+    if (params.type === 'contract' || params.type === 'paycheck') {
+      setActiveTab(params.type)
+    }
+    if (params.hourlyRate) setHourlyRate(params.hourlyRate as string)
+    if (params.hoursPerWeek) setHoursPerWeek(params.hoursPerWeek as string)
+    if (params.contractLength) setContractLength(params.contractLength as string)
+  }, [params])
+
+  // Track screen view on mount
+  useEffect(() => {
+    trackScreen('Calculator', { calculator_type: activeTab })
+    return () => {
+      trackScreenLoadTime('Calculator')
+    }
+  }, [])
+
+  // Track calculation when inputs change
+  useEffect(() => {
+    if (hourlyRate && hoursPerWeek && contractLength) {
+      const results = calculateContract()
+      trackEvent('calculator_completed', {
+        calculator_type: activeTab,
+        hourly_rate: parseFloat(hourlyRate),
+        hours_per_week: parseFloat(hoursPerWeek),
+        contract_length_weeks: parseFloat(contractLength),
+        total_value: results.totalGross
+      })
+    }
+  }, [hourlyRate, hoursPerWeek, contractLength, activeTab])
   
   const calculateContract = () => {
     const rate = parseFloat(hourlyRate) || 0
@@ -32,7 +68,14 @@ export default function CalculatorScreen() {
         <View style={styles.tabContainer}>
           <TouchableOpacity 
             style={[styles.tab, activeTab === 'contract' && styles.activeTab]}
-            onPress={() => setActiveTab('contract')}
+            onPress={() => {
+              setActiveTab('contract')
+              trackEvent('tab_switched', {
+                from_tab: 'paycheck',
+                to_tab: 'contract',
+                screen: 'Calculator'
+              })
+            }}
           >
             <Text style={[styles.tabText, activeTab === 'contract' && styles.activeTabText]}>
               Contract Calculator
@@ -41,7 +84,14 @@ export default function CalculatorScreen() {
           
           <TouchableOpacity 
             style={[styles.tab, activeTab === 'paycheck' && styles.activeTab]}
-            onPress={() => setActiveTab('paycheck')}
+            onPress={() => {
+              setActiveTab('paycheck')
+              trackEvent('tab_switched', {
+                from_tab: 'contract',
+                to_tab: 'paycheck',
+                screen: 'Calculator'
+              })
+            }}
           >
             <Text style={[styles.tabText, activeTab === 'paycheck' && styles.activeTabText]}>
               Paycheck Calculator
@@ -114,15 +164,44 @@ export default function CalculatorScreen() {
 
         {/* Action Buttons */}
         <View style={styles.actionSection}>
-          <TouchableOpacity style={styles.saveButton}>
+          <TouchableOpacity 
+            style={styles.saveButton}
+            onPress={() => {
+              trackEvent('calculation_saved', {
+                calculator_type: activeTab,
+                total_value: results.totalGross
+              })
+              // TODO: Implement save functionality
+              Analytics.addBreadcrumb('Calculation saved', {
+                type: activeTab,
+                value: results.totalGross
+              })
+            }}
+          >
             <Text style={styles.saveButtonText}>💾 Save Calculation</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.shareButton}>
-            <Text style={styles.shareButtonText}>📤 Share Results</Text>
-          </TouchableOpacity>
+          <ShareCalculationButton
+            type={activeTab}
+            results={results}
+            inputs={{
+              hourlyRate,
+              hoursPerWeek,
+              contractLength
+            }}
+            style={styles.shareButton}
+          />
           
-          <TouchableOpacity style={styles.compareButton}>
+          <TouchableOpacity 
+            style={styles.compareButton}
+            onPress={() => {
+              trackEvent('calculator_opened', {
+                calculator_type: 'comparison',
+                source: activeTab
+              })
+              // TODO: Navigate to comparison view
+            }}
+          >
             <Text style={styles.compareButtonText}>⚖️ Compare Contracts</Text>
           </TouchableOpacity>
         </View>

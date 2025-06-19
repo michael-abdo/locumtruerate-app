@@ -14,6 +14,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { trpc } from '@/lib/trpc'
+import { useOfflineJobs, useOfflineApplications } from '@/lib/offline'
+import { OfflineBadge } from '@/components/OfflineIndicator'
 
 // Types
 interface Job {
@@ -432,7 +434,18 @@ export default function JobsScreen() {
         <View style={styles.filterFooter}>
           <TouchableOpacity
             style={styles.applyFiltersButton}
-            onPress={() => handleApplyFilters(filters)}
+            onPress={() => {
+              handleApplyFilters(filters)
+              trackEvent('job_search', {
+                search_type: 'filter_applied',
+                location: filters.location || 'any',
+                job_type: filters.jobType || 'any',
+                remote: filters.remote?.toString() || 'any',
+                salary_min: filters.salaryMin || 0,
+                salary_max: filters.salaryMax || 0,
+                urgent_only: filters.urgent || false
+              })
+            }}
           >
             <Text style={styles.applyFiltersText}>Apply Filters</Text>
           </TouchableOpacity>

@@ -4,6 +4,7 @@ import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc';
 import { JobStatus, JobType, JobCategory } from '@locumtruerate/database';
 import { nanoid } from 'nanoid';
 import { addDays } from 'date-fns';
+import { featureGates, checkFeatureAccess, trackFeatureUsage } from '../middleware/feature-gate';
 
 // Validation schemas
 const createJobSchema = z.object({
@@ -62,11 +63,28 @@ const generateSlug = (title: string): string => {
 export const jobsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createJobSchema)
+    .use(featureGates.jobPosting) // Apply job posting feature gate
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Authentication required'
+        });
+      }
+
+      // Check current job posting count against subscription limits
+      const activeJobsCount = await ctx.db.job.count({
+        where: {
+          companyId: input.companyId,
+          status: { in: ['ACTIVE', 'DRAFT'] },
+        }
+      });
+
+      const featureAccess = await checkFeatureAccess(ctx, 'jobPostings', activeJobsCount + 1);
+      if (!featureAccess.hasAccess) {
+        throw new TRPCError({
+          code: 'PAYMENT_REQUIRED',
+          message: `You have reached your job posting limit (${featureAccess.limit}). Upgrade your subscription to post more jobs.`,
         });
       }
 
@@ -155,6 +173,9 @@ export const jobsRouter = createTRPCRouter({
           companyId,
           title
         });
+
+        // Track feature usage for job posting
+        await trackFeatureUsage(ctx, 'jobPostings', 1);
 
         return job;
       } catch (error) {

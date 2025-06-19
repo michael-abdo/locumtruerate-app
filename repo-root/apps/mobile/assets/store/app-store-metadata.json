@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "LocumTrueRate",
+    "subtitle": "Find Your Perfect Locum Tenens Position",
+    "description": {
+      "short": "The premier platform for locum tenens physicians. Search jobs, calculate rates, and manage your career.",
+      "full": "LocumTrueRate is the most trusted platform for locum tenens physicians seeking temporary medical positions across the United States.\n\n**Key Features:**\n\n• **Comprehensive Job Search** - Browse thousands of locum tenens opportunities with advanced filters for specialty, location, and compensation\n\n• **Smart Rate Calculator** - Calculate your true take-home pay with our industry-leading calculator that factors in taxes, expenses, and benefits\n\n• **Offline Access** - Save jobs and continue browsing even without an internet connection\n\n• **Secure Applications** - Apply to positions with one tap using biometric authentication\n\n• **Real-time Notifications** - Get instant alerts for new jobs matching your criteria\n\n• **Direct Messaging** - Communicate directly with healthcare facilities and recruiters\n\n• **Document Management** - Store and share your credentials, licenses, and certifications securely\n\n• **Market Insights** - Access salary trends and market data for your specialty\n\n**Why LocumTrueRate?**\n\n- Verified healthcare facilities only\n- No spam or duplicate listings\n- Transparent compensation details\n- Free for physicians\n- HIPAA-compliant security\n\nJoin thousands of physicians who trust LocumTrueRate to advance their locum tenens careers. Download now and find your next opportunity!"
+    },
+    "keywords": [
+      "locum tenens",
+      "physician jobs",
+      "doctor jobs",
+      "medical jobs",
+      "healthcare jobs",
+      "temporary physician",
+      "locums",
+      "medical staffing",
+      "physician recruiting",
+      "healthcare careers"
+    ],
+    "category": "Medical",
+    "secondary_category": "Business"
+  },
+  "ios": {
+    "bundle_id": "com.locumtruerate.app",
+    "app_store_id": "PENDING",
+    "team_id": "PENDING",
+    "promotional_text": "New: Biometric login, offline mode, and enhanced job alerts!",
+    "marketing_url": "https://locumtruerate.com",
+    "support_url": "https://locumtruerate.com/support",
+    "privacy_url": "https://locumtruerate.com/privacy"
+  },
+  "android": {
+    "package_name": "com.locumtruerate.app",
+    "short_description": "Find locum tenens jobs, calculate rates, manage your medical career",
+    "full_description": "LocumTrueRate is the premier platform for locum tenens physicians seeking temporary medical positions.\n\n<b>Key Features:</b>\n\n• <b>Job Search</b> - Browse thousands of opportunities\n• <b>Rate Calculator</b> - Calculate true take-home pay\n• <b>Offline Mode</b> - Access saved jobs anywhere\n• <b>Secure Apply</b> - One-tap applications\n• <b>Notifications</b> - Real-time job alerts\n• <b>Direct Chat</b> - Message recruiters\n• <b>Documents</b> - Secure credential storage\n\nJoin thousands of physicians advancing their careers with LocumTrueRate!",
+    "category": "MEDICAL",
+    "content_rating": "Everyone",
+    "website": "https://locumtruerate.com",
+    "email": "support@locumtruerate.com",
+    "privacy_policy": "https://locumtruerate.com/privacy"
+  },
+  "screenshots": {
+    "ios": {
+      "iPhone_6.5": [
+        "Home - Job Search",
+        "Job Details",
+        "Rate Calculator",
+        "Profile & Settings",
+        "Offline Mode"
+      ],
+      "iPhone_5.5": [
+        "Home - Job Search",
+        "Job Details",
+        "Rate Calculator",
+        "Profile & Settings",
+        "Offline Mode"
+      ],
+      "iPad_12.9": [
+        "Home - Job Search",
+        "Job Details Split View",
+        "Rate Calculator",
+        "Dashboard",
+        "Document Manager"
+      ]
+    },
+    "android": {
+      "phone": [
+        "Home - Job Search",
+        "Job Details",
+        "Rate Calculator",
+        "Profile & Settings",
+        "Offline Mode"
+      ],
+      "tablet_7": [
+        "Home - Job Search",
+        "Job Details",
+        "Rate Calculator",
+        "Dashboard"
+      ],
+      "tablet_10": [
+        "Home - Job Search",
+        "Job Details Split View",
+        "Rate Calculator",
+        "Dashboard",
+        "Document Manager"
+      ]
+    }
+  },
+  "release_notes": {
+    "1.0.0": "Initial release with job search, rate calculator, and secure applications",
+    "1.1.0": "Added biometric authentication and offline mode",
+    "1.2.0": "Improved search filters and added direct messaging"
+  },
+  "contact": {
+    "developer": "LocumTrueRate, Inc.",
+    "email": "support@locumtruerate.com",
+    "phone": "+1-555-0123",
+    "address": "123 Medical Plaza, Suite 100, Healthcare City, HC 12345"
+  }
+}

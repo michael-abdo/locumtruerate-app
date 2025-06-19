@@ -2,6 +2,83 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import Stripe from 'stripe'
 
+// Subscription tier definitions
+export type SubscriptionTier = 'FREE' | 'PRO' | 'ENTERPRISE'
+
+export interface SubscriptionFeatures {
+  jobPostings: number | 'unlimited'
+  teamMembers: number | 'unlimited'
+  applicationsPerJob: number | 'unlimited'
+  leadAccess: boolean
+  advancedAnalytics: boolean
+  prioritySupport: boolean
+  customBranding: boolean
+  apiAccess: boolean
+  boostCredits: number
+  calculatorExports: number | 'unlimited'
+}
+
+export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionFeatures> = {
+  FREE: {
+    jobPostings: 1,
+    teamMembers: 1,
+    applicationsPerJob: 50,
+    leadAccess: false,
+    advancedAnalytics: false,
+    prioritySupport: false,
+    customBranding: false,
+    apiAccess: false,
+    boostCredits: 0,
+    calculatorExports: 5,
+  },
+  PRO: {
+    jobPostings: 25,
+    teamMembers: 5,
+    applicationsPerJob: 500,
+    leadAccess: true,
+    advancedAnalytics: true,
+    prioritySupport: true,
+    customBranding: false,
+    apiAccess: false,
+    boostCredits: 10,
+    calculatorExports: 'unlimited',
+  },
+  ENTERPRISE: {
+    jobPostings: 'unlimited',
+    teamMembers: 'unlimited',
+    applicationsPerJob: 'unlimited',
+    leadAccess: true,
+    advancedAnalytics: true,
+    prioritySupport: true,
+    customBranding: true,
+    apiAccess: true,
+    boostCredits: 50,
+    calculatorExports: 'unlimited',
+  },
+}
+
+// Subscription plan configuration
+export const SUBSCRIPTION_PLANS = {
+  PRO: {
+    priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro_monthly_299',
+    yearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID || 'price_pro_yearly_2990',
+    name: 'Pro',
+    description: 'Perfect for growing recruitment teams',
+    monthlyPrice: 29900, // $299.00 in cents
+    yearlyPrice: 299000, // $2,990.00 in cents (save ~17%)
+    tier: 'PRO' as SubscriptionTier,
+  },
+  ENTERPRISE: {
+    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || 'price_enterprise_monthly_699',
+    yearlyPriceId: process.env.STRIPE_ENTERPRISE_YEARLY_PRICE_ID || 'price_enterprise_yearly_6990',
+    name: 'Enterprise',
+    description: 'Advanced features for large organizations',
+    monthlyPrice: 69900, // $699.00 in cents
+    yearlyPrice: 699000, // $6,990.00 in cents (save ~17%)
+    tier: 'ENTERPRISE' as SubscriptionTier,
+  },
+}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 })
@@ -87,34 +164,176 @@ export const paymentsRouter = createTRPCRouter({
       }
     }),
 
-  // Get subscription plans
+  // Get subscription plans with tier information
   getSubscriptionPlans: publicProcedure
     .query(async () => {
       try {
-        const prices = await stripe.prices.list({
-          active: true,
-          type: 'recurring',
-          expand: ['data.product'],
-        })
-
-        const plans = prices.data.map((price) => ({
-          id: price.id,
-          productId: price.product as string,
-          name: (price.product as Stripe.Product).name,
-          description: (price.product as Stripe.Product).description,
-          price: price.unit_amount,
-          currency: price.currency,
-          interval: price.recurring?.interval,
-          intervalCount: price.recurring?.interval_count,
-          features: (price.product as Stripe.Product).metadata?.features
-            ? JSON.parse((price.product as Stripe.Product).metadata.features)
-            : [],
-        }))
-
-        return plans
+        // Return our predefined plans with features
+        return [
+          {
+            id: 'free',
+            name: 'Free',
+            description: 'Perfect for trying out the platform',
+            price: 0,
+            currency: 'usd',
+            interval: 'month',
+            tier: 'FREE' as SubscriptionTier,
+            features: SUBSCRIPTION_TIERS.FREE,
+            priceId: null,
+            popular: false,
+          },
+          {
+            id: 'pro',
+            name: SUBSCRIPTION_PLANS.PRO.name,
+            description: SUBSCRIPTION_PLANS.PRO.description,
+            price: SUBSCRIPTION_PLANS.PRO.monthlyPrice,
+            yearlyPrice: SUBSCRIPTION_PLANS.PRO.yearlyPrice,
+            currency: 'usd',
+            interval: 'month',
+            tier: SUBSCRIPTION_PLANS.PRO.tier,
+            features: SUBSCRIPTION_TIERS.PRO,
+            priceId: SUBSCRIPTION_PLANS.PRO.priceId,
+            yearlyPriceId: SUBSCRIPTION_PLANS.PRO.yearlyPriceId,
+            popular: true,
+          },
+          {
+            id: 'enterprise',
+            name: SUBSCRIPTION_PLANS.ENTERPRISE.name,
+            description: SUBSCRIPTION_PLANS.ENTERPRISE.description,
+            price: SUBSCRIPTION_PLANS.ENTERPRISE.monthlyPrice,
+            yearlyPrice: SUBSCRIPTION_PLANS.ENTERPRISE.yearlyPrice,
+            currency: 'usd',
+            interval: 'month',
+            tier: SUBSCRIPTION_PLANS.ENTERPRISE.tier,
+            features: SUBSCRIPTION_TIERS.ENTERPRISE,
+            priceId: SUBSCRIPTION_PLANS.ENTERPRISE.priceId,
+            yearlyPriceId: SUBSCRIPTION_PLANS.ENTERPRISE.yearlyPriceId,
+            popular: false,
+          },
+        ]
       } catch (error) {
         console.error('Failed to fetch subscription plans:', error)
         throw new Error('Failed to fetch subscription plans')
+      }
+    }),
+
+  // Get user's current subscription tier
+  getUserSubscriptionTier: protectedProcedure
+    .query(async ({ ctx }) => {
+      try {
+        // Get user's subscription from database
+        const user = await ctx.db.user.findUnique({
+          where: { id: ctx.user.id },
+          select: {
+            stripeCustomerId: true,
+            subscriptionTier: true,
+            subscriptionStatus: true,
+          }
+        })
+
+        if (!user?.stripeCustomerId) {
+          return {
+            tier: 'FREE' as SubscriptionTier,
+            features: SUBSCRIPTION_TIERS.FREE,
+            status: 'active',
+          }
+        }
+
+        // Get active subscription from Stripe
+        const subscriptions = await stripe.subscriptions.list({
+          customer: user.stripeCustomerId,
+          status: 'active',
+          limit: 1,
+          expand: ['data.items.data.price.product'],
+        })
+
+        if (subscriptions.data.length === 0) {
+          return {
+            tier: 'FREE' as SubscriptionTier,
+            features: SUBSCRIPTION_TIERS.FREE,
+            status: 'inactive',
+          }
+        }
+
+        const subscription = subscriptions.data[0]
+        const priceId = subscription.items.data[0].price.id
+        
+        // Determine tier based on price ID
+        let tier: SubscriptionTier = 'FREE'
+        if (priceId === SUBSCRIPTION_PLANS.PRO.priceId || priceId === SUBSCRIPTION_PLANS.PRO.yearlyPriceId) {
+          tier = 'PRO'
+        } else if (priceId === SUBSCRIPTION_PLANS.ENTERPRISE.priceId || priceId === SUBSCRIPTION_PLANS.ENTERPRISE.yearlyPriceId) {
+          tier = 'ENTERPRISE'
+        }
+
+        return {
+          tier,
+          features: SUBSCRIPTION_TIERS[tier],
+          status: subscription.status,
+          currentPeriodEnd: subscription.current_period_end,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        }
+      } catch (error) {
+        console.error('Failed to get user subscription tier:', error)
+        return {
+          tier: 'FREE' as SubscriptionTier,
+          features: SUBSCRIPTION_TIERS.FREE,
+          status: 'error',
+        }
+      }
+    }),
+
+  // Check if user can perform action based on subscription tier
+  checkFeatureAccess: protectedProcedure
+    .input(
+      z.object({
+        feature: z.enum(['jobPostings', 'teamMembers', 'leadAccess', 'advancedAnalytics', 'prioritySupport', 'customBranding', 'apiAccess', 'boostCredits', 'calculatorExports']),
+        requestedAmount: z.number().optional(), // For features with limits
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        // Get user's current tier
+        const userTier = await ctx.db.user.findUnique({
+          where: { id: ctx.user.id },
+          select: { subscriptionTier: true }
+        })
+
+        const tier = (userTier?.subscriptionTier as SubscriptionTier) || 'FREE'
+        const features = SUBSCRIPTION_TIERS[tier]
+        const featureValue = features[input.feature]
+
+        // Check boolean features
+        if (typeof featureValue === 'boolean') {
+          return {
+            hasAccess: featureValue,
+            tier,
+            limit: featureValue ? 'unlimited' : 0,
+            usage: 0,
+          }
+        }
+
+        // Check numeric/unlimited features
+        if (featureValue === 'unlimited') {
+          return {
+            hasAccess: true,
+            tier,
+            limit: 'unlimited',
+            usage: 0,
+          }
+        }
+
+        // For numeric limits, check if requested amount is within limit
+        const requestedAmount = input.requestedAmount || 1
+        return {
+          hasAccess: requestedAmount <= featureValue,
+          tier,
+          limit: featureValue,
+          usage: 0, // TODO: Get actual usage from database
+        }
+      } catch (error) {
+        console.error('Failed to check feature access:', error)
+        throw new Error('Failed to check feature access')
       }
     }),
 
@@ -464,6 +683,404 @@ export const paymentsRouter = createTRPCRouter({
       } catch (error) {
         console.error('Stripe boost checkout session creation failed:', error)
         throw new Error('Failed to create boost checkout session')
+      }
+    }),
+
+  // Handle failed payment recovery
+  retryFailedPayment: protectedProcedure
+    .input(
+      z.object({
+        paymentIntentId: z.string(),
+        paymentMethodId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Get the failed payment intent
+        const paymentIntent = await stripe.paymentIntents.retrieve(input.paymentIntentId)
+        
+        if (paymentIntent.status !== 'requires_payment_method') {
+          throw new Error('Payment intent is not in a retryable state')
+        }
+        
+        // Update with new payment method if provided
+        const updateData: any = {}
+        if (input.paymentMethodId) {
+          updateData.payment_method = input.paymentMethodId
+        }
+        
+        // Retry the payment
+        const confirmedPayment = await stripe.paymentIntents.confirm(
+          input.paymentIntentId,
+          updateData
+        )
+        
+        return {
+          id: confirmedPayment.id,
+          status: confirmedPayment.status,
+          clientSecret: confirmedPayment.client_secret,
+        }
+      } catch (error) {
+        console.error('Payment retry failed:', error)
+        throw new Error('Failed to retry payment')
+      }
+    }),
+
+  // Handle subscription recovery after failed payment
+  recoverSubscription: protectedProcedure
+    .input(
+      z.object({
+        subscriptionId: z.string(),
+        paymentMethodId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        // Update the subscription's default payment method
+        const subscription = await stripe.subscriptions.update(
+          input.subscriptionId,
+          {
+            default_payment_method: input.paymentMethodId,
+          }
+        )
+        
+        // Get the latest invoice and retry payment
+        const invoices = await stripe.invoices.list({
+          subscription: input.subscriptionId,
+          status: 'open',
+          limit: 1,
+        })
+        
+        if (invoices.data.length > 0) {
+          const invoice = invoices.data[0]
+          
+          // Retry payment on the failed invoice
+          const paidInvoice = await stripe.invoices.pay(invoice.id, {
+            payment_method: input.paymentMethodId,
+          })
+          
+          return {
+            subscriptionId: subscription.id,
+            subscriptionStatus: subscription.status,
+            invoiceId: paidInvoice.id,
+            invoiceStatus: paidInvoice.status,
+          }
+        }
+        
+        return {
+          subscriptionId: subscription.id,
+          subscriptionStatus: subscription.status,
+        }
+      } catch (error) {
+        console.error('Subscription recovery failed:', error)
+        throw new Error('Failed to recover subscription')
+      }
+    }),
+
+  // Handle dunning management for failed payments
+  handleDunning: protectedProcedure
+    .input(
+      z.object({
+        customerId: z.string(),
+        subscriptionId: z.string(),
+        attemptCount: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const { customerId, subscriptionId, attemptCount } = input
+        
+        // Get customer and subscription info
+        const [customer, subscription] = await Promise.all([
+          stripe.customers.retrieve(customerId),
+          stripe.subscriptions.retrieve(subscriptionId),
+        ])
+        
+        // Define dunning strategy based on attempt count
+        let action: 'email_reminder' | 'suspend_service' | 'cancel_subscription' = 'email_reminder'
+        let gracePeriodDays = 0
+        
+        if (attemptCount <= 3) {
+          action = 'email_reminder'
+          gracePeriodDays = 3
+        } else if (attemptCount <= 7) {
+          action = 'suspend_service'
+          gracePeriodDays = 1
+        } else {
+          action = 'cancel_subscription'
+        }
+        
+        // Update database to track dunning state
+        await ctx.db.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: {
+            subscriptionStatus: action === 'cancel_subscription' ? 'cancelled' : 'past_due',
+          }
+        })
+        
+        // Send appropriate notification
+        const user = await ctx.db.user.findFirst({
+          where: { stripeCustomerId: customerId },
+          select: { email: true, contactName: true }
+        })
+        
+        if (user) {
+          const { EmailService } = await import('../services/email-service')
+          
+          if (action === 'email_reminder') {
+            await EmailService.sendTemplateEmail('payment_failed_reminder', user.email, {
+              customerName: user.contactName,
+              attemptCount,
+              gracePeriodDays,
+              updatePaymentUrl: `${process.env.NEXTAUTH_URL}/subscription/update-payment`,
+            })
+          } else if (action === 'suspend_service') {
+            await EmailService.sendTemplateEmail('service_suspended', user.email, {
+              customerName: user.contactName,
+              suspensionDate: new Date(),
+              updatePaymentUrl: `${process.env.NEXTAUTH_URL}/subscription/update-payment`,
+            })
+          } else {
+            await EmailService.sendTemplateEmail('subscription_cancelled', user.email, {
+              customerName: user.contactName,
+              cancellationDate: new Date(),
+              reactivateUrl: `${process.env.NEXTAUTH_URL}/subscription/reactivate`,
+            })
+          }
+        }
+        
+        return {
+          action,
+          gracePeriodDays,
+          nextAttemptDate: new Date(Date.now() + gracePeriodDays * 24 * 60 * 60 * 1000),
+        }
+      } catch (error) {
+        console.error('Dunning management failed:', error)
+        throw new Error('Failed to handle dunning process')
+      }
+    }),
+
+  // Reactivate cancelled subscription
+  reactivateSubscription: protectedProcedure
+    .input(
+      z.object({
+        subscriptionId: z.string(),
+        paymentMethodId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Create a new subscription with the same price
+        const oldSubscription = await stripe.subscriptions.retrieve(input.subscriptionId, {
+          expand: ['items.data.price'],
+        })
+        
+        if (oldSubscription.status !== 'canceled') {
+          throw new Error('Subscription is not cancelled')
+        }
+        
+        const customer = oldSubscription.customer as string
+        const priceId = oldSubscription.items.data[0].price.id
+        
+        // Create new subscription
+        const newSubscription = await stripe.subscriptions.create({
+          customer,
+          items: [{ price: priceId }],
+          default_payment_method: input.paymentMethodId,
+          expand: ['latest_invoice.payment_intent'],
+        })
+        
+        // Update user's subscription status in database
+        await ctx.db.user.updateMany({
+          where: { stripeCustomerId: customer },
+          data: {
+            subscriptionStatus: 'active',
+          }
+        })
+        
+        // Send reactivation confirmation email
+        const user = await ctx.db.user.findFirst({
+          where: { stripeCustomerId: customer },
+          select: { email: true, contactName: true }
+        })
+        
+        if (user) {
+          const { EmailService } = await import('../services/email-service')
+          
+          await EmailService.sendTemplateEmail('subscription_reactivated', user.email, {
+            customerName: user.contactName,
+            reactivationDate: new Date(),
+            nextBillingDate: new Date(newSubscription.current_period_end * 1000),
+          })
+        }
+        
+        return {
+          subscriptionId: newSubscription.id,
+          status: newSubscription.status,
+          currentPeriodEnd: newSubscription.current_period_end,
+        }
+      } catch (error) {
+        console.error('Subscription reactivation failed:', error)
+        throw new Error('Failed to reactivate subscription')
+      }
+    }),
+
+  // Update payment method for subscription
+  updateSubscriptionPaymentMethod: protectedProcedure
+    .input(
+      z.object({
+        subscriptionId: z.string(),
+        paymentMethodId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        // Update subscription's default payment method
+        const subscription = await stripe.subscriptions.update(
+          input.subscriptionId,
+          {
+            default_payment_method: input.paymentMethodId,
+          }
+        )
+        
+        // Also update the customer's default payment method
+        await stripe.customers.update(
+          subscription.customer as string,
+          {
+            invoice_settings: {
+              default_payment_method: input.paymentMethodId,
+            },
+          }
+        )
+        
+        return {
+          subscriptionId: subscription.id,
+          updated: true,
+        }
+      } catch (error) {
+        console.error('Payment method update failed:', error)
+        throw new Error('Failed to update payment method')
+      }
+    }),
+
+  // Handle payment method failure and update
+  handlePaymentMethodFailure: protectedProcedure
+    .input(
+      z.object({
+        customerId: z.string(),
+        failedPaymentMethodId: z.string(),
+        failureReason: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Mark the payment method as failed
+        await stripe.paymentMethods.detach(input.failedPaymentMethodId)
+        
+        // Get other valid payment methods for the customer
+        const paymentMethods = await stripe.paymentMethods.list({
+          customer: input.customerId,
+          type: 'card',
+        })
+        
+        const validPaymentMethods = paymentMethods.data.filter(
+          pm => pm.id !== input.failedPaymentMethodId
+        )
+        
+        // Update user in database
+        const user = await ctx.db.user.findFirst({
+          where: { stripeCustomerId: input.customerId },
+          select: { email: true, contactName: true }
+        })
+        
+        if (user) {
+          const { EmailService } = await import('../services/email-service')
+          
+          // Send payment method failure notification
+          await EmailService.sendTemplateEmail('payment_method_failed', user.email, {
+            customerName: user.contactName,
+            failureReason: input.failureReason,
+            hasValidBackup: validPaymentMethods.length > 0,
+            updatePaymentUrl: `${process.env.NEXTAUTH_URL}/subscription/payment-methods`,
+          })
+        }
+        
+        return {
+          failedPaymentMethodRemoved: true,
+          validPaymentMethodsCount: validPaymentMethods.length,
+          hasBackupPaymentMethod: validPaymentMethods.length > 0,
+        }
+      } catch (error) {
+        console.error('Payment method failure handling failed:', error)
+        throw new Error('Failed to handle payment method failure')
+      }
+    }),
+
+  // Smart retry payment with fallback methods
+  smartRetryPayment: protectedProcedure
+    .input(
+      z.object({
+        customerId: z.string(),
+        amount: z.number(),
+        currency: z.string().default('usd'),
+        description: z.string(),
+        subscriptionId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        // Get all customer's payment methods
+        const paymentMethods = await stripe.paymentMethods.list({
+          customer: input.customerId,
+          type: 'card',
+        })
+        
+        if (paymentMethods.data.length === 0) {
+          throw new Error('No valid payment methods available')
+        }
+        
+        // Try each payment method in order
+        let lastError: any = null
+        
+        for (const paymentMethod of paymentMethods.data) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.create({
+              amount: input.amount,
+              currency: input.currency,
+              customer: input.customerId,
+              payment_method: paymentMethod.id,
+              description: input.description,
+              confirm: true,
+              return_url: `${process.env.NEXTAUTH_URL}/subscription/payment-success`,
+              metadata: {
+                subscriptionId: input.subscriptionId || '',
+              },
+            })
+            
+            // If successful, return immediately
+            if (paymentIntent.status === 'succeeded') {
+              return {
+                success: true,
+                paymentIntentId: paymentIntent.id,
+                paymentMethodUsed: paymentMethod.id,
+                status: paymentIntent.status,
+              }
+            }
+          } catch (error) {
+            lastError = error
+            console.log(`Payment method ${paymentMethod.id} failed:`, error)
+            continue
+          }
+        }
+        
+        // All payment methods failed
+        throw lastError || new Error('All payment methods failed')
+      } catch (error) {
+        console.error('Smart retry payment failed:', error)
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Payment failed',
+        }
       }
     }),
 

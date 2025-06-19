@@ -6,7 +6,7 @@ import { Check, Zap, Crown, Building2, Sparkles } from 'lucide-react'
 import { Button } from '@locumtruerate/ui'
 import { cn } from '@/lib/utils'
 
-export type SubscriptionTier = 'FREE' | 'BASIC' | 'PROFESSIONAL' | 'ENTERPRISE'
+export type SubscriptionTier = 'FREE' | 'PRO' | 'ENTERPRISE'
 
 interface SubscriptionPlan {
   id: string
@@ -47,7 +47,8 @@ const subscriptionPlans: SubscriptionPlan[] = [
       '1 active job posting',
       'Basic applicant management',
       'Email notifications',
-      'Community support'
+      'Community support',
+      '5 calculator exports'
     ],
     limits: {
       jobPostings: 1,
@@ -61,49 +62,23 @@ const subscriptionPlans: SubscriptionPlan[] = [
     icon: Building2
   },
   {
-    id: 'basic',
-    tier: 'BASIC',
-    name: 'Basic',
-    description: 'Great for small businesses and startups',
-    price: { monthly: 29, yearly: 290 },
-    features: [
-      '5 active job postings',
-      'Advanced applicant tracking',
-      'Email & SMS notifications',
-      'Basic analytics dashboard',
-      'Email support',
-      '2 boost credits/month'
-    ],
-    limits: {
-      jobPostings: 5,
-      teamMembers: 3,
-      applicationsPerJob: 200,
-      boostCredits: 2,
-      analyticsRetention: 6,
-      supportLevel: 'email'
-    },
-    color: 'from-blue-500 to-blue-600',
-    icon: Zap
-  },
-  {
-    id: 'professional',
-    tier: 'PROFESSIONAL',
-    name: 'Professional',
-    description: 'Best for growing companies',
-    price: { monthly: 99, yearly: 990 },
+    id: 'pro',
+    tier: 'PRO',
+    name: 'Pro',
+    description: 'Perfect for growing recruitment teams',
+    price: { monthly: 299, yearly: 2990 },
     features: [
       '25 active job postings',
+      'Lead marketplace access',
       'Advanced analytics & reporting',
-      'Team collaboration tools',
-      'Custom branding',
+      'Team collaboration (5 members)',
       'Priority support',
       '10 boost credits/month',
-      'API access',
-      'Advanced integrations'
+      'Unlimited calculator exports'
     ],
     limits: {
       jobPostings: 25,
-      teamMembers: 10,
+      teamMembers: 5,
       applicationsPerJob: 500,
       boostCredits: 10,
       analyticsRetention: 12,
@@ -114,31 +89,31 @@ const subscriptionPlans: SubscriptionPlan[] = [
     color: 'from-purple-500 to-purple-600',
     icon: Crown,
     stripePriceId: {
-      monthly: 'price_professional_monthly',
-      yearly: 'price_professional_yearly'
+      monthly: 'price_pro_monthly_299',
+      yearly: 'price_pro_yearly_2990'
     }
   },
   {
     id: 'enterprise',
     tier: 'ENTERPRISE',
     name: 'Enterprise',
-    description: 'For large organizations with custom needs',
-    price: { monthly: 299, yearly: 2990 },
+    description: 'Advanced features for large organizations',
+    price: { monthly: 699, yearly: 6990 },
     features: [
       'Unlimited job postings',
       'Unlimited team members',
-      'Advanced security & compliance',
-      'Custom integrations',
+      'Custom branding & white-label',
+      'API access & integrations',
       'Dedicated account manager',
-      'Unlimited boost credits',
-      'White-label options',
+      '50 boost credits/month',
+      'Advanced security & compliance',
       'Custom SLA'
     ],
     limits: {
       jobPostings: 'unlimited',
       teamMembers: 'unlimited',
       applicationsPerJob: 'unlimited',
-      boostCredits: 999,
+      boostCredits: 50,
       analyticsRetention: 24,
       supportLevel: 'dedicated'
     },
@@ -146,8 +121,8 @@ const subscriptionPlans: SubscriptionPlan[] = [
     color: 'from-orange-500 to-red-500',
     icon: Sparkles,
     stripePriceId: {
-      monthly: 'price_enterprise_monthly',
-      yearly: 'price_enterprise_yearly'
+      monthly: 'price_enterprise_monthly_699',
+      yearly: 'price_enterprise_yearly_6990'
     }
   }
 ]
