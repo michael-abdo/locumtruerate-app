@@ -1,9 +1,9 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button } from '@locum-calc/ui/components/ui/button'
-import { Input } from '@locum-calc/ui/components/ui/input'
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locum-calc/ui/components/ui/modal'
+import { Button } from '@locumtruerate/ui/components/ui/button'
+import { Input } from '@locumtruerate/ui/components/ui/input'
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locumtruerate/ui/components/ui/modal'
 import { Save, X } from 'lucide-react'
 
 interface SaveCalculationDialogProps {

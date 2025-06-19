@@ -2,14 +2,14 @@
 
 import React from 'react'
 import { useState, useCallback, useEffect } from 'react'
-import { PaycheckCalculationEngine, PaycheckInput, PaycheckCalculationResult, US_STATES, PayFrequency, FilingStatus } from '@locum-calc/calc-core'
-import { Button } from '@locum-calc/ui/components/ui/button'
-import { Input } from '@locum-calc/ui/components/ui/input'
-import { Select, SelectOption } from '@locum-calc/ui/components/ui/select'
+import { PaycheckCalculationEngine, PaycheckInput, PaycheckCalculationResult, US_STATES, PayFrequency, FilingStatus } from '@locumtruerate/calc-core'
+import { Button } from '@locumtruerate/ui/components/ui/button'
+import { Input } from '@locumtruerate/ui/components/ui/input'
+import { Select, SelectOption } from '@locumtruerate/ui/components/ui/select'
 import { useCalculatorAnalytics } from '@/hooks/use-analytics'
-import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, Compare, Plus } from 'lucide-react'
+import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare, Plus } from 'lucide-react'
 import { format } from 'date-fns'
-import { cn } from '@locum-calc/ui/lib/utils'
+import { cn } from '@/lib/utils'
 import { SaveCalculationDialog } from './save-calculation-dialog'
 
 interface FormData {
@@ -315,7 +315,7 @@ export function PaycheckCalculator() {
             aria-expanded={showComparison}
             aria-controls="comparison-panel"
           >
-            <Compare className="w-4 h-4 mr-2" />
+            <GitCompare className="w-4 h-4 mr-2" />
             Compare Scenarios
           </Button>
           <Button

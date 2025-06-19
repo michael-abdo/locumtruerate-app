@@ -4,15 +4,16 @@ const nextConfig = {
   experimental: {
     // Enable experimental features for better performance
     optimizePackageImports: ['lucide-react', '@locumtruerate/ui'],
-    turbo: {
-      resolveAlias: {
-        '@locumtruerate/api': '../packages/api/src',
-        '@locumtruerate/calc-core': '../packages/calc-core/src',
-        '@locumtruerate/shared': '../packages/shared/src',
-        '@locumtruerate/types': '../packages/types/src',
-        '@locumtruerate/ui': '../packages/ui/src'
-      }
-    }
+    // Disable turbo temporarily to fix CSS processing
+    // turbo: {
+    //   resolveAlias: {
+    //     '@locumtruerate/api': '../packages/api/src',
+    //     '@locumtruerate/calc-core': '../packages/calc-core/src',
+    //     '@locumtruerate/shared': '../packages/shared/src',
+    //     '@locumtruerate/types': '../packages/types/src',
+    //     '@locumtruerate/ui': '../packages/ui/src'
+    //   }
+    // }
   },
   
   // Performance optimizations

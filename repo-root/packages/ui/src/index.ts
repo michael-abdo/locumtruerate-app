@@ -1,11 +1,18 @@
 // Legacy web-only components (deprecated - use cross-platform versions)
-export { Button as WebButton, buttonVariants } from './button'
+export { Button as WebButton, buttonVariants as webButtonVariants } from './button'
 
-// Cross-platform components (recommended)
-export * from './cross-platform'
+// Cross-platform components (temporarily disabled due to React Native import issues)
+// export * from './cross-platform'
+
+// Export individual web-only components instead
+export { Button, buttonVariants } from './components/ui/button'
+export { Input } from './components/ui/input'
+export { Select } from './components/ui/select'
+export { Modal } from './components/ui/modal'
+export { Toast, toast } from './components/ui/toast'
 
 // Utilities
-export { cn } from './utils'
+export { cn } from './lib/utils'
 export * from './lib/skeleton-utils'
 
 // Base skeleton components

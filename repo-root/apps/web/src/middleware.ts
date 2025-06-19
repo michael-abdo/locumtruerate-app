@@ -1,10 +1,21 @@
 import { authMiddleware } from '@clerk/nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 
-export default authMiddleware({
+export default function middleware(req: NextRequest) {
+  // Development bypass for middleware
+  if (process.env.NODE_ENV === 'development' && 
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder')) {
+    // In development with placeholder keys, bypass auth middleware entirely
+    return NextResponse.next()
+  }
+  
+  // In production or with real keys, use actual Clerk middleware
+  return authMiddleware({
   // Allow signed out users to access the specified routes:
   publicRoutes: [
     '/',
@@ -48,7 +59,8 @@ export default authMiddleware({
       return Response.redirect(dashboardUrl)
     }
   },
-})
+  })(req)
+}
 
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
