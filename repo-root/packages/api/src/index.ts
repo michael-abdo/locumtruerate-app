@@ -9,7 +9,7 @@ import { createTRPCRouter, publicProcedure } from './trpc';
 // import { supportRouter } from './routers/support'; // Temporarily disabled due to compilation issues
 // import { calculationsRouter } from './routers/calculations';
 // import { leadsRouter } from './routers/leads';
-// import { paymentsRouter } from './routers/payments';
+import { paymentsRouter } from './routers/payments';
 // import { leadMarketplaceRouter } from './routers/lead-marketplace';
 // import { API_VERSION } from './versioning'; // Temporarily disabled due to compilation issues
 // import { companiesRouter } from './routers/companies';
@@ -34,6 +34,9 @@ export const appRouter = createTRPCRouter({
       deprecated: [],
     })),
   }),
+  
+  // Add payments functionality
+  payments: paymentsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { db } from '@/lib/db'
+import { prisma as db } from '@locumtruerate/database'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -174,7 +174,7 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
 // Email notification helpers
 async function sendPurchaseConfirmationEmail(purchase: any, amount: number) {
   try {
-    const { EmailService } = await import('@/services/email-service')
+    const { EmailService } = await import('@locumtruerate/api')
     
     const buyer = await db.user.findUnique({
       where: { id: purchase.buyerId },
@@ -201,7 +201,7 @@ async function sendPurchaseConfirmationEmail(purchase: any, amount: number) {
 
 async function sendInternalPurchaseNotification(purchase: any, amount: number) {
   try {
-    const { EmailService } = await import('@/services/email-service')
+    const { EmailService } = await import('@locumtruerate/api')
     
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@locumtruerate.com'
     

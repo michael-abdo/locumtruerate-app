@@ -107,7 +107,7 @@ export function useLoadingState(options: LoadingOptions = {}): UseLoadingStateRe
     setState('idle')
   }, [])
 
-  const execute = useCallback(async <T>(asyncFn: () => Promise<T>): Promise<T> => {
+  const execute = useCallback(async <T,>(asyncFn: () => Promise<T>): Promise<T> => {
     try {
       startLoading()
       const result = await asyncFn()
@@ -205,7 +205,7 @@ export function useDebouncedLoadingState(
   const loadingState = useLoadingState(options)
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const debouncedExecute = useCallback(async <T>(asyncFn: () => Promise<T>): Promise<T | null> => {
+  const debouncedExecute = useCallback(async <T,>(asyncFn: () => Promise<T>): Promise<T | null> => {
     return new Promise((resolve, reject) => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)

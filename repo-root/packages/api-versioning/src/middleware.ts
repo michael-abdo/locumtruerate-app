@@ -5,7 +5,7 @@
 
 import type { Request, Response, NextFunction } from 'express';
 import semver from 'semver';
-import { AppError } from '@locumtruerate/shared';
+import { AppError, ErrorCode } from '@locumtruerate/shared';
 import type { VersioningConfig, ApiVersion } from './types';
 
 declare global {
@@ -106,8 +106,8 @@ export class ApiVersioningMiddleware {
     // Check if version is valid semver
     if (!semver.valid(version)) {
       throw new AppError(
+        ErrorCode.INVALID_FORMAT,
         `Invalid API version format: ${version}`,
-        'INVALID_API_VERSION',
         400
       );
     }
@@ -125,8 +125,8 @@ export class ApiVersioningMiddleware {
 
     if (!isSupported && this.config.strict) {
       throw new AppError(
+        ErrorCode.INVALID_INPUT,
         `API version ${version} is not supported. Supported versions: ${this.config.supportedVersions.join(', ')}`,
-        'UNSUPPORTED_API_VERSION',
         400
       );
     }
@@ -273,8 +273,8 @@ export class ApiVersioningMiddleware {
       
       if (!bestMatch) {
         throw new AppError(
+          ErrorCode.INVALID_INPUT,
           `This endpoint does not support version ${requestedVersion}. Supported versions: ${supportedVersions.join(', ')}`,
-          'ENDPOINT_VERSION_MISMATCH',
           400
         );
       }

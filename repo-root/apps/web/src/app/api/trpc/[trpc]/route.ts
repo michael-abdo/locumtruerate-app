@@ -8,8 +8,24 @@ const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext: ({ req: trpcReq }) => {
-      // Extract user information from Clerk
-      const { userId, sessionId } = auth()
+      // Development mode detection
+      const isDevelopment = process.env.NODE_ENV === 'development'
+      const hasPlaceholderKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder')
+      
+      let userId: string | null = null
+      let sessionId: string | null = null
+      
+      if (isDevelopment && hasPlaceholderKeys) {
+        // Use development user when in dev mode with placeholder keys
+        userId = 'dev_user_123'
+        sessionId = 'dev_session_123'
+      } else {
+        // Extract user information from Clerk in production
+        const authData = auth()
+        userId = authData.userId
+        sessionId = authData.sessionId
+      }
+      
       const ipAddress = trpcReq.headers.get('x-forwarded-for') || trpcReq.headers.get('x-real-ip') || 'unknown'
       const userAgent = trpcReq.headers.get('user-agent') || 'unknown'
       

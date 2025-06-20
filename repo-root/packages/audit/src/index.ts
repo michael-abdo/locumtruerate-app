@@ -26,5 +26,6 @@ export {
   AuditLogEntry as AuditLogEntrySchema
 } from './logger'
 
-// Default export
-export { audit as default }
+// Default export - import and re-export the audit object
+import { audit } from './logger'
+export default audit

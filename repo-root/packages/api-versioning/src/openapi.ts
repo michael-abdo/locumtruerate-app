@@ -22,10 +22,6 @@ export function generateOpenApiSpec(
       description: config.description,
       contact: config.contact,
       license: config.license,
-      'x-logo': {
-        url: 'https://locumtruerate.com/logo.png',
-        altText: 'LocumTrueRate Logo'
-      }
     },
     servers: config.servers,
     tags: config.tags,
@@ -72,7 +68,7 @@ function generatePaths(endpoints: ApiEndpoint[], version: string): OpenAPIV3.Pat
       operation.requestBody = generateRequestBody(versionedEndpoint);
     }
 
-    paths[path][method] = operation;
+    (paths[path] as any)[method] = operation;
   }
 
   return paths;

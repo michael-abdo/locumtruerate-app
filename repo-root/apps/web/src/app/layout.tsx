@@ -11,7 +11,13 @@ import { AccessibilityManager } from '@/components/layout/accessibility-manager'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { SentryErrorBoundary } from '@/components/error/sentry-error-boundary'
+import { initializeProductionApp } from '@/lib/config/init-production'
 import './globals.css'
+
+// Initialize production configuration on server startup
+if (typeof window === 'undefined') {
+  initializeProductionApp()
+}
 
 const inter = Inter({ 
   subsets: ['latin'],

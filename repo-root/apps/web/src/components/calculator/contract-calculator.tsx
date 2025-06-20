@@ -232,11 +232,11 @@ export function ContractCalculator() {
         location: formData.state
       })
     } catch (error) {
-      console.error('Calculation error:', error)
-      setErrors({ general: 'Calculation error: ' + (error as Error).message })
+      const errorMessage = (error as Error).message
+      setErrors({ general: 'Calculation error: ' + errorMessage })
       trackCalculatorError({
         calculatorType: 'contract',
-        error: (error as Error).message
+        error: errorMessage
       })
     } finally {
       setIsCalculating(false)
@@ -298,8 +298,8 @@ export function ContractCalculator() {
       name
     })
     
-    // In a real implementation, you'd save the calculation data
-    console.log('Saving calculation:', { name, formData, result })
+    // In a real implementation, you'd save the calculation data to backend
+    // For now, we just track the analytics event
   }, [result, formData, trackCalculatorUsage])
 
   return (

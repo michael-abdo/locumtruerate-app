@@ -347,18 +347,18 @@ export default function CookiePolicyPage() {
                   <div>
                     <h4 className="font-medium text-yellow-800 mb-2">Desktop Browsers</h4>
                     <ul className="list-disc list-inside text-yellow-700 space-y-1 text-sm">
-                      <li><strong>Chrome:</strong> Settings > Privacy & Security > Cookies</li>
-                      <li><strong>Firefox:</strong> Preferences > Privacy & Security</li>
-                      <li><strong>Safari:</strong> Preferences > Privacy</li>
-                      <li><strong>Edge:</strong> Settings > Cookies and site permissions</li>
+                      <li><strong>Chrome:</strong> Settings &gt; Privacy &amp; Security &gt; Cookies</li>
+                      <li><strong>Firefox:</strong> Preferences &gt; Privacy &amp; Security</li>
+                      <li><strong>Safari:</strong> Preferences &gt; Privacy</li>
+                      <li><strong>Edge:</strong> Settings &gt; Cookies and site permissions</li>
                     </ul>
                   </div>
                   <div>
                     <h4 className="font-medium text-yellow-800 mb-2">Mobile Browsers</h4>
                     <ul className="list-disc list-inside text-yellow-700 space-y-1 text-sm">
-                      <li><strong>iOS Safari:</strong> Settings > Safari > Privacy & Security</li>
-                      <li><strong>Android Chrome:</strong> Settings > Site settings > Cookies</li>
-                      <li><strong>Mobile Firefox:</strong> Settings > Data Management</li>
+                      <li><strong>iOS Safari:</strong> Settings &gt; Safari &gt; Privacy &amp; Security</li>
+                      <li><strong>Android Chrome:</strong> Settings &gt; Site settings &gt; Cookies</li>
+                      <li><strong>Mobile Firefox:</strong> Settings &gt; Data Management</li>
                     </ul>
                   </div>
                 </div>
@@ -496,20 +496,20 @@ export default function CookiePolicyPage() {
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">iOS Devices</h3>
                   <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
-                    <li><strong>App Tracking:</strong> Settings > Privacy & Security > Tracking</li>
-                    <li><strong>Advertising ID:</strong> Settings > Privacy & Security > Apple Advertising</li>
-                    <li><strong>Location Services:</strong> Settings > Privacy & Security > Location Services</li>
-                    <li><strong>Analytics:</strong> Settings > Privacy & Security > Analytics & Improvements</li>
+                    <li><strong>App Tracking:</strong> Settings &gt; Privacy &amp; Security &gt; Tracking</li>
+                    <li><strong>Advertising ID:</strong> Settings &gt; Privacy &amp; Security &gt; Apple Advertising</li>
+                    <li><strong>Location Services:</strong> Settings &gt; Privacy &amp; Security &gt; Location Services</li>
+                    <li><strong>Analytics:</strong> Settings &gt; Privacy &amp; Security &gt; Analytics &amp; Improvements</li>
                   </ul>
                 </div>
 
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Android Devices</h3>
                   <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
-                    <li><strong>Ad Personalization:</strong> Settings > Google > Ads</li>
-                    <li><strong>App Permissions:</strong> Settings > Apps > LocumTrueRate > Permissions</li>
-                    <li><strong>Location Sharing:</strong> Settings > Location</li>
-                    <li><strong>Usage Analytics:</strong> Settings > Google > Usage & Diagnostics</li>
+                    <li><strong>Ad Personalization:</strong> Settings &gt; Google &gt; Ads</li>
+                    <li><strong>App Permissions:</strong> Settings &gt; Apps &gt; LocumTrueRate &gt; Permissions</li>
+                    <li><strong>Location Sharing:</strong> Settings &gt; Location</li>
+                    <li><strong>Usage Analytics:</strong> Settings &gt; Google &gt; Usage &amp; Diagnostics</li>
                   </ul>
                 </div>
               </div>

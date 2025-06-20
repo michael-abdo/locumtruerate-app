@@ -93,7 +93,7 @@ export class ApiDocumentation {
         };
       }
       
-      pathItem[endpoint.method.toLowerCase() as keyof OpenAPIV3.PathItemObject] = operation;
+      (pathItem as any)[endpoint.method.toLowerCase()] = operation;
       paths[endpoint.path] = pathItem;
     }
     

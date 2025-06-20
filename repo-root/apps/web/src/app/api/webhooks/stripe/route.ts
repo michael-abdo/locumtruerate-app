@@ -1,11 +1,16 @@
 import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { z } from 'zod'
 import { db } from '@locumtruerate/database'
 import { SubscriptionTier } from '@locumtruerate/database'
+import { 
+  validateWebhookPayload,
+  stripeWebhookEventSchema 
+} from '@/lib/validation/schemas/stripe-webhook'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
+  apiVersion: '2023-10-16',
 })
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -32,45 +37,51 @@ export async function POST(req: NextRequest) {
   console.log('Processing Stripe webhook:', event.type, event.id)
 
   try {
+    // Validate the event structure first
+    const validatedEvent = stripeWebhookEventSchema.parse(event)
+    
+    // Validate the payload based on event type
+    const validatedData = validateWebhookPayload(validatedEvent)
+
     switch (event.type) {
       // Subscription created - customer successfully subscribed
       case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
+        await handleSubscriptionCreated(validatedData as Stripe.Subscription)
         break
 
       // Subscription updated - plan changes, status changes
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+        await handleSubscriptionUpdated(validatedData as Stripe.Subscription)
         break
 
       // Subscription deleted - cancellation
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
+        await handleSubscriptionDeleted(validatedData as Stripe.Subscription)
         break
 
       // Invoice payment succeeded - successful billing
       case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice)
+        await handleInvoicePaymentSucceeded(validatedData as Stripe.Invoice)
         break
 
       // Invoice payment failed - failed billing
       case 'invoice.payment_failed':
-        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
+        await handleInvoicePaymentFailed(validatedData as Stripe.Invoice)
         break
 
       // Payment method attached - customer adds payment method
       case 'payment_method.attached':
-        await handlePaymentMethodAttached(event.data.object as Stripe.PaymentMethod)
+        await handlePaymentMethodAttached(validatedData as Stripe.PaymentMethod)
         break
 
       // Customer created - new customer in Stripe
       case 'customer.created':
-        await handleCustomerCreated(event.data.object as Stripe.Customer)
+        await handleCustomerCreated(validatedData as Stripe.Customer)
         break
 
       // Customer updated - customer info changed
       case 'customer.updated':
-        await handleCustomerUpdated(event.data.object as Stripe.Customer)
+        await handleCustomerUpdated(validatedData as Stripe.Customer)
         break
 
       default:
@@ -79,6 +90,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
+    // Handle validation errors specifically
+    if (error instanceof z.ZodError) {
+      console.error('Webhook validation error:', error.errors)
+      return NextResponse.json(
+        { error: 'Invalid webhook payload', details: error.errors },
+        { status: 400 }
+      )
+    }
+    
     console.error('Webhook processing error:', error)
     return NextResponse.json(
       { error: 'Webhook processing failed' },
@@ -212,7 +232,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     if (user) {
       // Import email service dynamically to avoid circular dependencies
       try {
-        const { EmailService } = await import('../../../services/email-service')
+        const { EmailService } = await import('@locumtruerate/api')
         
         await EmailService.sendTemplateEmail('payment_failed', user.email, {
           customerName: user.contactName,

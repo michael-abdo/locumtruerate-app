@@ -11,9 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { Breadcrumbs } from '@/components/seo/breadcrumbs'
 import { JobCard, JobFilters, Pagination } from '@/components/placeholder'
 import { trpc } from '@/providers/trpc-provider'
-import { generateSEO } from '@/lib/seo'
-import { Metadata } from 'next'
-
 const categoryInfo = {
   'emergency-medicine': {
     name: 'Emergency Medicine',
@@ -85,32 +82,6 @@ const categoryInfo = {
     averageSalary: '$310,000',
     jobCount: 1456
   }
-}
-
-export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
-  const category = params.category
-  const info = categoryInfo[category as keyof typeof categoryInfo]
-  
-  if (!info) {
-    return {
-      title: 'Category Not Found | LocumTrueRate',
-      description: 'The requested job category could not be found.'
-    }
-  }
-  
-  return generateSEO({
-    title: `${info.name} Jobs - Locum Tenens Opportunities`,
-    description: `${info.description} ${info.jobCount} ${info.name.toLowerCase()} positions available. Average salary: ${info.averageSalary}.`,
-    url: `/jobs/category/${category}`,
-    keywords: [
-      info.name.toLowerCase(),
-      `${info.name.toLowerCase()} jobs`,
-      `${info.name.toLowerCase()} physician`,
-      `${info.name.toLowerCase()} locum tenens`,
-      'healthcare jobs',
-      'medical positions'
-    ]
-  })
 }
 
 export default function CategoryJobsPage() {

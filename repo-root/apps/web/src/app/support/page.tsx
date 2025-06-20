@@ -1,12 +1,9 @@
-import React from 'react'
-import { Metadata } from 'next'
-import { SupportDashboard } from '@locumtruerate/ui/components/support'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Support Center | LocumTrueRate',
-  description: 'Get help with your LocumTrueRate account, job postings, and platform features.',
-  keywords: ['support', 'help', 'customer service', 'locum tenens', 'healthcare jobs'],
-}
+import React from 'react'
+import { SupportDashboard } from '@locumtruerate/ui'
+
+// TODO: Move metadata to layout.tsx or create a server component wrapper
 
 export default function SupportPage() {
   // In a real app, this would come from authentication context

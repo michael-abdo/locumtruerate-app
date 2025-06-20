@@ -10,6 +10,10 @@ export { Input } from './components/ui/input'
 export { Select } from './components/ui/select'
 export { Modal } from './components/ui/modal'
 export { Toast, toast } from './components/ui/toast'
+export { Badge, badgeVariants } from './components/ui/badge'
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './components/ui/card'
+export { Label } from './components/ui/label'
+export { Textarea } from './components/ui/textarea'
 
 // Utilities
 export { cn } from './lib/utils'
@@ -68,3 +72,10 @@ export {
   QuoteSkeleton,
   ArticleSkeleton,
 } from './components/ui/text-skeleton'
+
+// Support components
+export {
+  SupportWidget,
+  FloatingSupportButton,
+  SupportDashboard,
+} from './components/support'

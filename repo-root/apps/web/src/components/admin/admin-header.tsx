@@ -12,11 +12,13 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useClerkUser } from '@/hooks/use-clerk-user'
+import { validateAdminSearch } from '@/lib/validation/schemas/admin'
 
 export function AdminHeader() {
   const router = useRouter()
   const { user } = useClerkUser()
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchError, setSearchError] = useState<string>('')
   const [showNotifications, setShowNotifications] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
 
@@ -49,11 +51,25 @@ export function AdminHeader() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/admin/search?q=${encodeURIComponent(searchQuery)}`)
+    setSearchError('')
+    
+    const validation = validateAdminSearch(searchQuery)
+    
+    if (!validation.isValid) {
+      setSearchError(validation.error || 'Invalid search query')
+      return
+    }
+    
+    if (validation.sanitized) {
+      router.push(`/admin/search?q=${encodeURIComponent(validation.sanitized)}`)
       setSearchQuery('')
       setShowSearch(false)
     }
+  }
+  
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setSearchError('') // Clear error on new input
   }
 
   return (
@@ -79,14 +95,23 @@ export function AdminHeader() {
                   onSubmit={handleSearch}
                   className="flex items-center"
                 >
-                  <Input
-                    type="text"
-                    placeholder="Search users, jobs, or content..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-64"
-                    autoFocus
-                  />
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search users, jobs, or content..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className={`w-64 ${searchError ? 'border-red-500' : ''}`}
+                      autoFocus
+                      aria-invalid={!!searchError}
+                      aria-describedby={searchError ? 'search-error' : undefined}
+                    />
+                    {searchError && (
+                      <p id="search-error" className="absolute text-xs text-red-500 mt-1 -bottom-5">
+                        {searchError}
+                      </p>
+                    )}
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"

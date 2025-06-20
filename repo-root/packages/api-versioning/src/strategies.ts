@@ -71,7 +71,8 @@ export class UrlVersioning extends VersioningStrategy {
     if (match) {
       // Strip version from path for downstream routing
       req.url = req.url.replace(pattern, '');
-      req.path = req.path.replace(pattern, '');
+      // Note: req.path is read-only, so we store the cleaned path in a custom property
+      (req as any).cleanPath = req.path.replace(pattern, '');
       return match[1];
     }
     

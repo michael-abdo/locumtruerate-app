@@ -11,8 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { Breadcrumbs } from '@/components/seo/breadcrumbs'
 import { JobCard, JobFilters, Pagination } from '@/components/placeholder'
 import { trpc } from '@/providers/trpc-provider'
-import { generateSEO } from '@/lib/seo'
-import { Metadata } from 'next'
 
 const locationInfo = {
   'new-york-ny': {
@@ -115,33 +113,6 @@ const locationInfo = {
     jobCount: 1234,
     topSpecialties: ['Internal Medicine', 'Cardiology', 'Emergency Medicine']
   }
-}
-
-export async function generateMetadata({ params }: { params: { location: string } }): Promise<Metadata> {
-  const location = params.location
-  const info = locationInfo[location as keyof typeof locationInfo]
-  
-  if (!info) {
-    return {
-      title: 'Location Not Found | LocumTrueRate',
-      description: 'The requested location could not be found.'
-    }
-  }
-  
-  return generateSEO({
-    title: `Healthcare Jobs in ${info.name} - Locum Tenens Opportunities`,
-    description: `${info.description} ${info.jobCount} medical positions available in ${info.name}. Average physician salary: ${info.averageSalary}.`,
-    url: `/jobs/location/${location}`,
-    keywords: [
-      `${info.name.toLowerCase()} healthcare jobs`,
-      `${info.name.toLowerCase()} physician jobs`,
-      `${info.name.toLowerCase()} medical positions`,
-      `${info.state.toLowerCase()} healthcare`,
-      `locum tenens ${info.name.toLowerCase()}`,
-      'healthcare careers',
-      'medical jobs'
-    ]
-  })
 }
 
 export default function LocationJobsPage() {

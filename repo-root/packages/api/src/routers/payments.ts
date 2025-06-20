@@ -80,7 +80,7 @@ export const SUBSCRIPTION_PLANS = {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
+  apiVersion: '2023-10-16',
 })
 
 export const paymentsRouter = createTRPCRouter({
@@ -425,32 +425,6 @@ export const paymentsRouter = createTRPCRouter({
       }
     }),
 
-  // Reactivate subscription
-  reactivateSubscription: protectedProcedure
-    .input(
-      z.object({
-        subscriptionId: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const subscription = await stripe.subscriptions.update(
-          input.subscriptionId,
-          {
-            cancel_at_period_end: false,
-          }
-        )
-
-        return {
-          id: subscription.id,
-          status: subscription.status,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        }
-      } catch (error) {
-        console.error('Failed to reactivate subscription:', error)
-        throw new Error('Failed to reactivate subscription')
-      }
-    }),
 
   // Get customer payment methods
   getPaymentMethods: protectedProcedure
@@ -1125,7 +1099,7 @@ export const paymentsRouter = createTRPCRouter({
         try {
           const user = await ctx.db.user.findUnique({
             where: { id: ctx.user.id },
-            select: { email: true, name: true }
+            select: { email: true, contactName: true }
           })
           
           if (user) {

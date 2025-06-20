@@ -177,6 +177,11 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || '0.1.0',
     NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
+    // Production logging configuration
+    NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'ERROR' : 'INFO'),
+    DEPLOYMENT_ID: process.env.DEPLOYMENT_ID,
+    DEPLOYMENT_COMMIT_SHA: process.env.DEPLOYMENT_COMMIT_SHA,
+    DEPLOYMENT_TIMESTAMP: process.env.DEPLOYMENT_TIMESTAMP,
   },
 
   // Transpile workspace packages
