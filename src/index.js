@@ -2669,10 +2669,10 @@ async function handleGetPublicCompanies(request, env) {
           const org = JSON.parse(orgData);
           if (org.settings?.allowPublicProfiles && company.status === "active") {
             // Apply filters
-            if (industry && company.industry \!== industry) continue;
-            if (location && \!company.location?.toLowerCase().includes(location.toLowerCase())) continue;
-            if (search && \!company.name.toLowerCase().includes(search.toLowerCase()) &&
-                \!company.description?.toLowerCase().includes(search.toLowerCase())) continue;
+            if (industry && company.industry !== industry) continue;
+            if (location && !company.location?.toLowerCase().includes(location.toLowerCase())) continue;
+            if (search && !company.name.toLowerCase().includes(search.toLowerCase()) &&
+                !company.description?.toLowerCase().includes(search.toLowerCase())) continue;
             
             // Get job count
             const jobCount = await getActiveJobCountForCompany(company.id, env);
@@ -2735,7 +2735,7 @@ async function handleGetPublicCompanies(request, env) {
 async function handleGetCompanyProfile(companyId, env) {
   try {
     const companyData = await env.COMPANIES.get(companyId);
-    if (\!companyData) {
+    if (!companyData) {
       return new Response(JSON.stringify({ error: "Company not found" }), {
         status: 404,
         headers: { 
@@ -2749,7 +2749,7 @@ async function handleGetCompanyProfile(companyId, env) {
     
     // Check if public profiles are enabled
     const orgData = await env.ORGANIZATIONS.get(company.organizationId);
-    if (\!orgData) {
+    if (!orgData) {
       return new Response(JSON.stringify({ error: "Organization not found" }), {
         status: 404,
         headers: { 
@@ -2760,7 +2760,7 @@ async function handleGetCompanyProfile(companyId, env) {
     }
     
     const org = JSON.parse(orgData);
-    if (\!org.settings?.allowPublicProfiles) {
+    if (!org.settings?.allowPublicProfiles) {
       return new Response(JSON.stringify({ error: "Public profiles not enabled" }), {
         status: 403,
         headers: { 
@@ -2826,7 +2826,7 @@ async function handleGetCompanyProfile(companyId, env) {
 async function handleGetCompanyJobs(companyId, env) {
   try {
     const companyData = await env.COMPANIES.get(companyId);
-    if (\!companyData) {
+    if (!companyData) {
       return new Response(JSON.stringify({ error: "Company not found" }), {
         status: 404,
         headers: { 
@@ -2895,7 +2895,7 @@ async function handleUpdateCompanyProfile(companyId, request, env) {
   try {
     // Verify authorization (in production, check JWT token)
     const authHeader = request.headers.get("Authorization");
-    if (\!authHeader) {
+    if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { 
@@ -2906,7 +2906,7 @@ async function handleUpdateCompanyProfile(companyId, request, env) {
     }
     
     const companyData = await env.COMPANIES.get(companyId);
-    if (\!companyData) {
+    if (!companyData) {
       return new Response(JSON.stringify({ error: "Company not found" }), {
         status: 404,
         headers: { 

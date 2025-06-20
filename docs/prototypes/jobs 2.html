@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LocumTrueRate.com - Job Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body { font-family:'Inter',sans-serif; background:#eef2f7; margin:0; padding:2rem; color:#2c3e50; }
+    .banner { display:flex; align-items:center; justify-content:center; gap:0.75rem; background:linear-gradient(90deg,#6a11cb,#2575fc); color:#fff; padding:1rem 2rem; border-radius:1.5rem; box-shadow:0 6px 20px rgba(0,0,0,0.1); margin-bottom:1.5rem; }
+    .filters { max-width:1000px; margin:0 auto 1rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end; }
+    .filters label { display:flex; flex-direction:column; font-size:0.9rem; }
+    .filters select, .filters input { margin-top:0.5rem; padding:0.5rem; border-radius:0.5rem; border:1px solid #ccc; }
+    .calculate-btn { background:linear-gradient(90deg,#2575fc,#6a11cb); color:#fff; border:none; padding:0.75rem 1.5rem; border-radius:1rem; cursor:pointer; }
+    .view-toggle { margin-left:auto; display:flex; gap:0.5rem; }
+    .view-toggle button { background:#f6f9fc; border:1px solid #ccc; padding:0.5rem; border-radius:0.5rem; cursor:pointer; }
+    .view-toggle button.active { background:#2575fc; color:#fff; border-color:#2575fc; }
+    /* Card Grid Styles */
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; max-width:1000px; margin:0 auto; }
+    .job-card { background:#fff; border-radius:1rem; box-shadow:0 4px 16px rgba(0,0,0,0.05); overflow:hidden; display:flex; flex-direction:column; }
+    .job-card img { width:100%; height:160px; object-fit:cover; }
+    .job-card-content { padding:1rem; flex:1; display:flex; flex-direction:column; }
+    .job-card h3 { margin:0 0 0.5rem; font-size:1.1rem; color:#2575fc; }
+    .job-card p { margin:0.25rem 0; font-size:0.95rem; }
+    .actions { margin-top:auto; display:flex; justify-content:flex-end; }
+    .eye-btn { background:none; border:none; color:#2575fc; font-size:1.25rem; cursor:pointer; }
+    /* Pill style for True Rate */
+    .pill { display:inline-block; padding:0.25rem 0.75rem; background:linear-gradient(90deg,#2575fc,#6a11cb); color:#fff; border-radius:2rem; font-weight:600; margin-left:0.5rem; }
+    /* List Styles */
+    .list { max-width:1000px; margin:0 auto; }
+    .list-item { background:#fff; border-radius:1rem; box-shadow:0 4px 16px rgba(0,0,0,0.05); padding:1rem; display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+    .list-item img { width:80px; height:80px; object-fit:cover; border-radius:0.5rem; }
+    .list-item-content { flex:1; }
+    /* Popup styles */
+    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; }
+    .popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:2rem; border-radius:1.5rem; box-shadow:0 12px 36px rgba(0,0,0,0.2); z-index:1000; max-width:500px; width:90%; }
+    .popup h2 { color:#2575fc; text-align:center; margin-top:0; }
+    .results { display:grid; gap:1rem; margin-top:1rem; }
+    .results p { background:#f6f9fc; padding:1rem; border-radius:1rem; box-shadow:inset 0 2px 6px rgba(0,0,0,0.05); margin:0; }
+    .results span.label { font-weight:600; color:#2575fc; margin-right:0.5rem; }
+    .true-btn { display:block; margin:0.5rem auto; padding:0.75rem; width:80%; background:linear-gradient(90deg,#2575fc,#6a11cb); color:#fff; border:none; border-radius:2rem; text-align:center; cursor:pointer; }
+    .close-btn { display:block; margin:1.5rem auto 0; padding:1rem; width:100%; background:#dc3545; color:#fff; border:none; border-radius:1rem; cursor:pointer; }
+    .login-bar { display:flex; justify-content:center; gap:1rem; margin-bottom:2rem; }
+    .login-bar a { text-decoration:none; padding:0.5rem 1rem; border:2px solid #2575fc; border-radius:1rem; color:#2575fc; font-weight:500; background:#fff; transition:all .3s; }
+    .login-bar a:hover { background:#2575fc; color:#fff; transform:translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="banner"><i class="fas fa-briefcase-medical"></i><span>LocumTrueRate™ Job Board</span></div>
+  <div class="login-bar">
+    <a href="main.html">Rate Calculator</a>
+    <a href="jobs">Job Board</a>
+    <a href="LocumDashboard">Locum Dashboard</a>
+    <a href="RecruiterDashboard">Recruiter Dashboard</a>
+    <a href="paycheckcalculator">Paycheck Calculator</a>
+  </div>
+  <section class="filters">
+    <label>State<select id="filterState"><option value="">All</option></select></label>
+    <label>Practitioner Type<select id="filterType"><option value="">All</option></select></label>
+    <label>Min Rate<input id="filterMinRate" type="number" placeholder="$0"/></label>
+    <label>Max Rate<input id="filterMaxRate" type="number" placeholder="$0"/></label>
+    <button class="calculate-btn" onclick="applyFilters()">Apply Filters</button>
+    <div class="view-toggle">
+      <button id="gridViewBtn" class="active">Grid</button>
+      <button id="listViewBtn">List</button>
+    </div>
+  </section>
+  <section class="listings">
+    <div id="jobCards" class="card-grid"></div>
+    <div id="jobList" class="list" style="display:none"></div>
+  </section>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="resultsPopup">
+    <h2>Contract Details</h2>
+    <div class="results">
+      <button class="true-btn" id="popupTrueRate"></button>
+      <p><span class="label">Gross Daily:</span><span id="popupGrossDaily"></span></p>
+      <p><span class="label">Gross Weekly:</span><span id="popupGrossWeekly"></span></p>
+      <p><span class="label">Gross Monthly:</span><span id="popupGrossMonthly"></span></p>
+      <p><span class="label">Gross Yearly:</span><span id="popupGrossYearly"></span></p>
+      <p><span class="label">Total Stipend:</span><span id="popupStipendTotal"></span></p>
+      <p><span class="label">Mileage Reimbursement:</span><span id="popupMileage"></span></p>
+      <p><span class="label">Beeper Compensation:</span><span id="popupBeeperComp"></span></p>
+      <p><span class="label">Total Hours:</span><span id="popupTotalHours"></span></p>
+      <p><span class="label">Completion Bonus:</span><span id="popupBonus"></span></p>
+    </div>
+    <button class="close-btn" onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    const jobs = [
+      {
+        imageUrl: 'https://via.placeholder.com/300x160?text=ICU',
+        state: 'CA', type: 'CRNA', hourly: 120, otRate: 180,
+        weeklyStipend: 500, dailyStipend: 50, weeks: 12, pto: 1,
+        hoursPerWeek: 40, shiftsPerWeek: 5, dailyMiles: 20,
+        completionBonus: 1000, beeperRate: 50, beeperHoursPerMonth: 10
+      },
+      {
+        imageUrl: 'https://via.placeholder.com/300x160?text=ER',
+        state: 'NY', type: 'PA', hourly: 100, otRate: 150,
+        weeklyStipend: 400, dailyStipend: 40, weeks: 24, pto: 2,
+        hoursPerWeek: 36, shiftsPerWeek: 4, dailyMiles: 10,
+        completionBonus: 2000, beeperRate: 40, beeperHoursPerMonth: 8
+      }
+    ];
+    let viewMode='grid';
+    function val(id){return parseFloat(document.getElementById(id).value)||0;}
+    function populateFilters(){ const fs=document.getElementById('filterState'), ft=document.getElementById('filterType'); [...new Set(jobs.map(j=>j.state))].forEach(s=>fs.innerHTML+=`<option value="${s}">${s}</option>`); [...new Set(jobs.map(j=>j.type))].forEach(t=>ft.innerHTML+=`<option value="${t}">${t}</option>`); }
+    function switchView(mode){ viewMode=mode; document.getElementById('gridViewBtn').classList.toggle('active', mode==='grid'); document.getElementById('listViewBtn').classList.toggle('active', mode==='list'); renderJobs(currentJobs); }
+    let currentJobs = jobs;
+    function renderJobs(list){
+      currentJobs=list;
+      const grid=document.getElementById('jobCards'), listEl=document.getElementById('jobList'); grid.innerHTML=''; listEl.innerHTML='';
+      list.forEach((j,i)=>{
+        const workedWeeks=j.weeks-j.pto;
+        const regular=Math.min(j.hoursPerWeek,40);
+        const overtime=Math.max(j.hoursPerWeek-40,0);
+        const gd=j.shiftsPerWeek?((regular*j.hourly+overtime*j.otRate)/j.shiftsPerWeek):0;
+        const gw=gd*j.shiftsPerWeek;
+        const gy=gw*workedWeeks;
+        const totalIncome=gy+j.weeklyStipend*workedWeeks+j.dailyStipend*(workedWeeks*j.shiftsPerWeek)+j.dailyMiles*(workedWeeks*j.shiftsPerWeek)*0.67+j.beeperRate*j.beeperHoursPerMonth*(workedWeeks/4)+j.completionBonus;
+        const trRate=(j.hoursPerWeek*workedWeeks)?totalIncome/(j.hoursPerWeek*workedWeeks):0;
+        if(viewMode==='grid'){
+          const card=document.createElement('div'); card.className='job-card';
+          card.innerHTML=`<img src="${j.imageUrl}" alt="${j.type}"/><div class="job-card-content"><h3>${j.type} - ${j.state}</h3><p>True Rate:<span class="pill">$${trRate.toFixed(2)}/hr</span></p><p>Base Rate:$${j.hourly}/hr</p><p>Gross Value: $${totalIncome.toFixed(2)}</p><div class="actions"><button class="eye-btn"><i class="fas fa-eye"></i></button></div></div>`;
+          card.querySelector('.eye-btn').onclick=()=>showPopup(gd,gw,gw*4,gy,j.weeklyStipend*workedWeeks+j.dailyStipend*(workedWeeks*j.shiftsPerWeek),j.dailyMiles*(workedWeeks*j.shiftsPerWeek)*0.67,j.beeperRate*j.beeperHoursPerMonth*(workedWeeks/4),j.hoursPerWeek*workedWeeks,j.completionBonus,trRate);
+          grid.appendChild(card);
+        } else {
+          const item=document.createElement('div'); item.className='list-item';
+          item.innerHTML=`<img src="${j.imageUrl}" alt="${j.type}"/><div class="list-item-content"><h3>${j.type} - ${j.state}</h3><p>True Rate:<span class="pill">$${trRate.toFixed(2)}/hr</span> Base Rate:$${j.hourly}/hr Gross:$${totalIncome.toFixed(2)}</p></div><button class="eye-btn"><i class="fas fa-eye"></i></button>`;
+          item.querySelector('.eye-btn').onclick=()=>showPopup(gd,gw,gw*4,gy,j.weeklyStipend*workedWeeks+j.dailyStipend*(workedWeeks*j.shiftsPerWeek),j.dailyMiles*(workedWeeks*j.shiftsPerWeek)*0.67,j.beeperRate*j.beeperHoursPerMonth*(workedWeeks/4),j.hoursPerWeek*workedWeeks,j.completionBonus,trRate);
+          listEl.appendChild(item);
+        }
+      });
+    }
+    function applyFilters(){ let f=jobs.filter(j=>(!document.getElementById('filterState').value||j.state===document.getElementById('filterState').value)&&(!document.getElementById('filterType').value||j.type===document.getElementById('filterType').value)); const min=val('filterMinRate'),max=val('filterMaxRate'); f=f.filter(j=>j.hourly>=min&&(max?j.hourly<=max:true)); renderJobs(f);}    
+    function showPopup(gd,gw,gm,gy,st,mr,bc,th,bonus,trRate){ document.getElementById('popupTrueRate').textContent=`True Rate: $${trRate.toFixed(2)}/hr`;document.getElementById('popupGrossDaily').textContent=`$${gd.toFixed(2)}`;document.getElementById('popupGrossWeekly').textContent=`$${gw.toFixed(2)}`;document.getElementById('popupGrossMonthly').textContent=`$${gm.toFixed(2)}`;document.getElementById('popupGrossYearly').textContent=`$${gy.toFixed(2)}`;document.getElementById('popupStipendTotal').textContent=`$${st.toFixed(2)}`;document.getElementById('popupMileage').textContent=`$${mr.toFixed(2)}`;document.getElementById('popupBeeperComp').textContent=`$${bc.toFixed(2)}`;document.getElementById('popupTotalHours').textContent=`${th}`;document.getElementById('popupBonus').textContent=`$${bonus.toFixed(2)}`;document.getElementById('overlay').style.display='block';document.getElementById('resultsPopup').style.display='block'; }
+    function closePopup(){document.getElementById('overlay').style.display='none';document.getElementById('resultsPopup').style.display='none';}
+    document.getElementById('gridViewBtn').onclick=()=>switchView('grid');
+    document.getElementById('listViewBtn').onclick=()=>switchView('list');
+    populateFilters(); switchView('grid'); applyFilters();
+  </script>
+</body>
+</html>

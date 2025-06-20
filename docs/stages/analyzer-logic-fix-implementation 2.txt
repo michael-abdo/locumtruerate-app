@@ -1,0 +1,87 @@
+- Fix Analyzer Logic Flaw - Complete Implementation Plan (11 hours total)
+  - Phase 1: Preparation & Analysis (2 hours)
+    - Step 1.1: Create Test Components (30 min)
+      - Create tools/cross-platform-validation/test-components/ directory
+      - Build web-heavy.tsx with 20+ className patterns for known web count verification
+      - Build native-heavy.tsx with 15+ StyleSheet patterns for known native count verification
+      - Build shared-pure.tsx with only React hooks for 100% shared verification
+      - Build mixed.tsx with 5 web + 3 native patterns for mixed count verification
+      - Document expected statement counts for each test component
+    - Step 1.2: Benchmark Current Performance (30 min)
+      - Measure current analyzer execution time on large components (SupportWidget, SupportDashboard)
+      - Profile memory usage during AST traversal with Node.js --prof flag
+      - Record baseline metrics for regression testing
+      - Test with 1000+ line files to identify potential performance bottlenecks
+    - Step 1.3: Document Current Behavior (60 min)
+      - Record exact current output for all 6 demo components (JSON format)
+      - Create statement vs pattern count comparison matrix
+      - Map the logic disconnect between AST traversal and pattern analysis
+      - Document expected changes for each component after fix
+      - Archive current analysis files with "pre-fix" naming convention
+  - Phase 2: Core Logic Fix (4 hours)
+    - Step 2.1: Create Helper Method (90 min)
+      - Design categorizeStatementByPattern() method signature
+      - Implement pattern matching logic with platform priority hierarchy
+      - Add real-time pattern checking against web/native/shared pattern sets
+      - Include line number tracking for accurate counting
+      - Handle edge cases (multiple patterns on same line, pattern conflicts)
+      - Add TypeScript types for pattern categorization results
+    - Step 2.2: Integrate into AST Traversal (90 min)
+      - Modify Statement visitor in analyzeAST() method
+      - Replace default "shared" assignment with pattern-based categorization
+      - Route statements to correct buckets (web/native/shared) in real-time
+      - Maintain visitedLines tracking to prevent double-counting
+      - Preserve existing import and API detection logic
+      - Ensure pattern metadata arrays are populated during categorization
+    - Step 2.3: Remove Separate Pattern Analysis (60 min)
+      - Remove analyzeLinePatterns() method call from main analysis flow
+      - Deprecate analyzeLinePatterns() method (keep for reference)
+      - Verify pattern arrays still populated correctly during integrated analysis
+      - Test that recommendations system still receives pattern metadata
+      - Ensure no breaking changes to result data structure
+  - Phase 3: Testing & Validation (3 hours)
+    - Step 3.1: Unit Testing (90 min)
+      - Test categorizeStatementByPattern() helper with known pattern strings
+      - Verify statement categorization accuracy with manual calculations
+      - Test edge cases: multiple patterns per line, overlapping patterns
+      - Test performance with regex compilation optimization
+      - Validate line number tracking accuracy
+      - Test pattern priority hierarchy (web vs native conflicts)
+    - Step 3.2: Integration Testing (60 min)
+      - Run fixed analyzer on all 4 test components
+      - Compare results with manual verification calculations
+      - Verify CLI tool displays new realistic results correctly
+      - Test JSON output format compatibility with existing tools
+      - Check that exit codes reflect actual target achievement
+      - Validate recommendation generation with new statement counts
+    - Step 3.3: Regression Testing (30 min)
+      - Run fixed analyzer on all 6 demo components
+      - Document specific changes from current (incorrect) results
+      - Verify pattern detection arrays still contain correct data
+      - Test that complexity analysis remains unaffected
+      - Confirm CLI formatting displays new metrics properly
+  - Phase 4: Re-baseline & Documentation (2 hours)
+    - Step 4.1: Generate New Accurate Baseline (60 min)
+      - Re-run analyzer on all 6 demo components with fixed logic
+      - Create new baseline report with realistic reusability percentages
+      - Generate fresh JSON analysis files with corrected statement counts
+      - Update component prioritization based on actual reusability scores
+      - Archive old incorrect analysis files with clear naming
+      - Verify 85% target is realistically achievable with current components
+    - Step 4.2: Update Documentation (60 min)
+      - Update BASELINE_REPORT.md with accurate metrics and realistic targets
+      - Add analyzer fix documentation to COMPREHENSIVE_VALIDATION_REPORT.md
+      - Document the logic flaw discovery and resolution process
+      - Create migration guide for any external systems consuming JSON output
+      - Update README with corrected baseline establishment process
+      - Document new realistic improvement roadmap based on accurate data
+- Post-Fix Validation & Continuation
+  - Verify All Downstream Tools
+    - Test CLI tool behavior with new realistic metrics
+    - Confirm report generation handles new data correctly
+    - Validate that component extraction priorities are now accurate
+  - Resume Cross-Platform Development
+    - Proceed with Jest configuration for dual-platform testing
+    - Build cross-platform test utilities with accurate baseline
+    - Continue with mobile development environment setup
+    - Implement component extraction tools using corrected reusability metrics
