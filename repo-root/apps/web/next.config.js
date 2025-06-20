@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const { withSentryConfig } = require('@sentry/nextjs')
 
 const nextConfig = {
   experimental: {
@@ -31,27 +32,87 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // Headers for security and performance
+  // HIPAA-compliant security headers
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
+          // Clickjacking protection - prevent embedding in frames
           {
             key: 'X-Frame-Options',
             value: 'DENY'
           },
+          // MIME type sniffing protection
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff'
           },
+          // XSS protection for older browsers
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          // Referrer policy for privacy
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           },
+          // HTTP Strict Transport Security (HSTS) - HTTPS only
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload'
+          },
+          // Content Security Policy for healthcare application
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.locumtruerate.com https://*.clerk.accounts.dev https://browser.sentry-cdn.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https: blob:",
+              "media-src 'self' https:",
+              "connect-src 'self' https://api.locumtruerate.com https://*.clerk.accounts.dev https://*.sentry.io wss://clerk.locumtruerate.com",
+              "frame-src 'self' https://*.clerk.accounts.dev",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests"
+            ].join('; ')
+          },
+          // Permissions Policy - restrict sensitive APIs for HIPAA compliance
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()'
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'usb=()',
+              'magnetometer=()',
+              'gyroscope=()',
+              'speaker=()',
+              'vibrate=()',
+              'fullscreen=(self)',
+              'sync-xhr=()'
+            ].join(', ')
+          },
+          // Cross-Origin Embedder Policy for security isolation
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp'
+          },
+          // Cross-Origin Opener Policy to prevent window.opener access
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin'
+          },
+          // Cross-Origin Resource Policy
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin'
           }
         ]
       },
@@ -175,4 +236,45 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// Sentry configuration for healthcare application monitoring
+const sentryWebpackPluginOptions = {
+  // Healthcare-specific Sentry configuration
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  
+  // Authentication
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  
+  // Source maps for production debugging (HIPAA-compliant)
+  silent: process.env.NODE_ENV === 'production',
+  
+  // Upload source maps only in CI/production
+  dryRun: process.env.NODE_ENV !== 'production',
+  
+  // Disable source map upload in development
+  disableServerWebpackPlugin: process.env.NODE_ENV === 'development',
+  disableClientWebpackPlugin: process.env.NODE_ENV === 'development',
+  
+  // Hide source maps from the public (security requirement)
+  hideSourceMaps: true,
+  
+  // Release naming for healthcare deployments
+  release: {
+    name: process.env.SENTRY_RELEASE || process.env.NEXT_PUBLIC_APP_VERSION,
+    deploy: {
+      env: process.env.NODE_ENV
+    }
+  },
+  
+  // Error handling during build
+  errorHandler: (err, invokeErr, compilation) => {
+    compilation.warnings.push('Sentry CLI Plugin: ' + err.message)
+  }
+}
+
+// Only apply Sentry in production or when explicitly enabled
+const shouldUseSentry = process.env.NODE_ENV === 'production' || process.env.ENABLE_SENTRY === 'true'
+
+module.exports = shouldUseSentry 
+  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  : nextConfig

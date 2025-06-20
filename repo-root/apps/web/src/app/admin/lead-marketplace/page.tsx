@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { trpc } from '@/providers/trpc-provider'
 import { Card, Button, Badge, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Tabs, TabsContent, TabsList, TabsTrigger, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Label } from '@locumtruerate/ui'
 import { toast } from 'sonner'
+import { z } from 'zod'
+import { moneySchema, safeTextSchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
 
 // Types
 interface Lead {
@@ -20,15 +23,36 @@ interface Lead {
   createdAt: Date
 }
 
+// Validation schema for lead listing creation
+const createListingSchema = z.object({
+  leadId: z.string().uuid('Invalid lead ID format'),
+  basePrice: z.number()
+    .min(1000, 'Price must be at least $10.00')
+    .max(10000, 'Price cannot exceed $100.00')
+    .multipleOf(100, 'Price must be in increments of $1.00'),
+  priceCategory: z.enum(['standard', 'premium', 'hot_lead']),
+  maxPurchases: z.number()
+    .int()
+    .min(1, 'Must allow at least 1 purchase')
+    .max(10, 'Cannot exceed 10 purchases'),
+  expiresInDays: z.number()
+    .int()
+    .min(1, 'Must expire in at least 1 day')
+    .max(90, 'Cannot expire more than 90 days out')
+})
+
+type CreateListingFormData = z.infer<typeof createListingSchema>
+
 // Create listing form component
 const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CreateListingFormData>({
     leadId: '',
     basePrice: 2500, // $25.00
     priceCategory: 'standard',
     maxPurchases: 1,
     expiresInDays: 30,
   })
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   const createListingMutation = trpc.leadMarketplace.createListing.useMutation({
     onSuccess: () => {
@@ -49,7 +73,30 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    createListingMutation.mutate(formData)
+    
+    const result = safeParse(createListingSchema, formData)
+    if (!result.success) {
+      setValidationErrors(result.errors)
+      return
+    }
+    
+    setValidationErrors({})
+    createListingMutation.mutate(result.data)
+  }
+
+  const handleFieldChange = <K extends keyof CreateListingFormData>(
+    field: K,
+    value: CreateListingFormData[K]
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    // Clear validation error for this field
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    }
   }
 
   return (
@@ -59,10 +106,18 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
         <Input
           id="leadId"
           value={formData.leadId}
-          onChange={(e) => setFormData(prev => ({ ...prev, leadId: e.target.value }))}
+          onChange={(e) => handleFieldChange('leadId', e.target.value)}
           placeholder="lead-id-here"
           required
+          className={validationErrors.leadId ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.leadId}
+          aria-describedby={validationErrors.leadId ? 'leadId-error' : undefined}
         />
+        {validationErrors.leadId && (
+          <p id="leadId-error" className="mt-1 text-sm text-red-600">
+            {validationErrors.leadId}
+          </p>
+        )}
       </div>
 
       <div>
@@ -71,12 +126,20 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           id="basePrice"
           type="number"
           value={formData.basePrice}
-          onChange={(e) => setFormData(prev => ({ ...prev, basePrice: parseInt(e.target.value) }))}
+          onChange={(e) => handleFieldChange('basePrice', parseInt(e.target.value) || 0)}
           min="1000"
           max="10000"
           step="100"
           required
+          className={validationErrors.basePrice ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.basePrice}
+          aria-describedby={validationErrors.basePrice ? 'basePrice-error' : undefined}
         />
+        {validationErrors.basePrice && (
+          <p id="basePrice-error" className="mt-1 text-sm text-red-600">
+            {validationErrors.basePrice}
+          </p>
+        )}
         <p className="text-sm text-gray-500">
           ${(formData.basePrice / 100).toFixed(2)} (min $10.00, max $100.00)
         </p>
@@ -86,7 +149,7 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
         <Label htmlFor="priceCategory">Price Category</Label>
         <Select
           value={formData.priceCategory}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, priceCategory: value }))}
+          onValueChange={(value) => handleFieldChange('priceCategory', value as 'standard' | 'premium' | 'hot_lead')}
         >
           <SelectTrigger>
             <SelectValue />
@@ -105,11 +168,19 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           id="maxPurchases"
           type="number"
           value={formData.maxPurchases}
-          onChange={(e) => setFormData(prev => ({ ...prev, maxPurchases: parseInt(e.target.value) }))}
+          onChange={(e) => handleFieldChange('maxPurchases', parseInt(e.target.value) || 1)}
           min="1"
           max="10"
           required
+          className={validationErrors.maxPurchases ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.maxPurchases}
+          aria-describedby={validationErrors.maxPurchases ? 'maxPurchases-error' : undefined}
         />
+        {validationErrors.maxPurchases && (
+          <p id="maxPurchases-error" className="mt-1 text-sm text-red-600">
+            {validationErrors.maxPurchases}
+          </p>
+        )}
       </div>
 
       <div>
@@ -118,11 +189,19 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           id="expiresInDays"
           type="number"
           value={formData.expiresInDays}
-          onChange={(e) => setFormData(prev => ({ ...prev, expiresInDays: parseInt(e.target.value) }))}
+          onChange={(e) => handleFieldChange('expiresInDays', parseInt(e.target.value) || 1)}
           min="1"
           max="90"
           required
+          className={validationErrors.expiresInDays ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.expiresInDays}
+          aria-describedby={validationErrors.expiresInDays ? 'expiresInDays-error' : undefined}
         />
+        {validationErrors.expiresInDays && (
+          <p id="expiresInDays-error" className="mt-1 text-sm text-red-600">
+            {validationErrors.expiresInDays}
+          </p>
+        )}
       </div>
 
       <Button 

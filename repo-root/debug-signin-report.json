@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-06-20T15:50:27.915Z",
+  "errors": [
+    "Connection failed: connect ECONNREFUSED 127.0.0.1:3000"
+  ],
+  "issues": [],
+  "testsRun": 4
+}

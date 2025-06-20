@@ -7,6 +7,21 @@ import { Button } from '@locumtruerate/ui'
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locumtruerate/ui'
 import { LeadCaptureForm } from './LeadCaptureForm'
 import { usePageAnalytics } from '@/hooks/use-analytics'
+import { z } from 'zod'
+import { safeTextSchema } from '@/lib/validation/schemas'
+
+// Validation schema for contact form modal props
+const contactModalPropsSchema = z.object({
+  trigger: z.enum(['button', 'exit_intent', 'time_delay', 'scroll', 'custom']).optional().default('button'),
+  source: safeTextSchema(0, 50).optional().default('modal'),
+  sourceId: safeTextSchema(0, 50).optional(),
+  title: safeTextSchema(0, 100).optional(),
+  description: safeTextSchema(0, 500).optional(),
+  ctaText: safeTextSchema(0, 50).optional(),
+  variant: z.enum(['contact', 'demo', 'support', 'consultation']).optional().default('contact'),
+  className: safeTextSchema(0, 200).optional().default(''),
+  testId: safeTextSchema(0, 50).optional().default('contact-form-modal')
+})
 
 interface ContactFormModalProps {
   isOpen: boolean
@@ -45,16 +60,35 @@ export function ContactFormModal({
   className = '',
   testId = 'contact-form-modal'
 }: ContactFormModalProps) {
+  // Validate props
+  const validatedProps = React.useMemo(() => {
+    try {
+      return contactModalPropsSchema.parse({
+        trigger,
+        source,
+        sourceId,
+        title,
+        description,
+        ctaText,
+        variant,
+        className,
+        testId
+      })
+    } catch (error) {
+      console.error('ContactFormModal: Invalid props', error)
+      return contactModalPropsSchema.parse({}) // Use defaults
+    }
+  }, [trigger, source, sourceId, title, description, ctaText, variant, className, testId])
   const [selectedAction, setSelectedAction] = useState<string | null>(null)
-  const [modalSource, setModalSource] = useState(source)
+  const [modalSource, setModalSource] = useState(validatedProps.source)
   const analytics = usePageAnalytics()
 
   // Update source based on trigger
   useEffect(() => {
-    if (trigger) {
-      setModalSource(`${source}_${trigger}`)
+    if (validatedProps.trigger) {
+      setModalSource(`${validatedProps.source}_${validatedProps.trigger}`)
     }
-  }, [source, trigger])
+  }, [validatedProps.source, validatedProps.trigger])
 
   // Track modal open
   useEffect(() => {

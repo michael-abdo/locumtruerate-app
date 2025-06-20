@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { trpc } from '@/providers/trpc-provider'
 import { debounce } from '@/lib/utils'
+import { jobSearchFiltersSchema } from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 interface AdvancedSearchProps {
   onSearch: (filters: SearchFilters) => void
@@ -32,6 +34,8 @@ export interface SearchFilters {
   startDate?: string
   duration?: string
 }
+
+type ValidationErrors = Partial<Record<keyof SearchFilters, string>>
 
 const categories = [
   'Emergency Medicine',
@@ -68,6 +72,7 @@ export function AdvancedSearch({ onSearch, initialFilters = {} }: AdvancedSearch
   const searchParams = useSearchParams()
   const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState<SearchFilters>(initialFilters)
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
   const [suggestions, setSuggestions] = useState<any>(null)
   const [showSuggestions, setShowSuggestions] = useState(false)
 
@@ -91,7 +96,56 @@ export function AdvancedSearch({ onSearch, initialFilters = {} }: AdvancedSearch
     []
   )
 
+  const validateAndTransformFilters = () => {
+    try {
+      const validationSchema = jobSearchFiltersSchema.extend({
+        category: z.string().optional(),
+        type: z.string().optional(),
+        salaryMin: z.number().min(0).optional(),
+        salaryMax: z.number().min(0).optional(),
+        remote: z.boolean().optional(),
+        urgent: z.boolean().optional(),
+        specialties: z.array(z.string()).optional(),
+        startDate: z.string().optional(),
+        duration: z.string().optional()
+      })
+
+      const result = validationSchema.safeParse({
+        query: filters.query,
+        location: filters.location ? { city: filters.location } : undefined,
+        category: filters.category,
+        type: filters.type,
+        salaryMin: filters.salaryMin,
+        salaryMax: filters.salaryMax,
+        remote: filters.remote,
+        urgent: filters.urgent,
+        specialties: filters.specialties,
+        startDate: filters.startDate,
+        duration: filters.duration
+      })
+
+      if (!result.success) {
+        const errors: ValidationErrors = {}
+        result.error.errors.forEach((err) => {
+          const field = err.path[0] as keyof SearchFilters
+          errors[field] = err.message
+        })
+        setValidationErrors(errors)
+        return null
+      }
+
+      setValidationErrors({})
+      return result.data
+    } catch (error) {
+      console.error('Validation error:', error)
+      return null
+    }
+  }
+
   const handleSearch = () => {
+    const validatedFilters = validateAndTransformFilters()
+    if (!validatedFilters) return
+
     // Update URL params
     const params = new URLSearchParams()
     Object.entries(filters).forEach(([key, value]) => {
@@ -133,12 +187,23 @@ export function AdvancedSearch({ onSearch, initialFilters = {} }: AdvancedSearch
                 placeholder="Search jobs, specialties, or keywords..."
                 value={filters.query || ''}
                 onChange={(e) => {
-                  setFilters({ ...filters, query: e.target.value })
-                  debouncedGetSuggestions(e.target.value)
+                  const value = e.target.value
+                  setFilters({ ...filters, query: value })
+                  if (validationErrors.query) {
+                    setValidationErrors({ ...validationErrors, query: undefined })
+                  }
+                  debouncedGetSuggestions(value)
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10"
+                className={`pl-10 ${validationErrors.query ? 'border-red-500' : ''}`}
+                aria-invalid={!!validationErrors.query}
+                aria-describedby={validationErrors.query ? 'query-error' : undefined}
               />
+              {validationErrors.query && (
+                <p id="query-error" className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {validationErrors.query}
+                </p>
+              )}
             </div>
 
             {/* Search Suggestions */}
@@ -312,15 +377,27 @@ export function AdvancedSearch({ onSearch, initialFilters = {} }: AdvancedSearch
                   <Input
                     type="number"
                     placeholder="Min"
+                    min="0"
                     value={filters.salaryMin || ''}
-                    onChange={(e) => setFilters({ ...filters, salaryMin: parseInt(e.target.value) || undefined })}
+                    onChange={(e) => {
+                      const value = e.target.value ? parseInt(e.target.value) : undefined
+                      if (value !== undefined && value < 0) return
+                      setFilters({ ...filters, salaryMin: value })
+                    }}
+                    className={validationErrors.salaryMin ? 'border-red-500' : ''}
                   />
                   <span className="self-center text-gray-500">-</span>
                   <Input
                     type="number"
                     placeholder="Max"
+                    min="0"
                     value={filters.salaryMax || ''}
-                    onChange={(e) => setFilters({ ...filters, salaryMax: parseInt(e.target.value) || undefined })}
+                    onChange={(e) => {
+                      const value = e.target.value ? parseInt(e.target.value) : undefined
+                      if (value !== undefined && value < 0) return
+                      setFilters({ ...filters, salaryMax: value })
+                    }}
+                    className={validationErrors.salaryMax ? 'border-red-500' : ''}
                   />
                 </div>
               </div>

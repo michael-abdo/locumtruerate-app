@@ -5,6 +5,14 @@ import { Button } from '@locumtruerate/ui/components/ui/button'
 import { Input } from '@locumtruerate/ui/components/ui/input'
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locumtruerate/ui/components/ui/modal'
 import { Save, X } from 'lucide-react'
+import { z } from 'zod'
+import { safeTextSchema } from '@/lib/validation/schemas'
+
+// Validation schema for calculation name
+const saveCalculationSchema = z.object({
+  name: safeTextSchema(1, 100),
+  calculationType: z.enum(['contract', 'paycheck', 'hourly', 'comparison', 'general']).default('general')
+})
 
 interface SaveCalculationDialogProps {
   isOpen: boolean
@@ -21,17 +29,47 @@ export function SaveCalculationDialog({
 }: SaveCalculationDialogProps) {
   const [name, setName] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [errors, setErrors] = useState<{ name?: string }>({})
+
+  const handleInputChange = (value: string) => {
+    setName(value)
+    
+    // Real-time validation
+    try {
+      saveCalculationSchema.shape.name.parse(value)
+      setErrors(prev => ({ ...prev, name: undefined }))
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({ ...prev, name: error.errors[0].message }))
+      }
+    }
+  }
 
   const handleSave = async () => {
-    if (!name.trim()) return
-    
-    setIsSaving(true)
+    // Validate form data
     try {
-      await onSave(name)
+      const validatedData = saveCalculationSchema.parse({
+        name: name.trim(),
+        calculationType
+      })
+      
+      setIsSaving(true)
+      await onSave(validatedData.name)
       setName('')
+      setErrors({})
       onClose()
     } catch (error) {
-      console.error('Failed to save calculation:', error)
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { name?: string } = {}
+        error.errors.forEach(err => {
+          if (err.path[0] === 'name') {
+            fieldErrors.name = err.message
+          }
+        })
+        setErrors(fieldErrors)
+      } else {
+        console.error('Failed to save calculation:', error)
+      }
     } finally {
       setIsSaving(false)
     }
@@ -58,11 +96,18 @@ export function SaveCalculationDialog({
             label="Calculation Name"
             id="calculation-name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => handleInputChange(e.target.value)}
             placeholder="e.g., Dallas Emergency Medicine Contract"
+            error={errors.name}
             required
             autoFocus
+            aria-describedby={errors.name ? "calculation-name-error" : undefined}
           />
+          {errors.name && (
+            <p id="calculation-name-error" className="text-sm text-red-600" role="alert">
+              {errors.name}
+            </p>
+          )}
           
           <div className="flex gap-3 justify-end">
             <Button
@@ -75,7 +120,7 @@ export function SaveCalculationDialog({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={!name.trim() || isSaving}
+              disabled={!name.trim() || !!errors.name || isSaving}
               loading={isSaving}
             >
               <Save className="w-4 h-4 mr-2" />

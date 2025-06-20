@@ -25,6 +25,8 @@ import {
 import { toast } from 'sonner'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { z } from 'zod'
+import { safeTextSchema } from '@/lib/validation/schemas'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -76,21 +78,76 @@ interface PurchasedLead {
   }
 }
 
+// Validation schema for lead filters
+const leadFilterSchema = z.object({
+  industry: safeTextSchema(0, 100).optional(),
+  location: safeTextSchema(0, 100).optional(),
+  priceCategory: z.enum(['all', 'standard', 'premium', 'hot_lead']).default('all'),
+  minScore: z.number().min(0).max(100).optional()
+})
+
+type LeadFilterData = z.infer<typeof leadFilterSchema>
+
 // Filters component
-const LeadFilters = ({ filters, onFiltersChange }: any) => {
+const LeadFilters = ({ filters, onFiltersChange }: { filters: LeadFilterData; onFiltersChange: (filters: LeadFilterData) => void }) => {
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+
+  const handleFieldChange = (field: keyof LeadFilterData, value: any) => {
+    const newFilters = { ...filters, [field]: value }
+    
+    // Validate the specific field
+    try {
+      const fieldSchema = leadFilterSchema.shape[field]
+      fieldSchema.parse(value)
+      
+      // Clear error for this field
+      setValidationErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+      
+      onFiltersChange(newFilters)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationErrors(prev => ({
+          ...prev,
+          [field]: error.errors[0].message
+        }))
+      }
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <Input
-        placeholder="Search industry..."
-        value={filters.industry || ''}
-        onChange={(e) => onFiltersChange({ ...filters, industry: e.target.value })}
-      />
-      <Input
-        placeholder="Search location..."
-        value={filters.location || ''}
-        onChange={(e) => onFiltersChange({ ...filters, location: e.target.value })}
-      />
-      <Select value={filters.priceCategory} onValueChange={(value) => onFiltersChange({ ...filters, priceCategory: value })}>
+      <div>
+        <Input
+          placeholder="Search industry..."
+          value={filters.industry || ''}
+          onChange={(e) => handleFieldChange('industry', e.target.value)}
+          className={validationErrors.industry ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.industry}
+        />
+        {validationErrors.industry && (
+          <p className="mt-1 text-xs text-red-600">{validationErrors.industry}</p>
+        )}
+      </div>
+      <div>
+        <Input
+          placeholder="Search location..."
+          value={filters.location || ''}
+          onChange={(e) => handleFieldChange('location', e.target.value)}
+          className={validationErrors.location ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.location}
+        />
+        {validationErrors.location && (
+          <p className="mt-1 text-xs text-red-600">{validationErrors.location}</p>
+        )}
+      </div>
+      <Select 
+        value={filters.priceCategory} 
+        onValueChange={(value) => handleFieldChange('priceCategory', value)}
+      >
         <SelectTrigger>
           <SelectValue placeholder="Price Category" />
         </SelectTrigger>
@@ -101,12 +158,24 @@ const LeadFilters = ({ filters, onFiltersChange }: any) => {
           <SelectItem value="hot_lead">Hot Lead ($65-$100)</SelectItem>
         </SelectContent>
       </Select>
-      <Input
-        type="number"
-        placeholder="Min Score"
-        value={filters.minScore || ''}
-        onChange={(e) => onFiltersChange({ ...filters, minScore: parseInt(e.target.value) || undefined })}
-      />
+      <div>
+        <Input
+          type="number"
+          placeholder="Min Score"
+          value={filters.minScore || ''}
+          onChange={(e) => {
+            const value = e.target.value ? parseInt(e.target.value) : undefined
+            handleFieldChange('minScore', value)
+          }}
+          min="0"
+          max="100"
+          className={validationErrors.minScore ? 'border-red-500' : ''}
+          aria-invalid={!!validationErrors.minScore}
+        />
+        {validationErrors.minScore && (
+          <p className="mt-1 text-xs text-red-600">{validationErrors.minScore}</p>
+        )}
+      </div>
     </div>
   )
 }

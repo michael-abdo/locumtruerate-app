@@ -108,6 +108,28 @@ temp/
 *.key
 *.cert
 *.crt
+.secrets
+secrets.json
+config/secrets.yml
+.credentials
+auth.json
+private-key.json
+service-account.json
+
+# Healthcare/HIPAA sensitive files
+patient-data/
+phi-exports/
+medical-records/
+*.phi
+*.medical
+audit-logs/
+
+# Additional environment patterns
+.env.production
+.env.staging
+.env.development
+.env.test
+.local
 
 # Database
 *.db

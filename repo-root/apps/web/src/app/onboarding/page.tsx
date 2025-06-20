@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
   User, Briefcase, Stethoscope, MapPin, DollarSign, 
-  Calendar, Award, ChevronRight, Check, ArrowRight
+  Calendar, Award, ChevronRight, Check, ArrowRight, AlertCircle
 } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -16,6 +16,9 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useClerkUser } from '@/hooks/use-clerk-user'
 import { trpc } from '@/providers/trpc-provider'
+import { z } from 'zod'
+import { safeTextSchema, moneySchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
 
 type OnboardingStep = 'role' | 'specialty' | 'experience' | 'preferences' | 'complete'
 
@@ -41,19 +44,38 @@ const specialties = [
   'Other'
 ]
 
+// Validation schemas for onboarding
+const onboardingSchema = z.object({
+  role: z.enum(['physician', 'nurse-practitioner', 'physician-assistant', 'crna'], {
+    errorMap: () => ({ message: 'Please select your healthcare role' })
+  }),
+  specialty: z.string().min(1, 'Please select your specialty'),
+  yearsExperience: z.coerce.number()
+    .int('Years must be a whole number')
+    .min(0, 'Years cannot be negative')
+    .max(50, 'Years cannot exceed 50'),
+  currentLocation: safeTextSchema(2, 100),
+  desiredLocations: z.array(safeTextSchema(2, 100)).min(1, 'Select at least one location'),
+  salaryExpectation: z.string().regex(/^\d+k?$/i, 'Enter amount like "250000" or "250k"'),
+  availability: z.enum(['immediate', 'within_2_weeks', 'within_month', 'flexible'])
+})
+
+type OnboardingFormData = z.infer<typeof onboardingSchema>
+
 export default function OnboardingPage() {
   const router = useRouter()
   const { user, displayName } = useClerkUser()
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('role')
-  const [formData, setFormData] = useState({
-    role: '',
+  const [formData, setFormData] = useState<OnboardingFormData>({
+    role: 'physician',
     specialty: '',
-    yearsExperience: '',
+    yearsExperience: 0,
     currentLocation: '',
-    desiredLocations: [] as string[],
+    desiredLocations: [],
     salaryExpectation: '',
-    availability: '',
+    availability: 'flexible',
   })
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   const updateProfileMutation = trpc.users.updateProfile.useMutation({
     onSuccess: () => {
@@ -61,7 +83,46 @@ export default function OnboardingPage() {
     }
   })
 
+  const validateCurrentStep = (): boolean => {
+    let fieldsToValidate: (keyof OnboardingFormData)[] = []
+    
+    switch (currentStep) {
+      case 'role':
+        fieldsToValidate = ['role']
+        break
+      case 'specialty':
+        fieldsToValidate = ['specialty']
+        break
+      case 'experience':
+        fieldsToValidate = ['yearsExperience', 'currentLocation']
+        break
+      case 'preferences':
+        fieldsToValidate = ['desiredLocations', 'salaryExpectation', 'availability']
+        break
+    }
+    
+    const partialSchema = onboardingSchema.pick(
+      fieldsToValidate.reduce((acc, field) => ({ ...acc, [field]: true }), {})
+    )
+    
+    const result = safeParse(partialSchema, 
+      fieldsToValidate.reduce((acc, field) => ({ ...acc, [field]: formData[field] }), {})
+    )
+    
+    if (!result.success) {
+      setValidationErrors(result.errors)
+      return false
+    }
+    
+    setValidationErrors({})
+    return true
+  }
+
   const handleNext = () => {
+    if (!validateCurrentStep()) {
+      return
+    }
+    
     const steps: OnboardingStep[] = ['role', 'specialty', 'experience', 'preferences', 'complete']
     const currentIndex = steps.indexOf(currentStep)
     if (currentIndex < steps.length - 1) {
@@ -70,10 +131,17 @@ export default function OnboardingPage() {
   }
 
   const handleComplete = async () => {
+    const result = safeParse(onboardingSchema, formData)
+    
+    if (!result.success) {
+      setValidationErrors(result.errors)
+      return
+    }
+    
     await updateProfileMutation.mutateAsync({
       role: formData.role,
       specialty: formData.specialty,
-      yearsExperience: parseInt(formData.yearsExperience),
+      yearsExperience: formData.yearsExperience,
       location: formData.currentLocation,
       preferences: {
         desiredLocations: formData.desiredLocations,
@@ -111,7 +179,12 @@ export default function OnboardingPage() {
                         ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'hover:shadow-lg'
                     }`}
-                    onClick={() => setFormData({ ...formData, role: role.id })}
+                    onClick={() => {
+                      setFormData({ ...formData, role: role.id as any })
+                      if (validationErrors.role) {
+                        setValidationErrors({ ...validationErrors, role: '' })
+                      }
+                    }}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4">
@@ -160,7 +233,12 @@ export default function OnboardingPage() {
                       ? 'bg-blue-600 text-white'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
-                  onClick={() => setFormData({ ...formData, specialty })}
+                  onClick={() => {
+                    setFormData({ ...formData, specialty })
+                    if (validationErrors.specialty) {
+                      setValidationErrors({ ...validationErrors, specialty: '' })
+                    }
+                  }}
                 >
                   {specialty}
                 </Badge>
@@ -192,9 +270,24 @@ export default function OnboardingPage() {
                   type="number"
                   placeholder="e.g., 5"
                   value={formData.yearsExperience}
-                  onChange={(e) => setFormData({ ...formData, yearsExperience: e.target.value })}
-                  className="mt-2"
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0
+                    setFormData({ ...formData, yearsExperience: value })
+                    if (validationErrors.yearsExperience) {
+                      setValidationErrors({ ...validationErrors, yearsExperience: '' })
+                    }
+                  }}
+                  className={`mt-2 ${validationErrors.yearsExperience ? 'border-red-500' : ''}`}
+                  aria-invalid={!!validationErrors.yearsExperience}
+                  min="0"
+                  max="50"
                 />
+                {validationErrors.yearsExperience && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.yearsExperience}
+                  </p>
+                )}
               </div>
               
               <div>
@@ -203,9 +296,21 @@ export default function OnboardingPage() {
                   id="currentLocation"
                   placeholder="City, State"
                   value={formData.currentLocation}
-                  onChange={(e) => setFormData({ ...formData, currentLocation: e.target.value })}
-                  className="mt-2"
+                  onChange={(e) => {
+                    setFormData({ ...formData, currentLocation: e.target.value })
+                    if (validationErrors.currentLocation) {
+                      setValidationErrors({ ...validationErrors, currentLocation: '' })
+                    }
+                  }}
+                  className={`mt-2 ${validationErrors.currentLocation ? 'border-red-500' : ''}`}
+                  aria-invalid={!!validationErrors.currentLocation}
                 />
+                {validationErrors.currentLocation && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.currentLocation}
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>

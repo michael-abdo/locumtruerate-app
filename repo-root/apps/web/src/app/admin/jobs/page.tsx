@@ -20,9 +20,15 @@ import {
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { trpc } from '@/providers/trpc-provider'
+import { z } from 'zod'
+import { searchQuerySchema } from '@/lib/validation/schemas'
+import { debounce } from 'lodash'
 
 type JobStatus = 'ACTIVE' | 'PENDING' | 'REJECTED' | 'EXPIRED' | 'DRAFT'
 type FilterStatus = JobStatus | 'ALL'
+
+// Validation schemas
+const statusFilterSchema = z.enum(['ALL', 'ACTIVE', 'PENDING', 'REJECTED', 'EXPIRED', 'DRAFT'])
 
 const statusConfig = {
   ACTIVE: { label: 'Active', color: 'green', icon: CheckCircle },
@@ -36,9 +42,27 @@ export default function AdminJobsPage() {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchError, setSearchError] = useState('')
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('ALL')
   const [page, setPage] = useState(1)
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set())
+
+  // Debounced search handler
+  const handleSearchChange = debounce((value: string) => {
+    try {
+      const sanitized = value.trim()
+      if (sanitized) {
+        searchQuerySchema.parse(sanitized)
+      }
+      setSearchQuery(sanitized)
+      setSearchError('')
+      setPage(1) // Reset to first page on search
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setSearchError(error.errors[0].message)
+      }
+    }
+  }, 300)
 
   // Get jobs with filters
   const { data: jobsData, isLoading, refetch } = trpc.jobs.getAll.useQuery({
@@ -148,17 +172,33 @@ export default function AdminJobsPage() {
                     <Input
                       type="text"
                       placeholder="Search jobs by title, company, or location..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      defaultValue={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className={`pl-10 ${searchError ? 'border-red-500' : ''}`}
+                      aria-invalid={!!searchError}
+                      aria-describedby={searchError ? 'search-error' : undefined}
                     />
+                    {searchError && (
+                      <p id="search-error" className="absolute -bottom-5 left-0 text-sm text-red-600">
+                        {searchError}
+                      </p>
+                    )}
                   </div>
                   
                   {/* Status Filter */}
                   <select
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
+                    onChange={(e) => {
+                      try {
+                        const validated = statusFilterSchema.parse(e.target.value)
+                        setStatusFilter(validated as FilterStatus)
+                        setPage(1) // Reset pagination
+                      } catch (error) {
+                        console.error('Invalid status filter:', e.target.value)
+                      }
+                    }}
                     className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    aria-label="Filter jobs by status"
                   >
                     <option value="ALL">All Status</option>
                     {Object.entries(statusConfig).map(([status, config]) => (

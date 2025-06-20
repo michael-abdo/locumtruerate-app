@@ -13,14 +13,15 @@ import { Label } from '@/components/ui/label'
 import { trpc } from '@/providers/trpc-provider'
 import { usePageAnalytics } from '@/hooks/use-analytics'
 import toast from 'react-hot-toast'
+import { emailSchema, phoneSchema, safeTextSchema } from '@/lib/validation/schemas'
 
 // Form validation schema
 const leadCaptureSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
-  company: z.string().optional(),
-  phone: z.string().optional(),
-  message: z.string().optional(),
+  email: emailSchema,
+  name: safeTextSchema(2, 100).optional(),
+  company: safeTextSchema(2, 200).optional(),
+  phone: phoneSchema.optional(),
+  message: safeTextSchema(0, 1000).optional(),
 })
 
 type LeadCaptureForm = z.infer<typeof leadCaptureSchema>

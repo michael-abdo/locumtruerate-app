@@ -21,9 +21,16 @@ import {
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { trpc } from '@/providers/trpc-provider'
+import { z } from 'zod'
+import { searchQuerySchema } from '@/lib/validation/schemas'
+import { debounce } from 'lodash'
 
 type UserRole = 'physician' | 'nurse-practitioner' | 'company'
 type FilterRole = UserRole | 'ALL'
+
+// Validation schemas
+const roleFilterSchema = z.enum(['ALL', 'physician', 'nurse-practitioner', 'company'])
+const verificationFilterSchema = z.enum(['ALL', 'VERIFIED', 'UNVERIFIED'])
 
 const roleConfig = {
   physician: { label: 'Physician', color: 'blue', icon: User },
@@ -35,10 +42,28 @@ export default function AdminUsersPage() {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchError, setSearchError] = useState('')
   const [roleFilter, setRoleFilter] = useState<FilterRole>('ALL')
   const [verifiedFilter, setVerifiedFilter] = useState<boolean | undefined>()
   const [page, setPage] = useState(1)
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+
+  // Debounced search handler
+  const handleSearchChange = debounce((value: string) => {
+    try {
+      const sanitized = value.trim()
+      if (sanitized) {
+        searchQuerySchema.parse(sanitized)
+      }
+      setSearchQuery(sanitized)
+      setSearchError('')
+      setPage(1) // Reset to first page on search
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setSearchError(error.errors[0].message)
+      }
+    }
+  }, 300)
 
   // Get users with filters
   const { data: usersData, isLoading, refetch } = trpc.admin.getUsers.useQuery({
@@ -163,17 +188,33 @@ export default function AdminUsersPage() {
                     <Input
                       type="text"
                       placeholder="Search users by name, email, or credentials..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      defaultValue={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className={`pl-10 ${searchError ? 'border-red-500' : ''}`}
+                      aria-invalid={!!searchError}
+                      aria-describedby={searchError ? 'search-error' : undefined}
                     />
+                    {searchError && (
+                      <p id="search-error" className="absolute -bottom-5 left-0 text-sm text-red-600">
+                        {searchError}
+                      </p>
+                    )}
                   </div>
                   
                   {/* Role Filter */}
                   <select
                     value={roleFilter}
-                    onChange={(e) => setRoleFilter(e.target.value as FilterRole)}
+                    onChange={(e) => {
+                      try {
+                        const validated = roleFilterSchema.parse(e.target.value)
+                        setRoleFilter(validated as FilterRole)
+                        setPage(1) // Reset pagination
+                      } catch (error) {
+                        console.error('Invalid role filter:', e.target.value)
+                      }
+                    }}
                     className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    aria-label="Filter users by role"
                   >
                     <option value="ALL">All Roles</option>
                     {Object.entries(roleConfig).map(([role, config]) => (
@@ -187,10 +228,16 @@ export default function AdminUsersPage() {
                   <select
                     value={verifiedFilter === undefined ? 'ALL' : verifiedFilter ? 'VERIFIED' : 'UNVERIFIED'}
                     onChange={(e) => {
-                      const value = e.target.value
-                      setVerifiedFilter(value === 'ALL' ? undefined : value === 'VERIFIED')
+                      try {
+                        const validated = verificationFilterSchema.parse(e.target.value)
+                        setVerifiedFilter(validated === 'ALL' ? undefined : validated === 'VERIFIED')
+                        setPage(1) // Reset pagination
+                      } catch (error) {
+                        console.error('Invalid verification filter:', e.target.value)
+                      }
                     }}
                     className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    aria-label="Filter users by verification status"
                   >
                     <option value="ALL">All Status</option>
                     <option value="VERIFIED">Verified</option>

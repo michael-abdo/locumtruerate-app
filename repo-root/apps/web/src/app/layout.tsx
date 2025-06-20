@@ -10,6 +10,7 @@ import { AccessibilityProvider, accessibilityStyles, SkipNavigation } from '@/co
 import { AccessibilityManager } from '@/components/layout/accessibility-manager'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { SentryErrorBoundary } from '@/components/error/sentry-error-boundary'
 import './globals.css'
 
 const inter = Inter({ 
@@ -107,7 +108,12 @@ export default function RootLayout({
                       <div className="flex min-h-screen flex-col">
                         <Header />
                         <main className="flex-1">
-                          {children}
+                          <SentryErrorBoundary 
+                            level="error"
+                            showDialog={process.env.NODE_ENV === 'production'}
+                          >
+                            {children}
+                          </SentryErrorBoundary>
                         </main>
                         <Footer />
                       </div>

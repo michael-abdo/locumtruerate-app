@@ -143,7 +143,9 @@ const boostPackages: BoostPackage[] = [
 
 // Form validation schema
 const boostJobSchema = z.object({
-  packageId: z.string().min(1, 'Please select a boost package'),
+  packageId: z.enum(['featured', 'urgent', 'premium', 'sponsored'], {
+    errorMap: () => ({ message: 'Please select a boost package' })
+  }),
   paymentMethod: z.enum(['card', 'invoice']).default('card'),
   agreedToTerms: z.boolean().refine(val => val === true, 'You must agree to the terms'),
   startDate: z.enum(['now', 'scheduled']).default('now'),

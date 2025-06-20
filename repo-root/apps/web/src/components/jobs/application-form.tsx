@@ -21,19 +21,36 @@ import {
 import { Button } from '@locumtruerate/ui'
 import { cn } from '@/lib/utils'
 import type { Job } from '@locumtruerate/types'
+import { emailSchema, phoneSchema, urlSchema, safeTextSchema, fileUploadSchema } from '@/lib/validation/schemas'
 
-// Application form validation schema
+// Resume file validation
+const resumeFileSchema = fileUploadSchema.extend({
+  type: z.enum([
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ], {
+    errorMap: () => ({ message: 'Only PDF and Word documents are allowed' })
+  }),
+  size: z.number().max(5 * 1024 * 1024, 'File must be less than 5MB')
+})
+
+// Application form validation schema using standardized validators
 const applicationSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  phone: z.string().min(10, 'Please enter a valid phone number'),
-  linkedinUrl: z.string().url('Please enter a valid LinkedIn URL').optional().or(z.literal('')),
-  portfolioUrl: z.string().url('Please enter a valid portfolio URL').optional().or(z.literal('')),
-  coverLetter: z.string().min(50, 'Cover letter must be at least 50 characters'),
-  experience: z.string().min(10, 'Please describe your relevant experience'),
-  availability: z.string().min(5, 'Please specify your availability'),
-  salaryExpectation: z.string().optional(),
+  firstName: safeTextSchema(2, 50),
+  lastName: safeTextSchema(2, 50),
+  email: emailSchema,
+  phone: phoneSchema,
+  linkedinUrl: urlSchema.optional().or(z.literal('')),
+  portfolioUrl: urlSchema.optional().or(z.literal('')),
+  coverLetter: safeTextSchema(50, 5000),
+  experience: safeTextSchema(10, 2000),
+  availability: safeTextSchema(5, 200),
+  salaryExpectation: z
+    .string()
+    .regex(/^\d+$/, 'Please enter a valid number')
+    .optional()
+    .or(z.literal('')),
   agreedToTerms: z.boolean().refine(val => val === true, 'You must agree to the terms'),
   agreedToPrivacy: z.boolean().refine(val => val === true, 'You must agree to the privacy policy')
 })
@@ -91,12 +108,21 @@ export function ApplicationForm({
   const watchedFields = watch()
 
   const handleFileUpload = useCallback((file: File) => {
-    // Validate file type and size
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-    const maxSize = 5 * 1024 * 1024 // 5MB
-
-    if (!allowedTypes.includes(file.type)) {
-      alert('Please upload a PDF or Word document')
+    try {
+      // Validate file using our schema
+      resumeFileSchema.parse({
+        name: file.name,
+        type: file.type,
+        size: file.size
+      })
+      
+      setResumeFile(file)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        alert(error.errors[0].message)
+      } else {
+        alert('Error uploading file')
+      }
       return
     }
 

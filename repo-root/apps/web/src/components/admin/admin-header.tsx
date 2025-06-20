@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
 import { 
   Search, Bell, Settings, Menu, X, 
   HelpCircle, LogOut, User, Shield 
@@ -11,10 +11,11 @@ import { Button } from '@locumtruerate/ui'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useClerkUser } from '@/hooks/use-clerk-user'
 
 export function AdminHeader() {
   const router = useRouter()
-  const { user } = useUser()
+  const { user } = useClerkUser()
   const [searchQuery, setSearchQuery] = useState('')
   const [showNotifications, setShowNotifications] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -197,14 +198,26 @@ export function AdminHeader() {
                   Super Admin
                 </p>
               </div>
-              <UserButton
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: 'h-10 w-10'
-                  }
-                }}
-              />
+              {process.env.NODE_ENV === 'development' && 
+               process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder') ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.push('/sign-in')}
+                  className="h-10 w-10 rounded-full p-0"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              ) : (
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: 'h-10 w-10'
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

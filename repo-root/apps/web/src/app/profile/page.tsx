@@ -6,7 +6,7 @@ import {
   User, Mail, Phone, MapPin, Camera, Save, 
   Plus, Edit3, Trash2, Award, Briefcase, 
   GraduationCap, FileText, Star, Calendar,
-  Building, Stethoscope, Shield, Globe
+  Building, Stethoscope, Shield, Globe, AlertCircle
 } from 'lucide-react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -17,6 +17,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { trpc } from '@/providers/trpc-provider'
+import { profileUpdateSchema, emailSchema, phoneSchema, safeTextSchema, npiSchema, licenseNumberSchema } from '@/lib/validation/schemas'
+import { z } from 'zod'
+import { safeParse } from '@/lib/validation/apply-validation'
 
 type ProfileSection = 'personal' | 'experience' | 'education' | 'certifications' | 'preferences'
 
@@ -93,10 +96,26 @@ const certifications = [
   }
 ]
 
+// Extend profile update schema for additional fields
+const extendedProfileSchema = profileUpdateSchema.extend({
+  location: safeTextSchema(2, 100).optional(),
+  yearsExperience: z.coerce.number().min(0).max(70).optional(),
+  jobType: safeTextSchema(2, 50).optional(),
+  salaryRange: safeTextSchema(5, 50).optional(),
+  preferredLocations: safeTextSchema(5, 200).optional(),
+  schedule: safeTextSchema(2, 50).optional(),
+  travelRadius: safeTextSchema(2, 50).optional(),
+  requirements: safeTextSchema(0, 500).optional()
+})
+
+type ProfileFormData = z.infer<typeof extendedProfileSchema>
+
 export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<ProfileSection>('personal')
   const [isEditing, setIsEditing] = useState(false)
   const [profileImage, setProfileImage] = useState('/placeholder-avatar.jpg')
+  const [formData, setFormData] = useState<ProfileFormData>({})
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   // API calls
   const { data: user, isLoading } = trpc.users.getProfile.useQuery()
@@ -112,9 +131,34 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSave = () => {
-    // Implement save functionality
-    setIsEditing(false)
+  const handleFieldChange = (field: keyof ProfileFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    // Clear validation error for this field when user types
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    }
+  }
+
+  const handleSave = async () => {
+    const result = safeParse(extendedProfileSchema, formData)
+    
+    if (!result.success) {
+      setValidationErrors(result.errors)
+      return
+    }
+    
+    try {
+      // TODO: Implement API call to save profile
+      console.log('Saving validated data:', result.data)
+      setIsEditing(false)
+      setValidationErrors({})
+    } catch (error) {
+      console.error('Error saving profile:', error)
+    }
   }
 
   if (isLoading) {
@@ -285,16 +329,36 @@ export default function ProfilePage() {
                         <Input
                           id="firstName"
                           defaultValue={user?.firstName || ''}
+                          onChange={(e) => handleFieldChange('firstName', e.target.value)}
                           disabled={!isEditing}
+                          className={validationErrors.firstName ? 'border-red-500' : ''}
+                          aria-invalid={!!validationErrors.firstName}
+                          aria-describedby={validationErrors.firstName ? 'firstName-error' : undefined}
                         />
+                        {validationErrors.firstName && (
+                          <p id="firstName-error" className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {validationErrors.firstName}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="lastName">Last Name</Label>
                         <Input
                           id="lastName"
                           defaultValue={user?.lastName || ''}
+                          onChange={(e) => handleFieldChange('lastName', e.target.value)}
                           disabled={!isEditing}
+                          className={validationErrors.lastName ? 'border-red-500' : ''}
+                          aria-invalid={!!validationErrors.lastName}
+                          aria-describedby={validationErrors.lastName ? 'lastName-error' : undefined}
                         />
+                        {validationErrors.lastName && (
+                          <p id="lastName-error" className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {validationErrors.lastName}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -305,8 +369,18 @@ export default function ProfilePage() {
                           id="email"
                           type="email"
                           defaultValue={user?.email || ''}
+                          onChange={(e) => handleFieldChange('email', e.target.value)}
                           disabled={!isEditing}
+                          className={validationErrors.email ? 'border-red-500' : ''}
+                          aria-invalid={!!validationErrors.email}
+                          aria-describedby={validationErrors.email ? 'email-error' : undefined}
                         />
+                        {validationErrors.email && (
+                          <p id="email-error" className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {validationErrors.email}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="phone">Phone Number</Label>
@@ -314,8 +388,18 @@ export default function ProfilePage() {
                           id="phone"
                           type="tel"
                           defaultValue="+1 (555) 123-4567"
+                          onChange={(e) => handleFieldChange('phone', e.target.value)}
                           disabled={!isEditing}
+                          className={validationErrors.phone ? 'border-red-500' : ''}
+                          aria-invalid={!!validationErrors.phone}
+                          aria-describedby={validationErrors.phone ? 'phone-error' : undefined}
                         />
+                        {validationErrors.phone && (
+                          <p id="phone-error" className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {validationErrors.phone}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -334,8 +418,18 @@ export default function ProfilePage() {
                         id="bio"
                         rows={4}
                         defaultValue="Board-certified Emergency Medicine physician with 8+ years of experience in high-acuity settings. Expertise in trauma care, critical care, and emergency procedures. Proven track record in locum tenens assignments across diverse healthcare systems."
+                        onChange={(e) => handleFieldChange('bio', e.target.value)}
                         disabled={!isEditing}
+                        className={validationErrors.bio ? 'border-red-500' : ''}
+                        aria-invalid={!!validationErrors.bio}
+                        aria-describedby={validationErrors.bio ? 'bio-error' : undefined}
                       />
+                      {validationErrors.bio && (
+                        <p id="bio-error" className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {validationErrors.bio}
+                        </p>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

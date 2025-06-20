@@ -14,9 +14,11 @@ import { trpc } from '@/providers/trpc-provider'
 import { usePageAnalytics } from '@/hooks/use-analytics'
 import toast from 'react-hot-toast'
 
+import { emailSchema } from '@/lib/validation/schemas'
+
 // Newsletter signup schema
 const newsletterSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: emailSchema,
 })
 
 type NewsletterForm = z.infer<typeof newsletterSchema>

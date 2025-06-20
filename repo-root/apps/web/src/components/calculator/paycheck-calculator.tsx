@@ -7,56 +7,67 @@ import { Button } from '@locumtruerate/ui/components/ui/button'
 import { Input } from '@locumtruerate/ui/components/ui/input'
 import { Select, SelectOption } from '@locumtruerate/ui/components/ui/select'
 import { useCalculatorAnalytics } from '@/hooks/use-analytics'
-import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare, Plus } from 'lucide-react'
+import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare, Plus, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { SaveCalculationDialog } from './save-calculation-dialog'
+import { z } from 'zod'
+import { safeTextSchema, moneySchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
 
-interface FormData {
+// Validation schema for paycheck calculator
+const paycheckCalculatorSchema = z.object({
   // Basic Info
-  grossSalary: string
-  payPeriod: PayFrequency
-  payDate: string
+  grossSalary: z.coerce.number()
+    .min(0.01, 'Gross salary must be positive')
+    .max(10000000, 'Gross salary seems too high'),
+  payPeriod: z.enum(['WEEKLY', 'BI_WEEKLY', 'SEMI_MONTHLY', 'MONTHLY', 'QUARTERLY', 'ANNUALLY']),
+  payDate: z.string().optional(),
   
   // Location
-  workState: string
-  residenceState: string
-  city: string
-  zipCode: string
+  workState: z.string().min(1, 'Work state is required'),
+  residenceState: z.string().min(1, 'Residence state is required'),
+  city: safeTextSchema(1, 100),
+  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code format'),
   
   // Tax Info
-  filingStatus: FilingStatus
-  allowances: string
-  additionalExemptions: string
+  filingStatus: z.enum(['SINGLE', 'MARRIED_FILING_JOINTLY', 'MARRIED_FILING_SEPARATELY', 'HEAD_OF_HOUSEHOLD', 'QUALIFYING_WIDOW']),
+  allowances: z.coerce.number()
+    .int('Allowances must be a whole number')
+    .min(0, 'Allowances cannot be negative')
+    .max(20, 'Allowances seem too high'),
+  additionalExemptions: z.coerce.number().min(0).optional().default(0),
   
   // Year-to-date (optional)
-  ytdGross: string
-  ytdFederalTax: string
-  ytdStateTax: string
-  ytdSocialSecurity: string
-  ytdMedicare: string
-  ytdStateDisability: string
+  ytdGross: z.coerce.number().min(0).optional().default(0),
+  ytdFederalTax: z.coerce.number().min(0).optional().default(0),
+  ytdStateTax: z.coerce.number().min(0).optional().default(0),
+  ytdSocialSecurity: z.coerce.number().min(0).optional().default(0),
+  ytdMedicare: z.coerce.number().min(0).optional().default(0),
+  ytdStateDisability: z.coerce.number().min(0).optional().default(0),
   
   // Pre-tax deductions (optional)
-  retirement401k: string
-  healthInsurance: string
-  dentalInsurance: string
-  visionInsurance: string
-  otherPreTax: string
+  retirement401k: z.coerce.number().min(0).optional().default(0),
+  healthInsurance: z.coerce.number().min(0).optional().default(0),
+  dentalInsurance: z.coerce.number().min(0).optional().default(0),
+  visionInsurance: z.coerce.number().min(0).optional().default(0),
+  otherPreTax: z.coerce.number().min(0).optional().default(0),
   
   // Post-tax deductions (optional)
-  rothContribution: string
-  otherPostTax: string
+  rothContribution: z.coerce.number().min(0).optional().default(0),
+  otherPostTax: z.coerce.number().min(0).optional().default(0),
   
   // Additional withholdings
-  additionalFederalWithholding: string
-  additionalStateWithholding: string
+  additionalFederalWithholding: z.coerce.number().min(0).optional().default(0),
+  additionalStateWithholding: z.coerce.number().min(0).optional().default(0),
   
   // Overtime (optional)
-  hoursWorked: string
-  overtimeHours: string
-  overtimeMultiplier: string
-}
+  hoursWorked: z.coerce.number().min(0).max(168).optional().default(40),
+  overtimeHours: z.coerce.number().min(0).max(168).optional().default(0),
+  overtimeMultiplier: z.coerce.number().min(1).max(3).optional().default(1.5)
+})
+
+type FormData = z.infer<typeof paycheckCalculatorSchema>
 
 interface FormErrors {
   [key: string]: string
@@ -116,7 +127,36 @@ const initialFormData: FormData = {
 }
 
 export function PaycheckCalculator() {
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [formData, setFormData] = useState<FormData>({
+    grossSalary: 0,
+    payPeriod: 'BI_WEEKLY',
+    payDate: format(new Date(), 'yyyy-MM-dd'),
+    workState: '',
+    residenceState: '',
+    city: '',
+    zipCode: '',
+    filingStatus: 'SINGLE',
+    allowances: 0,
+    additionalExemptions: 0,
+    ytdGross: 0,
+    ytdFederalTax: 0,
+    ytdStateTax: 0,
+    ytdSocialSecurity: 0,
+    ytdMedicare: 0,
+    ytdStateDisability: 0,
+    retirement401k: 0,
+    healthInsurance: 0,
+    dentalInsurance: 0,
+    visionInsurance: 0,
+    otherPreTax: 0,
+    rothContribution: 0,
+    otherPostTax: 0,
+    additionalFederalWithholding: 0,
+    additionalStateWithholding: 0,
+    hoursWorked: 40,
+    overtimeHours: 0,
+    overtimeMultiplier: 1.5
+  })
   const [errors, setErrors] = useState<FormErrors>({})
   const [isCalculating, setIsCalculating] = useState(false)
   const [result, setResult] = useState<PaycheckCalculationResult | null>(null)
@@ -130,15 +170,30 @@ export function PaycheckCalculator() {
   
   const { trackCalculatorUsage, trackCalculatorError, trackCalculatorExport } = useCalculatorAnalytics()
 
-  // Handle input changes
-  const handleInputChange = useCallback((field: keyof FormData, value: string) => {
+  // Handle input changes with validation
+  const handleInputChange = useCallback((field: keyof FormData, value: string | number) => {
+    // Update form data
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error for this field
-    setErrors(prev => {
-      const newErrors = { ...prev }
-      delete newErrors[field]
-      return newErrors
-    })
+    
+    // Validate the specific field
+    try {
+      const fieldSchema = paycheckCalculatorSchema.shape[field]
+      fieldSchema.parse(value)
+      
+      // Clear error for this field if validation passes
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: error.errors[0].message
+        }))
+      }
+    }
   }, [])
 
   // Calculate gross pay for the period based on annual salary
@@ -155,37 +210,17 @@ export function PaycheckCalculator() {
     return annualSalary / periodsPerYear[payPeriod]
   }, [])
 
-  // Validate form
+  // Validate form using Zod schema
   const validateForm = useCallback((): boolean => {
-    const newErrors: FormErrors = {}
+    const result = safeParse(paycheckCalculatorSchema, formData)
     
-    // Required fields validation
-    if (!formData.grossSalary) {
-      newErrors.grossSalary = 'Gross salary is required'
-    } else if (parseFloat(formData.grossSalary) <= 0) {
-      newErrors.grossSalary = 'Gross salary must be positive'
+    if (!result.success) {
+      setErrors(result.errors)
+      return false
     }
     
-    if (!formData.workState) {
-      newErrors.workState = 'Work state is required'
-    }
-    
-    if (!formData.residenceState) {
-      newErrors.residenceState = 'Residence state is required'
-    }
-    
-    if (!formData.city) {
-      newErrors.city = 'City is required'
-    }
-    
-    if (!formData.zipCode) {
-      newErrors.zipCode = 'ZIP code is required'
-    } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Invalid ZIP code format'
-    }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors({})
+    return true
   }, [formData])
 
   // Handle calculation

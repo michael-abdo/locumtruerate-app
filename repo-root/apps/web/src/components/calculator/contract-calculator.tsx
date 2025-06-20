@@ -7,38 +7,54 @@ import { Button } from '@locumtruerate/ui/components/ui/button'
 import { Input } from '@locumtruerate/ui/components/ui/input'
 import { Select, SelectOption } from '@locumtruerate/ui/components/ui/select'
 import { useCalculatorAnalytics } from '@/hooks/use-analytics'
-import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare } from 'lucide-react'
+import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { SaveCalculationDialog } from './save-calculation-dialog'
+import { z } from 'zod'
+import { safeTextSchema, moneySchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
 
-interface FormData {
+// Validation schema for contract calculator
+const contractCalculatorSchema = z.object({
   // Basic Info
-  title: string
-  specialty: string
+  title: safeTextSchema(0, 200),
+  specialty: safeTextSchema(0, 100),
   
   // Location
-  state: string
-  city: string
-  zipCode: string
+  state: z.string().min(1, 'State is required'),
+  city: safeTextSchema(1, 100),
+  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code format'),
   
   // Contract Terms
-  contractType: ContractType
-  hourlyRate: string
-  hoursPerWeek: string
-  duration: string
-  startDate: string
-  endDate: string
+  contractType: z.enum(['LOCUM_TENENS', 'PERMANENT', 'CONTRACT_TO_HIRE', 'TRAVEL_NURSING', 'CONSULTING']),
+  hourlyRate: z.coerce.number()
+    .min(0.01, 'Hourly rate must be positive')
+    .max(10000, 'Hourly rate seems too high'),
+  hoursPerWeek: z.coerce.number()
+    .min(1, 'Hours per week must be at least 1')
+    .max(168, 'Hours per week cannot exceed 168'),
+  duration: z.coerce.number()
+    .int('Duration must be a whole number')
+    .min(1, 'Duration must be at least 1 week')
+    .max(260, 'Duration cannot exceed 5 years'),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
   
   // Tax Info
-  filingStatus: string
-  federalExemptions: string
+  filingStatus: z.enum(['SINGLE', 'MARRIED_FILING_JOINTLY', 'MARRIED_FILING_SEPARATELY', 'HEAD_OF_HOUSEHOLD']),
+  federalExemptions: z.coerce.number()
+    .int('Exemptions must be a whole number')
+    .min(0, 'Exemptions cannot be negative')
+    .max(20, 'Exemptions seem too high'),
   
   // Expenses (optional)
-  travelExpenses: string
-  housingAllowance: string
-  malpracticeInsurance: string
-}
+  travelExpenses: z.coerce.number().min(0).optional().default(0),
+  housingAllowance: z.coerce.number().min(0).optional().default(0),
+  malpracticeInsurance: z.coerce.number().min(0).optional().default(0)
+})
+
+type FormData = z.infer<typeof contractCalculatorSchema>
 
 interface FormErrors {
   [key: string]: string
@@ -84,7 +100,24 @@ const initialFormData: FormData = {
 }
 
 export function ContractCalculator() {
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [formData, setFormData] = useState<FormData>({
+    title: '',
+    specialty: '',
+    state: '',
+    city: '',
+    zipCode: '',
+    contractType: 'LOCUM_TENENS',
+    hourlyRate: 0,
+    hoursPerWeek: 0,
+    duration: 0,
+    startDate: '',
+    endDate: '',
+    filingStatus: 'SINGLE',
+    federalExemptions: 0,
+    travelExpenses: 0,
+    housingAllowance: 0,
+    malpracticeInsurance: 0
+  })
   const [errors, setErrors] = useState<FormErrors>({})
   const [isCalculating, setIsCalculating] = useState(false)
   const [result, setResult] = useState<ContractCalculationResult | null>(null)
@@ -96,56 +129,43 @@ export function ContractCalculator() {
   
   const { trackCalculatorUsage, trackCalculatorError, trackCalculatorExport } = useCalculatorAnalytics()
 
-  // Handle input changes
-  const handleInputChange = useCallback((field: keyof FormData, value: string) => {
+  // Handle input changes with validation
+  const handleInputChange = useCallback((field: keyof FormData, value: string | number) => {
+    // Update form data
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear error for this field
-    setErrors(prev => {
-      const newErrors = { ...prev }
-      delete newErrors[field]
-      return newErrors
-    })
+    
+    // Validate the specific field
+    try {
+      const fieldSchema = contractCalculatorSchema.shape[field]
+      fieldSchema.parse(value)
+      
+      // Clear error for this field if validation passes
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({
+          ...prev,
+          [field]: error.errors[0].message
+        }))
+      }
+    }
   }, [])
 
-  // Validate form
+  // Validate form using Zod schema
   const validateForm = useCallback((): boolean => {
-    const newErrors: FormErrors = {}
+    const result = safeParse(contractCalculatorSchema, formData)
     
-    // Required fields validation
-    if (!formData.hourlyRate) {
-      newErrors.hourlyRate = 'Hourly rate is required'
-    } else if (parseFloat(formData.hourlyRate) <= 0) {
-      newErrors.hourlyRate = 'Hourly rate must be positive'
+    if (!result.success) {
+      setErrors(result.errors)
+      return false
     }
     
-    if (!formData.hoursPerWeek) {
-      newErrors.hoursPerWeek = 'Hours per week is required'
-    } else if (parseFloat(formData.hoursPerWeek) <= 0 || parseFloat(formData.hoursPerWeek) > 168) {
-      newErrors.hoursPerWeek = 'Hours per week must be between 1 and 168'
-    }
-    
-    if (!formData.duration) {
-      newErrors.duration = 'Contract duration is required'
-    } else if (parseInt(formData.duration) <= 0) {
-      newErrors.duration = 'Duration must be positive'
-    }
-    
-    if (!formData.city) {
-      newErrors.city = 'City is required'
-    }
-    
-    if (!formData.state) {
-      newErrors.state = 'State is required'
-    }
-    
-    if (!formData.zipCode) {
-      newErrors.zipCode = 'ZIP code is required'
-    } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Invalid ZIP code format'
-    }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors({})
+    return true
   }, [formData])
 
   // Handle calculation
@@ -169,17 +189,17 @@ export function ContractCalculator() {
         contractType: formData.contractType as ContractType,
         startDate: formData.startDate ? new Date(formData.startDate) : new Date(),
         endDate: formData.endDate ? new Date(formData.endDate) : new Date(Date.now() + parseInt(formData.duration) * 7 * 24 * 60 * 60 * 1000),
-        duration: parseInt(formData.duration),
-        hourlyRate: parseFloat(formData.hourlyRate),
-        hoursPerWeek: parseFloat(formData.hoursPerWeek),
+        duration: formData.duration,
+        hourlyRate: formData.hourlyRate,
+        hoursPerWeek: formData.hoursPerWeek,
         overtimeThreshold: 40,
         bonuses: [],
         stipends: {
-          housing: formData.housingAllowance ? parseFloat(formData.housingAllowance) : 0,
-          travel: formData.travelExpenses ? parseFloat(formData.travelExpenses) : 0,
+          housing: formData.housingAllowance || 0,
+          travel: formData.travelExpenses || 0,
           meals: 0,
           licensure: 0,
-          malpractice: formData.malpracticeInsurance ? parseFloat(formData.malpracticeInsurance) : 0,
+          malpractice: formData.malpracticeInsurance || 0,
           cme: 0,
           other: 0
         },
@@ -193,8 +213,8 @@ export function ContractCalculator() {
           other: 0
         },
         taxInfo: {
-          filingStatus: formData.filingStatus as any,
-          federalExemptions: parseInt(formData.federalExemptions),
+          filingStatus: formData.filingStatus,
+          federalExemptions: formData.federalExemptions,
           stateExemptions: 0,
           additionalFederalWithholding: 0,
           additionalStateWithholding: 0,
@@ -225,7 +245,24 @@ export function ContractCalculator() {
 
   // Reset form
   const handleReset = useCallback(() => {
-    setFormData(initialFormData)
+    setFormData({
+      title: '',
+      specialty: '',
+      state: '',
+      city: '',
+      zipCode: '',
+      contractType: 'LOCUM_TENENS',
+      hourlyRate: 0,
+      hoursPerWeek: 0,
+      duration: 0,
+      startDate: '',
+      endDate: '',
+      filingStatus: 'SINGLE',
+      federalExemptions: 0,
+      travelExpenses: 0,
+      housingAllowance: 0,
+      malpracticeInsurance: 0
+    })
     setErrors({})
     setResult(null)
     setShowTaxBreakdown(false)

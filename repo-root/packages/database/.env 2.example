@@ -1,6 +1,0 @@
-# Database URLs for Prisma
-# Use connection pooling for serverless environments
-DATABASE_URL="postgresql://username:password@host:5432/database?sslmode=require&pgbouncer=true"
-
-# Direct connection for migrations
-DIRECT_DATABASE_URL="postgresql://username:password@host:5432/database?sslmode=require"

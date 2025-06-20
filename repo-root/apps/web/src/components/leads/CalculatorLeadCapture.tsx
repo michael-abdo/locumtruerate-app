@@ -8,6 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { LeadCaptureForm } from './LeadCaptureForm'
 import { usePageAnalytics } from '@/hooks/use-analytics'
+import { z } from 'zod'
+import { safeTextSchema } from '@/lib/validation/schemas'
+
+// Validation schema for calculation result
+const calculationResultSchema = z.object({
+  type: z.enum(['contract', 'paycheck', 'hourly', 'comparison']),
+  annualSalary: z.number().min(0).max(10000000).optional(),
+  hourlyRate: z.number().min(0).max(10000).optional(),
+  weeklyPay: z.number().min(0).max(50000).optional(),
+  monthlyPay: z.number().min(0).max(200000).optional(),
+  netPay: z.number().min(0).max(10000000).optional(),
+  location: safeTextSchema(0, 100).optional(),
+  specialty: safeTextSchema(0, 100).optional(),
+  experience: z.number().int().min(0).max(50).optional()
+}).passthrough() // Allow additional properties
 
 interface CalculationResult {
   type: 'contract' | 'paycheck' | 'hourly' | 'comparison'
@@ -21,6 +36,15 @@ interface CalculationResult {
   experience?: number
   [key: string]: any
 }
+
+// Validation schema for component props
+const calculatorLeadCapturePropsSchema = z.object({
+  variant: z.enum(['popup', 'inline', 'sidebar']).optional().default('popup'),
+  delay: z.number().int().min(0).max(30000).optional().default(2000),
+  className: safeTextSchema(0, 200).optional().default(''),
+  testId: safeTextSchema(0, 50).optional().default('calculator-lead-capture'),
+  isVisible: z.boolean().optional().default(true)
+})
 
 interface CalculatorLeadCaptureProps {
   calculationData: CalculationResult
@@ -41,6 +65,32 @@ export function CalculatorLeadCapture({
   delay = 2000,
   testId = 'calculator-lead-capture'
 }: CalculatorLeadCaptureProps) {
+  // Validate calculation data
+  const validatedCalculationData = React.useMemo(() => {
+    try {
+      return calculationResultSchema.parse(calculationData)
+    } catch (error) {
+      console.error('CalculatorLeadCapture: Invalid calculation data', error)
+      // Return minimal valid data as fallback
+      return { type: 'contract' as const }
+    }
+  }, [calculationData])
+
+  // Validate props
+  const validatedProps = React.useMemo(() => {
+    try {
+      return calculatorLeadCapturePropsSchema.parse({
+        variant,
+        delay,
+        className,
+        testId,
+        isVisible
+      })
+    } catch (error) {
+      console.error('CalculatorLeadCapture: Invalid props', error)
+      return calculatorLeadCapturePropsSchema.parse({}) // Use defaults
+    }
+  }, [variant, delay, className, testId, isVisible])
   const [showForm, setShowForm] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
   const [hasTriggered, setHasTriggered] = useState(false)
@@ -48,29 +98,29 @@ export function CalculatorLeadCapture({
 
   // Auto-trigger after delay
   React.useEffect(() => {
-    if (isVisible && !hasTriggered && delay > 0) {
+    if (validatedProps.isVisible && !hasTriggered && validatedProps.delay > 0) {
       const timer = setTimeout(() => {
         setHasTriggered(true)
         analytics.trackFeatureUsage('calculator_lead_capture_triggered', {
-          calculationType: calculationData.type,
-          delay,
-          variant,
-          calculationValue: calculationData.annualSalary || calculationData.hourlyRate || 0
+          calculationType: validatedCalculationData.type,
+          delay: validatedProps.delay,
+          variant: validatedProps.variant,
+          calculationValue: validatedCalculationData.annualSalary || validatedCalculationData.hourlyRate || 0
         })
-      }, delay)
+      }, validatedProps.delay)
 
       return () => clearTimeout(timer)
     }
-  }, [isVisible, hasTriggered, delay, analytics, calculationData, variant])
+  }, [validatedProps.isVisible, hasTriggered, validatedProps.delay, analytics, validatedCalculationData, validatedProps.variant])
 
   const handleShowForm = useCallback(() => {
     setShowForm(true)
     analytics.trackFeatureUsage('calculator_lead_capture_opened', {
-      calculationType: calculationData.type,
-      variant,
-      calculationValue: calculationData.annualSalary || calculationData.hourlyRate || 0
+      calculationType: validatedCalculationData.type,
+      variant: validatedProps.variant,
+      calculationValue: validatedCalculationData.annualSalary || validatedCalculationData.hourlyRate || 0
     })
-  }, [analytics, calculationData, variant])
+  }, [analytics, validatedCalculationData, validatedProps.variant])
 
   const handleDismiss = useCallback(() => {
     setIsDismissed(true)

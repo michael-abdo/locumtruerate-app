@@ -26,6 +26,49 @@ import {
   ToggleRight,
   Settings
 } from 'lucide-react'
+import { z } from 'zod'
+import { safeTextSchema, searchQuerySchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
+
+// Validation schema for job filters
+const jobFiltersSchema = z.object({
+  // Basic filters
+  location: safeTextSchema(0, 100).optional(),
+  remote: z.enum(['remote', 'onsite', 'hybrid', '']).optional(),
+  specialty: safeTextSchema(0, 100).optional(),
+  experience: z.enum(['entry', 'mid', 'senior', 'executive', '']).optional(),
+  jobType: z.union([
+    z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'REMOTE', 'INTERNSHIP']),
+    z.literal('')
+  ]).optional(),
+  
+  // Salary range validation
+  salaryMin: z.number().min(0).max(10000000).optional(),
+  salaryMax: z.number().min(0).max(10000000).optional(),
+  salaryCurrency: z.enum(['USD', 'CAD', 'EUR', 'GBP']).optional().default('USD'),
+  salaryPeriod: z.enum(['hourly', 'daily', 'weekly', 'monthly', 'yearly']).optional().default('yearly'),
+  
+  // Date filters
+  datePosted: z.enum(['24h', '3d', '7d', '30d', '']).optional(),
+  
+  // Company filters
+  companySize: z.enum(['startup', 'small', 'medium', 'large', 'enterprise', '']).optional(),
+  
+  // Benefits - limit array size and validate each item
+  benefits: z.array(safeTextSchema(1, 50)).max(20).optional(),
+  
+  // Boolean flags
+  urgent: z.boolean().optional(),
+  featured: z.boolean().optional()
+}).refine((data) => {
+  // Custom validation: salaryMin should be less than salaryMax
+  if (data.salaryMin && data.salaryMax && data.salaryMin > data.salaryMax) {
+    return false
+  }
+  return true
+}, {
+  message: "Minimum salary cannot be greater than maximum salary"
+})
 
 // Filter interfaces extending the existing SearchFilters pattern
 export interface JobFiltersState {

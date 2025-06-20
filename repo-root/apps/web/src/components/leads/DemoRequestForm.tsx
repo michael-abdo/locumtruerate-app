@@ -19,21 +19,22 @@ import { Badge } from '@/components/ui/badge'
 import { trpc } from '@/providers/trpc-provider'
 import { usePageAnalytics } from '@/hooks/use-analytics'
 import toast from 'react-hot-toast'
+import { emailSchema, phoneSchema, safeTextSchema } from '@/lib/validation/schemas'
 
 // Demo request validation schema
 const demoRequestSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  company: z.string().min(2, 'Company name is required'),
-  phone: z.string().optional(),
-  jobTitle: z.string().optional(),
+  email: emailSchema,
+  name: safeTextSchema(2, 100),
+  company: safeTextSchema(2, 200),
+  phone: phoneSchema.optional(),
+  jobTitle: safeTextSchema(2, 100).optional(),
   teamSize: z.enum(['1-10', '11-50', '51-200', '200+', 'individual']).optional(),
-  useCase: z.string().optional(),
-  currentChallenges: z.string().optional(),
+  useCase: safeTextSchema(0, 500).optional(),
+  currentChallenges: safeTextSchema(0, 1000).optional(),
   preferredTime: z.enum(['morning', 'afternoon', 'evening', 'flexible']).optional(),
-  timezone: z.string().optional(),
+  timezone: z.string().max(50).optional(),
   urgency: z.enum(['asap', 'this_week', 'this_month', 'exploring']).default('exploring'),
-  additionalInfo: z.string().optional(),
+  additionalInfo: safeTextSchema(0, 2000).optional(),
 })
 
 type DemoRequestForm = z.infer<typeof demoRequestSchema>

@@ -22,6 +22,7 @@ import {
 import { Button } from '@locumtruerate/ui'
 import { cn } from '@/lib/utils'
 import { useAccessibility } from './accessibility-provider'
+import { z } from 'zod'
 
 interface AccessibilitySettingsPanelProps {
   isOpen: boolean
@@ -144,13 +145,16 @@ function SettingToggle({
   )
 }
 
+// Validation schema for category selection
+const categorySchema = z.enum(['All', 'Visual', 'Motion', 'Navigation', 'Audio'])
+
 export function AccessibilitySettingsPanel({ 
   isOpen, 
   onClose, 
   className 
 }: AccessibilitySettingsPanelProps) {
   const { settings, updateSetting, resetSettings, announce } = useAccessibility()
-  const [activeCategory, setActiveCategory] = useState<string>('All')
+  const [activeCategory, setActiveCategory] = useState<z.infer<typeof categorySchema>>('All')
 
   const categories = ['All', 'Visual', 'Motion', 'Navigation', 'Audio']
   
@@ -159,26 +163,51 @@ export function AccessibilitySettingsPanel({
     : settingsConfig.filter(setting => setting.category === activeCategory)
 
   const handleToggle = (key: keyof typeof settings) => {
+    // Validate the setting key
+    const validSettings = [
+      'reducedMotion',
+      'highContrast', 
+      'largeText',
+      'focusVisible',
+      'keyboardNavigation',
+      'announcements'
+    ]
+    
+    if (!validSettings.includes(key)) {
+      console.error('Invalid accessibility setting:', key)
+      return
+    }
+    
     updateSetting(key, !settings[key])
   }
 
   const handleReset = () => {
-    resetSettings()
-    announce('All accessibility settings have been reset to defaults', 'assertive')
+    try {
+      resetSettings()
+      announce('All accessibility settings have been reset to defaults', 'assertive')
+    } catch (error) {
+      console.error('Error resetting accessibility settings:', error)
+      announce('Error resetting settings. Please try again.', 'assertive')
+    }
   }
 
   const detectSystemPreferences = () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const prefersHighContrast = window.matchMedia('(prefers-contrast: high)').matches
-    
-    if (prefersReducedMotion) {
-      updateSetting('reducedMotion', true)
+    try {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const prefersHighContrast = window.matchMedia('(prefers-contrast: high)').matches
+      
+      if (prefersReducedMotion) {
+        updateSetting('reducedMotion', true)
+      }
+      if (prefersHighContrast) {
+        updateSetting('highContrast', true)
+      }
+      
+      announce('System preferences detected and applied', 'polite')
+    } catch (error) {
+      console.error('Error detecting system preferences:', error)
+      announce('Unable to detect system preferences', 'polite')
     }
-    if (prefersHighContrast) {
-      updateSetting('highContrast', true)
-    }
-    
-    announce('System preferences detected and applied', 'polite')
   }
 
   if (!isOpen) return null

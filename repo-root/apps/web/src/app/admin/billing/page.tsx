@@ -22,6 +22,10 @@ import { Button } from '@locumtruerate/ui'
 import { Badge } from '@locumtruerate/ui'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@locumtruerate/ui'
 import { cn } from '@/lib/utils'
+import { z } from 'zod'
+
+// Validation schema for time range selection
+const timeRangeSchema = z.enum(['7d', '30d', '90d', '1y'])
 
 // Mock data for demonstration - would come from tRPC in real implementation
 const mockBillingData = {
@@ -315,8 +319,17 @@ function RevenueChart() {
 }
 
 export default function BillingDashboard() {
-  const [timeRange, setTimeRange] = useState('30d')
+  const [timeRange, setTimeRange] = useState<z.infer<typeof timeRangeSchema>>('30d')
   const { overview } = mockBillingData
+
+  const handleTimeRangeChange = (value: string) => {
+    try {
+      const validated = timeRangeSchema.parse(value)
+      setTimeRange(validated)
+    } catch (error) {
+      console.error('Invalid time range:', value)
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -334,8 +347,9 @@ export default function BillingDashboard() {
         <div className="flex items-center gap-3">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
+            onChange={(e) => handleTimeRangeChange(e.target.value)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+            aria-label="Select time range for billing data"
           >
             <option value="7d">Last 7 days</option>
             <option value="30d">Last 30 days</option>
