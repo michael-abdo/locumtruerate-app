@@ -60,19 +60,29 @@ node scripts/validate-cloudflare-setup.js  # Run full validation
 
 ### **Prerequisites for Deployment**
 
-1. **Set Cloudflare Account ID**:
-   ```bash
-   export CLOUDFLARE_ACCOUNT_ID=your_account_id_here
-   ```
+**REQUIRED**: Cloudflare credentials not found in environment. Need to confirm:
 
-2. **Configure Cloudflare API Token**:
-   - Create token with Pages:Edit permissions
-   - Set in environment or wrangler configuration
+1. **Cloudflare Account ID**: Check if available in environment or needs setup
+2. **Cloudflare API Token**: Check if available or needs creation
+3. **Authentication Method**: Environment variables vs Wrangler login
 
-3. **Build the application** (if deploying manually):
-   ```bash
-   npm run build
-   ```
+**Options**:
+- Option A: Use existing credentials (if available but not found)
+- Option B: Create new Cloudflare account and generate tokens
+- Option C: Use `wrangler login` for browser-based authentication
+
+**Quick Setup**:
+```bash
+# Option 1: Environment variables (if credentials exist)
+export CLOUDFLARE_ACCOUNT_ID=your_account_id
+export CLOUDFLARE_API_TOKEN=your_token
+
+# Option 2: Wrangler interactive login
+wrangler login
+
+# Option 3: Check if already authenticated
+wrangler whoami
+```
 
 ### **Deployment Process**
 

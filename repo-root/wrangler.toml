@@ -1,10 +1,13 @@
 name = "locumtruerate-staging"
 compatibility_date = "2024-06-21"
+account_id = "9130901762195117cb17491a6616b071"
 
 [env.production]
+name = "locumtruerate"
 compatibility_date = "2024-06-21"
 
 [env.staging]
+name = "locumtruerate-staging"
 compatibility_date = "2024-06-21"
 
 # Static files - targeting the 'out' directory from Next.js export
