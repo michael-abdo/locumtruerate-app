@@ -25,7 +25,7 @@ import {
   Users
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { trpc } from '@/lib/trpc/client'
+// import { trpc } from '@/lib/trpc/client' // Temporarily disabled
 import { toast } from 'sonner'
 
 // Mock data for demonstration
@@ -228,10 +228,11 @@ export default function BoostManagementPage() {
   const [selectedJob, setSelectedJob] = useState<string | null>(null)
   const [showBoostModal, setShowBoostModal] = useState(false)
 
-  const activateBoost = trpc.payments.activateBoost.useMutation({
-    onSuccess: (result) => {
+  // Mock mutation until router is enabled
+  const activateBoost = {
+    mutate: ({ jobId, packageId, packageDuration }: any) => {
       toast.success('Boost activated successfully!', {
-        description: `Your job listing is now boosted for ${result.packageId} package`
+        description: `Your job listing is now boosted for ${packageId} package`
       })
       
       // Clear URL parameters
@@ -241,12 +242,8 @@ export default function BoostManagementPage() {
       url.searchParams.delete('packageId')
       window.history.replaceState({}, '', url.toString())
     },
-    onError: (error) => {
-      toast.error('Failed to activate boost', {
-        description: error.message
-      })
-    }
-  })
+    isLoading: false
+  }
 
   // Handle payment success callback
   useEffect(() => {
@@ -296,19 +293,15 @@ export default function BoostManagementPage() {
     setShowBoostModal(true)
   }
 
-  const createBoostCheckout = trpc.payments.createBoostCheckout.useMutation({
-    onSuccess: (result) => {
-      // Redirect to Stripe checkout
-      if (result.url) {
-        window.location.href = result.url
-      }
+  // Mock mutation until router is enabled
+  const createBoostCheckout = {
+    mutateAsync: async (data: any) => {
+      // Mock the checkout creation
+      toast.info('Payment processing is currently disabled in demo mode')
+      return { url: null }
     },
-    onError: (error) => {
-      toast.error('Failed to create boost payment session', {
-        description: error.message
-      })
-    }
-  })
+    isLoading: false
+  }
 
   const handleBoostSubmit = async (data: any) => {
     const currentJobData = selectedJob ? mockJobs.find(j => j.id === selectedJob) : null

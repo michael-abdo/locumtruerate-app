@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@locumtruerate/ui'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { trpc } from '@/providers/trpc-provider'
+// import { trpc } from '@/providers/trpc-provider' // Temporarily disabled
 
 const stats = [
   {
@@ -92,10 +92,15 @@ const recentActivity = [
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
-  // API calls for real data
-  const { data: analyticsData } = trpc.analytics.getDashboardStats.useQuery()
-  const { data: pendingJobs } = trpc.admin.getPendingJobs.useQuery({ limit: 5 })
-  const { data: flaggedUsers } = trpc.admin.getFlaggedUsers.useQuery({ limit: 5 })
+  // Mock data until routers are enabled
+  const analyticsData = {
+    totalUsers: 0,
+    totalJobs: 0,
+    totalApplications: 0,
+    revenue: 0
+  }
+  const pendingJobs = []
+  const flaggedUsers = []
 
   const getActivityIcon = (type: string) => {
     switch (type) {

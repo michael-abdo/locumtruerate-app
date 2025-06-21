@@ -20,7 +20,7 @@ import {
 } from '@locumtruerate/ui'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { trpc } from '@/providers/trpc-provider'
+// import { trpc } from '@/providers/trpc-provider' // Temporarily disabled
 import { z } from 'zod'
 import { searchQuerySchema } from '@/lib/validation/schemas'
 import { debounce } from 'lodash'
@@ -65,29 +65,35 @@ export default function AdminUsersPage() {
     }
   }, 300)
 
-  // Get users with filters
-  const { data: usersData, isLoading, refetch } = trpc.admin.getUsers.useQuery({
-    page,
-    limit: 25,
-    search: searchQuery || undefined,
-    role: roleFilter === 'ALL' ? undefined : roleFilter,
-    verified: verifiedFilter,
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  })
-
-  // Get flagged users count
-  const { data: flaggedUsers } = trpc.admin.getFlaggedUsers.useQuery({
-    limit: 1,
-    page: 1
-  })
-
-  // User verification mutation
-  const verifyUserMutation = trpc.admin.updateUserVerification.useMutation({
-    onSuccess: () => {
-      refetch()
+  // Mock data until routers are enabled
+  const usersData = {
+    users: [],
+    pagination: {
+      total: 0,
+      totalPages: 0,
+      currentPage: 1,
+      perPage: 25
     }
-  })
+  }
+  const isLoading = false
+  const refetch = () => {}
+
+  // Mock flagged users count
+  const flaggedUsers = {
+    users: [],
+    pagination: {
+      total: 0
+    }
+  }
+
+  // Mock user verification mutation
+  const verifyUserMutation = {
+    mutateAsync: async (data: any) => {
+      console.log('Verifying user:', data)
+      return { success: true }
+    },
+    isLoading: false
+  }
 
   const handleVerifyUser = async (userId: string, verified: boolean, reason?: string) => {
     try {

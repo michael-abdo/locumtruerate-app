@@ -20,7 +20,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@locumtruerate/ui'
 import { Button } from '@locumtruerate/ui'
 import { Badge } from '@locumtruerate/ui'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@locumtruerate/ui'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { z } from 'zod'
 

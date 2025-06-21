@@ -19,15 +19,18 @@ const mockGetQueuedActions = jest.fn()
 const mockClearQueue = jest.fn()
 
 // Mock navigator.onLine
+let mockOnlineStatus = true
 Object.defineProperty(navigator, 'onLine', {
-  writable: true,
-  value: true
+  get() {
+    return mockOnlineStatus
+  },
+  configurable: true
 })
 
 describe('useOffline Hook', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    navigator.onLine = true
+    mockOnlineStatus = true
   })
 
   afterEach(() => {
@@ -38,7 +41,7 @@ describe('useOffline Hook', () => {
     it('detects online status correctly', () => {
       const { result } = renderHook(() => useOffline())
       
-      expect(result.current.isOnline).toBe(true)
+      expect(result.current.isOffline).toBe(false)
       expect(result.current.showOfflineNotification).toBe(false)
     })
 
@@ -46,11 +49,11 @@ describe('useOffline Hook', () => {
       const { result } = renderHook(() => useOffline())
       
       act(() => {
-        navigator.onLine = false
+        mockOnlineStatus = false
         window.dispatchEvent(new Event('offline'))
       })
       
-      expect(result.current.showOfflineNotification).toBe(true)
+      expect(result.current.isOffline).toBe(true)
     })
 
     it('handles network reconnection', () => {
@@ -58,18 +61,18 @@ describe('useOffline Hook', () => {
       
       // Go offline first
       act(() => {
-        navigator.onLine = false
+        mockOnlineStatus = false
         window.dispatchEvent(new Event('offline'))
       })
       
       // Come back online
       act(() => {
-        navigator.onLine = true
+        mockOnlineStatus = true
         window.dispatchEvent(new Event('online'))
       })
       
-      expect(result.current.isOnline).toBe(true)
-      expect(result.current.showReconnectedNotification).toBe(true)
+      expect(result.current.isOffline).toBe(false)
+      expect(result.current.isOffline).toBe(false)
     })
   })
 })

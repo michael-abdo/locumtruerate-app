@@ -179,9 +179,9 @@ const nextConfig = {
     NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
     // Production logging configuration
     NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'ERROR' : 'INFO'),
-    DEPLOYMENT_ID: process.env.DEPLOYMENT_ID,
-    DEPLOYMENT_COMMIT_SHA: process.env.DEPLOYMENT_COMMIT_SHA,
-    DEPLOYMENT_TIMESTAMP: process.env.DEPLOYMENT_TIMESTAMP,
+    DEPLOYMENT_ID: process.env.DEPLOYMENT_ID || 'local-dev',
+    DEPLOYMENT_COMMIT_SHA: process.env.DEPLOYMENT_COMMIT_SHA || 'unknown',
+    DEPLOYMENT_TIMESTAMP: process.env.DEPLOYMENT_TIMESTAMP || new Date().toISOString(),
   },
 
   // Transpile workspace packages

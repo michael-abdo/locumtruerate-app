@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { JobCard } from '@/components/jobs/job-card'
-import type { JobCardData } from '@locumtruerate/types'
+import { JobCardData, JobType, JobCategory } from '@locumtruerate/types'
 
 // Mock job data for testing
 const mockJob: JobCardData = {
@@ -18,8 +18,8 @@ const mockJob: JobCardData = {
     currency: 'USD',
     period: 'hourly'
   },
-  type: 'CONTRACT',
-  category: 'OTHER',
+  type: JobType.CONTRACT,
+  category: JobCategory.OTHER,
   tags: ['Emergency Medicine', 'Night Shifts'],
   specialty: 'Emergency Medicine',
   experienceLevel: '5+ years',

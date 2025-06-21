@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { trpc } from '@/providers/trpc-provider'
+// import { trpc } from '@/providers/trpc-provider' // Temporarily disabled
 import { Card, Button, Badge, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Tabs, TabsContent, TabsList, TabsTrigger, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Label } from '@locumtruerate/ui'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -54,22 +54,17 @@ const CreateListingForm = ({ onSuccess }: { onSuccess: () => void }) => {
   })
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
-  const createListingMutation = trpc.leadMarketplace.createListing.useMutation({
-    onSuccess: () => {
+  // Mock mutation until router is enabled
+  const createListingMutation = {
+    mutate: () => {
       toast({
         title: 'Success',
         description: 'Lead listing created successfully',
       })
       onSuccess()
     },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      })
-    },
-  })
+    isLoading: false
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -222,13 +217,9 @@ const LeadSelector = ({ onLeadSelect }: { onLeadSelect: (lead: Lead) => void }) 
     minScore: 50,
   })
 
-  const { data: leadsData, isLoading } = trpc.leads.getLeads.useQuery({
-    ...filters,
-    page: 1,
-    limit: 20,
-    sortBy: 'score',
-    sortOrder: 'desc',
-  })
+  // Mock data until router is enabled
+  const leadsData = { leads: [] }
+  const isLoading = false
 
   if (isLoading) {
     return <div>Loading leads...</div>
@@ -300,7 +291,14 @@ const LeadSelector = ({ onLeadSelect }: { onLeadSelect: (lead: Lead) => void }) 
 
 // Statistics dashboard
 const MarketplaceStats = () => {
-  const { data: stats, isLoading } = trpc.leadMarketplace.getMarketplaceStats.useQuery()
+  // Mock data until router is enabled
+  const stats = {
+    listings: { total: 0, active: 0 },
+    purchases: { total: 0, completed: 0 },
+    revenue: { total: 0, pending: 0 },
+    conversionRate: 0
+  }
+  const isLoading = false
 
   if (isLoading) {
     return <div>Loading statistics...</div>

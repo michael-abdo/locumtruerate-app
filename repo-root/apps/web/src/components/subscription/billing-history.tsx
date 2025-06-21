@@ -17,6 +17,9 @@ import {
 } from 'lucide-react'
 import { Button } from '@locumtruerate/ui'
 import { cn } from '@/lib/utils'
+import { z } from 'zod'
+import { safeTextSchema } from '@/lib/validation/schemas'
+import { safeParse } from '@/lib/validation/apply-validation'
 
 interface BillingRecord {
   id: string
@@ -96,6 +99,10 @@ const generateMockBillingRecords = (): BillingRecord[] => {
   return records
 }
 
+// Validation schemas
+const searchQuerySchema = safeTextSchema(0, 100)
+const filterSchema = z.enum(['all', 'paid', 'pending', 'failed', 'refunded'])
+
 export function BillingHistory({
   records = generateMockBillingRecords(),
   loading = false,
@@ -105,6 +112,7 @@ export function BillingHistory({
 }: BillingHistoryProps) {
   const [filter, setFilter] = useState<'all' | 'paid' | 'pending' | 'failed'>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchError, setSearchError] = useState('')
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null)
 
   const filteredRecords = records.filter(record => {

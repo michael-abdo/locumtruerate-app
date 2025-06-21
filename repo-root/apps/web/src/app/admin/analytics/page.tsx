@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@locumtruerate/ui'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { trpc } from '@/providers/trpc-provider'
+// import { trpc } from '@/providers/trpc-provider' // Temporarily disabled until analytics router is enabled
 
 type DateRange = '24h' | '7d' | '30d' | '90d'
 
@@ -46,24 +46,41 @@ export default function AdminAnalyticsPage() {
 
   const { startDate, endDate } = getDateRange(dateRange)
 
-  // Analytics queries
-  const { data: dashboardStats, isLoading: statsLoading } = trpc.analytics.getDashboardStats.useQuery({
-    startDate,
-    endDate,
-    granularity: dateRange === '24h' ? 'hour' : 'day'
-  })
+  // Analytics queries - using mock data until analytics router is enabled
+  const statsLoading = false;
+  const dashboardStats = {
+    pageViews: [],
+    sessions: 0,
+    users: 0,
+    bounceRate: 0,
+    avgSessionDuration: 0,
+    topPages: [],
+    topReferrers: [],
+    deviceBreakdown: { desktop: 0, mobile: 0, tablet: 0 }
+  };
 
-  const { data: realTimeStats } = trpc.analytics.getRealTimeStats.useQuery()
+  const realTimeStats = {
+    activeUsers: 0,
+    pageViewsLastHour: 0,
+    currentPages: []
+  };
   
-  const { data: performanceMetrics } = trpc.analytics.getPerformanceMetrics.useQuery({
-    startDate,
-    endDate
-  })
+  const performanceMetrics = {
+    avgPageLoadTime: 0,
+    serverResponseTime: 0,
+    clientRenderTime: 0,
+    apiLatency: 0
+  };
   
-  const { data: conversionMetrics } = trpc.analytics.getConversionMetrics.useQuery({
-    startDate,
-    endDate
-  })
+  const conversionMetrics = {
+    signupRate: 0,
+    calculatorUsage: 0,
+    jobApplicationRate: 0,
+    leadCaptureRate: 0,
+    visitorToRegistration: 0,
+    registrationToCalculator: 0,
+    calculatorToLead: 0
+  };
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
@@ -285,18 +302,18 @@ export default function AdminAnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {dashboardStats?.topPages.slice(0, 5).map((page, index) => (
-                          <div key={page.page} className="flex items-center justify-between">
+                        {(dashboardStats?.topPages || []).slice(0, 5).map((page: any, index) => (
+                          <div key={page?.page || index} className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-xs font-semibold text-blue-600 dark:text-blue-400">
                                 {index + 1}
                               </div>
                               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                {page.page || 'Unknown'}
+                                {page?.page || 'Unknown'}
                               </span>
                             </div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {formatNumber(page.views)} views
+                              {formatNumber(page?.views || 0)} views
                             </span>
                           </div>
                         )) || (
@@ -319,9 +336,9 @@ export default function AdminAnalyticsPage() {
                     <CardTitle>Performance Metrics</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {performanceMetrics?.performanceMetrics.length ? (
+                    {false ? (
                       <div className="space-y-4">
-                        {performanceMetrics.performanceMetrics.map((metric) => (
+                        {[].map((metric: any) => (
                           <div key={metric.page} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                             <div>
                               <h4 className="font-medium text-gray-900 dark:text-white">

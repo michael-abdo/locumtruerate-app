@@ -10,7 +10,7 @@ Sentry.init({
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
   
   // Session tracking for HIPAA audit requirements
-  autoSessionTracking: true,
+  // Note: Session tracking is enabled by default in Sentry v9
   
   // Privacy and HIPAA compliance configurations
   beforeSend: (event) => {
@@ -23,8 +23,8 @@ Sentry.init({
       // Keep only minimal user context for debugging
       event.user = {
         id: event.user.id ? '[REDACTED]' : undefined,
-        role: event.user.role || 'unknown'
-      }
+        role: (event.user as any).role || 'unknown'
+      } as any
     }
     
     // Sanitize request data to remove potential PHI
@@ -41,8 +41,8 @@ Sentry.init({
       ]
       
       phiFields.forEach(field => {
-        if (sanitizedData[field]) {
-          sanitizedData[field] = '[REDACTED-PHI]'
+        if ((sanitizedData as any)[field]) {
+          (sanitizedData as any)[field] = '[REDACTED-PHI]'
         }
       })
       
@@ -87,10 +87,12 @@ Sentry.init({
   },
   
   // Healthcare application specific tags
-  tags: {
-    component: 'frontend',
-    application: 'locumtruerate',
-    compliance: 'hipaa'
+  initialScope: {
+    tags: {
+      component: 'frontend',
+      application: 'locumtruerate',
+      compliance: 'hipaa'
+    }
   },
   
   // Release tracking for production deployments
@@ -98,14 +100,7 @@ Sentry.init({
   
   // Integration configurations
   integrations: [
-    new Sentry.BrowserTracing({
-      // Performance monitoring for critical healthcare flows
-      tracingOrigins: [
-        'localhost',
-        process.env.NEXT_PUBLIC_API_URL,
-        /^\//  // Relative URLs
-      ]
-    })
+    Sentry.browserTracingIntegration()
   ],
   
   // Error filtering for production

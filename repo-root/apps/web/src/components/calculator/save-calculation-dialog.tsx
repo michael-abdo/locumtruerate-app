@@ -1,9 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button } from '@locumtruerate/ui/components/ui/button'
-import { Input } from '@locumtruerate/ui/components/ui/input'
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locumtruerate/ui/components/ui/modal'
+import { Button, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalBody } from '@locumtruerate/ui'
 import { Save, X } from 'lucide-react'
 import { z } from 'zod'
 import { safeTextSchema } from '@/lib/validation/schemas'

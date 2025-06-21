@@ -3,9 +3,9 @@
 import React from 'react'
 import { useState, useCallback, useEffect } from 'react'
 import { ContractCalculationEngine, ContractInput, ContractCalculationResult, US_STATES, ContractType } from '@locumtruerate/calc-core'
-import { Button } from '@locumtruerate/ui/components/ui/button'
-import { Input } from '@locumtruerate/ui/components/ui/input'
-import { Select, SelectOption } from '@locumtruerate/ui/components/ui/select'
+import { Button } from '@locumtruerate/ui'
+import { Input } from '@/components/ui/input'
+import { Select, SelectOption } from '@/components/ui/select'
 import { useCalculatorAnalytics } from '@/hooks/use-analytics'
 import { ChevronDown, ChevronUp, Download, Save, Calculator, RefreshCw, GitCompare, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
@@ -189,17 +189,17 @@ export function ContractCalculator() {
         contractType: formData.contractType as ContractType,
         startDate: formData.startDate ? new Date(formData.startDate) : new Date(),
         endDate: formData.endDate ? new Date(formData.endDate) : new Date(Date.now() + parseInt(formData.duration) * 7 * 24 * 60 * 60 * 1000),
-        duration: formData.duration,
-        hourlyRate: formData.hourlyRate,
-        hoursPerWeek: formData.hoursPerWeek,
+        duration: parseInt(formData.duration) || 0,
+        hourlyRate: parseFloat(formData.hourlyRate) || 0,
+        hoursPerWeek: parseFloat(formData.hoursPerWeek) || 0,
         overtimeThreshold: 40,
         bonuses: [],
         stipends: {
-          housing: formData.housingAllowance || 0,
-          travel: formData.travelExpenses || 0,
+          housing: parseFloat(formData.housingAllowance) || 0,
+          travel: parseFloat(formData.travelExpenses) || 0,
           meals: 0,
           licensure: 0,
-          malpractice: formData.malpracticeInsurance || 0,
+          malpractice: parseFloat(formData.malpracticeInsurance) || 0,
           cme: 0,
           other: 0
         },

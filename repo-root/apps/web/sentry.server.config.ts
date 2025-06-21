@@ -19,8 +19,8 @@ Sentry.init({
       // Complete removal of user PII for server-side logging
       event.user = {
         id: '[REDACTED]',
-        role: event.user.role || 'unknown'
-      }
+        role: (event.user as any).role || 'unknown'
+      } as any
     }
     
     // Sanitize server request data
@@ -50,8 +50,8 @@ Sentry.init({
         ]
         
         phiFields.forEach(field => {
-          if (sanitizedData[field]) {
-            sanitizedData[field] = '[REDACTED-PHI]'
+          if ((sanitizedData as any)[field]) {
+            (sanitizedData as any)[field] = '[REDACTED-PHI]'
           }
         })
         
@@ -73,7 +73,7 @@ Sentry.init({
     if (event.exception?.values?.[0]?.value?.includes('DETAIL:')) {
       // PostgreSQL detail messages might contain sensitive data
       const exception = event.exception.values[0]
-      exception.value = exception.value.split('DETAIL:')[0] + 'DETAIL: [REDACTED]'
+      exception.value = exception.value ? exception.value.split('DETAIL:')[0] + 'DETAIL: [REDACTED]' : ''
     }
     
     // Filter authentication errors
@@ -107,11 +107,13 @@ Sentry.init({
   },
   
   // Healthcare application specific tags for server
-  tags: {
-    component: 'backend',
-    application: 'locumtruerate',
-    compliance: 'hipaa',
-    server: true
+  initialScope: {
+    tags: {
+      component: 'backend',
+      application: 'locumtruerate',
+      compliance: 'hipaa',
+      server: true
+    }
   },
   
   // Release tracking
@@ -120,15 +122,10 @@ Sentry.init({
   // Server-specific integrations
   integrations: [
     // Database query tracking (with PHI filtering)
-    new Sentry.Integrations.Postgres({
-      usePgNative: false
-    }),
+    Sentry.postgresIntegration(),
     
     // HTTP request tracking
-    new Sentry.Integrations.Http({
-      tracing: true,
-      breadcrumbs: true
-    })
+    Sentry.httpIntegration()
   ],
   
   // Server error filtering
@@ -158,8 +155,8 @@ Sentry.init({
   // Sampling for high-volume healthcare applications
   beforeSendTransaction: (transaction) => {
     // Reduce noise from health check endpoints
-    if (transaction.name?.includes('/health') || 
-        transaction.name?.includes('/status')) {
+    if ((transaction as any).name?.includes('/health') || 
+        (transaction as any).name?.includes('/status')) {
       return Math.random() < 0.1 ? transaction : null
     }
     

@@ -169,7 +169,7 @@ describe('Analytics Hooks', () => {
       }
       
       act(() => {
-        result.current.trackCalculatorUsage('salary', inputs, results)
+        result.current.trackCalculatorUsage({ calculatorType: 'salary', inputs, results })
       })
       
       expect(mockTrackEvent.trackFeatureUsage).toHaveBeenCalledWith(
@@ -189,7 +189,7 @@ describe('Analytics Hooks', () => {
       const inputs = { invalidInput: 'test' }
       
       act(() => {
-        result.current.trackCalculatorError('salary', 'Invalid input values', inputs)
+        result.current.trackCalculatorError({ calculatorType: 'salary', error: 'Invalid input values', inputs })
       })
       
       expect(mockTrackEvent.trackError).toHaveBeenCalledWith(
@@ -208,7 +208,7 @@ describe('Analytics Hooks', () => {
       }
       
       act(() => {
-        result.current.trackCalculatorExport('salary', 'pdf', data)
+        result.current.trackCalculatorExport({ calculatorType: 'salary', format: 'pdf', ...data })
       })
       
       expect(mockTrack).toHaveBeenCalledWith('calculator_export', {
@@ -254,7 +254,7 @@ describe('Analytics Hooks', () => {
       const { result } = renderHook(() => useCalculatorAnalytics())
       
       act(() => {
-        result.current.trackCalculatorUsage('salary', { hourlyRate: 150 })
+        result.current.trackCalculatorUsage({ calculatorType: 'salary', hourlyRate: 150 })
       })
       
       expect(mockTrackEvent.trackFeatureUsage).toHaveBeenCalledWith(

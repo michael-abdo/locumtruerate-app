@@ -60,11 +60,13 @@ Sentry.init({
   },
   
   // Edge runtime specific tags
-  tags: {
-    component: 'edge',
-    application: 'locumtruerate',
-    compliance: 'hipaa',
-    runtime: 'edge'
+  initialScope: {
+    tags: {
+      component: 'edge',
+      application: 'locumtruerate',
+      compliance: 'hipaa',
+      runtime: 'edge'
+    }
   },
   
   // Minimal configuration for edge performance

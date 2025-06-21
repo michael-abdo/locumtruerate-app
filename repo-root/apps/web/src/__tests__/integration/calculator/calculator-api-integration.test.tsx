@@ -1,11 +1,11 @@
-import { renderHook, waitFor, act } from '@testing-library/react'
+import { renderHook, waitFor, act, within } from '@testing-library/react'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, createMockCalculationResult } from '@/__tests__/utils/test-utils'
 import { useCalculatorPersistence } from '@/hooks/calculator/useCalculatorPersistence'
 import { ContractCalculator } from '@/components/calculator/contract-calculator'
-import { api } from '@/trpc/react'
+// import { api } from '@/trpc/react' // Disabled for testing
 import { TRPCError } from '@trpc/server'
 
 // Mock Clerk authentication
@@ -155,8 +155,8 @@ describe('Calculator API Integration Tests', () => {
     
     // Setup default successful responses
     mockSaveCalculation.mockResolvedValue({
-      id: 'new-calc-123',
-      ...mockCalculations[0]
+      ...mockCalculations[0],
+      id: 'new-calc-123'
     })
     
     mockUpdateCalculation.mockResolvedValue({

@@ -19,7 +19,7 @@ import {
 } from '@locumtruerate/ui'
 import { AdminHeader } from '@/components/admin/admin-header'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { trpc } from '@/providers/trpc-provider'
+// import { trpc } from '@/providers/trpc-provider' // Temporarily disabled
 import { z } from 'zod'
 import { searchQuerySchema } from '@/lib/validation/schemas'
 import { debounce } from 'lodash'
@@ -64,28 +64,36 @@ export default function AdminJobsPage() {
     }
   }, 300)
 
-  // Get jobs with filters
-  const { data: jobsData, isLoading, refetch } = trpc.jobs.getAll.useQuery({
-    page,
-    limit: 25,
-    search: searchQuery || undefined,
-    status: statusFilter === 'ALL' ? undefined : statusFilter,
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  })
-
-  // Get pending jobs count
-  const { data: pendingJobs } = trpc.admin.getPendingJobs.useQuery({
-    limit: 1,
-    page: 1
-  })
-
-  // Moderation mutations
-  const moderateJobMutation = trpc.admin.moderateJob.useMutation({
-    onSuccess: () => {
-      refetch()
+  // Mock data until routers are enabled
+  const jobsData = {
+    jobs: [],
+    pagination: {
+      total: 0,
+      totalPages: 0,
+      currentPage: 1,
+      perPage: 25
     }
-  })
+  }
+  const isLoading = false
+  const refetch = () => {}
+
+  // Mock pending jobs count
+  const pendingJobs = {
+    jobs: [],
+    pagination: {
+      total: 0
+    }
+  }
+
+  // Mock moderation mutation
+  const moderateJobMutation = {
+    mutate: () => {},
+    mutateAsync: async (data: any) => {
+      console.log('Moderating job:', data)
+      return { success: true }
+    },
+    isLoading: false
+  }
 
   const handleModerateJob = async (jobId: string, action: 'approve' | 'reject', reason?: string) => {
     try {

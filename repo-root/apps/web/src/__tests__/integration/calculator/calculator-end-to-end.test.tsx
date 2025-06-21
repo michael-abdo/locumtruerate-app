@@ -4,18 +4,18 @@ import { render, createMockCalculationResult, waitForLoadingToFinish } from '@/_
 import { ContractCalculator } from '@/components/calculator/contract-calculator'
 import { PaycheckCalculator } from '@/components/calculator/paycheck-calculator'
 import { 
-  calculateContract, 
-  calculatePaycheck,
+  ContractCalculationEngine, 
+  PaycheckCalculationEngine,
   ContractType,
-  TaxFilingStatus,
+  FilingStatus,
   type ContractInput,
   type PaycheckInput 
 } from '@locumtruerate/calc-core'
 
 // Mock calc-core calculations
 jest.mock('@locumtruerate/calc-core', () => ({
-  calculateContract: jest.fn(),
-  calculatePaycheck: jest.fn(),
+  ContractCalculationEngine: { calculate: jest.fn() },
+  PaycheckCalculationEngine: { calculate: jest.fn() },
   ContractType: {
     HOURLY: 'HOURLY',
     DAILY: 'DAILY',
