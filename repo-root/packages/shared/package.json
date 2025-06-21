@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./errors": "./src/errors/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./src/utils/logger": "./src/utils/logger.ts"
   },
   "scripts": {
     "build": "tsc",

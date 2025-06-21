@@ -49,20 +49,20 @@ export default function AdminAnalyticsPage() {
   // Analytics queries - using mock data until analytics router is enabled
   const statsLoading = false;
   const dashboardStats = {
-    pageViews: [],
+    pageViews: [] as Array<{ count: number; date: string }>,
     sessions: 0,
     users: 0,
     bounceRate: 0,
     avgSessionDuration: 0,
-    topPages: [],
-    topReferrers: [],
+    topPages: [] as Array<{ path: string; views: number }>,
+    topReferrers: [] as Array<{ domain: string; visits: number }>,
     deviceBreakdown: { desktop: 0, mobile: 0, tablet: 0 }
   };
 
   const realTimeStats = {
     activeUsers: 0,
     pageViewsLastHour: 0,
-    currentPages: []
+    currentPages: [] as Array<{ path: string; users: number }>
   };
   
   const performanceMetrics = {
@@ -77,9 +77,9 @@ export default function AdminAnalyticsPage() {
     calculatorUsage: 0,
     jobApplicationRate: 0,
     leadCaptureRate: 0,
-    visitorToRegistration: 0,
-    registrationToCalculator: 0,
-    calculatorToLead: 0
+    visitorToRegistration: { rate: 0, visitors: 0, registrations: 0 },
+    registrationToCalculator: { rate: 0, registrations: 0, calculatorUses: 0 },
+    calculatorToLead: { rate: 0, calculatorUses: 0, leads: 0 }
   };
 
   const formatNumber = (num: number) => {
@@ -121,7 +121,7 @@ export default function AdminAnalyticsPage() {
     },
     {
       title: 'Avg Load Time',
-      value: performanceMetrics?.performanceMetrics?.[0]?.avgLoadTime || 0,
+      value: performanceMetrics?.avgPageLoadTime || 0,
       change: -15.3,
       icon: Zap,
       color: 'purple',

@@ -48,7 +48,11 @@ envFiles.forEach(file => {
 });
 
 // Load environment variables
-require('dotenv').config({ path: '.env.local' });
+try {
+    require('dotenv').config({ path: '.env.local' });
+} catch (error) {
+    // Continue without dotenv if not available
+}
 
 console.log('\n🔑 Checking required environment variables...');
 requiredEnvVars.forEach(varName => {

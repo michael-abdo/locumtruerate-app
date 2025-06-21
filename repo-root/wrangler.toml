@@ -1,0 +1,11 @@
+name = "locumtruerate-staging"
+compatibility_date = "2024-06-21"
+
+[env.production]
+compatibility_date = "2024-06-21"
+
+[env.staging]
+compatibility_date = "2024-06-21"
+
+# Static files - targeting the 'out' directory from Next.js export
+pages_build_output_dir = "apps/web/out"
