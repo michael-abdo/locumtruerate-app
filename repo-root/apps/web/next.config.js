@@ -3,10 +3,10 @@ const { withSentryConfig } = require('@sentry/nextjs')
 
 const nextConfig = {
   experimental: {
-    // Enable experimental features for better performance
-    optimizePackageImports: ['lucide-react', '@locumtruerate/ui'],
     // Handle ESM packages
     esmExternals: 'loose',
+    // Temporarily disabled barrel optimization to fix build issues
+    // optimizePackageImports: ['lucide-react'],
     // Disable turbo temporarily to fix CSS processing
     // turbo: {
     //   resolveAlias: {
@@ -218,12 +218,24 @@ const nextConfig = {
     return config
   },
 
-  // Output configuration for static export if needed
-  output: process.env.EXPORT ? 'export' : undefined,
-  trailingSlash: false,
-  skipTrailingSlashRedirect: true,
+  // Output configuration for static export
+  output: process.env.EXPORT === 'true' ? 'export' : undefined,
+  trailingSlash: true,
+  skipTrailingSlashRedirect: false,
+  distDir: '.next',
+  
+  // Static export configuration overrides
+  ...(process.env.EXPORT === 'true' && {
+    images: {
+      unoptimized: true,
+    },
+    // Disable server features for static export
+    headers: async () => [],
+    redirects: async () => [],
+    rewrites: async () => [],
+  }),
 
-  // TypeScript configuration
+  // TypeScript configuration - re-enable for production
   typescript: {
     ignoreBuildErrors: false,
   },

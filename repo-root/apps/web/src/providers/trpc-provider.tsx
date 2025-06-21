@@ -6,6 +6,7 @@ import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 import type { AppRouter } from '@locumtruerate/api'
+import { isStaticMode } from '@/lib/static-mock-data'
 
 export const trpc = createTRPCReact<AppRouter>()
 
@@ -14,6 +15,12 @@ function getBaseUrl() {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL
   return 'http://localhost:3000'
+}
+
+function isStaticExport() {
+  return process.env.EXPORT === 'true' || 
+         (typeof window !== 'undefined' && 
+          window.location.hostname.includes('.pages.dev'))
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
@@ -47,8 +54,29 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       })
   )
 
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [trpcClient] = useState(() => {
+    // For static export, create a client that will gracefully handle API failures
+    if (isStaticExport()) {
+      return trpc.createClient({
+        transformer: superjson,
+        links: [
+          httpBatchLink({
+            url: `${getBaseUrl()}/api/trpc`,
+            headers() {
+              return {
+                'x-trpc-source': 'web-static',
+              }
+            },
+            fetch(url, options) {
+              // In static mode, always fail gracefully to mock data
+              return Promise.reject(new Error('Static export mode - using mock data'))
+            },
+          }),
+        ],
+      })
+    }
+
+    return trpc.createClient({
       transformer: superjson,
       links: [
         httpBatchLink({
@@ -67,7 +95,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         }),
       ],
     })
-  )
+  })
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>

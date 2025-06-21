@@ -1,0 +1,182 @@
+- LocumTrueRate Vercel Deployment - Complete Migration Plan
+  - Phase 1: Pre-Deployment Validation (30 minutes)
+    - Verify current app builds successfully
+      - Navigate to apps/web directory
+      - Run npm run build command
+      - Validate build completes without errors
+      - Check .next directory is created properly
+    - Test database connectivity
+      - Run npm run db:migrate --dry-run
+      - Verify PostgreSQL connection works
+      - Check all database tables exist
+      - Validate Prisma schema is up to date
+    - Validate environment variables are complete
+      - Review .env.production.example
+      - Identify all required variables
+      - Check for missing or placeholder values
+      - Document any gaps that need production values
+    - Test core application functionality locally
+      - Start development server
+      - Test authentication flow (Clerk)
+      - Test database operations
+      - Test payment webhook endpoints
+      - Verify all critical user paths work
+  - Phase 2: Vercel Project Setup (15 minutes)
+    - Create Vercel account and project
+      - Sign up or login to Vercel
+      - Connect GitHub account
+      - Import repository from GitHub
+      - Select correct repository branch
+    - Configure project settings
+      - Set root directory to apps/web
+      - Configure build command: next build
+      - Set output directory: .next
+      - Select Next.js framework preset
+      - Configure install command: pnpm install
+    - Initial deployment test
+      - Trigger first deployment
+      - Monitor build logs for errors
+      - Verify deployment completes
+      - Test preview URL functionality
+  - Phase 3: Environment Configuration (20 minutes)
+    - Database configuration
+      - Copy DATABASE_URL to Vercel environment
+      - Test database connection from Vercel
+      - Configure DATABASE_ENCRYPTION_KEY
+      - Set up DATABASE_READ_URL if needed
+    - Authentication setup
+      - Copy CLERK_SECRET_KEY to Vercel
+      - Copy NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+      - Configure CLERK_WEBHOOK_SECRET
+      - Set Clerk URL redirects for production
+    - Payment processing setup
+      - Copy STRIPE_SECRET_KEY to Vercel
+      - Copy NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+      - Configure STRIPE_WEBHOOK_SECRET
+      - Set STRIPE_CONNECT_CLIENT_ID
+    - Monitoring and error tracking
+      - Copy SENTRY_DSN to Vercel
+      - Configure SENTRY_AUTH_TOKEN
+      - Set SENTRY_ORG and SENTRY_PROJECT
+      - Configure SENTRY_ENVIRONMENT as production
+    - Email service configuration
+      - Copy SENDGRID_API_KEY to Vercel
+      - Set EMAIL_FROM address
+      - Configure EMAIL_SUPPORT address
+    - File storage and CDN
+      - Copy AWS credentials to Vercel
+      - Configure S3 bucket names
+      - Set CloudFront domain
+    - Analytics and tracking
+      - Copy Google Analytics ID
+      - Configure Mixpanel token
+      - Set up New Relic license key
+    - Feature flags and production settings
+      - Enable production feature flags
+      - Disable debug logging
+      - Configure HIPAA compliance settings
+      - Set rate limiting parameters
+  - Phase 4: Build Configuration (10 minutes)
+    - Create vercel.json configuration
+      - Define build command
+      - Set output directory
+      - Configure install command
+      - Specify Next.js framework
+      - Add any custom headers or redirects
+    - Update next.config.js for Vercel
+      - Remove Cloudflare-specific optimizations
+      - Ensure Vercel compatibility
+      - Keep security headers configuration
+      - Maintain Sentry integration
+      - Preserve image optimization settings
+    - Update package.json scripts
+      - Add vercel deployment scripts
+      - Update build commands if needed
+      - Ensure all dependencies are correctly specified
+  - Phase 5: Deploy and Test (30 minutes)
+    - Deploy to preview environment
+      - Push changes to feature branch
+      - Monitor Vercel build process
+      - Check build logs for errors
+      - Verify preview deployment succeeds
+    - Test core application flows
+      - Test user authentication (sign up/sign in)
+      - Verify job search functionality
+      - Test calculator features
+      - Check admin dashboard access
+      - Validate payment processing
+    - Test API endpoints and webhooks
+      - Test tRPC API routes
+      - Verify Stripe webhook endpoints
+      - Test Clerk authentication webhooks
+      - Check email sending functionality
+    - Performance and security validation
+      - Run Lighthouse audit
+      - Check Core Web Vitals
+      - Verify security headers are present
+      - Test SSL certificate
+      - Validate HIPAA compliance features
+    - Database operations testing
+      - Test read operations
+      - Test write operations
+      - Verify migrations work
+      - Check connection pooling
+  - Phase 6: DNS Migration (15 minutes)
+    - Prepare DNS changes
+      - Document current DNS configuration
+      - Plan rollback procedure
+      - Get Vercel deployment URLs
+      - Prepare CNAME records
+    - Update Cloudflare DNS settings
+      - Add CNAME record for www pointing to Vercel
+      - Update A record for root domain if needed
+      - Configure proxy settings
+      - Set appropriate TTL values
+    - Test domain connectivity
+      - Verify https://locumtruerate.com resolves
+      - Test https://www.locumtruerate.com
+      - Check SSL certificate validity
+      - Verify redirects work correctly
+    - Monitor and validate
+      - Monitor DNS propagation
+      - Check application functionality on production domain
+      - Verify all services work correctly
+      - Watch error logs for issues
+  - Phase 7: Post-Deployment Validation (20 minutes)
+    - Comprehensive functionality testing
+      - Test all user authentication flows
+      - Verify job posting and application process
+      - Test payment processing end-to-end
+      - Check admin panel functionality
+      - Validate email notifications
+    - Performance monitoring
+      - Check application load times
+      - Monitor error rates in Sentry
+      - Verify database performance
+      - Check API response times
+    - Security validation
+      - Verify all security headers present
+      - Check HTTPS enforcement
+      - Validate CSP policies
+      - Test HIPAA compliance features
+    - Documentation and cleanup
+      - Update deployment documentation
+      - Clean up unused Cloudflare configurations
+      - Document new Vercel deployment process
+      - Create rollback procedures
+  - Phase 8: Cleanup and Documentation (10 minutes)
+    - Remove Cloudflare-specific files
+      - Archive cloudflare-pages package
+      - Remove deployment scripts
+      - Clean up configuration files
+      - Update README documentation
+    - Update project documentation
+      - Create Vercel deployment guide
+      - Update environment setup instructions
+      - Document new build and deployment process
+      - Create troubleshooting guide
+    - Establish monitoring and maintenance
+      - Set up Vercel deployment notifications
+      - Configure automated health checks
+      - Establish backup procedures
+      - Plan regular maintenance schedule

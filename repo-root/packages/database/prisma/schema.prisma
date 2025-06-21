@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextIndex"]
@@ -12,7 +9,665 @@ datasource db {
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
-// ==================== ENUMS ====================
+model User {
+  id                    String               @id @default(cuid())
+  email                 String               @unique
+  passwordHash          String?
+  role                  UserRole             @default(EMPLOYER)
+  companyName           String?
+  contactName           String
+  phoneNumber           String?
+  avatarUrl             String?
+  bio                   String?
+  emailVerified         DateTime?
+  lastLoginAt           DateTime?
+  failedLoginAttempts   Int                  @default(0)
+  lockedUntil           DateTime?
+  subscriptionTier      SubscriptionTier     @default(FREE)
+  subscriptionStatus    String?
+  stripeCustomerId      String?              @unique
+  subscriptionStartDate DateTime?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  deletedAt             DateTime?
+  legacyId              String?              @unique
+  activities            ActivityLog[]
+  analyticsEvents       AnalyticsEvent[]
+  apiKeys               ApiKey[]
+  applications          Application[]
+  comments              ApplicationComment[]
+  companies             Company[]
+  featureUsage          FeatureUsage[]
+  jobs                  Job[]
+  knowledgeAuthored     KnowledgeArticle[]   @relation("KnowledgeAuthor")
+  knowledgeReviewed     KnowledgeArticle[]   @relation("KnowledgeReviewer")
+  knowledgeSearches     KnowledgeSearch[]
+  leadPurchases         LeadPurchase[]       @relation("LeadPurchases")
+  notifications         Notification[]
+  organizationMembers   OrganizationMember[]
+  savedCalculations     SavedCalculation[]
+  sessions              Session[]
+  supportFeedback       SupportFeedback[]
+  supportMessages       SupportMessage[]
+  supportTickets        SupportTicket[]
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String
+  key         String    @unique
+  permissions String[]
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([key])
+}
+
+model Organization {
+  id                     String               @id @default(cuid())
+  name                   String
+  slug                   String               @unique
+  description            String?
+  logo                   String?
+  website                String?
+  allowPublicProfiles    Boolean              @default(true)
+  autoApproveJobs        Boolean              @default(false)
+  maxJobPostings         Int                  @default(10)
+  maxTeamMembers         Int                  @default(5)
+  subscriptionTier       SubscriptionTier     @default(FREE)
+  subscriptionValidUntil DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  deletedAt              DateTime?
+  legacyId               String?              @unique
+  companies              Company[]
+  members                OrganizationMember[]
+  subscription           Subscription?
+
+  @@index([slug])
+  @@index([createdAt])
+}
+
+model OrganizationMember {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole @default(MEMBER)
+  permissions    String[]
+  invitedAt      DateTime         @default(now())
+  invitedBy      String
+  joinedAt       DateTime?
+  legacyId       String?          @unique
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Company {
+  id             String        @id @default(cuid())
+  organizationId String?
+  ownerId        String
+  name           String
+  slug           String        @unique
+  description    String?
+  logo           String?
+  website        String?
+  industry       String?
+  size           String?
+  foundedYear    Int?
+  location       String?
+  benefits       String[]
+  culture        String?
+  techStack      String[]
+  socialLinks    Json?
+  mediaGallery   String[]
+  isPublic       Boolean       @default(true)
+  isVerified     Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  legacyId       String?       @unique
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  owner          User          @relation(fields: [ownerId], references: [id])
+  jobs           Job[]
+
+  @@index([slug])
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([isPublic])
+}
+
+model Job {
+  id               String        @id @default(cuid())
+  companyId        String
+  userId           String
+  title            String
+  slug             String        @unique
+  location         String
+  description      String
+  requirements     String?
+  responsibilities String?
+  benefits         String?
+  salary           String?
+  type             JobType?
+  category         JobCategory?
+  tags             String[]
+  status           JobStatus     @default(DRAFT)
+  publishedAt      DateTime?
+  expiresAt        DateTime
+  viewCount        Int           @default(0)
+  applicationCount Int           @default(0)
+  autoRenew        Boolean       @default(false)
+  renewalDays      Int           @default(30)
+  maxRenewals      Int           @default(3)
+  renewalCount     Int           @default(0)
+  metaTitle        String?
+  metaDescription  String?
+  lastViewedAt     DateTime?
+  isBoosted        Boolean       @default(false)
+  boostType        String?
+  boostExpiresAt   DateTime?
+  boostPaymentId   String?
+  boostActivatedAt DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+  legacyId         String?       @unique
+  activities       ActivityLog[]
+  applications     Application[]
+  company          Company       @relation(fields: [companyId], references: [id])
+  user             User          @relation(fields: [userId], references: [id])
+  jobViews         JobView[]
+
+  @@index([slug])
+  @@index([companyId])
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([type])
+  @@index([expiresAt])
+  @@index([createdAt])
+}
+
+model JobView {
+  id        String   @id @default(cuid())
+  jobId     String
+  viewerId  String?
+  ipAddress String
+  userAgent String?
+  referrer  String?
+  sessionId String?
+  viewedAt  DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([viewedAt])
+}
+
+model Application {
+  id              String               @id @default(cuid())
+  jobId           String
+  userId          String?
+  name            String
+  email           String
+  phone           String
+  experience      Int
+  currentCompany  String?
+  currentRole     String?
+  expectedSalary  String?
+  noticePeriod    String?
+  resumeUrl       String?
+  coverLetter     String
+  portfolioUrl    String?
+  linkedinUrl     String?
+  additionalInfo  String?
+  score           Float?
+  scoreBreakdown  Json?
+  matchPercentage Float?
+  status          ApplicationStatus    @default(PENDING)
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  appliedAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  ipAddress       String?
+  legacyId        String?              @unique
+  activities      ActivityLog[]
+  job             Job                  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user            User?                @relation(fields: [userId], references: [id])
+  comments        ApplicationComment[]
+
+  @@index([jobId])
+  @@index([userId])
+  @@index([status])
+  @@index([score])
+  @@index([appliedAt])
+}
+
+model ApplicationComment {
+  id            String      @id @default(cuid())
+  applicationId String
+  userId        String
+  comment       String
+  isInternal    Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  legacyId      String?     @unique
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@index([applicationId])
+  @@index([userId])
+}
+
+model ActivityLog {
+  id             String      @id @default(cuid())
+  organizationId String?
+  userId         String
+  action         String
+  entityType     String
+  entityId       String
+  details        Json?
+  ipAddress      String?
+  userAgent      String?
+  timestamp      DateTime    @default(now())
+  legacyId       String?     @unique
+  job            Application @relation(fields: [entityId], references: [id], map: "ActivityLog_job_fkey")
+  job            Job         @relation(fields: [entityId], references: [id], map: "ActivityLog_job_fkey")
+  user           User        @relation(fields: [userId], references: [id])
+
+  @@index([organizationId])
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  legacyId  String?   @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([createdAt])
+}
+
+model Subscription {
+  id                   String           @id @default(cuid())
+  organizationId       String           @unique
+  tier                 SubscriptionTier
+  status               String
+  stripeCustomerId     String?          @unique
+  stripeSubscriptionId String?          @unique
+  stripePriceId        String?
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAt             DateTime?
+  cancelledAt          DateTime?
+  jobPostingsUsed      Int              @default(0)
+  teamMembersUsed      Int              @default(0)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  payments             Payment[]
+  organization         Organization     @relation(fields: [organizationId], references: [id])
+
+  @@index([stripeCustomerId])
+  @@index([status])
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  subscriptionId        String
+  amount                Int
+  currency              String        @default("usd")
+  status                PaymentStatus
+  stripePaymentIntentId String?       @unique
+  stripeInvoiceId       String?
+  description           String?
+  failureReason         String?
+  paidAt                DateTime?
+  createdAt             DateTime      @default(now())
+  subscription          Subscription  @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model FeatureUsage {
+  id                 String   @id @default(cuid())
+  userId             String
+  feature            String
+  amount             Int      @default(0)
+  billingPeriodStart DateTime
+  billingPeriodEnd   DateTime
+  metadata           Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature, billingPeriodStart, billingPeriodEnd])
+  @@index([userId])
+  @@index([feature])
+  @@index([billingPeriodStart])
+  @@index([billingPeriodEnd])
+  @@index([createdAt])
+}
+
+model EmailLog {
+  id                String    @id @default(cuid())
+  to                String
+  from              String
+  subject           String
+  template          String
+  sendgridMessageId String?
+  status            String
+  sentAt            DateTime  @default(now())
+  deliveredAt       DateTime?
+  openedAt          DateTime?
+  clickedAt         DateTime?
+  bouncedAt         DateTime?
+  failedAt          DateTime?
+  error             String?
+
+  @@index([to])
+  @@index([status])
+  @@index([sentAt])
+}
+
+model Lead {
+  id          String         @id @default(cuid())
+  source      String
+  sourceId    String?
+  email       String
+  name        String?
+  company     String?
+  phone       String?
+  message     String?
+  score       Int            @default(0)
+  status      String         @default("new")
+  metadata    Json?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  convertedAt DateTime?
+  listing     LeadListing?
+  purchases   LeadPurchase[]
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Analytics {
+  id          String   @id @default(cuid())
+  eventType   String
+  eventName   String
+  entityType  String?
+  entityId    String?
+  userId      String?
+  sessionId   String
+  ipAddress   String?
+  userAgent   String?
+  page        String?
+  referrer    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  properties  Json?
+  timestamp   DateTime @default(now())
+  loadTime    Int?
+  ttfb        Int?
+
+  @@index([eventType])
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([timestamp])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  sessionId  String
+  event      String
+  properties Json?
+  page       String?
+  referrer   String?
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([page])
+}
+
+model SupportTicket {
+  id            String            @id @default(cuid())
+  ticketNumber  String            @unique
+  userId        String
+  email         String
+  name          String
+  subject       String
+  description   String
+  category      TicketCategory
+  priority      TicketPriority
+  status        TicketStatus      @default(OPEN)
+  assignedTo    String?
+  tags          String[]          @default([])
+  attachments   String[]          @default([])
+  metadata      Json?
+  internalNotes String?
+  resolution    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  resolvedAt    DateTime?
+  closedAt      DateTime?
+  feedback      SupportFeedback[]
+  messages      SupportMessage[]
+  user          User              @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@index([ticketNumber])
+}
+
+model SupportMessage {
+  id          String        @id @default(cuid())
+  ticketId    String
+  authorId    String
+  authorType  String
+  message     String
+  attachments String[]      @default([])
+  isInternal  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  author      User          @relation(fields: [authorId], references: [id])
+  ticket      SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model KnowledgeArticle {
+  id                String    @id @default(cuid())
+  title             String
+  content           String
+  category          String
+  tags              String[]  @default([])
+  difficulty        String    @default("beginner")
+  estimatedReadTime Int       @default(5)
+  helpful           Int       @default(0)
+  notHelpful        Int       @default(0)
+  views             Int       @default(0)
+  published         Boolean   @default(false)
+  authorId          String?
+  reviewerId        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  publishedAt       DateTime?
+  author            User?     @relation("KnowledgeAuthor", fields: [authorId], references: [id])
+  reviewer          User?     @relation("KnowledgeReviewer", fields: [reviewerId], references: [id])
+
+  @@index([category])
+  @@index([published])
+  @@index([views])
+  @@index([helpful])
+  @@index([tags])
+  @@index([title])
+  @@index([content])
+}
+
+model KnowledgeSearch {
+  id           String   @id @default(cuid())
+  query        String
+  category     String?
+  tags         String[] @default([])
+  resultsCount Int      @default(0)
+  userId       String?
+  createdAt    DateTime @default(now())
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([query])
+  @@index([category])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SupportFeedback {
+  id        String        @id @default(cuid())
+  ticketId  String
+  userId    String
+  rating    Int
+  feedback  String?
+  category  String?
+  createdAt DateTime      @default(now())
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+  @@index([userId])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model SavedCalculation {
+  id            String    @id @default(cuid())
+  userId        String
+  type          String
+  input         Json
+  result        Json
+  name          String?
+  tags          String[]  @default([])
+  isFavorite    Boolean   @default(false)
+  isPublic      Boolean   @default(false)
+  shareableLink String?   @unique
+  expiresAt     DateTime?
+  metadata      Json?
+  timestamp     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isFavorite])
+  @@index([isPublic])
+  @@index([timestamp])
+  @@index([tags])
+}
+
+model LeadPurchase {
+  id               String    @id @default(cuid())
+  leadId           String
+  buyerId          String
+  price            Int
+  stripePaymentId  String?
+  paymentStatus    String    @default("pending")
+  accessGranted    Boolean   @default(false)
+  accessGrantedAt  DateTime?
+  leadSource       String?
+  leadScore        Int?
+  purchaseMetadata Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  buyer            User      @relation("LeadPurchases", fields: [buyerId], references: [id], onDelete: Cascade)
+  lead             Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, buyerId])
+  @@index([buyerId])
+  @@index([leadId])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([leadSource])
+}
+
+model LeadListing {
+  id               String    @id @default(cuid())
+  leadId           String    @unique
+  basePrice        Int
+  currentPrice     Int
+  priceCategory    String
+  isAvailable      Boolean   @default(true)
+  maxPurchases     Int       @default(1)
+  currentPurchases Int       @default(0)
+  industry         String?
+  location         String?
+  experience       String?
+  previewData      Json?
+  leadScore        Int       @default(0)
+  calculatorData   Json?
+  engagementLevel  String    @default("medium")
+  listedAt         DateTime  @default(now())
+  expiresAt        DateTime?
+  lead             Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([isAvailable])
+  @@index([priceCategory])
+  @@index([leadScore])
+  @@index([listedAt])
+  @@index([industry])
+  @@index([location])
+}
 
 enum UserRole {
   ADMIN
@@ -79,645 +734,6 @@ enum PaymentStatus {
   REFUNDED
 }
 
-// ==================== MODELS ====================
-
-// User model (replacing EMPLOYERS KV namespace)
-model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  passwordHash      String?  // Null for OAuth users
-  role              UserRole @default(EMPLOYER)
-  
-  // Profile information
-  companyName       String?
-  contactName       String
-  phoneNumber       String?
-  avatarUrl         String?
-  bio               String?
-  
-  // Authentication & Security
-  emailVerified     DateTime?
-  lastLoginAt       DateTime?
-  failedLoginAttempts Int    @default(0)
-  lockedUntil       DateTime?
-  
-  // Subscription information
-  subscriptionTier   SubscriptionTier @default(FREE)
-  subscriptionStatus String?         // 'active', 'past_due', 'cancelled', etc.
-  stripeCustomerId   String?         @unique
-  subscriptionStartDate DateTime?
-  
-  // Metadata
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deletedAt         DateTime? // Soft delete
-  
-  // Legacy support
-  legacyId          String?  @unique // Original KV ID for migration
-  
-  // Relations
-  jobs              Job[]
-  applications      Application[]
-  companies         Company[]
-  organizationMembers OrganizationMember[]
-  activities        ActivityLog[]
-  notifications     Notification[]
-  sessions          Session[]
-  apiKeys           ApiKey[]
-  comments          ApplicationComment[]
-  analyticsEvents   AnalyticsEvent[]
-  
-  // Support system relations
-  supportTickets    SupportTicket[]
-  supportMessages   SupportMessage[]
-  knowledgeSearches KnowledgeSearch[]
-  supportFeedback   SupportFeedback[]
-  knowledgeAuthored KnowledgeArticle[] @relation("KnowledgeAuthor")
-  knowledgeReviewed KnowledgeArticle[] @relation("KnowledgeReviewer")
-  
-  // Calculator relations
-  savedCalculations SavedCalculation[]
-  
-  // Lead marketplace relations
-  leadPurchases     LeadPurchase[] @relation("LeadPurchases")
-  
-  // Feature usage tracking
-  featureUsage      FeatureUsage[]
-  
-  @@index([email])
-  @@index([role])
-  @@index([createdAt])
-}
-
-// Session management for authentication
-model Session {
-  id            String   @id @default(cuid())
-  userId        String
-  token         String   @unique
-  expiresAt     DateTime
-  ipAddress     String?
-  userAgent     String?
-  createdAt     DateTime @default(now())
-  
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([token])
-  @@index([expiresAt])
-}
-
-// API key management for programmatic access
-model ApiKey {
-  id            String   @id @default(cuid())
-  userId        String
-  name          String
-  key           String   @unique
-  permissions   String[] // Array of permission strings
-  lastUsedAt    DateTime?
-  expiresAt     DateTime?
-  createdAt     DateTime @default(now())
-  revokedAt     DateTime?
-  
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([key])
-}
-
-// Organization model (from ORGANIZATIONS KV namespace)
-model Organization {
-  id                String   @id @default(cuid())
-  name              String
-  slug              String   @unique
-  description       String?
-  logo              String?
-  website           String?
-  
-  // Settings
-  allowPublicProfiles Boolean @default(true)
-  autoApproveJobs    Boolean @default(false)
-  maxJobPostings     Int     @default(10)
-  maxTeamMembers     Int     @default(5)
-  
-  // Subscription
-  subscriptionTier   SubscriptionTier @default(FREE)
-  subscriptionValidUntil DateTime?
-  
-  // Metadata
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deletedAt         DateTime? // Soft delete
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  companies         Company[]
-  members           OrganizationMember[]
-  subscription      Subscription?
-  
-  @@index([slug])
-  @@index([createdAt])
-}
-
-// Organization membership (from ORGANIZATION_USERS KV namespace)
-model OrganizationMember {
-  id                String   @id @default(cuid())
-  organizationId    String
-  userId            String
-  role              OrganizationRole @default(MEMBER)
-  permissions       String[] // Custom permissions array
-  
-  // Invitation tracking
-  invitedAt         DateTime @default(now())
-  invitedBy         String
-  joinedAt          DateTime?
-  
-  // Relations
-  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  @@unique([organizationId, userId])
-  @@index([organizationId])
-  @@index([userId])
-}
-
-// Company model (from COMPANIES KV namespace)
-model Company {
-  id                String   @id @default(cuid())
-  organizationId    String?
-  ownerId           String
-  
-  // Company information
-  name              String
-  slug              String   @unique
-  description       String?
-  logo              String?
-  website           String?
-  industry          String?
-  size              String?  // "1-10", "11-50", "51-200", "201-500", "500+"
-  foundedYear       Int?
-  location          String?
-  
-  // Enhanced profile
-  benefits          String[]
-  culture           String?
-  techStack         String[]
-  socialLinks       Json?    // { linkedin, twitter, facebook, etc }
-  mediaGallery      String[] // Array of image URLs
-  
-  // Settings
-  isPublic          Boolean  @default(true)
-  isVerified        Boolean  @default(false)
-  
-  // Metadata
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deletedAt         DateTime? // Soft delete
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  organization      Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  owner             User @relation(fields: [ownerId], references: [id])
-  jobs              Job[]
-  
-  @@index([slug])
-  @@index([organizationId])
-  @@index([ownerId])
-  @@index([isPublic])
-}
-
-// Job model (from JOBS KV namespace)
-model Job {
-  id                String   @id @default(cuid())
-  companyId         String
-  userId            String   // Who posted the job
-  
-  // Job details
-  title             String
-  slug              String   @unique
-  location          String
-  description       String   @db.Text
-  requirements      String?  @db.Text
-  responsibilities  String?  @db.Text
-  benefits          String?  @db.Text
-  salary            String?
-  type              JobType?
-  category          JobCategory?
-  tags              String[]
-  
-  // Job lifecycle
-  status            JobStatus @default(DRAFT)
-  publishedAt       DateTime?
-  expiresAt         DateTime
-  viewCount         Int      @default(0)
-  applicationCount  Int      @default(0)
-  
-  // Auto-renewal settings
-  autoRenew         Boolean  @default(false)
-  renewalDays       Int      @default(30)
-  maxRenewals       Int      @default(3)
-  renewalCount      Int      @default(0)
-  
-  // SEO & Analytics
-  metaTitle         String?
-  metaDescription   String?
-  lastViewedAt      DateTime?
-  
-  // Boost functionality
-  isBoosted         Boolean  @default(false)
-  boostType         String?  // featured, urgent, premium, sponsored
-  boostExpiresAt    DateTime?
-  boostPaymentId    String?  // Stripe payment ID for tracking
-  boostActivatedAt  DateTime?
-  
-  // Metadata
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  deletedAt         DateTime? // Soft delete
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  company           Company @relation(fields: [companyId], references: [id])
-  user              User @relation(fields: [userId], references: [id])
-  applications      Application[]
-  activities        ActivityLog[]
-  jobViews          JobView[]
-  
-  @@index([slug])
-  @@index([companyId])
-  @@index([userId])
-  @@index([status])
-  @@index([category])
-  @@index([type])
-  @@index([expiresAt])
-  @@index([createdAt])
-}
-
-// Job view tracking for analytics
-model JobView {
-  id                String   @id @default(cuid())
-  jobId             String
-  viewerId          String?  // Null for anonymous views
-  ipAddress         String
-  userAgent         String?
-  referrer          String?
-  sessionId         String?
-  viewedAt          DateTime @default(now())
-  
-  job               Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  
-  @@index([jobId])
-  @@index([viewedAt])
-}
-
-// Application model (from APPLICATIONS KV namespace)
-model Application {
-  id                String   @id @default(cuid())
-  jobId             String
-  userId            String?  // Null for guest applications
-  
-  // Applicant information
-  name              String
-  email             String
-  phone             String
-  experience        Int      // Years of experience
-  currentCompany    String?
-  currentRole       String?
-  expectedSalary    String?
-  noticePeriod      String?
-  
-  // Application content
-  resumeUrl         String?
-  coverLetter       String   @db.Text
-  portfolioUrl      String?
-  linkedinUrl       String?
-  additionalInfo    String?  @db.Text
-  
-  // AI Scoring
-  score             Float?   // 0-100
-  scoreBreakdown    Json?    // Detailed scoring criteria
-  matchPercentage   Float?   // Job match percentage
-  
-  // Status tracking
-  status            ApplicationStatus @default(PENDING)
-  reviewedAt        DateTime?
-  reviewedBy        String?
-  
-  // Metadata
-  appliedAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  ipAddress         String?
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  job               Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  user              User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  comments          ApplicationComment[]
-  activities        ActivityLog[]
-  
-  @@index([jobId])
-  @@index([userId])
-  @@index([status])
-  @@index([score])
-  @@index([appliedAt])
-}
-
-// Application comments (from APPLICATION_COMMENTS KV namespace)
-model ApplicationComment {
-  id                String   @id @default(cuid())
-  applicationId     String
-  userId            String
-  
-  comment           String   @db.Text
-  isInternal        Boolean  @default(true) // Internal team comment vs applicant-visible
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  user              User @relation(fields: [userId], references: [id])
-  
-  @@index([applicationId])
-  @@index([userId])
-}
-
-// Activity log (from ACTIVITY_LOG KV namespace)
-model ActivityLog {
-  id                String   @id @default(cuid())
-  organizationId    String?
-  userId            String
-  
-  action            String   // 'job_created', 'application_received', etc.
-  entityType        String   // 'job', 'application', 'user', 'organization'
-  entityId          String
-  details           Json?    // Additional context
-  
-  ipAddress         String?
-  userAgent         String?
-  timestamp         DateTime @default(now())
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  user              User @relation(fields: [userId], references: [id])
-  job               Job? @relation(fields: [entityId], references: [id], map: "ActivityLog_job_fkey")
-  application       Application? @relation(fields: [entityId], references: [id], map: "ActivityLog_application_fkey")
-  
-  @@index([organizationId])
-  @@index([userId])
-  @@index([entityType, entityId])
-  @@index([timestamp])
-}
-
-// Notification model (from NOTIFICATIONS KV namespace)
-model Notification {
-  id                String   @id @default(cuid())
-  userId            String
-  
-  type              String   // 'application', 'system', 'renewal', etc.
-  title             String
-  message           String   @db.Text
-  data              Json?    // Additional notification data
-  
-  readAt            DateTime?
-  createdAt         DateTime @default(now())
-  
-  // Legacy support
-  legacyId          String?  @unique
-  
-  // Relations
-  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([readAt])
-  @@index([createdAt])
-}
-
-// ==================== BUSINESS FEATURES ====================
-
-// Subscription management
-model Subscription {
-  id                String   @id @default(cuid())
-  organizationId    String   @unique
-  
-  tier              SubscriptionTier
-  status            String   // 'active', 'cancelled', 'past_due'
-  
-  // Stripe integration
-  stripeCustomerId  String?  @unique
-  stripeSubscriptionId String? @unique
-  stripePriceId     String?
-  
-  // Billing
-  currentPeriodStart DateTime
-  currentPeriodEnd  DateTime
-  cancelAt          DateTime?
-  cancelledAt       DateTime?
-  
-  // Usage tracking
-  jobPostingsUsed   Int      @default(0)
-  teamMembersUsed   Int      @default(0)
-  
-  // Metadata
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relations
-  organization      Organization @relation(fields: [organizationId], references: [id])
-  payments          Payment[]
-  
-  @@index([stripeCustomerId])
-  @@index([status])
-}
-
-// Payment history
-model Payment {
-  id                String   @id @default(cuid())
-  subscriptionId    String
-  
-  amount            Int      // Amount in cents
-  currency          String   @default("usd")
-  status            PaymentStatus
-  
-  // Stripe integration
-  stripePaymentIntentId String? @unique
-  stripeInvoiceId   String?
-  
-  description       String?
-  failureReason     String?
-  
-  paidAt            DateTime?
-  createdAt         DateTime @default(now())
-  
-  // Relations
-  subscription      Subscription @relation(fields: [subscriptionId], references: [id])
-  
-  @@index([subscriptionId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-// Feature usage tracking for subscription enforcement
-model FeatureUsage {
-  id                  String   @id @default(cuid())
-  userId              String
-  feature             String   // jobPostings, teamMembers, etc.
-  amount              Int      @default(0)
-  billingPeriodStart  DateTime
-  billingPeriodEnd    DateTime
-  metadata            Json?    // Additional usage data (overage costs, etc.)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  
-  // Relations
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, feature, billingPeriodStart, billingPeriodEnd])
-  @@index([userId])
-  @@index([feature])
-  @@index([billingPeriodStart])
-  @@index([billingPeriodEnd])
-  @@index([createdAt])
-}
-
-// Email tracking
-model EmailLog {
-  id                String   @id @default(cuid())
-  
-  to                String
-  from              String
-  subject           String
-  template          String
-  
-  // SendGrid integration
-  sendgridMessageId String?
-  
-  status            String   // 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'failed'
-  
-  sentAt            DateTime @default(now())
-  deliveredAt       DateTime?
-  openedAt          DateTime?
-  clickedAt         DateTime?
-  bouncedAt         DateTime?
-  failedAt          DateTime?
-  
-  error             String?
-  
-  @@index([to])
-  @@index([status])
-  @@index([sentAt])
-}
-
-// Lead generation (Zapier integration)
-model Lead {
-  id                String   @id @default(cuid())
-  
-  source            String   // 'zapier', 'api', 'website', etc.
-  sourceId          String?  // External system ID
-  
-  // Lead information
-  email             String
-  name              String?
-  company           String?
-  phone             String?
-  message           String?  @db.Text
-  
-  // Lead scoring
-  score             Int      @default(0)
-  status            String   @default("new") // 'new', 'contacted', 'qualified', 'converted'
-  
-  // Metadata
-  metadata          Json?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  convertedAt       DateTime?
-  
-  // Relations
-  purchases         LeadPurchase[]
-  listing           LeadListing?
-  
-  @@index([email])
-  @@index([status])
-  @@index([createdAt])
-}
-
-// Analytics and metrics tracking
-model Analytics {
-  id                String   @id @default(cuid())
-  
-  // Event tracking
-  eventType         String   // 'page_view', 'job_view', 'application_submit', etc.
-  eventName         String
-  entityType        String?  // 'job', 'user', 'application', etc.
-  entityId          String?
-  
-  // User tracking
-  userId            String?
-  sessionId         String
-  ipAddress         String?
-  userAgent         String?
-  
-  // Location and context
-  page              String?
-  referrer          String?
-  utmSource         String?
-  utmMedium         String?
-  utmCampaign       String?
-  
-  // Metadata
-  properties        Json?    // Additional event properties
-  timestamp         DateTime @default(now())
-  
-  // Performance metrics
-  loadTime          Int?     // Page load time in ms
-  ttfb              Int?     // Time to first byte
-  
-  @@index([eventType])
-  @@index([entityType, entityId])
-  @@index([userId])
-  @@index([sessionId])
-  @@index([timestamp])
-}
-
-// Modern analytics events for enhanced tracking
-model AnalyticsEvent {
-  id            String   @id @default(cuid())
-  userId        String?  // Null for anonymous events
-  sessionId     String
-  event         String   // Event name (page_view, job_view, application_submit, etc.)
-  properties    Json?    // Event properties (flexible data)
-  page          String?  // Page URL
-  referrer      String?  // Referrer URL
-  userAgent     String?  // User agent string
-  ip            String?  // IP address
-  createdAt     DateTime @default(now())
-  
-  user          User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  @@index([userId])
-  @@index([sessionId])
-  @@index([event])
-  @@index([createdAt])
-  @@index([page])
-}
-
-// ==================== SUPPORT SYSTEM ====================
-
 enum TicketStatus {
   OPEN
   IN_PROGRESS
@@ -743,268 +759,4 @@ enum TicketCategory {
   FEATURE_REQUEST
   BUG_REPORT
   OTHER
-}
-
-// Support tickets
-model SupportTicket {
-  id              String         @id @default(cuid())
-  ticketNumber    String         @unique
-  userId          String
-  email           String
-  name            String
-  
-  subject         String
-  description     String         @db.Text
-  category        TicketCategory
-  priority        TicketPriority
-  status          TicketStatus   @default(OPEN)
-  
-  assignedTo      String?        // Support agent ID
-  tags            String[]       @default([])
-  attachments     String[]       @default([])
-  metadata        Json?          // Additional data
-  
-  internalNotes   String?        @db.Text
-  resolution      String?        @db.Text
-  
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  resolvedAt      DateTime?
-  closedAt        DateTime?
-  
-  // Relations
-  user            User           @relation(fields: [userId], references: [id])
-  messages        SupportMessage[]
-  feedback        SupportFeedback[]
-  
-  @@index([userId])
-  @@index([status])
-  @@index([priority])
-  @@index([category])
-  @@index([assignedTo])
-  @@index([createdAt])
-  @@index([ticketNumber])
-}
-
-// Support ticket messages/thread
-model SupportMessage {
-  id              String          @id @default(cuid())
-  ticketId        String
-  authorId        String
-  authorType      String          // 'user' or 'support'
-  
-  message         String          @db.Text
-  attachments     String[]        @default([])
-  isInternal      Boolean         @default(false)
-  
-  createdAt       DateTime        @default(now())
-  
-  // Relations
-  ticket          SupportTicket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  author          User            @relation(fields: [authorId], references: [id])
-  
-  @@index([ticketId])
-  @@index([authorId])
-  @@index([createdAt])
-}
-
-// Knowledge base articles
-model KnowledgeArticle {
-  id                String   @id @default(cuid())
-  title             String
-  content           String   @db.Text
-  category          String
-  tags              String[] @default([])
-  difficulty        String   @default("beginner") // beginner, intermediate, advanced
-  
-  estimatedReadTime Int      @default(5) // in minutes
-  helpful           Int      @default(0)
-  notHelpful        Int      @default(0)
-  views             Int      @default(0)
-  
-  published         Boolean  @default(false)
-  
-  authorId          String?
-  reviewerId        String?
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  publishedAt       DateTime?
-  
-  // Relations
-  author            User?    @relation("KnowledgeAuthor", fields: [authorId], references: [id])
-  reviewer          User?    @relation("KnowledgeReviewer", fields: [reviewerId], references: [id])
-  
-  @@index([category])
-  @@index([published])
-  @@index([views])
-  @@index([helpful])
-  @@index([tags])
-  @@index([title])
-  @@index([content])
-}
-
-// Knowledge base search tracking
-model KnowledgeSearch {
-  id            String   @id @default(cuid())
-  query         String
-  category      String?
-  tags          String[] @default([])
-  resultsCount  Int      @default(0)
-  userId        String?
-  
-  createdAt     DateTime @default(now())
-  
-  // Relations
-  user          User?    @relation(fields: [userId], references: [id])
-  
-  @@index([query])
-  @@index([category])
-  @@index([userId])
-  @@index([createdAt])
-}
-
-// Customer feedback and satisfaction
-model SupportFeedback {
-  id              String        @id @default(cuid())
-  ticketId        String
-  userId          String
-  
-  rating          Int           // 1-5 star rating
-  feedback        String?       @db.Text
-  category        String?       // What aspect they're rating
-  
-  createdAt       DateTime      @default(now())
-  
-  // Relations
-  ticket          SupportTicket @relation(fields: [ticketId], references: [id])
-  user            User          @relation(fields: [userId], references: [id])
-  
-  @@index([ticketId])
-  @@index([userId])
-  @@index([rating])
-  @@index([createdAt])
-}
-
-// ==================== CALCULATOR ====================
-
-// Saved calculations
-model SavedCalculation {
-  id              String   @id @default(cuid())
-  userId          String
-  
-  // Calculation details
-  type            String   // 'contract', 'paycheck', 'comparison'
-  input           Json     // The input parameters
-  result          Json     // The calculation results
-  
-  // Metadata
-  name            String?  // User-provided name
-  tags            String[] @default([])
-  isFavorite      Boolean  @default(false)
-  isPublic        Boolean  @default(false)
-  
-  // Sharing
-  shareableLink   String?  @unique
-  expiresAt       DateTime?
-  
-  // Additional metadata
-  metadata        Json?    // Any additional data
-  
-  // Timestamps
-  timestamp       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  
-  // Relations
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-  @@index([type])
-  @@index([isFavorite])
-  @@index([isPublic])
-  @@index([timestamp])
-  @@index([tags])
-}
-
-// ==================== LEAD MARKETPLACE ====================
-
-// Lead purchase tracking - when recruiters buy leads
-model LeadPurchase {
-  id                String   @id @default(cuid())
-  
-  // Purchase details
-  leadId            String
-  buyerId           String   // Recruiter who purchased the lead
-  price             Int      // Price in cents ($10.00 = 1000)
-  
-  // Payment tracking
-  stripePaymentId   String?  // Stripe payment intent ID
-  paymentStatus     String   @default("pending") // pending, completed, failed, refunded
-  
-  // Lead access
-  accessGranted     Boolean  @default(false)
-  accessGrantedAt   DateTime?
-  
-  // Metadata
-  leadSource        String?  // calculator, contact_form, etc.
-  leadScore         Int?     // Lead quality score at time of purchase
-  purchaseMetadata  Json?    // Additional purchase data
-  
-  // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
-  // Relations
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  buyer             User     @relation("LeadPurchases", fields: [buyerId], references: [id], onDelete: Cascade)
-  
-  @@unique([leadId, buyerId]) // Prevent duplicate purchases
-  @@index([buyerId])
-  @@index([leadId])
-  @@index([paymentStatus])
-  @@index([createdAt])
-  @@index([leadSource])
-}
-
-// Lead marketplace listing - available leads for purchase
-model LeadListing {
-  id                String   @id @default(cuid())
-  
-  // Lead details
-  leadId            String   @unique
-  
-  // Pricing
-  basePrice         Int      // Base price in cents
-  currentPrice      Int      // Current price (may vary based on demand)
-  priceCategory     String   // standard, premium, hot_lead
-  
-  // Availability
-  isAvailable       Boolean  @default(true)
-  maxPurchases      Int      @default(1) // How many recruiters can buy this lead
-  currentPurchases  Int      @default(0)
-  
-  // Lead preview (masked information)
-  industry          String?
-  location          String?
-  experience        String?
-  previewData       Json?    // Masked lead data for preview
-  
-  // Quality metrics
-  leadScore         Int      @default(0)
-  calculatorData    Json?    // Calculator inputs that generated this lead
-  engagementLevel   String   @default("medium") // low, medium, high
-  
-  // Metadata
-  listedAt          DateTime @default(now())
-  expiresAt         DateTime? // When listing expires
-  
-  // Relations
-  lead              Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  
-  @@index([isAvailable])
-  @@index([priceCategory])
-  @@index([leadScore])
-  @@index([listedAt])
-  @@index([industry])
-  @@index([location])
 }

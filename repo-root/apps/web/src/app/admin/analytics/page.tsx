@@ -62,7 +62,8 @@ export default function AdminAnalyticsPage() {
   const realTimeStats = {
     activeUsers: 0,
     pageViewsLastHour: 0,
-    currentPages: [] as Array<{ path: string; users: number }>
+    currentPages: [] as Array<{ path: string; users: number }>,
+    recentEvents: [] as Array<{ id: string; type: string; timestamp: string; details: string; event: string; user?: { firstName: string; lastName: string }; page?: string }>
   };
   
   const performanceMetrics = {
@@ -79,7 +80,9 @@ export default function AdminAnalyticsPage() {
     leadCaptureRate: 0,
     visitorToRegistration: { rate: 0, visitors: 0, registrations: 0 },
     registrationToCalculator: { rate: 0, registrations: 0, calculatorUses: 0 },
-    calculatorToLead: { rate: 0, calculatorUses: 0, leads: 0 }
+    calculatorToLead: { rate: 0, calculatorUses: 0, leads: 0 },
+    viewToApplication: { rate: 0, views: 0, applications: 0 },
+    applicationToHire: { rate: 0, applications: 0, hires: 0 }
   };
 
   const formatNumber = (num: number) => {

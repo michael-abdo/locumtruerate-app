@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:static": "cross-env EXPORT=true next build",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
@@ -14,6 +15,7 @@
     "test:e2e": "playwright test",
     "analyze": "cross-env ANALYZE=true next build",
     "export": "next export",
+    "deploy:static": "npm run build:static && cp -r out/* ../../../deploy-temp/",
     "visual-test": "node testing/quick-visual.js",
     "visual-validate": "node testing/visual-validator.js"
   },
