@@ -5,12 +5,14 @@
 ### 🌐 Live URLs
 
 #### Production Environment
-- **Main URL**: https://locumtruerate.pages.dev
+- **Main URL**: https://locumtruerate.pages.dev ✅
+- **Direct URL**: https://ecb1b1cd.locumtruerate.pages.dev ✅
 - **Deployment ID**: ecb1b1cd
 - **Status**: ✅ LIVE
 
 #### Staging Environment  
-- **Main URL**: https://staging.locumtruerate-staging.pages.dev
+- **Main URL**: https://locumtruerate-staging.pages.dev ✅
+- **Direct URL**: https://7d612f65.locumtruerate-staging.pages.dev ✅
 - **Deployment ID**: 7d612f65
 - **Status**: ✅ LIVE
 
