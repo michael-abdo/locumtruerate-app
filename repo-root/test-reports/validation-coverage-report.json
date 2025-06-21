@@ -1,0 +1,51 @@
+{
+  "totalComponents": 21,
+  "validatedComponents": 18,
+  "categories": {
+    "admin": {
+      "total": 2,
+      "validated": 2,
+      "coverage": "100.0"
+    },
+    "auth": {
+      "total": 0,
+      "validated": 0,
+      "coverage": 0
+    },
+    "calculator": {
+      "total": 4,
+      "validated": 3,
+      "coverage": "75.0"
+    },
+    "forms": {
+      "total": 0,
+      "validated": 0,
+      "coverage": 0
+    },
+    "support": {
+      "total": 0,
+      "validated": 0,
+      "coverage": 0
+    },
+    "auth-pages": {
+      "total": 0,
+      "validated": 0,
+      "coverage": 0
+    },
+    "admin-pages": {
+      "total": 9,
+      "validated": 8,
+      "coverage": "88.9"
+    },
+    "job-pages": {
+      "total": 5,
+      "validated": 4,
+      "coverage": "80.0"
+    },
+    "tool-pages": {
+      "total": 1,
+      "validated": 1,
+      "coverage": "100.0"
+    }
+  }
+}
