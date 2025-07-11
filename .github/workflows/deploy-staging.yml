@@ -1,0 +1,82 @@
+name: Deploy LocumTrueRate to Staging
+
+# Automatically deploy to staging on every push to main/master
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop  # Optional: if you use develop branch
+
+jobs:
+  deploy:
+    name: Deploy LocumTrueRate to Heroku Staging
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for Heroku
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          cd repo-root
+          npm install
+      
+      - name: Build Next.js application
+        run: |
+          cd repo-root
+          npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: Create Heroku-compatible package.json
+        run: |
+          cd repo-root
+          # Create simplified package.json for Heroku deployment
+          cat > heroku-package.json << 'EOF'
+          {
+            "name": "locumtruerate-app",
+            "version": "1.0.0",
+            "scripts": {
+              "start": "cd apps/web && npm start",
+              "heroku-postbuild": "cd apps/web && npm run build"
+            },
+            "engines": {
+              "node": "18.x"
+            },
+            "dependencies": {}
+          }
+          EOF
+          mv heroku-package.json package.json
+      
+      - name: Deploy to Staging
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "locumtruerate-staging"
+          heroku_email: "zenex3298@gmail.com"
+          appdir: "repo-root"
+          branch: "main"
+      
+      - name: Post deployment notification
+        if: success()
+        run: |
+          echo "✅ Successfully deployed LocumTrueRate to staging!"
+          echo "🔗 View at: https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+      
+      - name: Run smoke tests
+        if: success()
+        run: |
+          echo "⏳ Waiting for deployment to be ready..."
+          sleep 30
+          echo "🔍 Running health check..."
+          curl -f https://locumtruerate-staging-66ba3177c382.herokuapp.com || exit 1
+          echo "✅ Health check passed!"

@@ -1,0 +1,71 @@
+name: PR Preview Deployment
+
+# Create preview deployments for pull requests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  preview:
+    name: Deploy PR Preview
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v3
+      
+      - name: Create PR Preview App
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+          # Create preview app name
+          APP_NAME="locumtruerate-pr-$PR_NUMBER"
+          
+          # Check if app exists, create if not
+          if ! heroku apps:info $APP_NAME >/dev/null 2>&1; then
+            heroku create $APP_NAME --region us
+            heroku pipelines:add locumtruerate -a $APP_NAME -s review
+          fi
+          
+          # Deploy PR code
+          git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$APP_NAME.git HEAD:refs/heads/main --force
+          
+          echo "Preview URL: https://$APP_NAME.herokuapp.com"
+      
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const appName = `locumtruerate-pr-${process.env.PR_NUMBER}`;
+            const url = `https://${appName}.herokuapp.com`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Preview deployment ready!\n\n🔗 **Preview URL**: ${url}\n\n_This preview will be automatically updated with new commits._`
+            })
+
+  cleanup:
+    name: Cleanup PR Preview
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    
+    steps:
+      - name: Delete Preview App
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+          # Delete preview app
+          APP_NAME="locumtruerate-pr-$PR_NUMBER"
+          heroku apps:destroy $APP_NAME --confirm $APP_NAME || true

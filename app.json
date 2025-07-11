@@ -1,0 +1,39 @@
+{
+  "name": "locumtruerate",
+  "description": "LocumTrueRate - Healthcare Contract Calculator and Job Board",
+  "repository": "https://github.com/your-username/locumtruerate",
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "NEXT_PUBLIC_APP_ENV": {
+      "description": "App environment (production, staging, preview)",
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "environments": {
+    "review": {
+      "env": {
+        "NEXT_PUBLIC_APP_ENV": "review",
+        "NEXT_PUBLIC_SHOW_PREVIEW_BANNER": "true"
+      }
+    },
+    "staging": {
+      "env": {
+        "NEXT_PUBLIC_APP_ENV": "staging"
+      }
+    }
+  }
+}
