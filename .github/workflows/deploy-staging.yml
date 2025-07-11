@@ -1,61 +1,55 @@
-name: Deploy Vanilla Demos to Heroku Staging
+name: Deploy to Heroku Staging
 
 on:
   push:
     branches:
       - main
-      - master
 
 jobs:
   deploy:
-    name: Deploy to Heroku Staging
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Debug - List files
-        run: |
-          echo "🔍 Current directory: $(pwd)"
-          echo "📁 Files in repository:"
-          ls -la
-          echo "📄 Checking for key files:"
-          echo "  - server.js exists: $(test -f server.js && echo 'YES' || echo 'NO')"
-          echo "  - package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
-          echo "  - Procfile exists: $(test -f Procfile && echo 'YES' || echo 'NO')"
-      
-      - name: Debug - Check secrets
-        run: |
-          echo "🔐 Checking if HEROKU_API_KEY is set..."
-          if [ -z "${{ secrets.HEROKU_API_KEY }}" ]; then
-            echo "❌ ERROR: HEROKU_API_KEY secret is NOT set!"
-            echo "Please add it at: https://github.com/${{ github.repository }}/settings/secrets/actions"
-            exit 1
-          else
-            echo "✅ HEROKU_API_KEY is configured (hidden)"
-          fi
-      
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.13.15
         with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "locumtruerate-staging"
-          heroku_email: "zenex3298@gmail.com"
-      
-      - name: Verify deployment
-        if: success()
-        run: |
-          echo "⏳ Waiting for app to start..."
-          sleep 45
-          echo "🔍 Checking health endpoint:"
-          HEALTH_RESPONSE=$(curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health)
-          echo "Response: $HEALTH_RESPONSE"
+          fetch-depth: 0
           
-          if echo "$HEALTH_RESPONSE" | grep -q "locumtruerate-vanilla-demos"; then
-            echo "✅ SUCCESS! Vanilla demos are deployed!"
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for git authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Add Heroku remote
+          git remote add heroku https://git.heroku.com/locumtruerate-staging.git || true
+          
+          # Push to Heroku
+          echo "🚀 Deploying to Heroku..."
+          git push heroku main:main --force
+          
+      - name: Verify deployment
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 45
+          
+          echo "🔍 Checking deployment..."
+          RESPONSE=$(curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health)
+          echo "Response: $RESPONSE"
+          
+          # Check if it's v4.0.0
+          if echo "$RESPONSE" | grep -q '"version":"4.0.0"'; then
+            echo "✅ SUCCESS! GitHub Actions deployment works!"
+            echo "🎉 Version 4.0.0 is now live!"
           else
-            echo "⚠️  WARNING: Health check didn't return expected response"
-            echo "Checking main page..."
-            curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com | head -20
+            echo "⚠️ Deployment may still be in progress..."
+            echo "Current response: $RESPONSE"
           fi
