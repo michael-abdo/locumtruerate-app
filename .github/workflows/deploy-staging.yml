@@ -3,7 +3,7 @@ name: Deploy to Heroku Staging
 on:
   push:
     branches:
-      - main
+      - vanilla-demos
 
 jobs:
   deploy:
