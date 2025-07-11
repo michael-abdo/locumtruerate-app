@@ -1,0 +1,30 @@
+name: Deploy Vanilla Demos to Staging
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - vanilla-demo-deployment
+
+jobs:
+  deploy:
+    name: Deploy to Heroku Staging
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Deploy to Staging
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "locumtruerate-staging"
+          heroku_email: "zenex3298@gmail.com"
+      
+      - name: Success notification
+        if: success()
+        run: |
+          echo "✅ Successfully deployed vanilla demos to staging!"
+          echo "🔗 View at: https://locumtruerate-staging-66ba3177c382.herokuapp.com"
