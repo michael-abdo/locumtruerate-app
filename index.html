@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocumTrueRate - v4.2.2 Navigation Debug!</title>
+    <title>LocumTrueRate - v4.2.3 Deep Navigation Debug!</title>
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -558,7 +558,7 @@
                             <div class="feature-icon">📈</div>
                             <h3>Paycheck Calculator</h3>
                             <p>Plan your finances with weekly, biweekly, and monthly paycheck calculations including taxes and deductions.</p>
-                            <a href="paycheck-calculator.html" class="btn-feature">Calculate Paycheck</a>
+                            <a href="paycheck-calculator.html" class="btn-feature" id="paycheck-btn-debug">Calculate Paycheck</a>
                         </div>
                         <div class="feature-card">
                             <div class="feature-icon">🔍</div>
@@ -824,8 +824,16 @@
                 });
             });
             
-            // Button click reliability temporarily disabled for debugging
-            // Will re-implement if needed after confirming navigation works
+            // Debug the paycheck button specifically
+            const paycheckBtn = document.getElementById('paycheck-btn-debug');
+            if (paycheckBtn) {
+                paycheckBtn.addEventListener('click', function(e) {
+                    console.log('Paycheck button clicked!');
+                    console.log('href:', this.href);
+                    console.log('Will navigate to:', this.getAttribute('href'));
+                    // Let the default behavior happen
+                });
+            }
         });
     </script>
 </body>

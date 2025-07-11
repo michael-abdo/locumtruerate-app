@@ -17,7 +17,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     app: 'locumtruerate-vanilla-demos',
-    version: '4.2.2',
+    version: '4.2.3',
     timestamp: new Date().toISOString(),
     message: 'This is the REAL vanilla demos server!',
     deployment: {
@@ -45,6 +45,10 @@ app.get('/locum', (req, res) => {
 });
 
 app.get('/paycheck', (req, res) => {
+  res.sendFile(path.join(__dirname, 'paycheck-calculator.html'));
+});
+
+app.get('/paycheck-calculator.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'paycheck-calculator.html'));
 });
 
