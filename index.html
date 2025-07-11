@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocumTrueRate - v4.2.1 Button Click Fixed!</title>
+    <title>LocumTrueRate - v4.2.2 Navigation Debug!</title>
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -555,7 +555,7 @@
                             <a href="contract-calculator.html" class="btn-feature">Calculate Now</a>
                         </div>
                         <div class="feature-card">
-                            <div class="feature-icon">📊</div>
+                            <div class="feature-icon">📈</div>
                             <h3>Paycheck Calculator</h3>
                             <p>Plan your finances with weekly, biweekly, and monthly paycheck calculations including taxes and deductions.</p>
                             <a href="paycheck-calculator.html" class="btn-feature">Calculate Paycheck</a>
@@ -824,21 +824,8 @@
                 });
             });
             
-            // Fix button click reliability (prevent rapid double-clicks only)
-            const buttons = document.querySelectorAll('a[href], button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    // Prevent rapid double-clicking issues
-                    if (this.dataset.clicking) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    this.dataset.clicking = 'true';
-                    setTimeout(() => {
-                        delete this.dataset.clicking;
-                    }, 500);
-                });
-            });
+            // Button click reliability temporarily disabled for debugging
+            // Will re-implement if needed after confirming navigation works
         });
     </script>
 </body>
