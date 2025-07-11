@@ -974,12 +974,19 @@
     </script>
 
     <!-- Floating Logger Component -->
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+        <span id="fab-icon">🔍</span>
+    </button>
+    
     <div id="floating-logger" class="floating-logger">
         <div class="logger-header">
             <span class="logger-title">Console Logger</span>
             <div class="logger-controls">
                 <button class="logger-btn" onclick="clearLogs()" title="Clear logs">🗑️</button>
                 <button class="logger-btn" onclick="copyLogs()" title="Copy logs">📋</button>
+                <button class="logger-btn" onclick="minimizeLogger()" title="Minimize logger">
+                    <span id="minimize-icon">−</span>
+                </button>
                 <button class="logger-btn" onclick="toggleLogger()" title="Toggle logger">
                     <span id="toggle-icon">▼</span>
                 </button>
@@ -992,11 +999,53 @@
 
     <style>
         /* Floating Logger Styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --background-color: #f8fafc;
+            --text-primary: #1e293b;
+            --text-muted: #94a3b8;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        /* Floating Action Button for toggling logger */
+        .logger-toggle-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .logger-toggle-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .logger-toggle-fab.visible {
+            display: flex;
+        }
+
         .floating-logger {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 400px;
+            width: 450px;
             max-width: 90vw;
             background-color: var(--surface-color);
             border: 2px solid var(--border-color);
@@ -1004,7 +1053,12 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             z-index: 9999;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 12px;
+            font-size: 14px; /* Increased for better OCR */
+            transition: all 0.3s ease;
+        }
+
+        .floating-logger.hidden {
+            display: none;
         }
 
         .logger-header {
@@ -1061,12 +1115,14 @@
         }
 
         .log-entry {
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-            border-left: 3px solid var(--border-color);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border-color);
             background-color: var(--surface-color);
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             word-wrap: break-word;
+            line-height: 1.6; /* Better OCR readability */
+            letter-spacing: 0.02em; /* Slight letter spacing for OCR */
         }
 
         .log-entry.log {
@@ -1075,22 +1131,25 @@
 
         .log-entry.warn {
             border-left-color: var(--warning-color);
-            background-color: rgba(245, 158, 11, 0.05);
+            background-color: rgba(245, 158, 11, 0.08);
         }
 
         .log-entry.error {
             border-left-color: var(--error-color);
-            background-color: rgba(239, 68, 68, 0.05);
+            background-color: rgba(239, 68, 68, 0.08);
         }
 
         .log-timestamp {
             color: var(--text-muted);
-            font-size: 10px;
-            margin-right: 0.5rem;
+            font-size: 12px; /* Larger for OCR */
+            margin-right: 0.75rem;
+            font-weight: 500;
         }
 
         .log-message {
             color: var(--text-primary);
+            font-size: 14px; /* Ensure consistent size */
+            font-weight: 400;
         }
 
         /* Responsive adjustments */
@@ -1113,6 +1172,7 @@
             
             // Logger state
             let isCollapsed = false;
+            let isHidden = false;
             const maxLogs = 100;
             const logs = [];
             
@@ -1136,6 +1196,9 @@
                 
                 // Add initial message
                 console.log('🚀 Floating Logger initialized');
+                
+                // Default to open
+                isHidden = false;
             }
             
             // Log message to floating logger
@@ -1188,7 +1251,31 @@
                     .replace(/'/g, "&#039;");
             }
             
-            // Toggle logger visibility
+            // Toggle logger visibility (show/hide entire logger)
+            window.toggleLoggerVisibility = function() {
+                isHidden = !isHidden;
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                
+                if (isHidden) {
+                    logger.classList.add('hidden');
+                    fab.classList.add('visible');
+                } else {
+                    logger.classList.remove('hidden');
+                    fab.classList.remove('visible');
+                }
+            };
+            
+            // Minimize logger (hide from view, show FAB)
+            window.minimizeLogger = function() {
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                logger.classList.add('hidden');
+                fab.classList.add('visible');
+                isHidden = true;
+            };
+            
+            // Toggle logger collapse/expand
             window.toggleLogger = function() {
                 isCollapsed = !isCollapsed;
                 const content = document.getElementById('logger-content');
