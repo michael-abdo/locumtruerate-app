@@ -988,23 +988,28 @@
                 
                 // Focus behavior
                 input.addEventListener('focus', function() {
-                    // Small delay to ensure selection works
+                    // Small delay to ensure selection works, prevent scroll
                     setTimeout(() => {
+                        const scrollPosition = window.pageYOffset;
                         this.select();
+                        window.scrollTo(0, scrollPosition);
                     }, 50);
                 });
             });
             
-            // Fix button click reliability
+            // Fix button click reliability (prevent rapid double-clicks only)
             const buttons = document.querySelectorAll('a[href], button');
             buttons.forEach(button => {
                 button.addEventListener('click', function(e) {
-                    // Prevent double-clicking issues
-                    if (this.dataset.clicking) return;
+                    // Prevent rapid double-clicking issues
+                    if (this.dataset.clicking) {
+                        e.preventDefault();
+                        return false;
+                    }
                     this.dataset.clicking = 'true';
                     setTimeout(() => {
                         delete this.dataset.clicking;
-                    }, 300);
+                    }, 500);
                 });
             });
         });
