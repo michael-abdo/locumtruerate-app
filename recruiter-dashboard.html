@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Dashboard - ContractCalc Pro</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-info p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.accent {
+            border-left-color: var(--accent-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--error-color);
+        }
+
+        /* Dashboard Sections */
+        .dashboard-section {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-small.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Job Listings Table */
+        .jobs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .jobs-table th,
+        .jobs-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .jobs-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .jobs-table tr:hover {
+            background-color: var(--background-color);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-badge.pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.filled {
+            background-color: rgba(100, 116, 139, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.edit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .action-btn.view {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Applicants Section */
+        .applicant-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .applicant-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .applicant-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .applicant-info {
+            flex: 1;
+        }
+
+        .applicant-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .applicant-specialty {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .applicant-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+        }
+
+        .applicant-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Analytics Chart Placeholder */
+        .chart-container {
+            height: 300px;
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .jobs-table {
+                font-size: 0.9rem;
+            }
+
+            .jobs-table th,
+            .jobs-table td {
+                padding: 0.5rem;
+            }
+
+            .applicant-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>ContractCalc Pro</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link active">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Dashboard Header -->
+        <section class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1>Welcome back, Sarah Johnson</h1>
+                        <p>Metropolitan Staffing Solutions • Senior Healthcare Recruiter</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="showNewJobForm()">Post New Job</button>
+                        <button class="btn-secondary" onclick="viewAnalytics()">View Reports</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Active Job Listings</div>
+                        <div class="stat-change positive">↗ +3 this week</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Total Applicants</div>
+                        <div class="stat-change positive">↗ +18 this week</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Positions Filled</div>
+                        <div class="stat-change positive">↗ +2 this month</div>
+                    </div>
+                    <div class="stat-card accent">
+                        <div class="stat-value">92%</div>
+                        <div class="stat-label">Client Satisfaction</div>
+                        <div class="stat-change positive">↗ +5% this quarter</div>
+                    </div>
+                </div>
+
+                <!-- Job Listings Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Your Job Listings</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterJobs('all')">All</button>
+                            <button class="btn-small secondary" onclick="filterJobs('active')">Active</button>
+                            <button class="btn-small secondary" onclick="filterJobs('pending')">Pending</button>
+                            <button class="btn-small primary" onclick="showNewJobForm()">+ New Job</button>
+                        </div>
+                    </div>
+
+                    <table class="jobs-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Facility</th>
+                                <th>Location</th>
+                                <th>Rate</th>
+                                <th>Applicants</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Emergency Medicine Physician</td>
+                                <td>Metropolitan General</td>
+                                <td>Los Angeles, CA</td>
+                                <td>$350/hr</td>
+                                <td>12</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="action-btn view" onclick="viewJob(1)">View</button>
+                                        <button class="action-btn edit" onclick="editJob(1)">Edit</button>
+                                        <button class="action-btn delete" onclick="deleteJob(1)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Internal Medicine Hospitalist</td>
+                                <td>City Medical Center</td>
+                                <td>Houston, TX</td>
+                                <td>$285/hr</td>
+                                <td>8</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="action-btn view" onclick="viewJob(2)">View</button>
+                                        <button class="action-btn edit" onclick="editJob(2)">Edit</button>
+                                        <button class="action-btn delete" onclick="deleteJob(2)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Anesthesiologist</td>
+                                <td>Sunshine Surgery Center</td>
+                                <td>Miami, FL</td>
+                                <td>$425/hr</td>
+                                <td>15</td>
+                                <td><span class="status-badge pending">Pending Approval</span></td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="action-btn view" onclick="viewJob(3)">View</button>
+                                        <button class="action-btn edit" onclick="editJob(3)">Edit</button>
+                                        <button class="action-btn delete" onclick="deleteJob(3)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>General Surgeon</td>
+                                <td>Prairie Regional Medical</td>
+                                <td>Chicago, IL</td>
+                                <td>$380/hr</td>
+                                <td>6</td>
+                                <td><span class="status-badge filled">Position Filled</span></td>
+                                <td>
+                                    <div class="job-actions">
+                                        <button class="action-btn view" onclick="viewJob(4)">View</button>
+                                        <button class="action-btn edit" onclick="editJob(4)">Edit</button>
+                                        <button class="action-btn delete" onclick="deleteJob(4)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Applicants -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Applicants</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="viewAllApplicants()">View All</button>
+                            <button class="btn-small primary" onclick="exportApplicants()">Export List</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant-card">
+                        <div class="applicant-avatar">DM</div>
+                        <div class="applicant-info">
+                            <div class="applicant-name">Dr. Michael Rodriguez</div>
+                            <div class="applicant-specialty">Emergency Medicine • 8 years experience</div>
+                            <div class="applicant-rating">
+                                <span class="rating-stars">★★★★★</span>
+                                <span>4.9/5 • Applied to EM Physician - LA</span>
+                            </div>
+                        </div>
+                        <div class="applicant-actions">
+                            <button class="action-btn view" onclick="viewApplicant(1)">Review</button>
+                            <button class="action-btn edit" onclick="contactApplicant(1)">Contact</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant-card">
+                        <div class="applicant-avatar">SK</div>
+                        <div class="applicant-info">
+                            <div class="applicant-name">Dr. Sarah Kim</div>
+                            <div class="applicant-specialty">Internal Medicine • 12 years experience</div>
+                            <div class="applicant-rating">
+                                <span class="rating-stars">★★★★★</span>
+                                <span>4.8/5 • Applied to Hospitalist - Houston</span>
+                            </div>
+                        </div>
+                        <div class="applicant-actions">
+                            <button class="action-btn view" onclick="viewApplicant(2)">Review</button>
+                            <button class="action-btn edit" onclick="contactApplicant(2)">Contact</button>
+                        </div>
+                    </div>
+
+                    <div class="applicant-card">
+                        <div class="applicant-avatar">AP</div>
+                        <div class="applicant-info">
+                            <div class="applicant-name">Dr. Amanda Patel</div>
+                            <div class="applicant-specialty">Anesthesiology • 15 years experience</div>
+                            <div class="applicant-rating">
+                                <span class="rating-stars">★★★★☆</span>
+                                <span>4.7/5 • Applied to Anesthesiologist - Miami</span>
+                            </div>
+                        </div>
+                        <div class="applicant-actions">
+                            <button class="action-btn view" onclick="viewApplicant(3)">Review</button>
+                            <button class="action-btn edit" onclick="contactApplicant(3)">Contact</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Analytics -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Performance Analytics</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="changeTimeframe('week')">This Week</button>
+                            <button class="btn-small secondary" onclick="changeTimeframe('month')">This Month</button>
+                            <button class="btn-small secondary" onclick="changeTimeframe('quarter')">This Quarter</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        📊 Job Posting Performance Chart
+                        <br><small>Views, Applications, and Conversions Over Time</small>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">1,247</div>
+                            <div style="color: var(--text-secondary);">Total Job Views</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-color);">156</div>
+                            <div style="color: var(--text-secondary);">Applications Received</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--warning-color);">12.5%</div>
+                            <div style="color: var(--text-secondary);">Conversion Rate</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--success-color);">18 days</div>
+                            <div style="color: var(--text-secondary);">Avg. Time to Fill</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>ContractCalc Pro</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Dashboard functionality
+        function showNewJobForm() {
+            alert('Opening job posting form...\n\nThis would lead to a comprehensive job posting interface with:\n• Position details and requirements\n• Compensation structure\n• Contract terms\n• Applicant screening criteria\n• Multi-board posting options');
+        }
+
+        function viewAnalytics() {
+            alert('Loading advanced analytics...\n\n📊 Available Reports:\n• Job posting performance\n• Applicant conversion rates\n• Market rate comparisons\n• Time-to-fill analytics\n• Client satisfaction metrics\n• Revenue and placement tracking');
+        }
+
+        function filterJobs(filter) {
+            // Simulate filtering jobs
+            const buttons = document.querySelectorAll('.btn-small.secondary');
+            buttons.forEach(btn => btn.classList.remove('primary'));
+            event.target.classList.add('primary');
+            
+            alert(`Filtering jobs by: ${filter}\n\nThis would update the table to show only ${filter} job listings.`);
+        }
+
+        function viewJob(jobId) {
+            alert(`Viewing job details for Job ID: ${jobId}\n\nThis would open a detailed view showing:\n• Complete job description\n• Applicant list and status\n• Performance metrics\n• Edit options`);
+        }
+
+        function editJob(jobId) {
+            alert(`Editing job posting ${jobId}...\n\nThis would open the job editing interface allowing you to:\n• Update job details\n• Modify compensation\n• Change requirements\n• Adjust posting settings`);
+        }
+
+        function deleteJob(jobId) {
+            if (confirm(`Are you sure you want to delete this job posting?`)) {
+                alert(`Job posting ${jobId} has been deleted.\n\n• Applicants have been notified\n• Posting removed from all boards\n• Data archived for reporting`);
+            }
+        }
+
+        function viewApplicant(applicantId) {
+            alert(`Viewing applicant profile ${applicantId}...\n\nThis would show:\n• Complete resume and credentials\n• Previous work history\n• References and ratings\n• Interview scheduling options\n• Background check status`);
+        }
+
+        function contactApplicant(applicantId) {
+            alert(`Contacting applicant ${applicantId}...\n\nCommunication options:\n• Send message through platform\n• Schedule phone interview\n• Request additional documents\n• Share job details and next steps`);
+        }
+
+        function viewAllApplicants() {
+            alert('Loading complete applicant management interface...\n\n👥 Features:\n• Advanced filtering and search\n• Bulk actions and messaging\n• Application status tracking\n• Interview scheduling\n• Offer management');
+        }
+
+        function exportApplicants() {
+            alert('Exporting applicant data...\n\n📄 Export includes:\n• Contact information\n• Application status\n• Qualifications summary\n• Notes and ratings\n• Interview history\n\nFile will be downloaded as Excel spreadsheet.');
+        }
+
+        function changeTimeframe(period) {
+            const buttons = document.querySelectorAll('.section-actions .btn-small.secondary');
+            buttons.forEach(btn => btn.classList.remove('primary'));
+            event.target.classList.add('primary');
+            
+            alert(`Analytics updated for ${period} view.\n\n📈 Showing data for:\n• Job performance metrics\n• Application trends\n• Conversion rates\n• Market comparisons`);
+        }
+
+        // Simulate real-time updates
+        function updateDashboard() {
+            // This would typically fetch real data from an API
+            console.log('Dashboard updated with latest data');
+        }
+
+        // Update dashboard every 30 seconds (in a real app)
+        // setInterval(updateDashboard, 30000);
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Recruiter dashboard loaded');
+            // Load initial data, set up real-time updates, etc.
+        });
+    </script>
+</body>
+</html>

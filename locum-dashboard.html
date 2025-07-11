@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locum Dashboard - ContractCalc Pro</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-info p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--surface-color);
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--border-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid white;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.accent {
+            border-left-color: var(--accent-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--error-color);
+        }
+
+        /* Dashboard Sections */
+        .dashboard-section {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-small.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-small.secondary {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-small.accent {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Contract Cards */
+        .contracts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .contract-card {
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contract-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .contract-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .contract-status.active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .contract-status.completed {
+            background-color: rgba(100, 116, 139, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .contract-status.upcoming {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .contract-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            margin-right: 4rem;
+        }
+
+        .contract-facility {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .contract-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .contract-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .contract-detail {
+            text-align: center;
+            padding: 0.75rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+        }
+
+        .contract-detail-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .contract-detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .contract-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.accent {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Profile Section */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .profile-summary {
+            background-color: var(--background-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 0 auto 1rem;
+        }
+
+        .profile-info h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-specialty {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .profile-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars {
+            color: var(--warning-color);
+            font-size: 1.2rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .profile-stat {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--surface-color);
+            border-radius: 0.5rem;
+        }
+
+        .profile-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .profile-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Earnings Chart */
+        .earnings-chart {
+            background-color: var(--background-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .contracts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contract-details {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>ContractCalc Pro</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link active">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Dashboard Header -->
+        <section class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1>Welcome back, Dr. Emily Chen</h1>
+                        <p>Emergency Medicine Physician • Board Certified • 12 years experience</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="job-board.html" class="btn-primary">Find New Positions</a>
+                        <button class="btn-secondary" onclick="updateProfile()">Update Profile</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Active Contracts</div>
+                        <div class="stat-change positive">↗ +1 this month</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value">$847K</div>
+                        <div class="stat-label">Total Earnings (YTD)</div>
+                        <div class="stat-change positive">↗ +15% vs last year</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Contracts Completed</div>
+                        <div class="stat-change positive">↗ +8 this year</div>
+                    </div>
+                    <div class="stat-card accent">
+                        <div class="stat-value">4.9</div>
+                        <div class="stat-label">Average Rating</div>
+                        <div class="stat-change positive">↗ Excellent feedback</div>
+                    </div>
+                </div>
+
+                <!-- Profile & Earnings Overview -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Profile Overview</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="exportProfile()">Export Resume</button>
+                            <button class="btn-small primary" onclick="updateProfile()">Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <div class="profile-grid">
+                        <div class="profile-summary">
+                            <div class="profile-avatar">EC</div>
+                            <div class="profile-info">
+                                <h3>Dr. Emily Chen</h3>
+                                <div class="profile-specialty">Emergency Medicine Physician</div>
+                                <div class="profile-rating">
+                                    <span class="rating-stars">★★★★★</span>
+                                    <span>4.9/5 (127 reviews)</span>
+                                </div>
+                            </div>
+                            <div class="profile-stats">
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">12</div>
+                                    <div class="profile-stat-label">Years Experience</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">8</div>
+                                    <div class="profile-stat-label">States Licensed</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">42</div>
+                                    <div class="profile-stat-label">Contracts</div>
+                                </div>
+                                <div class="profile-stat">
+                                    <div class="profile-stat-value">18</div>
+                                    <div class="profile-stat-label">Avg Days/Month</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="earnings-chart">
+                            📈 Earnings Trend Chart
+                            <br><small>Monthly earnings over the past 12 months</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contract Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Your Contracts</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterContracts('all')">All</button>
+                            <button class="btn-small secondary" onclick="filterContracts('active')">Active</button>
+                            <button class="btn-small secondary" onclick="filterContracts('upcoming')">Upcoming</button>
+                            <button class="btn-small accent" onclick="analyzeContracts()">Analyze All</button>
+                        </div>
+                    </div>
+
+                    <div class="contracts-grid">
+                        <div class="contract-card">
+                            <div class="contract-status active">Active</div>
+                            <div class="contract-header">
+                                <h3>Emergency Medicine Physician</h3>
+                                <div class="contract-facility">Metropolitan General Hospital</div>
+                                <div class="contract-location">📍 Los Angeles, CA</div>
+                            </div>
+                            <div class="contract-details">
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Rate</div>
+                                    <div class="contract-detail-value">$350/hr</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Duration</div>
+                                    <div class="contract-detail-value">13 weeks</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Hours/Week</div>
+                                    <div class="contract-detail-value">48 hrs</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Housing</div>
+                                    <div class="contract-detail-value">$1,800/wk</div>
+                                </div>
+                            </div>
+                            <div class="contract-actions">
+                                <button class="action-btn primary" onclick="viewContract(1)">View Details</button>
+                                <button class="action-btn accent" onclick="calculateEarnings(1)">Calculate</button>
+                                <button class="action-btn secondary" onclick="extendContract(1)">Extend</button>
+                            </div>
+                        </div>
+
+                        <div class="contract-card">
+                            <div class="contract-status upcoming">Upcoming</div>
+                            <div class="contract-header">
+                                <h3>Emergency Medicine - Rural</h3>
+                                <div class="contract-facility">Valley Community Hospital</div>
+                                <div class="contract-location">📍 Fresno, CA</div>
+                            </div>
+                            <div class="contract-details">
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Rate</div>
+                                    <div class="contract-detail-value">$380/hr</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Duration</div>
+                                    <div class="contract-detail-value">8 weeks</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Hours/Week</div>
+                                    <div class="contract-detail-value">36 hrs</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Start Date</div>
+                                    <div class="contract-detail-value">Feb 15</div>
+                                </div>
+                            </div>
+                            <div class="contract-actions">
+                                <button class="action-btn primary" onclick="viewContract(2)">View Details</button>
+                                <button class="action-btn accent" onclick="calculateEarnings(2)">Calculate</button>
+                                <button class="action-btn secondary" onclick="prepareContract(2)">Prepare</button>
+                            </div>
+                        </div>
+
+                        <div class="contract-card">
+                            <div class="contract-status completed">Completed</div>
+                            <div class="contract-header">
+                                <h3>Emergency Medicine Locum</h3>
+                                <div class="contract-facility">Houston Medical Center</div>
+                                <div class="contract-location">📍 Houston, TX</div>
+                            </div>
+                            <div class="contract-details">
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Rate</div>
+                                    <div class="contract-detail-value">$325/hr</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Duration</div>
+                                    <div class="contract-detail-value">26 weeks</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Total Earned</div>
+                                    <div class="contract-detail-value">$421,200</div>
+                                </div>
+                                <div class="contract-detail">
+                                    <div class="contract-detail-label">Rating</div>
+                                    <div class="contract-detail-value">★★★★★</div>
+                                </div>
+                            </div>
+                            <div class="contract-actions">
+                                <button class="action-btn primary" onclick="viewContract(3)">View Details</button>
+                                <button class="action-btn secondary" onclick="downloadContract(3)">Download</button>
+                                <button class="action-btn accent" onclick="renewContract(3)">Renew</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Calculations -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Saved Calculations</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="exportCalculations()">Export All</button>
+                            <button class="btn-small primary" onclick="compareCalculations()">Compare</button>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.75rem; background: var(--background-color);">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Metropolitan General Contract</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Calculated: Jan 15, 2025</p>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Total Value:</span>
+                                <strong>$298,400</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span>True Rate:</span>
+                                <strong>$476.83/hr</strong>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="action-btn primary" onclick="viewCalculation(1)">View</button>
+                                <button class="action-btn secondary" onclick="useCalculation(1)">Use</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.75rem; background: var(--background-color);">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Houston Medical Paycheck</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Calculated: Jan 10, 2025</p>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Weekly Net:</span>
+                                <strong>$5,240</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span>Monthly Est:</span>
+                                <strong>$22,707</strong>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="action-btn primary" onclick="viewCalculation(2)">View</button>
+                                <button class="action-btn secondary" onclick="useCalculation(2)">Use</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.75rem; background: var(--background-color);">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Valley Rural Position</h4>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Calculated: Jan 8, 2025</p>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span>Total Value:</span>
+                                <strong>$109,440</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span>True Rate:</span>
+                                <strong>$380.00/hr</strong>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="action-btn primary" onclick="viewCalculation(3)">View</button>
+                                <button class="action-btn secondary" onclick="useCalculation(3)">Use</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>ContractCalc Pro</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Dashboard functionality
+        function updateProfile() {
+            alert('Opening profile editor...\n\n📝 Update:\n• Personal information\n• Specialties and certifications\n• License information\n• Availability preferences\n• Rate expectations\n• Work history');
+        }
+
+        function exportProfile() {
+            alert('Exporting professional profile...\n\n📄 Includes:\n• Comprehensive resume\n• Certifications and licenses\n• Work history and ratings\n• Skills and specialties\n• References\n\nFile will be downloaded as PDF.');
+        }
+
+        function filterContracts(filter) {
+            const buttons = document.querySelectorAll('.section-actions .btn-small.secondary');
+            buttons.forEach(btn => btn.classList.remove('primary'));
+            event.target.classList.add('primary');
+            
+            alert(`Filtering contracts: ${filter}\n\nShowing ${filter} contracts only.`);
+        }
+
+        function analyzeContracts() {
+            alert('Analyzing all contracts...\n\n📊 Analysis includes:\n• Total earnings comparison\n• Rate trends over time\n• Best performing contracts\n• Market rate analysis\n• Recommendations for improvement');
+        }
+
+        function viewContract(contractId) {
+            alert(`Viewing contract details ${contractId}...\n\n📋 Details include:\n• Complete contract terms\n• Payment schedule\n• Housing and benefits\n• Performance ratings\n• Extension options\n• Contact information`);
+        }
+
+        function calculateEarnings(contractId) {
+            // Pre-fill calculator with contract data
+            localStorage.setItem('calculatorData', JSON.stringify({
+                hourlyRate: contractId === 1 ? 350 : contractId === 2 ? 380 : 325,
+                hoursPerWeek: contractId === 1 ? 48 : contractId === 2 ? 36 : 40,
+                contractWeeks: contractId === 1 ? 13 : contractId === 2 ? 8 : 26,
+                housingStipend: contractId === 1 ? 1800 : contractId === 2 ? 1200 : 1400,
+                jobTitle: contractId === 1 ? 'Emergency Medicine Physician' : contractId === 2 ? 'Emergency Medicine - Rural' : 'Emergency Medicine Locum',
+                facility: contractId === 1 ? 'Metropolitan General Hospital' : contractId === 2 ? 'Valley Community Hospital' : 'Houston Medical Center'
+            }));
+            
+            window.location.href = 'contract-calculator.html';
+        }
+
+        function extendContract(contractId) {
+            alert(`Requesting contract extension for Contract ${contractId}...\n\n📞 Next steps:\n• Contact recruiter\n• Negotiate terms\n• Confirm availability\n• Submit extension request`);
+        }
+
+        function prepareContract(contractId) {
+            alert(`Preparing for upcoming contract ${contractId}...\n\n✅ Preparation checklist:\n• Verify credentials\n• Arrange housing\n• Plan travel\n• Review orientation materials\n• Complete pre-arrival requirements`);
+        }
+
+        function downloadContract(contractId) {
+            alert(`Downloading contract ${contractId} documents...\n\n📁 Documents include:\n• Signed contract\n• Pay statements\n• Performance reviews\n• Reference letters\n• Tax documents`);
+        }
+
+        function renewContract(contractId) {
+            alert(`Initiating contract renewal for Contract ${contractId}...\n\n🔄 Renewal process:\n• Express interest to recruiter\n• Review updated terms\n• Negotiate improvements\n• Confirm dates and rates`);
+        }
+
+        function viewCalculation(calcId) {
+            const calculations = {
+                1: { type: 'Contract', rate: '$476.83/hr', total: '$298,400' },
+                2: { type: 'Paycheck', weekly: '$5,240', monthly: '$22,707' },
+                3: { type: 'Contract', rate: '$380.00/hr', total: '$109,440' }
+            };
+            
+            const calc = calculations[calcId];
+            alert(`Viewing saved calculation ${calcId}:\n\nType: ${calc.type} Analysis\nDetails: ${calc.rate || calc.weekly}\nTotal: ${calc.total || calc.monthly}`);
+        }
+
+        function useCalculation(calcId) {
+            alert(`Loading calculation ${calcId} into calculator...\n\nRedirecting to calculator with pre-filled data.`);
+            
+            // Simulate loading calculation data
+            setTimeout(() => {
+                if (calcId === 2) {
+                    window.location.href = 'paycheck-calculator.html';
+                } else {
+                    window.location.href = 'contract-calculator.html';
+                }
+            }, 1000);
+        }
+
+        function exportCalculations() {
+            alert('Exporting all saved calculations...\n\n📊 Export includes:\n• Contract analyses\n• Paycheck calculations\n• Comparison data\n• Performance metrics\n\nFile will be downloaded as Excel spreadsheet.');
+        }
+
+        function compareCalculations() {
+            alert('Opening calculation comparison tool...\n\n⚖️ Compare:\n• Multiple contract offers\n• Rate analysis\n• Total compensation\n• True hourly rates\n• Benefits comparison');
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Locum dashboard loaded');
+            // Load saved data, update stats, etc.
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Calculator - ContractCalc Pro</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pre-filled Alert */
+        .prefilled-alert {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .prefilled-alert.show {
+            display: block;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            padding: 3rem 0;
+        }
+
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .calculator-form {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .calculator-results {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 6rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.65rem;
+            padding-right: 2.5rem;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Results */
+        .results-summary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-summary h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .results-summary .amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .results-summary .rate {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .results-breakdown {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--border-color);
+        }
+
+        .result-item.highlight {
+            border-left-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .result-item.warning {
+            border-left-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-subtext {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .comparison-card {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .comparison-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .comparison-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-accent:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .calculator-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .calculator-results {
+                position: static;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>ContractCalc Pro</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link active">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Contract Calculator</h1>
+                <p>Calculate true hourly rates and total contract value with detailed compensation breakdown</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="calculator-section">
+                <div class="container">
+                    <!-- Pre-filled Alert -->
+                    <div class="prefilled-alert" id="prefilledAlert">
+                        <h3>📋 Job Data Pre-filled</h3>
+                        <p>Contract details have been automatically filled from your selected job posting. Feel free to adjust any values.</p>
+                    </div>
+
+                    <div class="calculator-container">
+                        <!-- Calculator Form -->
+                        <div class="calculator-form">
+                            <h2 class="section-title">Contract Details</h2>
+                            
+                            <!-- Basic Contract Info -->
+                            <div class="form-group">
+                                <label class="form-label">Job Title</label>
+                                <input type="text" class="form-input" id="jobTitle" value="Emergency Medicine Physician" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Facility</label>
+                                <input type="text" class="form-input" id="facility" value="Metropolitan General Hospital" readonly>
+                            </div>
+
+                            <!-- Hourly Rates -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Regular Hourly Rate ($)</label>
+                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="form-help">Base hourly rate for regular hours</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Overtime Rate ($)</label>
+                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="form-help">Rate for hours over 40/week</div>
+                                </div>
+                            </div>
+
+                            <!-- Schedule -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Hours per Week</label>
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0" max="80" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Contract Length (weeks)</label>
+                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
+                                </div>
+                            </div>
+
+                            <!-- Stipends -->
+                            <div class="form-group">
+                                <label class="form-label">Housing Stipend ($ per week)</label>
+                                <input type="number" class="form-input" id="housingStipend" value="1800" min="0" step="0.01" oninput="calculateContract()">
+                                <div class="form-help">Tax-free housing allowance</div>
+                            </div>
+
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Meal Stipend ($ per week)</label>
+                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Travel Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01" oninput="calculateContract()">
+                                </div>
+                            </div>
+
+                            <!-- Call Pay -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Call Hours per Week</label>
+                                    <input type="number" class="form-input" id="callHours" value="24" min="0" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Call Rate ($ per hour)</label>
+                                    <input type="number" class="form-input" id="callRate" value="25" min="0" step="0.01" oninput="calculateContract()">
+                                </div>
+                            </div>
+
+                            <!-- Additional Benefits -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">CME Allowance ($)</label>
+                                    <input type="number" class="form-input" id="cmeAllowance" value="2500" min="0" step="0.01" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">License Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="licenseReimbursement" value="1500" min="0" step="0.01" oninput="calculateContract()">
+                                </div>
+                            </div>
+
+                            <!-- Contract Type -->
+                            <div class="form-group">
+                                <label class="form-label">Contract Type</label>
+                                <select class="form-input form-select" id="contractType" onchange="calculateContract()">
+                                    <option value="locum">Locum Tenens</option>
+                                    <option value="permanent">Permanent Placement</option>
+                                    <option value="per-diem">Per Diem</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="calculator-results">
+                            <h2 class="section-title">Contract Analysis</h2>
+                            
+                            <div class="results-summary">
+                                <h3>Total Contract Value</h3>
+                                <div class="amount" id="totalContractValue">$298,400</div>
+                                <div class="rate">True Hourly Rate: <span id="trueHourlyRate">$476.83</span></div>
+                            </div>
+
+                            <div class="results-breakdown">
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Regular Pay</span>
+                                        <div class="result-subtext">40 hrs/week × $350/hr</div>
+                                    </div>
+                                    <span class="result-value" id="regularPay">$182,000</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Overtime Pay</span>
+                                        <div class="result-subtext">8 hrs/week × $525/hr</div>
+                                    </div>
+                                    <span class="result-value" id="overtimePay">$54,600</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Call Pay</span>
+                                        <div class="result-subtext">24 hrs/week × $25/hr</div>
+                                    </div>
+                                    <span class="result-value" id="callPay">$7,800</span>
+                                </div>
+                                <div class="result-item highlight">
+                                    <div>
+                                        <span class="result-label">Gross Taxable Income</span>
+                                        <div class="result-subtext">Subject to federal/state taxes</div>
+                                    </div>
+                                    <span class="result-value" id="grossTaxableIncome">$244,400</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Housing Stipend</span>
+                                        <div class="result-subtext">Tax-free benefit</div>
+                                    </div>
+                                    <span class="result-value" id="totalHousingStipend">$23,400</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Other Stipends</span>
+                                        <div class="result-subtext">Meals, travel, CME, licenses</div>
+                                    </div>
+                                    <span class="result-value" id="otherStipends">$30,600</span>
+                                </div>
+                                <div class="result-item warning">
+                                    <div>
+                                        <span class="result-label">Estimated Taxes (25%)</span>
+                                        <div class="result-subtext">Federal + State + FICA</div>
+                                    </div>
+                                    <span class="result-value" id="estimatedTaxes">-$61,100</span>
+                                </div>
+                                <div class="result-item highlight">
+                                    <div>
+                                        <span class="result-label">Net Take-Home</span>
+                                        <div class="result-subtext">After taxes and benefits</div>
+                                    </div>
+                                    <span class="result-value" id="netTakeHome">$237,300</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn-primary" onclick="saveContract()">Save Analysis</button>
+                                <button class="btn-secondary" onclick="compareContracts()">Compare</button>
+                                <button class="btn-accent" onclick="findSimilarJobs()">Find Similar Jobs</button>
+                                <button class="btn-secondary" onclick="exportAnalysis()">Export PDF</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Section -->
+                    <div class="comparison-section">
+                        <h3 class="section-title">Contract Comparison</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Compare this contract with industry averages and your saved contracts</p>
+                        
+                        <div class="comparison-grid">
+                            <div class="comparison-card">
+                                <h4>Your Contract</h4>
+                                <div class="comparison-value" id="yourContractRate">$476.83</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">True Hourly Rate</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Market Average</h4>
+                                <div class="comparison-value">$385.00</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">EM Specialists</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Your Previous</h4>
+                                <div class="comparison-value">$422.50</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Last Contract</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Annual Equivalent</h4>
+                                <div class="comparison-value" id="annualEquivalent">$992,206</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">If worked year-round</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>ContractCalc Pro</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function calculateContract() {
+            // Get input values
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
+            const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
+            const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
+            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
+            const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
+            const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
+            const callHours = parseFloat(document.getElementById('callHours').value) || 0;
+            const callRate = parseFloat(document.getElementById('callRate').value) || 0;
+            const cmeAllowance = parseFloat(document.getElementById('cmeAllowance').value) || 0;
+            const licenseReimbursement = parseFloat(document.getElementById('licenseReimbursement').value) || 0;
+
+            // Calculate regular and overtime hours
+            const regularHours = Math.min(hoursPerWeek, 40);
+            const overtimeHours = Math.max(hoursPerWeek - 40, 0);
+
+            // Calculate pay components
+            const regularPay = regularHours * hourlyRate * contractWeeks;
+            const overtimePay = overtimeHours * overtimeRate * contractWeeks;
+            const callPay = callHours * callRate * contractWeeks;
+            
+            // Tax-free benefits
+            const totalHousingStipend = housingStipend * contractWeeks;
+            const totalMealStipend = mealStipend * contractWeeks;
+            const otherStipends = totalMealStipend + travelReimbursement + cmeAllowance + licenseReimbursement;
+            
+            // Taxable income
+            const grossTaxableIncome = regularPay + overtimePay + callPay;
+            
+            // Estimated taxes (simplified calculation)
+            const estimatedTaxRate = 0.25; // 25% combined federal, state, FICA
+            const estimatedTaxes = grossTaxableIncome * estimatedTaxRate;
+            
+            // Total contract value and net take-home
+            const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends;
+            const netTakeHome = grossTaxableIncome - estimatedTaxes + totalHousingStipend + otherStipends;
+            
+            // True hourly rate calculation
+            const totalHours = hoursPerWeek * contractWeeks;
+            const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
+            
+            // Annual equivalent (52 weeks)
+            const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
+
+            // Update display
+            document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('grossTaxableIncome').textContent = '$' + grossTaxableIncome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('totalHousingStipend').textContent = '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('otherStipends').textContent = '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('estimatedTaxes').textContent = '-$' + estimatedTaxes.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('netTakeHome').textContent = '$' + netTakeHome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('totalContractValue').textContent = '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toFixed(2);
+            document.getElementById('yourContractRate').textContent = '$' + trueHourlyRate.toFixed(2);
+            document.getElementById('annualEquivalent').textContent = '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+            // Update subtexts
+            document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
+            document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
+            document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = `${callHours} hrs/week × $${callRate}/hr`;
+        }
+
+        function saveContract() {
+            const contractData = {
+                timestamp: new Date().toISOString(),
+                jobTitle: document.getElementById('jobTitle').value,
+                facility: document.getElementById('facility').value,
+                hourlyRate: document.getElementById('hourlyRate').value,
+                hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                contractWeeks: document.getElementById('contractWeeks').value,
+                totalValue: document.getElementById('totalContractValue').textContent,
+                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                netTakeHome: document.getElementById('netTakeHome').textContent
+            };
+
+            let savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+            savedContracts.unshift(contractData);
+            savedContracts = savedContracts.slice(0, 10); // Keep only last 10
+            localStorage.setItem('savedContracts', JSON.stringify(savedContracts));
+            
+            alert('Contract analysis saved successfully!');
+        }
+
+        function compareContracts() {
+            const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+            if (savedContracts.length === 0) {
+                alert('No saved contracts found. Save this contract first to enable comparisons.');
+                return;
+            }
+            
+            let comparison = 'Contract Comparison:\n\n';
+            comparison += `Current: ${document.getElementById('trueHourlyRate').textContent}/hr\n`;
+            savedContracts.slice(0, 3).forEach((contract, index) => {
+                comparison += `Previous ${index + 1}: ${contract.trueHourlyRate}/hr - ${contract.jobTitle}\n`;
+            });
+            
+            alert(comparison);
+        }
+
+        function findSimilarJobs() {
+            const jobTitle = document.getElementById('jobTitle').value;
+            const hourlyRate = document.getElementById('hourlyRate').value;
+            
+            // Simulate finding similar jobs
+            alert(`Finding similar ${jobTitle} positions with rates near $${hourlyRate}/hr...\n\nRedirecting to job board with filters applied.`);
+            
+            setTimeout(() => {
+                window.location.href = 'job-board.html#similar-jobs';
+            }, 1000);
+        }
+
+        function exportAnalysis() {
+            const analysis = {
+                jobTitle: document.getElementById('jobTitle').value,
+                facility: document.getElementById('facility').value,
+                totalValue: document.getElementById('totalContractValue').textContent,
+                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                netTakeHome: document.getElementById('netTakeHome').textContent,
+                timestamp: new Date().toLocaleDateString()
+            };
+            
+            alert(`Contract Analysis PDF exported:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`);
+        }
+
+        // Auto-calculate overtime rate based on regular rate
+        document.getElementById('hourlyRate').addEventListener('input', function() {
+            const regularRate = parseFloat(this.value) || 0;
+            const overtimeRate = regularRate * 1.5;
+            document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+            calculateContract();
+        });
+
+        // Check for pre-filled data from job board
+        function checkPrefilledData() {
+            const calculatorData = localStorage.getItem('calculatorData');
+            if (calculatorData) {
+                const data = JSON.parse(calculatorData);
+                
+                // Fill form with job data
+                if (data.hourlyRate) document.getElementById('hourlyRate').value = data.hourlyRate;
+                if (data.hoursPerWeek) document.getElementById('hoursPerWeek').value = data.hoursPerWeek;
+                if (data.contractWeeks) document.getElementById('contractWeeks').value = data.contractWeeks;
+                if (data.housingStipend) document.getElementById('housingStipend').value = data.housingStipend;
+                if (data.jobTitle) document.getElementById('jobTitle').value = data.jobTitle;
+                if (data.facility) document.getElementById('facility').value = data.facility;
+                
+                // Auto-calculate overtime rate
+                const overtimeRate = data.hourlyRate * 1.5;
+                document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+                
+                // Show alert
+                document.getElementById('prefilledAlert').classList.add('show');
+                
+                // Clear the data
+                localStorage.removeItem('calculatorData');
+                
+                // Calculate with new data
+                calculateContract();
+            }
+        }
+
+        // Initialize calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            checkPrefilledData();
+            calculateContract();
+        });
+    </script>
+</body>
+</html>
