@@ -1,0 +1,21 @@
+name: Deploy with Official Action
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "locumtruerate-staging"
+          heroku_email: "zenex3298@gmail.com"
+          buildpack: "https://github.com/heroku/heroku-buildpack-nodejs"
+          usedocker: false
