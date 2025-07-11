@@ -12,6 +12,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Health check endpoint to verify this is vanilla demos
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    app: 'locumtruerate-vanilla-demos',
+    version: '2.0.0',
+    timestamp: new Date().toISOString(),
+    message: 'This is the REAL vanilla demos server!'
+  });
+});
+
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
 });
