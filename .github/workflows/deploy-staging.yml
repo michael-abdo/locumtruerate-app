@@ -1,0 +1,40 @@
+name: Deploy to Staging
+
+# Automatically deploy to staging on every push to main/master
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop  # Optional: if you use develop branch
+
+jobs:
+  deploy:
+    name: Deploy to Heroku Staging
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for Heroku
+      
+      - name: Deploy to Staging
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "locumtruerate-staging"
+          heroku_email: "zenex3298@gmail.com"
+          branch: "main"
+      
+      - name: Post deployment notification
+        if: success()
+        run: |
+          echo "✅ Successfully deployed to staging!"
+          echo "View at: https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+      
+      - name: Run smoke tests (optional)
+        if: success()
+        run: |
+          # Add basic health check
+          curl -f https://locumtruerate-staging-66ba3177c382.herokuapp.com || exit 1

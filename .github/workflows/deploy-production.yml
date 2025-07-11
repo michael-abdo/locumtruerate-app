@@ -1,0 +1,74 @@
+name: Deploy to Production
+
+# Deploy to production only on:
+# 1. Release tags (v1.0.0, v2.1.0, etc)
+# 2. Manual trigger with confirmation
+on:
+  push:
+    tags:
+      - 'v*'  # Matches tags like v1.0.0, v2.1.0
+  
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+    inputs:
+      confirm_production:
+        description: 'Type "DEPLOY" to confirm production deployment'
+        required: true
+        default: ''
+
+jobs:
+  deploy:
+    name: Deploy to Heroku Production
+    runs-on: ubuntu-latest
+    
+    # Only run if manually triggered with confirmation or on tag push
+    if: |
+      github.event_name == 'push' || 
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_production == 'DEPLOY')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Promote from Staging (Recommended)
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+          # Promote staging to production
+          heroku pipelines:promote -a locumtruerate-staging
+      
+      # Alternative: Direct deployment (commented out)
+      # - name: Direct Deploy to Production
+      #   uses: akhileshns/heroku-deploy@v3.12.14
+      #   with:
+      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+      #     heroku_app_name: "locumtruerate-demo"
+      #     heroku_email: "zenex3298@gmail.com"
+      
+      - name: Create deployment record
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Record deployment in GitHub
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/deployments \
+            -d '{
+              "ref": "${{ github.ref }}",
+              "environment": "production",
+              "auto_merge": false,
+              "required_contexts": []
+            }'
+      
+      - name: Notify deployment
+        if: success()
+        run: |
+          echo "🚀 Successfully deployed to PRODUCTION!"
+          echo "View at: https://locumtruerate-demo.herokuapp.com"
+          echo "Deployed ref: ${{ github.ref }}"
