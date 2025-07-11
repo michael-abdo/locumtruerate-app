@@ -1,4 +1,4 @@
-name: Deploy Vanilla Demos to Staging
+name: Deploy Vanilla Demos to Heroku (NOT Vercel)
 
 on:
   push:
@@ -8,23 +8,39 @@ on:
       - vanilla-demo-deployment
 
 jobs:
-  deploy:
-    name: Deploy to Heroku Staging
+  deploy-to-heroku:
+    name: Deploy Express App to Heroku Staging
     runs-on: ubuntu-latest
+    if: github.repository == 'michael-abdo/locumtruerate-app'
     
     steps:
-      - name: Checkout code
+      - name: Checkout vanilla demos code
         uses: actions/checkout@v3
+        with:
+          path: vanilla-demos
       
-      - name: Deploy to Staging
+      - name: List files to verify content
+        run: |
+          echo "📁 Files in repository:"
+          ls -la vanilla-demos/
+          echo "📄 Checking for server.js:"
+          cat vanilla-demos/server.js | head -10
+      
+      - name: Deploy to Heroku Staging (NOT Vercel)
         uses: akhileshns/heroku-deploy@v3.12.14
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "locumtruerate-staging"
           heroku_email: "zenex3298@gmail.com"
+          appdir: "vanilla-demos"
+          buildpack: "heroku/nodejs"
+          branch: "main"
       
-      - name: Success notification
+      - name: Verify Heroku deployment
         if: success()
         run: |
-          echo "✅ Successfully deployed vanilla demos to staging!"
+          echo "✅ Successfully deployed vanilla demos to HEROKU staging!"
           echo "🔗 View at: https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+          echo "🔍 Checking health endpoint:"
+          sleep 30
+          curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health || echo "Health check pending..."
