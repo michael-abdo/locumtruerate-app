@@ -1,0 +1,13 @@
+{
+  "name": "locumtruerate-deployment-demo",
+  "version": "1.0.0",
+  "description": "Demo of automatic GitHub Actions deployment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
