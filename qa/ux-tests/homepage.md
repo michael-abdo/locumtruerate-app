@@ -7,7 +7,7 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/
 
 ### Navigation Testing
 1. Load the homepage and verify the page loads completely
-2. Verify the navigation bar displays "ContractCalc Pro" logo on the left
+2. Verify the navigation bar displays "LocumTrueRate" logo on the left
 3. Click on each navigation link and verify they work:
    - Click "Home" - should stay on current page
    - Click "Job Board" - should navigate to job board page
@@ -64,7 +64,7 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/
     - "Paycheck Calculator"
     - "Contract Calculator" 
     - "Job Board"
-25. Verify copyright notice displays "© 2025 ContractCalc Pro. All rights reserved."
+25. Verify copyright notice displays "© 2025 LocumTrueRate. All rights reserved."
 
 ### QA Report
 - ✅ What worked:

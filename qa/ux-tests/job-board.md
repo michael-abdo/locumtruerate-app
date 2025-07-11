@@ -8,7 +8,7 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/job-board.html
 ### Page Load and Navigation
 1. Navigate to the job board page from the homepage
 2. Verify the page loads completely with "Job Board" in the navigation highlighted
-3. Verify the page title shows "Job Board - ContractCalc Pro"
+3. Verify the page title shows "Job Board - LocumTrueRate"
 4. Verify the main heading displays "Find Your Perfect Locum Position"
 
 ### Search and Filter Controls
