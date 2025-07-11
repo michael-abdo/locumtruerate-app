@@ -49,6 +49,7 @@ app.get('/recruiter', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`LocumTrueRate Vanilla Demos running on port ${PORT}`);
+  console.log(`🎉 VERCEL DISABLED - This is HEROKU deployment!`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Available pages:`);
   console.log(`  / - Homepage`);
