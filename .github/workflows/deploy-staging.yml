@@ -34,7 +34,7 @@ jobs:
           
           # Push to Heroku
           echo "🚀 Deploying to Heroku..."
-          git push heroku main:main --force
+          git push heroku vanilla-demos:main --force
           
       - name: Verify deployment
         run: |
@@ -45,10 +45,10 @@ jobs:
           RESPONSE=$(curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health)
           echo "Response: $RESPONSE"
           
-          # Check if it's v4.0.0
-          if echo "$RESPONSE" | grep -q '"version":"4.0.0"'; then
+          # Check if it's v4.2.4
+          if echo "$RESPONSE" | grep -q '"version":"4.2.4"'; then
             echo "✅ SUCCESS! GitHub Actions deployment works!"
-            echo "🎉 Version 4.0.0 is now live!"
+            echo "🎉 Version 4.2.4 is now live!"
           else
             echo "⚠️ Deployment may still be in progress..."
             echo "Current response: $RESPONSE"
