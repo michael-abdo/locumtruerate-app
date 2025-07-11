@@ -17,9 +17,14 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     app: 'locumtruerate-vanilla-demos',
-    version: '2.0.0',
+    version: '3.0.0',
     timestamp: new Date().toISOString(),
-    message: 'This is the REAL vanilla demos server!'
+    message: 'This is the REAL vanilla demos server!',
+    deployment: {
+      method: process.env.HEROKU_SLUG_COMMIT ? 'github-actions' : 'manual',
+      commit: process.env.HEROKU_SLUG_COMMIT || 'unknown',
+      dyno: process.env.DYNO || 'local'
+    }
   });
 });
 

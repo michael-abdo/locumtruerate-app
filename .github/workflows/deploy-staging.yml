@@ -1,42 +1,63 @@
-name: Deploy Vanilla Demos to Heroku (NOT Vercel)
+name: Deploy Vanilla Demos to Heroku Staging
 
 on:
   push:
     branches:
       - main
       - master
-      - vanilla-demo-deployment
 
 jobs:
-  deploy-to-heroku:
-    name: Deploy Express App to Heroku Staging
+  deploy:
+    name: Deploy to Heroku Staging
     runs-on: ubuntu-latest
-    if: github.repository == 'michael-abdo/locumtruerate-app'
     
     steps:
-      - name: Checkout vanilla demos code
+      - name: Checkout code
         uses: actions/checkout@v3
       
-      - name: List files to verify content
+      - name: Debug - List files
         run: |
+          echo "🔍 Current directory: $(pwd)"
           echo "📁 Files in repository:"
           ls -la
-          echo "📄 Checking for server.js:"
-          cat server.js | head -10
+          echo "📄 Checking for key files:"
+          echo "  - server.js exists: $(test -f server.js && echo 'YES' || echo 'NO')"
+          echo "  - package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
+          echo "  - Procfile exists: $(test -f Procfile && echo 'YES' || echo 'NO')"
       
-      - name: Deploy to Heroku Staging (NOT Vercel)
+      - name: Debug - Check secrets
+        run: |
+          echo "🔐 Checking if HEROKU_API_KEY is set..."
+          if [ -z "${{ secrets.HEROKU_API_KEY }}" ]; then
+            echo "❌ ERROR: HEROKU_API_KEY secret is NOT set!"
+            echo "Please add it at: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            exit 1
+          else
+            echo "✅ HEROKU_API_KEY is configured (hidden)"
+          fi
+      
+      - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.14
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: "locumtruerate-staging"
           heroku_email: "zenex3298@gmail.com"
           buildpack: "heroku/nodejs"
+          branch: "main"
       
-      - name: Verify Heroku deployment
+      - name: Verify deployment
         if: success()
         run: |
-          echo "✅ Successfully deployed vanilla demos to HEROKU staging!"
-          echo "🔗 View at: https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+          echo "⏳ Waiting for app to start..."
+          sleep 45
           echo "🔍 Checking health endpoint:"
-          sleep 30
-          curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health || echo "Health check pending..."
+          HEALTH_RESPONSE=$(curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com/health)
+          echo "Response: $HEALTH_RESPONSE"
+          
+          if echo "$HEALTH_RESPONSE" | grep -q "locumtruerate-vanilla-demos"; then
+            echo "✅ SUCCESS! Vanilla demos are deployed!"
+          else
+            echo "⚠️  WARNING: Health check didn't return expected response"
+            echo "Checking main page..."
+            curl -s https://locumtruerate-staging-66ba3177c382.herokuapp.com | head -20
+          fi
