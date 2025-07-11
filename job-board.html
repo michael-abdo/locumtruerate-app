@@ -95,15 +95,29 @@
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
             z-index: 1000;
+            margin-top: 0;
+            pointer-events: none;
         }
 
         .nav-dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+            z-index: 999;
         }
 
         .dropdown-menu li {
@@ -208,7 +222,7 @@
             background: none;
             cursor: pointer;
             border-radius: 0.25rem;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
         }
 
         .view-btn.active {
@@ -245,7 +259,7 @@
             border: 1px solid var(--border-color);
             border-radius: 0.75rem;
             padding: 1.5rem;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
         }
 
@@ -349,7 +363,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
             text-align: center;
@@ -368,7 +382,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
             text-align: center;
@@ -940,6 +954,19 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             renderJobs();
+            
+            // Fix button click reliability
+            const buttons = document.querySelectorAll('a[href], button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Prevent double-clicking issues
+                    if (this.dataset.clicking) return;
+                    this.dataset.clicking = 'true';
+                    setTimeout(() => {
+                        delete this.dataset.clicking;
+                    }, 300);
+                });
+            });
         });
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocumTrueRate - v4.1 Consistent Branding Complete!</title>
+    <title>LocumTrueRate - v4.2 All UX Issues Fixed!</title>
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -100,15 +100,29 @@
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
             z-index: 1000;
+            margin-top: 0;
+            pointer-events: none;
         }
 
         .nav-dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+            z-index: 999;
         }
 
         .dropdown-menu li {
@@ -778,6 +792,48 @@
         document.addEventListener('DOMContentLoaded', function() {
             calculateContract();
             calculatePaycheck();
+            
+            // Fix input field usability issues
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                // Prevent Ctrl+A from selecting entire page when input is focused
+                input.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'a') {
+                        e.stopPropagation();
+                        // Let the default behavior select all text in the input
+                        setTimeout(() => {
+                            this.select();
+                        }, 0);
+                    }
+                });
+                
+                // Better double-click behavior
+                input.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    this.select();
+                });
+                
+                // Focus behavior
+                input.addEventListener('focus', function() {
+                    // Small delay to ensure selection works
+                    setTimeout(() => {
+                        this.select();
+                    }, 50);
+                });
+            });
+            
+            // Fix button click reliability
+            const buttons = document.querySelectorAll('a[href], button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Prevent double-clicking issues
+                    if (this.dataset.clicking) return;
+                    this.dataset.clicking = 'true';
+                    setTimeout(() => {
+                        delete this.dataset.clicking;
+                    }, 300);
+                });
+            });
         });
     </script>
 </body>

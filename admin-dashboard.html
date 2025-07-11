@@ -95,15 +95,19 @@
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
             z-index: 1000;
+            margin-top: 0;            pointer-events: none;
         }
 
         .nav-dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
+        }
+        .nav-dropdown::before {            content: '';            position: absolute;            top: 100%;            left: 0;            right: 0;            height: 10px;            background: transparent;            z-index: 999;
         }
 
         .dropdown-menu li {
@@ -181,7 +185,7 @@
             border-radius: 0.5rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
         }
@@ -199,7 +203,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
         }
@@ -223,7 +227,7 @@
             padding: 2rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border-left: 4px solid var(--border-color);
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             position: relative;
             overflow: hidden;
         }
@@ -325,7 +329,7 @@
             border: none;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
         }
 
         .btn-small.primary {
