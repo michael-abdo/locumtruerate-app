@@ -17,7 +17,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     app: 'locumtruerate-vanilla-demos',
-    version: '4.2.3',
+    version: '4.2.4',
     timestamp: new Date().toISOString(),
     message: 'This is the REAL vanilla demos server!',
     deployment: {
