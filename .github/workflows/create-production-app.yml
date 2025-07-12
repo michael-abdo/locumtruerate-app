@@ -1,0 +1,61 @@
+name: Create Production Heroku App
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      app_name:
+        description: 'Heroku app name to create'
+        required: true
+        default: 'locumtruerate-66ba3177c382'
+      confirm:
+        description: 'Type "create" to confirm app creation'
+        required: true
+        default: ''
+
+jobs:
+  create-app:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'create'
+    steps:
+      - name: Create Heroku App
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+          # Login to Heroku
+          echo $HEROKU_API_KEY | heroku auth:token
+          
+          # Create the app
+          echo "🚀 Creating Heroku app: ${{ github.event.inputs.app_name }}"
+          heroku create ${{ github.event.inputs.app_name }} --region us
+          
+          # Configure the app
+          heroku config:set NODE_ENV=production -a ${{ github.event.inputs.app_name }}
+          heroku config:set APP_NAME="LocumTrueRate Production" -a ${{ github.event.inputs.app_name }}
+          
+          # Verify app was created
+          echo "✅ App created successfully!"
+          echo "URL: https://${{ github.event.inputs.app_name }}.herokuapp.com"
+          heroku apps:info -a ${{ github.event.inputs.app_name }}
+          
+      - name: Test App Connectivity
+        run: |
+          echo "🔍 Testing app connectivity..."
+          sleep 10
+          curl -I https://${{ github.event.inputs.app_name }}.herokuapp.com || echo "App created but not deployed yet (expected)"
+          
+      - name: Output Next Steps
+        run: |
+          echo "🎉 Production app created successfully!"
+          echo ""
+          echo "Next steps:"
+          echo "1. App is ready at: https://${{ github.event.inputs.app_name }}.herokuapp.com"
+          echo "2. Run deployment: git push heroku-prod vanilla-only:main --force"
+          echo "3. Or use the deployment script: ./deploy-to-production.sh"
+          echo ""
+          echo "The app is configured with:"
+          echo "- NODE_ENV=production"
+          echo "- Region: us"
+          echo "- Ready for Node.js deployment"
