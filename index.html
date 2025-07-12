@@ -101,26 +101,28 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(-5px);
-            transition: all 0.2s ease-in-out;
+            transition: all 0.3s ease-in-out;
             z-index: 1000;
-            margin-top: 0;
+            margin-top: -5px;
             pointer-events: none;
         }
 
-        .nav-dropdown:hover .dropdown-menu {
+        .nav-dropdown:hover .dropdown-menu,
+        .nav-dropdown:focus-within .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
             pointer-events: auto;
+            transition-delay: 0.1s;
         }
 
         .nav-dropdown::before {
             content: '';
             position: absolute;
             top: 100%;
-            left: 0;
-            right: 0;
-            height: 10px;
+            left: -20px;
+            right: -20px;
+            height: 20px;
             background: transparent;
             z-index: 999;
         }
@@ -291,7 +293,7 @@
         .btn-feature {
             background-color: var(--primary-color);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
             border-radius: 0.5rem;
             font-weight: 500;
@@ -299,6 +301,8 @@
             transition: all 0.2s;
             text-decoration: none;
             display: inline-block;
+            min-height: 44px;
+            line-height: 1.5;
         }
 
         .btn-feature:hover {
@@ -560,8 +564,8 @@
                     <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
                     <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
                     <li class="nav-dropdown">
-                        <a href="#" class="nav-link">Dashboards</a>
-                        <ul class="dropdown-menu">
+                        <a href="#" class="nav-link" role="button" aria-haspopup="true" aria-expanded="false">Dashboards</a>
+                        <ul class="dropdown-menu" role="menu">
                             <li><a href="recruiter-dashboard.html">Recruiter</a></li>
                             <li><a href="locum-dashboard.html">Locum</a></li>
                             <li><a href="admin-dashboard.html">Admin</a></li>
@@ -870,14 +874,24 @@
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
             numberInputs.forEach(input => {
+                // Improve input handling to ensure first typed value registers
+                input.addEventListener('input', function(e) {
+                    // Force recalculation on every input event
+                    if (this.id.includes('hourly') || this.id.includes('hours') || 
+                        this.id.includes('contract') || this.id.includes('housing') || 
+                        this.id.includes('travel')) {
+                        calculateContract();
+                    } else if (this.id.includes('regular') || this.id.includes('overtime') || 
+                              this.id.includes('stipend')) {
+                        calculatePaycheck();
+                    }
+                });
+                
                 // Prevent Ctrl+A from selecting entire page when input is focused
                 input.addEventListener('keydown', function(e) {
                     if (e.ctrlKey && e.key === 'a') {
                         e.stopPropagation();
-                        // Let the default behavior select all text in the input
-                        setTimeout(() => {
-                            this.select();
-                        }, 0);
+                        this.select();
                     }
                 });
                 
@@ -887,14 +901,18 @@
                     this.select();
                 });
                 
-                // Focus behavior
-                input.addEventListener('focus', function() {
-                    // Small delay to ensure selection works, prevent scroll
-                    setTimeout(() => {
-                        const scrollPosition = window.pageYOffset;
-                        this.select();
-                        window.scrollTo(0, scrollPosition);
-                    }, 50);
+                // Focus behavior - select on click
+                input.addEventListener('click', function() {
+                    this.select();
+                });
+                
+                // Ensure value is captured on blur
+                input.addEventListener('blur', function() {
+                    if (this.value !== '') {
+                        // Trigger calculation on blur to ensure value is processed
+                        const event = new Event('input', { bubbles: true });
+                        this.dispatchEvent(event);
+                    }
                 });
             });
             
@@ -1117,15 +1135,22 @@
             // Initialize logger
             function initLogger() {
                 // Check if we're in production (hide logger in production)
-                const isProduction = window.location.hostname.includes('production') || 
-                                   (!window.location.hostname.includes('staging') && 
-                                    !window.location.hostname.includes('localhost') &&
-                                    !window.location.hostname.includes('127.0.0.1'));
+                const hostname = window.location.hostname.toLowerCase();
+                const isStaging = hostname.includes('staging') || 
+                                hostname.includes('localhost') || 
+                                hostname.includes('127.0.0.1');
+                const isDevelopment = hostname.includes('dev') || 
+                                    hostname.includes('test');
                 
-                if (isProduction) {
+                // Only show logger on staging, development, or local environments
+                if (!isStaging && !isDevelopment) {
                     // Hide logger in production
-                    document.getElementById('floating-logger').style.display = 'none';
-                    document.getElementById('logger-toggle-fab').style.display = 'none';
+                    const logger = document.getElementById('floating-logger');
+                    const fab = document.getElementById('logger-toggle-fab');
+                    if (logger) logger.style.display = 'none';
+                    if (fab) fab.style.display = 'none';
+                    // Log to browser console for verification
+                    originalLog.apply(console, ['Floating logger hidden in production environment']);
                     return;
                 }
                 
