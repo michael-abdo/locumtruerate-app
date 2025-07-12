@@ -1,0 +1,60 @@
+name: Production Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to confirm production deployment'
+        required: true
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'DEPLOY'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Deploy to Production
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for git authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          
+          # Create production app (will skip if exists)
+          echo "🚀 Creating/verifying production app..."
+          heroku create locumtruerate-66ba3177c382 --region us || echo "App already exists, continuing..."
+          
+          # Configure production environment
+          heroku config:set NODE_ENV=production -a locumtruerate-66ba3177c382 || true
+          
+          # Add production remote and deploy
+          git remote add heroku-prod https://git.heroku.com/locumtruerate-66ba3177c382.git || true
+          
+          echo "🚀 Deploying to PRODUCTION..."
+          git push heroku-prod HEAD:main --force
+          
+      - name: Verify Production
+        run: |
+          echo "⏳ Waiting for deployment..."
+          sleep 60
+          
+          echo "🔍 Testing production..."
+          curl -I https://locumtruerate-66ba3177c382.herokuapp.com/ || echo "Still deploying..."
+          
+          echo "✅ Production deployment complete!"
+          echo "🌟 Live at: https://locumtruerate-66ba3177c382.herokuapp.com"
