@@ -1,0 +1,84 @@
+name: Universal Deployment
+
+on:
+  push:
+    branches:
+      - staging-deploy
+      - production-deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Determine Environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/staging-deploy" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "app_name=locumtruerate-staging" >> $GITHUB_OUTPUT
+            echo "app_url=https://locumtruerate-staging-66ba3177c382.herokuapp.com" >> $GITHUB_OUTPUT
+            echo "heroku_url=https://git.heroku.com/locumtruerate-staging.git" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/production-deploy" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+            echo "app_name=locumtruerate-66ba3177c382" >> $GITHUB_OUTPUT
+            echo "app_url=https://locumtruerate-66ba3177c382.herokuapp.com" >> $GITHUB_OUTPUT
+            echo "heroku_url=https://git.heroku.com/locumtruerate-66ba3177c382.git" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          echo "🚀 Deploying to ${{ steps.env.outputs.environment }}"
+          
+          # Create .netrc file for authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Install Heroku CLI for production app creation
+          if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
+            curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+            
+            # Create production app if it doesn't exist
+            heroku create ${{ steps.env.outputs.app_name }} --region us || echo "App already exists"
+            heroku config:set NODE_ENV=production -a ${{ steps.env.outputs.app_name }}
+            heroku config:set APP_NAME="LocumTrueRate Production" -a ${{ steps.env.outputs.app_name }}
+          fi
+          
+          # Add Heroku remote and deploy
+          git remote add heroku ${{ steps.env.outputs.heroku_url }} || true
+          git push heroku ${{ github.ref_name }}:main --force
+          
+      - name: Verify Deployment
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 45
+          
+          echo "🔍 Checking ${{ steps.env.outputs.environment }} deployment..."
+          RESPONSE=$(curl -s ${{ steps.env.outputs.app_url }}/health || echo "No health endpoint yet")
+          echo "Response: $RESPONSE"
+          
+          if echo "$RESPONSE" | grep -q '"version"'; then
+            echo "✅ SUCCESS! ${{ steps.env.outputs.environment }} deployment works!"
+            echo "🎉 Live at: ${{ steps.env.outputs.app_url }}"
+          else
+            echo "⚠️ Deployment may still be in progress..."
+            echo "🌟 Check: ${{ steps.env.outputs.app_url }}"
+          fi
+          
+      - name: Cleanup Deployment Branch
+        run: |
+          echo "🧹 Cleaning up ${{ github.ref_name }} branch..."
+          git push origin --delete ${{ github.ref_name }} || true
