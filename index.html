@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocumTrueRate - v4.2.3 Deep Navigation Debug!</title>
+    <title>LocumTrueRate - Homepage UX Fixes</title>
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -510,10 +510,12 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <h2>LocumTrueRate</h2>
+                    <a href="/" style="text-decoration: none; color: inherit;">
+                        <h2>LocumTrueRate</h2>
+                    </a>
                 </div>
                 <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link active">Home</a></li>
+                    <li><a href="/" class="nav-link active">Home</a></li>
                     <li><a href="job-board.html" class="nav-link">Job Board</a></li>
                     <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
                     <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
@@ -608,7 +610,7 @@
                             <div class="calc-inputs">
                                 <div class="form-group">
                                     <label class="form-label">Hourly Rate ($)</label>
-                                    <input type="number" class="form-input" id="hourlyRate" value="85" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="hourlyRate" value="100" oninput="calculateContract()">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
@@ -620,11 +622,14 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Housing Stipend ($/week)</label>
-                                    <input type="number" class="form-input" id="housingStipend" value="1200" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="housingStipend" value="1500" oninput="calculateContract()">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Travel Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="travelReimbursement" value="1000" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="travelReimbursement" value="500" oninput="calculateContract()">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn-primary" onclick="calculateContract()" style="width: 100%; margin-top: 1rem;">Calculate</button>
                                 </div>
                             </div>
                             <div class="calc-results">
@@ -669,6 +674,9 @@
                                 <div class="form-group">
                                     <label class="form-label">Weekly Stipends ($)</label>
                                     <input type="number" class="form-input" id="weeklyStipends" value="1200" oninput="calculatePaycheck()">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn-primary" onclick="calculatePaycheck()" style="width: 100%; margin-top: 1rem;">Calculate</button>
                                 </div>
                             </div>
                             <div class="calc-results">
@@ -762,8 +770,11 @@
             const weeklyPay = hourlyRate * hoursPerWeek;
             const totalStipends = (housingStipend * contractWeeks) + travelReimbursement;
             const totalContract = (weeklyPay * contractWeeks) + totalStipends;
+            
+            // Calculate true hourly rate with stipend adjustment factor (65% of stipends count toward effective rate)
             const totalHours = hoursPerWeek * contractWeeks;
-            const trueHourlyRate = totalHours > 0 ? totalContract / totalHours : 0;
+            const adjustedContract = (weeklyPay * contractWeeks) + (totalStipends * 0.65);
+            const trueHourlyRate = totalHours > 0 ? adjustedContract / totalHours : 0;
 
             document.getElementById('weeklyPay').textContent = '$' + weeklyPay.toLocaleString();
             document.getElementById('totalStipends').textContent = '$' + totalStipends.toLocaleString();
