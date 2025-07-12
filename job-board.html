@@ -264,8 +264,9 @@
         }
 
         .job-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
         }
 
         .job-header {
@@ -393,6 +394,30 @@
             color: var(--primary-color);
         }
 
+        .btn-save {
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .btn-save:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .btn-save.saved {
+            border-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
         /* List View Specific */
         .jobs-grid.list-view .job-card {
             display: flex;
@@ -517,6 +542,56 @@
             text-align: center;
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+
+        .pagination-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn:disabled:hover {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .filters-container {
@@ -573,7 +648,7 @@
         <!-- Page Header -->
         <section class="page-header">
             <div class="container">
-                <h1>Healthcare Job Board</h1>
+                <h1>Find Your Perfect Locum Position</h1>
                 <p>Find your next locum opportunity with our advanced search and calculator integration</p>
             </div>
         </section>
@@ -609,8 +684,26 @@
                                 <option value="300-400">$300-400/hr</option>
                                 <option value="400+">$400+/hr</option>
                             </select>
+                            <select class="filter-input" id="contractTypeFilter">
+                                <option value="">All Contract Types</option>
+                                <option value="8-week">8 weeks</option>
+                                <option value="13-week">13 weeks</option>
+                                <option value="16-week">16 weeks</option>
+                                <option value="20-week">20 weeks</option>
+                                <option value="26-week">26 weeks</option>
+                                <option value="ongoing">Ongoing</option>
+                            </select>
                         </div>
                         <div class="filters-group">
+                            <select class="filter-input" id="sortFilter">
+                                <option value="">Sort by...</option>
+                                <option value="salary-high">Salary: High to Low</option>
+                                <option value="salary-low">Salary: Low to High</option>
+                                <option value="total-comp-high">Total Compensation: High to Low</option>
+                                <option value="total-comp-low">Total Compensation: Low to High</option>
+                                <option value="location">Location (A-Z)</option>
+                                <option value="duration">Duration (Shortest first)</option>
+                            </select>
                             <div class="view-toggle">
                                 <button class="view-btn active" onclick="toggleView('card')">📋 Cards</button>
                                 <button class="view-btn" onclick="toggleView('list')">📄 List</button>
@@ -628,6 +721,9 @@
                 <div class="container">
                     <div class="jobs-grid card-view" id="jobsGrid">
                         <!-- Job listings will be dynamically generated -->
+                    </div>
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination controls will be dynamically generated -->
                     </div>
                 </div>
             </section>
@@ -772,12 +868,55 @@
 
         let currentView = 'card';
         let filteredJobs = [...jobsData];
+        let currentPage = 1;
+        const jobsPerPage = 6;
+        
+        // Save job functionality
+        function getSavedJobs() {
+            return JSON.parse(localStorage.getItem('savedJobs') || '[]');
+        }
+        
+        function toggleSaveJob(jobId) {
+            const savedJobs = getSavedJobs();
+            const index = savedJobs.indexOf(jobId);
+            
+            if (index > -1) {
+                savedJobs.splice(index, 1);
+                console.log(`Job ${jobId} removed from saved jobs`);
+            } else {
+                savedJobs.push(jobId);
+                console.log(`Job ${jobId} added to saved jobs`);
+            }
+            
+            localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+            renderJobs(); // Re-render to update save button states
+        }
+        
+        // Calculate total compensation
+        function calculateTotalCompensation(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            const totalContract = (weeklyPay * contractWeeks) + totalStipends;
+            
+            return `$${totalContract.toLocaleString()}`;
+        }
 
         function renderJobs() {
             const grid = document.getElementById('jobsGrid');
             grid.innerHTML = '';
             
-            filteredJobs.forEach(job => {
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            const startIndex = (currentPage - 1) * jobsPerPage;
+            const endIndex = startIndex + jobsPerPage;
+            const jobsToShow = filteredJobs.slice(startIndex, endIndex);
+            
+            jobsToShow.forEach(job => {
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
                 jobCard.onclick = () => showJobDetail(job);
@@ -789,7 +928,10 @@
                             <div class="job-facility">${job.facility}</div>
                             <div class="job-location">📍 ${job.location}</div>
                         </div>
-                        <div class="job-salary">${job.salary}</div>
+                        <div class="job-salary">
+                            <div style="font-size: 1rem; font-weight: 600;">${job.salary}</div>
+                            <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: ${calculateTotalCompensation(job)}</div>
+                        </div>
                     </div>
                     <div class="job-details">
                         <div class="job-detail">
@@ -812,6 +954,9 @@
                     <div class="job-actions">
                         <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
                         <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
+                        <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
+                            ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
+                        </button>
                     </div>
                 `;
                 
@@ -819,6 +964,48 @@
             });
             
             document.getElementById('resultsCount').textContent = filteredJobs.length;
+            renderPagination(totalPages);
+        }
+        
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span class="pagination-info">...</span>`;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next ›</button>`;
+            
+            // Page info
+            const startItem = (currentPage - 1) * jobsPerPage + 1;
+            const endItem = Math.min(currentPage * jobsPerPage, filteredJobs.length);
+            paginationHTML += `<div class="pagination-info">Showing ${startItem}-${endItem} of ${filteredJobs.length}</div>`;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderJobs();
         }
 
         function toggleView(view) {
@@ -837,6 +1024,7 @@
             const specialty = document.getElementById('specialtyFilter').value;
             const location = document.getElementById('locationFilter').value;
             const salary = document.getElementById('salaryFilter').value;
+            const contractType = document.getElementById('contractTypeFilter').value;
             
             filteredJobs = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(search) || 
@@ -854,10 +1042,71 @@
                     else if (salary === '400+') matchesSalary = hourlyRate >= 400;
                 }
                 
-                return matchesSearch && matchesSpecialty && matchesLocation && matchesSalary;
+                let matchesContractType = true;
+                if (contractType) {
+                    const duration = job.duration.toLowerCase();
+                    if (contractType === '8-week') matchesContractType = duration.includes('8');
+                    else if (contractType === '13-week') matchesContractType = duration.includes('13');
+                    else if (contractType === '16-week') matchesContractType = duration.includes('16');
+                    else if (contractType === '20-week') matchesContractType = duration.includes('20');
+                    else if (contractType === '26-week') matchesContractType = duration.includes('26');
+                    else if (contractType === 'ongoing') matchesContractType = duration.includes('ongoing');
+                }
+                
+                return matchesSearch && matchesSpecialty && matchesLocation && matchesSalary && matchesContractType;
+            });
+            
+            currentPage = 1; // Reset to first page when filtering
+            sortJobs(); // Apply sorting after filtering
+        }
+        
+        // Sort functionality
+        function sortJobs() {
+            const sortBy = document.getElementById('sortFilter').value;
+            
+            if (!sortBy) {
+                renderJobs();
+                return;
+            }
+            
+            filteredJobs.sort((a, b) => {
+                switch (sortBy) {
+                    case 'salary-high':
+                        return parseInt(b.salary.replace(/\$|\/hr/g, '')) - parseInt(a.salary.replace(/\$|\/hr/g, ''));
+                    case 'salary-low':
+                        return parseInt(a.salary.replace(/\$|\/hr/g, '')) - parseInt(b.salary.replace(/\$|\/hr/g, ''));
+                    case 'total-comp-high':
+                        const totalA = calculateTotalCompensationValue(a);
+                        const totalB = calculateTotalCompensationValue(b);
+                        return totalB - totalA;
+                    case 'total-comp-low':
+                        const totalA2 = calculateTotalCompensationValue(a);
+                        const totalB2 = calculateTotalCompensationValue(b);
+                        return totalA2 - totalB2;
+                    case 'location':
+                        return a.location.localeCompare(b.location);
+                    case 'duration':
+                        const durationA = parseInt(a.duration.replace(/weeks/g, '')) || (a.duration.includes('Ongoing') ? 999 : 13);
+                        const durationB = parseInt(b.duration.replace(/weeks/g, '')) || (b.duration.includes('Ongoing') ? 999 : 13);
+                        return durationA - durationB;
+                    default:
+                        return 0;
+                }
             });
             
             renderJobs();
+        }
+        
+        // Helper function to calculate total compensation as number
+        function calculateTotalCompensationValue(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            return (weeklyPay * contractWeeks) + totalStipends;
         }
 
         function showJobDetail(jobId) {
@@ -935,7 +1184,58 @@
         }
 
         function applyToJob(jobId) {
-            alert(`Application submitted for Job ID: ${jobId}. You will be redirected to the recruiter's portal.`);
+            const job = jobsData.find(j => j.id === jobId);
+            if (job) {
+                const recruiterInfo = {
+                    1: { name: "Sarah Johnson", email: "sarah.johnson@medhire.com", phone: "(555) 123-4567" },
+                    2: { name: "Michael Chen", email: "m.chen@healthstaffing.com", phone: "(555) 234-5678" },
+                    3: { name: "Lisa Rodriguez", email: "l.rodriguez@surgicalsolutions.com", phone: "(555) 345-6789" },
+                    4: { name: "David Kim", email: "david.kim@radnetwork.com", phone: "(555) 456-7890" },
+                    5: { name: "Jennifer Walsh", email: "j.walsh@traumacare.com", phone: "(555) 567-8901" },
+                    6: { name: "Robert Martinez", email: "r.martinez@ruralhealthcare.com", phone: "(555) 678-9012" }
+                };
+                
+                const recruiter = recruiterInfo[jobId];
+                const modal = document.getElementById('jobModal');
+                const modalContent = document.getElementById('modalContent');
+                
+                modalContent.innerHTML = `
+                    <h2>✅ Application Submitted Successfully!</h2>
+                    <div style="background: var(--success-color); color: white; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0;">
+                        <p style="margin: 0; font-size: 1.1rem;">Your application for <strong>${job.title}</strong> at <strong>${job.facility}</strong> has been submitted.</p>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Your Recruiter Contact</h3>
+                    <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                ${recruiter.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; color: var(--text-primary);">${recruiter.name}</h4>
+                                <p style="margin: 0; color: var(--text-secondary);">Healthcare Recruiter</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiter.email}" style="color: var(--primary-color);">${recruiter.email}</a></p>
+                            <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiter.phone}" style="color: var(--primary-color);">${recruiter.phone}</a></p>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Next Steps</h3>
+                    <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                        <li>Your recruiter will review your application within 24 hours</li>
+                        <li>They may contact you for an initial phone screening</li>
+                        <li>Be prepared to discuss your experience and availability</li>
+                        <li>Have your credentials and references ready</li>
+                    </ul>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button class="btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
+                        <button class="btn-secondary" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+            }
         }
 
         // Event listeners
@@ -943,6 +1243,8 @@
         document.getElementById('specialtyFilter').addEventListener('change', filterJobs);
         document.getElementById('locationFilter').addEventListener('change', filterJobs);
         document.getElementById('salaryFilter').addEventListener('change', filterJobs);
+        document.getElementById('contractTypeFilter').addEventListener('change', filterJobs);
+        document.getElementById('sortFilter').addEventListener('change', sortJobs);
 
         // Close modal when clicking outside
         document.getElementById('jobModal').addEventListener('click', function(e) {
@@ -1015,7 +1317,7 @@
         .logger-toggle-fab {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             width: 56px;
             height: 56px;
             border-radius: 50%;
@@ -1024,7 +1326,7 @@
             border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             cursor: pointer;
-            z-index: 10000;
+            z-index: 10001;
             display: none;
             align-items: center;
             justify-content: center;
@@ -1044,14 +1346,14 @@
         .floating-logger {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             width: 450px;
             max-width: 90vw;
             background-color: var(--surface-color);
             border: 2px solid var(--border-color);
             border-radius: 0.75rem;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 9999;
+            z-index: 1001;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 14px; /* Increased for better OCR */
             transition: all 0.3s ease;
@@ -1156,8 +1458,8 @@
         @media (max-width: 480px) {
             .floating-logger {
                 width: calc(100vw - 40px);
-                right: 20px;
                 left: 20px;
+                right: 20px;
             }
         }
     </style>
