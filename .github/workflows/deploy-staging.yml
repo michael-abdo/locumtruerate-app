@@ -3,7 +3,7 @@ name: Deploy to Heroku Staging
 on:
   push:
     branches:
-      - vanilla-demos
+      - demos
 
 jobs:
   deploy:
@@ -34,7 +34,7 @@ jobs:
           
           # Push to Heroku
           echo "🚀 Deploying to Heroku..."
-          git push heroku vanilla-demos:main --force
+          git push heroku demos:main --force
           
       - name: Verify deployment
         run: |
