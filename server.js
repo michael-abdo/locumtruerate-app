@@ -4,6 +4,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Handle trailing slashes - redirect to clean URLs
+app.use((req, res, next) => {
+  if (req.path !== '/' && req.path.endsWith('/')) {
+    const cleanPath = req.path.slice(0, -1);
+    return res.redirect(301, cleanPath + req.url.slice(req.path.length));
+  }
+  next();
+});
+
 // Serve static files
 app.use(express.static('.'));
 

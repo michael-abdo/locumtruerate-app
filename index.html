@@ -487,6 +487,9 @@
             color: var(--text-muted);
             text-decoration: none;
             transition: color 0.2s;
+            display: block;
+            padding: 0.25rem 0;
+            cursor: pointer;
         }
 
         .footer-section a:hover {
@@ -828,11 +831,19 @@
         }
 
         function calculateContract() {
-            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
-            const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
-            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
-            const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
+            // Get input elements
+            const hourlyRateEl = document.getElementById('hourlyRate');
+            const hoursPerWeekEl = document.getElementById('hoursPerWeek');
+            const contractWeeksEl = document.getElementById('contractWeeks');
+            const housingStipendEl = document.getElementById('housingStipend');
+            const travelReimbursementEl = document.getElementById('travelReimbursement');
+            
+            // Use default values for empty fields instead of 0
+            const hourlyRate = parseFloat(hourlyRateEl.value) || parseFloat(hourlyRateEl.defaultValue) || 100;
+            const hoursPerWeek = parseFloat(hoursPerWeekEl.value) || parseFloat(hoursPerWeekEl.defaultValue) || 40;
+            const contractWeeks = parseFloat(contractWeeksEl.value) || parseFloat(contractWeeksEl.defaultValue) || 13;
+            const housingStipend = parseFloat(housingStipendEl.value) || parseFloat(housingStipendEl.defaultValue) || 1500;
+            const travelReimbursement = parseFloat(travelReimbursementEl.value) || parseFloat(travelReimbursementEl.defaultValue) || 500;
 
             const weeklyPay = hourlyRate * hoursPerWeek;
             const totalStipends = (housingStipend * contractWeeks) + travelReimbursement;
@@ -850,11 +861,19 @@
         }
 
         function calculatePaycheck() {
-            const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
-            const overtimeHours = parseFloat(document.getElementById('overtimeHours').value) || 0;
-            const regularRate = parseFloat(document.getElementById('regularRate').value) || 0;
-            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
-            const weeklyStipends = parseFloat(document.getElementById('weeklyStipends').value) || 0;
+            // Get input elements
+            const regularHoursEl = document.getElementById('regularHours');
+            const overtimeHoursEl = document.getElementById('overtimeHours');
+            const regularRateEl = document.getElementById('regularRate');
+            const overtimeRateEl = document.getElementById('overtimeRate');
+            const weeklyStipendsEl = document.getElementById('weeklyStipends');
+            
+            // Use default values for empty fields instead of 0
+            const regularHours = parseFloat(regularHoursEl.value) || parseFloat(regularHoursEl.defaultValue) || 40;
+            const overtimeHours = parseFloat(overtimeHoursEl.value) || parseFloat(overtimeHoursEl.defaultValue) || 8;
+            const regularRate = parseFloat(regularRateEl.value) || parseFloat(regularRateEl.defaultValue) || 85;
+            const overtimeRate = parseFloat(overtimeRateEl.value) || parseFloat(overtimeRateEl.defaultValue) || 127.50;
+            const weeklyStipends = parseFloat(weeklyStipendsEl.value) || parseFloat(weeklyStipendsEl.defaultValue) || 1200;
 
             const regularPay = regularHours * regularRate;
             const overtimePay = overtimeHours * overtimeRate;
@@ -874,19 +893,6 @@
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
             numberInputs.forEach(input => {
-                // Improve input handling to ensure first typed value registers
-                input.addEventListener('input', function(e) {
-                    // Force recalculation on every input event
-                    if (this.id.includes('hourly') || this.id.includes('hours') || 
-                        this.id.includes('contract') || this.id.includes('housing') || 
-                        this.id.includes('travel')) {
-                        calculateContract();
-                    } else if (this.id.includes('regular') || this.id.includes('overtime') || 
-                              this.id.includes('stipend')) {
-                        calculatePaycheck();
-                    }
-                });
-                
                 // Prevent Ctrl+A from selecting entire page when input is focused
                 input.addEventListener('keydown', function(e) {
                     if (e.ctrlKey && e.key === 'a') {
@@ -905,27 +911,24 @@
                 input.addEventListener('click', function() {
                     this.select();
                 });
-                
-                // Ensure value is captured on blur
-                input.addEventListener('blur', function() {
-                    if (this.value !== '') {
-                        // Trigger calculation on blur to ensure value is processed
-                        const event = new Event('input', { bubbles: true });
-                        this.dispatchEvent(event);
+            });
+            
+            // Fix footer link reliability
+            const footerLinks = document.querySelectorAll('.footer-section a[href]');
+            footerLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Ensure the link navigates even if there are JS conflicts
+                    const href = this.getAttribute('href');
+                    if (href && href !== '#') {
+                        // Small delay to ensure click is processed
+                        setTimeout(() => {
+                            if (!e.defaultPrevented) {
+                                window.location.href = href;
+                            }
+                        }, 10);
                     }
                 });
             });
-            
-            // Debug the paycheck button specifically
-            const paycheckBtn = document.getElementById('paycheck-btn-debug');
-            if (paycheckBtn) {
-                paycheckBtn.addEventListener('click', function(e) {
-                    console.log('Paycheck button clicked!');
-                    console.log('href:', this.href);
-                    console.log('Will navigate to:', this.getAttribute('href'));
-                    // Let the default behavior happen
-                });
-            }
         });
     </script>
 
