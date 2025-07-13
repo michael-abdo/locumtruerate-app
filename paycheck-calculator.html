@@ -959,9 +959,9 @@
             // Taxable income - includes all pay types
             const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
             
-            // Tax calculations - Fixed to use proper rates and logic
-            const federalTaxRate = 0.22; // 22% federal tax rate
-            const federalTax = Math.round((grossTaxable * federalTaxRate) * 100) / 100;
+            // Tax calculations - FIXED: Correct calculation logic
+            const federalTaxRate = 0.22; // 22% federal tax rate  
+            const federalTax = grossTaxable > 0 ? Math.round((grossTaxable * federalTaxRate) * 100) / 100 : 0;
             
             // State tax calculation - FIXED: Now properly applies selected state tax
             let stateTaxRate = 0;
@@ -972,10 +972,10 @@
                 case 'california': stateTaxRate = 0.133; break; // 13.3%
                 default: stateTaxRate = 0; // No state tax
             }
-            const stateTax = Math.round((grossTaxable * stateTaxRate) * 100) / 100;
+            const stateTax = grossTaxable > 0 ? Math.round((grossTaxable * stateTaxRate) * 100) / 100 : 0;
             
             const ficaRate = 0.0765; // Social Security + Medicare
-            const ficaTax = Math.round((grossTaxable * ficaRate) * 100) / 100;
+            const ficaTax = grossTaxable > 0 ? Math.round((grossTaxable * ficaRate) * 100) / 100 : 0;
             
             // Tax-free stipends
             const totalStipends = Math.round(((housingStipend + mealStipend + mileageReimbursement) * multiplier) * 100) / 100;
@@ -1005,11 +1005,24 @@
                 document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
                 document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
                 
-                // FIXED: Net pay calculation logic - CRITICAL FIX
-                document.getElementById('netPayDisplay').textContent = formatCurrency(netPay);
-                document.getElementById('netPay').textContent = formatCurrency(netPay);
+                // CRITICAL FIX: Update BOTH Net Pay displays consistently
+                const netPayFormatted = formatCurrency(netPay);
+                document.getElementById('netPayDisplay').textContent = netPayFormatted;
+                document.getElementById('netPay').textContent = netPayFormatted;
+                
+                console.log('Updated both netPay displays:', netPayFormatted);
                 
                 console.log('Display updated successfully');
+                
+                // FORCE refresh of the blue Net Pay card to ensure it updates
+                const netPayCard = document.getElementById('netPay');
+                if (netPayCard) {
+                    netPayCard.textContent = netPayFormatted;
+                    netPayCard.style.opacity = '0.8';
+                    setTimeout(() => {
+                        netPayCard.style.opacity = '1';
+                    }, 100);
+                }
                 
                 // Auto-scroll to results after calculation with significant changes
                 if (grossTaxable > 0) {
@@ -1037,6 +1050,11 @@
         // Helper function to get validated numeric value
         function getValidatedValue(fieldId) {
             const input = document.getElementById(fieldId);
+            if (!input) {
+                console.warn('Input not found:', fieldId);
+                return 0;
+            }
+            
             const value = input.value.trim();
             
             // If field is empty, return 0
@@ -1051,9 +1069,9 @@
                 return 0;
             }
             
-            // Block hours > 168
+            // Hours > 168 should return 168 (handled in validation)
             if (fieldId.includes('Hours') && numValue > 168) {
-                return 0;
+                return 168;
             }
             
             return numValue;
