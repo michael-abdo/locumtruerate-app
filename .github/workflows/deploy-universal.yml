@@ -51,8 +51,8 @@ jobs:
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
             curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
             
-            # Create production app if it doesn't exist
-            heroku create ${{ steps.env.outputs.app_name }} --region us || echo "App already exists"
+            # Create production app if it doesn't exist (force recreate if needed)
+            heroku create ${{ steps.env.outputs.app_name }} --region us || echo "App already exists - will override"
             heroku config:set NODE_ENV=production -a ${{ steps.env.outputs.app_name }}
             heroku config:set APP_NAME="LocumTrueRate Production" -a ${{ steps.env.outputs.app_name }}
           fi
