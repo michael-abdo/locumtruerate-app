@@ -673,13 +673,13 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Regular Hourly Rate ($)</label>
-                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0.01" step="0.01" oninput="validateAndCalculate(this)" required>
+                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hourly rate" required>
                                     <div class="form-error" id="hourlyRate-error"></div>
                                     <div class="form-help">Base hourly rate for regular hours</div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0.01" step="0.01" oninput="validateAndCalculate(this)" required>
+                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Auto-calculated" required>
                                     <div class="form-error" id="overtimeRate-error"></div>
                                     <div class="form-help">Rate for hours over 40/week</div>
                                 </div>
@@ -689,12 +689,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
-                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0.01" max="168" step="0.5" oninput="validateAndCalculate(this)" required>
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0.01" max="168" step="0.5" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hours per week" required>
                                     <div class="form-error" id="hoursPerWeek-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Contract Length (weeks)</label>
-                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="validateAndCalculate(this)" required>
+                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter contract length" required>
                                     <div class="form-error" id="contractWeeks-error"></div>
                                 </div>
                             </div>
@@ -896,10 +896,12 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()">Save Analysis</button>
-                                <button class="btn-secondary" onclick="compareContracts()">Compare</button>
-                                <button class="btn-accent" onclick="findSimilarJobs()">Find Similar Jobs</button>
-                                <button class="btn-secondary" onclick="exportAnalysis()">Export PDF</button>
+                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison (login required)">📁 Save Analysis</button>
+                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare</button>
+                                <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
+                                <button class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
+                                <button class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
+                                <button class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -997,6 +999,8 @@
                         if (value <= 0) {
                             isValid = false;
                             errorMessage = 'Rate must be greater than $0';
+                            // Force calculation to stop and clear results
+                            clearResults();
                         } else if (value > 10000) {
                             isValid = false;
                             errorMessage = 'Rate seems unusually high (>$10,000/hr)';
@@ -1007,9 +1011,12 @@
                         if (value <= 0) {
                             isValid = false;
                             errorMessage = 'Hours must be greater than 0';
+                            // Force calculation to stop and clear results
+                            clearResults();
                         } else if (value > 168) {
                             isValid = false;
                             errorMessage = 'Cannot exceed 168 hours per week (maximum possible)';
+                            clearResults();
                         } else if (value > 80) {
                             // Warning for high but not impossible hours
                             inputElement.style.backgroundColor = '#fef3c7'; // Light yellow warning
@@ -1055,7 +1062,7 @@
                         }
                         break;
                         
-                    // Validate other numeric fields
+                    // Validate other numeric fields - strict no negative values
                     case 'housingStipend':
                     case 'mealStipend':
                     case 'travelReimbursement':
@@ -1065,6 +1072,13 @@
                         if (value < 0) {
                             isValid = false;
                             errorMessage = 'Amount cannot be negative';
+                            // Immediately reset negative values to 0
+                            inputElement.value = '0';
+                            showNotification(`⚠️ Negative values not allowed - reset to $0`, 'error');
+                        } else if (value > 50000) {
+                            // Sanity check for extremely high values
+                            isValid = false;
+                            errorMessage = 'Amount seems unusually high (>$50,000)';
                         }
                         break;
                 }
@@ -1142,16 +1156,29 @@
             const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
             const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
             
-            // Show instant warnings for problematic values
+            // Strict validation for impossible values - don't calculate at all
             if (hourlyRate <= 0 || overtimeRate <= 0) {
-                showNotification('⚠️ Warning: Zero or negative hourly rates detected', 'error');
+                showNotification('⚠️ Error: Hourly rates must be greater than $0', 'error');
+                clearResults();
+                return;
             }
             if (hoursPerWeek <= 0) {
-                showNotification('⚠️ Warning: Zero or negative hours per week', 'error');
+                showNotification('⚠️ Error: Hours per week must be greater than 0', 'error');
+                clearResults();
+                return;
             }
             if (hoursPerWeek > 168) {
-                showNotification('⚠️ Warning: Hours exceed 168/week (impossible)', 'error');
-                return; // Don't calculate with impossible values
+                showNotification('⚠️ Error: Cannot exceed 168 hours per week (impossible)', 'error');
+                clearResults();
+                return;
+            }
+            if (hoursPerWeek > 80) {
+                showNotification('⚠️ Warning: Very high hours (>80/week)', 'info');
+            }
+            if (contractWeeks <= 0) {
+                showNotification('⚠️ Error: Contract must be at least 1 week', 'error');
+                clearResults();
+                return;
             }
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
@@ -1218,10 +1245,24 @@
             document.getElementById('yourContractRate').textContent = '$' + trueHourlyRate.toFixed(2);
             document.getElementById('annualEquivalent').textContent = '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
-            // Update subtexts with dynamic hours
-            document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
-            document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
-            document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = `${callHours} hrs/week × $${callRate}/hr`;
+            // Update subtexts with dynamic hours - only show realistic calculations
+            if (regularHours > 0 && hourlyRate > 0) {
+                document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
+            } else {
+                document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = 'Invalid hours or rate';
+            }
+            
+            if (overtimeHours > 0 && overtimeRate > 0) {
+                document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
+            } else {
+                document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = 'No overtime hours';
+            }
+            
+            if (callHours > 0 && callRate > 0) {
+                document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = `${callHours} hrs/week × $${callRate}/hr`;
+            } else {
+                document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = 'No call hours';
+            }
             
             // Calculate and display weekly gross pay
             const weeklyGrossPay = contractWeeks > 0 ? (regularPay + overtimePay + callPay) / contractWeeks : 0;
@@ -1238,6 +1279,18 @@
         }
 
         function saveContract() {
+            // Check for account requirement
+            const isLoggedIn = localStorage.getItem('userToken'); // Simulate login check
+            if (!isLoggedIn) {
+                if (confirm('🔑 Account required to save contracts. Sign up for free?')) {
+                    showNotification('🚀 Redirecting to signup...', 'info');
+                    // In real app: window.location.href = '/signup';
+                    return;
+                } else {
+                    return;
+                }
+            }
+            
             // Always allow saving, but warn if validation issues exist
             const hasValidationErrors = !areAllFieldsValid();
             if (hasValidationErrors) {
@@ -1278,7 +1331,9 @@
         function compareContracts() {
             const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
             if (savedContracts.length === 0) {
-                alert('No saved contracts found. Save this contract first to enable comparisons.');
+                if (confirm('📊 No saved contracts found. Save this contract first to enable comparisons.\n\nWould you like to save this contract now?')) {
+                    saveContract();
+                }
                 return;
             }
             
@@ -1411,6 +1466,98 @@
             setTimeout(() => {
                 window.location.href = 'job-board.html#similar-jobs';
             }, 1000);
+        }
+
+        // Print Results function
+        function printResults() {
+            // Create a clean print version without navigation and buttons
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                        h1 { color: #2563eb; text-align: center; margin-bottom: 20px; }
+                        .summary { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                        .results { display: grid; gap: 10px; }
+                        .result-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+                        .total { font-weight: bold; font-size: 1.1em; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    <h1>Contract Analysis Report</h1>
+                    <div class="summary">
+                        <p><strong>Position:</strong> ${document.getElementById('jobTitle').value}</p>
+                        <p><strong>Facility:</strong> ${document.getElementById('facility').value}</p>
+                        <p><strong>Contract:</strong> ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week</p>
+                        <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                    </div>
+                    <div class="results">
+                        <div class="result-row total"><span>Total Contract Value:</span><span>${document.getElementById('totalContractValue').textContent}</span></div>
+                        <div class="result-row total"><span>True Hourly Rate:</span><span>${document.getElementById('trueHourlyRate').textContent}</span></div>
+                        <div class="result-row"><span>Weekly Gross Pay:</span><span>${document.getElementById('weeklyGrossPay').textContent}</span></div>
+                        <div class="result-row"><span>Regular Pay:</span><span>${document.getElementById('regularPay').textContent}</span></div>
+                        <div class="result-row"><span>Overtime Pay:</span><span>${document.getElementById('overtimePay').textContent}</span></div>
+                        <div class="result-row"><span>Call Pay:</span><span>${document.getElementById('callPay').textContent}</span></div>
+                        <div class="result-row"><span>Net Take-Home:</span><span>${document.getElementById('netTakeHome').textContent}</span></div>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Open print dialog immediately
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
+            if (printWindow) {
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 100);
+                showNotification('📄 Print dialog opened', 'success');
+            } else {
+                showNotification('⚠️ Please allow pop-ups for printing', 'error');
+            }
+        }
+        
+        // Email Results function
+        function emailResults() {
+            const subject = `Contract Analysis - ${document.getElementById('jobTitle').value}`;
+            const body = `Contract Analysis Summary:
+
+` +
+                `Position: ${document.getElementById('jobTitle').value}
+` +
+                `Facility: ${document.getElementById('facility').value}
+` +
+                `Contract: ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week
+
+` +
+                `Total Contract Value: ${document.getElementById('totalContractValue').textContent}
+` +
+                `True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
+` +
+                `Weekly Gross Pay: ${document.getElementById('weeklyGrossPay').textContent}
+` +
+                `Net Take-Home: ${document.getElementById('netTakeHome').textContent}
+
+` +
+                `Generated: ${new Date().toLocaleDateString()}
+` +
+                `From: LocumTrueRate Contract Calculator`;
+                
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Try to open email client
+            const link = document.createElement('a');
+            link.href = mailtoLink;
+            link.click();
+            
+            showNotification('📧 Email client opened with contract analysis', 'success');
         }
 
         function exportAnalysis() {
