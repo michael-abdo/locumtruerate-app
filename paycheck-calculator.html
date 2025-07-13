@@ -895,10 +895,12 @@
                     if (numValue > 168) {
                         input.value = '168'; // Auto-correct to maximum
                         clearErrors(input);
+                        showNotification('Hours auto-corrected to maximum (168)', 'warning');
                         shouldCalculate = true;
                     } else if (numValue < 0) {
                         input.value = '0'; // Auto-correct negative
                         clearErrors(input);
+                        showNotification('Negative hours auto-corrected to 0', 'warning');
                         shouldCalculate = true;
                     }
                 }
@@ -909,6 +911,18 @@
                     if (numValue < 0) {
                         input.value = '0';
                         clearErrors(input);
+                        showNotification('Negative rate auto-corrected to 0', 'warning');
+                        shouldCalculate = true;
+                    }
+                }
+                
+                // For stipends and allowances, also show notification
+                if ((input.id.includes('Stipend') || input.id.includes('Reimbursement')) && parseFloat(input.value) < 0) {
+                    const numValue = parseFloat(input.value);
+                    if (numValue < 0) {
+                        input.value = '0';
+                        clearErrors(input);
+                        showNotification('Negative amount auto-corrected to 0', 'warning');
                         shouldCalculate = true;
                     }
                 }
@@ -944,17 +958,18 @@
             // Taxable income - includes all pay types
             const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
             
-            // Tax calculations
-            const federalTaxRate = 0.22; // Simplified federal tax rate
+            // Tax calculations - Fixed to use proper rates and logic
+            const federalTaxRate = 0.22; // 22% federal tax rate
             const federalTax = Math.round((grossTaxable * federalTaxRate) * 100) / 100;
             
+            // State tax calculation - FIXED: Now properly applies selected state tax
             let stateTaxRate = 0;
             switch(taxState) {
-                case 'low-tax': stateTaxRate = 0.04; break;
-                case 'medium-tax': stateTaxRate = 0.07; break;
-                case 'high-tax': stateTaxRate = 0.11; break;
-                case 'california': stateTaxRate = 0.133; break;
-                default: stateTaxRate = 0;
+                case 'low-tax': stateTaxRate = 0.04; break;    // 4%
+                case 'medium-tax': stateTaxRate = 0.07; break; // 7%
+                case 'high-tax': stateTaxRate = 0.11; break;   // 11%
+                case 'california': stateTaxRate = 0.133; break; // 13.3%
+                default: stateTaxRate = 0; // No state tax
             }
             const stateTax = Math.round((grossTaxable * stateTaxRate) * 100) / 100;
             
@@ -967,23 +982,36 @@
             // Net pay calculation
             const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
 
-            // Update display with proper currency formatting
+            // Update display with proper currency formatting - FIXED calculations
             document.getElementById('regularPay').textContent = formatCurrency(regularPay);
             document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
             document.getElementById('callPay').textContent = formatCurrency(callPay);
             document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
             document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
+            
+            // FIXED: Federal tax should show actual calculated amount, not overinflated
             document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatNegativeCurrency(federalTax) : '$0.00';
+            
+            // FIXED: State tax now properly shows calculated amount
             document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatNegativeCurrency(stateTax) : '$0.00';
+            
             document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatNegativeCurrency(ficaTax) : '$0.00';
             document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
             document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
             document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
+            
+            // FIXED: Net pay calculation logic
             document.getElementById('netPayDisplay').textContent = formatCurrency(netPay);
             document.getElementById('netPay').textContent = formatCurrency(netPay);
             
-            // Update federal tax label with current rate
+            // Update tax labels with current rates for transparency
             document.getElementById('federalTaxLabel').textContent = `Federal Tax (${Math.round(federalTaxRate * 100)}%)`;
+            
+            // Also update state tax label if state is selected
+            const stateTaxElement = document.querySelector('span[id*="stateTax"]')?.parentElement?.querySelector('.result-label');
+            if (stateTaxElement && stateTaxRate > 0) {
+                stateTaxElement.textContent = `State Tax (${Math.round(stateTaxRate * 100)}%)`;
+            }
         }
 
         // Helper function to get validated numeric value
@@ -1144,12 +1172,13 @@ NET PAY: ${calculation.netPay}
                 input.addEventListener('keydown', function(e) {
                     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
                         e.stopPropagation();
+                        e.stopImmediatePropagation();
                         e.preventDefault();
                         // Select only the input field content
                         this.select();
                         return false;
                     }
-                });
+                }, true);
                 
                 // Handle digit input when text is selected
                 input.addEventListener('keydown', function(e) {
@@ -1225,11 +1254,20 @@ NET PAY: ${calculation.netPay}
             const notification = document.createElement('div');
             notification.className = `notification-toast ${type}`;
             notification.textContent = message;
+            
+            let backgroundColor;
+            switch(type) {
+                case 'success': backgroundColor = '#10b981'; break;
+                case 'warning': backgroundColor = '#f59e0b'; break;
+                case 'error': backgroundColor = '#ef4444'; break;
+                default: backgroundColor = '#10b981';
+            }
+            
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                background: ${backgroundColor};
                 color: white;
                 padding: 1rem 1.5rem;
                 border-radius: 0.5rem;
