@@ -862,7 +862,7 @@
                     errorMessage = 'Please enter a valid number';
                 } else if (numValue < 0) {
                     isValid = false;
-                    errorMessage = 'Value cannot be negative';
+                    errorMessage = 'Negative values are not allowed';
                 } else if (fieldId.includes('Hours') && numValue > 168) {
                     isValid = false;
                     errorMessage = 'Hours cannot exceed 168 per week';
@@ -884,10 +884,22 @@
 
         // Combined validation and calculation function
         function validateAndCalculate(input) {
+            let shouldCalculate = true;
+            
             if (input) {
-                validateInput(input);
+                const isValid = validateInput(input);
+                // Block calculation for hours > 168
+                if (input.id.includes('Hours') && !isValid) {
+                    const numValue = parseFloat(input.value);
+                    if (numValue > 168) {
+                        shouldCalculate = false;
+                    }
+                }
             }
-            calculatePaycheck();
+            
+            if (shouldCalculate) {
+                calculatePaycheck();
+            }
         }
 
         function calculatePaycheck() {
@@ -914,7 +926,7 @@
             const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
             const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
             
-            // Taxable income
+            // Taxable income - includes all pay types
             const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
             
             // Tax calculations
@@ -962,8 +974,26 @@
         // Helper function to get validated numeric value
         function getValidatedValue(fieldId) {
             const input = document.getElementById(fieldId);
-            const value = parseFloat(input.value.trim());
-            return isNaN(value) || value < 0 ? 0 : value;
+            const value = input.value.trim();
+            
+            // If field is empty, return 0
+            if (value === '') {
+                return 0;
+            }
+            
+            const numValue = parseFloat(value);
+            
+            // Block invalid values
+            if (isNaN(numValue) || numValue < 0) {
+                return 0;
+            }
+            
+            // Block hours > 168
+            if (fieldId.includes('Hours') && numValue > 168) {
+                return 0;
+            }
+            
+            return numValue;
         }
 
         // Helper function to format currency with cents
@@ -1004,19 +1034,64 @@
             savedCalculations = savedCalculations.slice(0, 10); // Keep only last 10
             localStorage.setItem('paycheckCalculations', JSON.stringify(savedCalculations));
             
-            alert('Calculation saved successfully!');
+            // Show success message
+            showNotification('Calculation saved successfully!');
         }
 
         function exportToPDF() {
-            // Simulate PDF export
+            // Generate PDF content
             const calculation = {
                 period: currentPeriod,
                 netPay: document.getElementById('netPay').textContent,
                 grossTaxable: document.getElementById('grossTaxable').textContent,
+                regularPay: document.getElementById('regularPay').textContent,
+                overtimePay: document.getElementById('overtimePay').textContent,
+                callPay: document.getElementById('callPay').textContent,
+                callbackPay: document.getElementById('callbackPay').textContent,
+                federalTax: document.getElementById('federalTax').textContent,
+                stateTax: document.getElementById('stateTax').textContent,
+                ficaTax: document.getElementById('ficaTax').textContent,
                 timestamp: new Date().toLocaleDateString()
             };
             
-            alert(`PDF exported for ${calculation.period} paycheck calculation:\nNet Pay: ${calculation.netPay}\nGenerated: ${calculation.timestamp}`);
+            // Create a simple text representation
+            const pdfContent = `
+PAYCHECK CALCULATION SUMMARY
+============================
+
+Period: ${calculation.period.charAt(0).toUpperCase() + calculation.period.slice(1)}
+Generated: ${calculation.timestamp}
+
+EARNINGS
+--------
+Regular Pay: ${calculation.regularPay}
+Overtime Pay: ${calculation.overtimePay}
+Call Pay: ${calculation.callPay}
+Callback Pay: ${calculation.callbackPay}
+
+Gross Taxable Income: ${calculation.grossTaxable}
+
+DEDUCTIONS
+----------
+Federal Tax: ${calculation.federalTax}
+State Tax: ${calculation.stateTax}
+FICA: ${calculation.ficaTax}
+
+NET PAY: ${calculation.netPay}
+`;
+            
+            // Create and download the file
+            const blob = new Blob([pdfContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `paycheck-calculation-${calculation.period}-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            showNotification('Paycheck summary downloaded!');
         }
 
         // Auto-calculate overtime rate
@@ -1037,11 +1112,12 @@
             numberInputs.forEach(input => {
                 // Prevent Ctrl+A from selecting entire page when input is focused
                 input.addEventListener('keydown', function(e) {
-                    if (e.ctrlKey && e.key === 'a') {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
                         e.stopPropagation();
                         e.preventDefault();
                         // Select only the input field content
-                        this.select();
+                        this.setSelectionRange(0, this.value.length);
+                        return false;
                     }
                 });
                 
@@ -1083,12 +1159,61 @@
         });
     </script>
 
+        // Notification system
+        function showNotification(message, type = 'success') {
+            // Remove any existing notifications
+            const existingNotif = document.querySelector('.notification-toast');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+
     <!-- Floating Logger Component -->
-    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger" style="display: none;">
         <span id="fab-icon">🔍</span>
     </button>
     
-    <div id="floating-logger" class="floating-logger">
+    <div id="floating-logger" class="floating-logger" style="display: none;">
         <div class="logger-header">
             <span class="logger-title">Console Logger</span>
             <div class="logger-controls">
