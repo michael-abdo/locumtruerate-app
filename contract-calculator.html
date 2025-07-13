@@ -272,6 +272,33 @@
             margin-top: 0.25rem;
         }
 
+        .form-error {
+            font-size: 0.85rem;
+            color: var(--error-color);
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-primary:disabled, .btn-secondary:disabled, .btn-accent:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary:disabled:hover, .btn-secondary:disabled:hover, .btn-accent:disabled:hover {
+            transform: none;
+            background-color: var(--primary-color);
+        }
+
         /* Results */
         .results-summary {
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
@@ -578,12 +605,14 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Regular Hourly Rate ($)</label>
-                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0" step="0.01" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0.01" step="0.01" oninput="validateAndCalculate(this)" required>
+                                    <div class="form-error" id="hourlyRate-error"></div>
                                     <div class="form-help">Base hourly rate for regular hours</div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0" step="0.01" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0.01" step="0.01" oninput="validateAndCalculate(this)" required>
+                                    <div class="form-error" id="overtimeRate-error"></div>
                                     <div class="form-help">Rate for hours over 40/week</div>
                                 </div>
                             </div>
@@ -592,11 +621,13 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
-                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0" max="80" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0.01" max="168" step="0.5" oninput="validateAndCalculate(this)" required>
+                                    <div class="form-error" id="hoursPerWeek-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Contract Length (weeks)</label>
-                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="validateAndCalculate(this)" required>
+                                    <div class="form-error" id="contractWeeks-error"></div>
                                 </div>
                             </div>
 
@@ -622,7 +653,8 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Call Hours per Week</label>
-                                    <input type="number" class="form-input" id="callHours" value="24" min="0" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="callHours" value="24" min="0" max="168" step="0.5" oninput="validateAndCalculate(this)">
+                                    <div class="form-error" id="callHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Call Rate ($ per hour)</label>
@@ -642,14 +674,22 @@
                                 </div>
                             </div>
 
-                            <!-- Contract Type -->
-                            <div class="form-group">
-                                <label class="form-label">Contract Type</label>
-                                <select class="form-input form-select" id="contractType" onchange="calculateContract()">
-                                    <option value="locum">Locum Tenens</option>
-                                    <option value="permanent">Permanent Placement</option>
-                                    <option value="per-diem">Per Diem</option>
-                                </select>
+                            <!-- Contract Type and Tax Rate -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Contract Type</label>
+                                    <select class="form-input form-select" id="contractType" onchange="calculateContract()">
+                                        <option value="locum">Locum Tenens</option>
+                                        <option value="permanent">Permanent Placement</option>
+                                        <option value="per-diem">Per Diem</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Estimated Tax Rate (%)</label>
+                                    <input type="number" class="form-input" id="taxRate" value="25" min="0" max="50" step="0.5" oninput="validateAndCalculate(this)">
+                                    <div class="form-help">Combined federal, state, and FICA taxes</div>
+                                    <div class="form-error" id="taxRate-error"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -685,6 +725,13 @@
                                     </div>
                                     <span class="result-value" id="callPay">$7,800</span>
                                 </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Weekly Gross Pay</span>
+                                        <div class="result-subtext">Taxable income per week</div>
+                                    </div>
+                                    <span class="result-value" id="weeklyGrossPay">$5,092</span>
+                                </div>
                                 <div class="result-item highlight">
                                     <div>
                                         <span class="result-label">Gross Taxable Income</span>
@@ -708,7 +755,7 @@
                                 </div>
                                 <div class="result-item warning">
                                     <div>
-                                        <span class="result-label">Estimated Taxes (25%)</span>
+                                        <span class="result-label" id="taxesLabel">Estimated Taxes (25%)</span>
                                         <div class="result-subtext">Federal + State + FICA</div>
                                     </div>
                                     <span class="result-value" id="estimatedTaxes">-$61,100</span>
@@ -796,6 +843,100 @@
     </div>
 
     <script>
+        // Validation and calculation function
+        function validateAndCalculate(inputElement) {
+            const fieldId = inputElement.id;
+            const value = parseFloat(inputElement.value) || 0;
+            const errorElement = document.getElementById(fieldId + '-error');
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Clear previous error state
+            inputElement.classList.remove('error');
+            errorElement.classList.remove('show');
+            
+            // Validate based on field type
+            switch(fieldId) {
+                case 'hourlyRate':
+                case 'overtimeRate':
+                    if (value <= 0) {
+                        isValid = false;
+                        errorMessage = 'Rate must be greater than $0';
+                    }
+                    break;
+                    
+                case 'hoursPerWeek':
+                    if (value <= 0) {
+                        isValid = false;
+                        errorMessage = 'Hours must be greater than 0';
+                    } else if (value > 168) {
+                        isValid = false;
+                        errorMessage = 'Cannot exceed 168 hours per week (maximum possible)';
+                    }
+                    break;
+                    
+                case 'contractWeeks':
+                    if (value < 1) {
+                        isValid = false;
+                        errorMessage = 'Contract must be at least 1 week';
+                    }
+                    break;
+                    
+                case 'callHours':
+                    if (value > 168) {
+                        isValid = false;
+                        errorMessage = 'Cannot exceed 168 hours per week';
+                    }
+                    break;
+                    
+                case 'taxRate':
+                    if (value < 0) {
+                        isValid = false;
+                        errorMessage = 'Tax rate cannot be negative';
+                    } else if (value > 50) {
+                        isValid = false;
+                        errorMessage = 'Tax rate seems unusually high (>50%)';
+                    }
+                    break;
+            }
+            
+            // Show error if validation failed
+            if (!isValid) {
+                inputElement.classList.add('error');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.add('show');
+            }
+            
+            // Update button states
+            updateButtonStates();
+            
+            // Calculate if all fields are valid
+            if (areAllFieldsValid()) {
+                calculateContract();
+            }
+            
+            return isValid;
+        }
+        
+        // Check if all required fields are valid
+        function areAllFieldsValid() {
+            const requiredFields = ['hourlyRate', 'overtimeRate', 'hoursPerWeek', 'contractWeeks'];
+            return requiredFields.every(fieldId => {
+                const input = document.getElementById(fieldId);
+                const value = parseFloat(input.value) || 0;
+                return value > 0 && !input.classList.contains('error');
+            });
+        }
+        
+        // Update button states based on validation
+        function updateButtonStates() {
+            const isValid = areAllFieldsValid();
+            const buttons = document.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent');
+            buttons.forEach(button => {
+                button.disabled = !isValid;
+            });
+        }
+
         function calculateContract() {
             // Get input values
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
@@ -827,20 +968,22 @@
             // Taxable income
             const grossTaxableIncome = regularPay + overtimePay + callPay;
             
-            // Estimated taxes (simplified calculation)
-            const estimatedTaxRate = 0.25; // 25% combined federal, state, FICA
+            // Estimated taxes (configurable rate)
+            const taxRatePercent = parseFloat(document.getElementById('taxRate').value) || 25;
+            const estimatedTaxRate = taxRatePercent / 100;
             const estimatedTaxes = grossTaxableIncome * estimatedTaxRate;
             
             // Total contract value and net take-home
             const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends;
             const netTakeHome = grossTaxableIncome - estimatedTaxes + totalHousingStipend + otherStipends;
             
-            // True hourly rate calculation
-            const totalHours = hoursPerWeek * contractWeeks;
+            // True hourly rate calculation (include call hours in total hours worked)
+            const totalWeeklyHours = hoursPerWeek + callHours;
+            const totalHours = totalWeeklyHours * contractWeeks;
             const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
             
-            // Annual equivalent (52 weeks)
-            const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
+            // Annual equivalent (52 weeks) - use total weekly hours including call
+            const annualEquivalent = trueHourlyRate * totalWeeklyHours * 52;
 
             // Update display
             document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -856,10 +999,23 @@
             document.getElementById('yourContractRate').textContent = '$' + trueHourlyRate.toFixed(2);
             document.getElementById('annualEquivalent').textContent = '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
-            // Update subtexts
+            // Update subtexts with dynamic hours
             document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
             document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
             document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = `${callHours} hrs/week × $${callRate}/hr`;
+            
+            // Calculate and display weekly gross pay
+            const weeklyGrossPay = (regularPay + overtimePay + callPay) / contractWeeks;
+            document.getElementById('weeklyGrossPay').textContent = '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            
+            // Update tax label with current rate
+            document.getElementById('taxesLabel').textContent = `Estimated Taxes (${taxRatePercent}%)`;
+            
+            // Log calculation details
+            console.log(`📊 Weekly Gross Pay: $${weeklyGrossPay.toFixed(2)}`);
+            console.log(`📊 Total Weekly Hours: ${totalWeeklyHours} (includes ${callHours} call hours)`);
+            console.log(`📊 True Hourly Rate: $${trueHourlyRate.toFixed(2)} (total value ÷ total hours)`);
+            console.log(`📊 Tax Rate: ${taxRatePercent}%`);
         }
 
         function saveContract() {
@@ -927,9 +1083,11 @@
         // Auto-calculate overtime rate based on regular rate
         document.getElementById('hourlyRate').addEventListener('input', function() {
             const regularRate = parseFloat(this.value) || 0;
-            const overtimeRate = regularRate * 1.5;
-            document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
-            calculateContract();
+            if (regularRate > 0) {
+                const overtimeRate = regularRate * 1.5;
+                document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+            }
+            validateAndCalculate(this);
         });
 
         // Check for pre-filled data from job board
@@ -964,19 +1122,18 @@
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
             checkPrefilledData();
+            updateButtonStates();
             calculateContract();
             
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
             numberInputs.forEach(input => {
-                // Prevent Ctrl+A from selecting entire page when input is focused
+                // Fix Ctrl+A to only select input text, not entire page
                 input.addEventListener('keydown', function(e) {
                     if (e.ctrlKey && e.key === 'a') {
+                        e.preventDefault();
                         e.stopPropagation();
-                        // Let the default behavior select all text in the input
-                        setTimeout(() => {
-                            this.select();
-                        }, 0);
+                        this.select();
                     }
                 });
                 
@@ -986,14 +1143,22 @@
                     this.select();
                 });
                 
-                // Focus behavior
+                // Focus behavior - select all text
                 input.addEventListener('focus', function() {
-                    // Small delay to ensure selection works, prevent scroll
                     setTimeout(() => {
-                        const scrollPosition = window.pageYOffset;
                         this.select();
-                        window.scrollTo(0, scrollPosition);
                     }, 50);
+                });
+                
+                // Clear error state on input
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        this.classList.remove('error');
+                        const errorElement = document.getElementById(this.id + '-error');
+                        if (errorElement) {
+                            errorElement.classList.remove('show');
+                        }
+                    }
                 });
             });
             
@@ -1085,17 +1250,17 @@
 
         .floating-logger {
             position: fixed;
-            bottom: 20px;
+            bottom: 100px;
             right: 20px;
-            width: 450px;
-            max-width: 90vw;
+            width: 400px;
+            max-width: 85vw;
             background-color: var(--surface-color);
             border: 2px solid var(--border-color);
             border-radius: 0.75rem;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             z-index: 9999;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px; /* Increased for better OCR */
+            font-size: 14px;
             transition: all 0.3s ease;
         }
 
@@ -1140,7 +1305,7 @@
         }
 
         .logger-content {
-            max-height: 300px;
+            max-height: 250px;
             overflow: hidden;
             transition: max-height 0.3s ease;
         }
@@ -1152,7 +1317,7 @@
         .logger-messages {
             padding: 1rem;
             overflow-y: auto;
-            max-height: 300px;
+            max-height: 250px;
             background-color: var(--background-color);
         }
 
