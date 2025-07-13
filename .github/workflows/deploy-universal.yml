@@ -26,7 +26,7 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/production-deploy" ]]; then
             echo "environment=production" >> $GITHUB_OUTPUT
             echo "app_name=locumtruerate-production" >> $GITHUB_OUTPUT
-            echo "app_url=https://locumtruerate-production-66ba3177c382.herokuapp.com" >> $GITHUB_OUTPUT
+            echo "app_url=https://locumtruerate-production.herokuapp.com" >> $GITHUB_OUTPUT
             echo "heroku_url=https://git.heroku.com/locumtruerate-production.git" >> $GITHUB_OUTPUT
           fi
           

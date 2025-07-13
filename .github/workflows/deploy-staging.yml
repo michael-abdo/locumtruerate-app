@@ -75,7 +75,7 @@ jobs:
           
           # Determine target URL for verification
           if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            TARGET_URL="https://locumtruerate-production-66ba3177c382.herokuapp.com"
+            TARGET_URL="https://locumtruerate-production.herokuapp.com"
             ENV_NAME="PRODUCTION"
           else
             TARGET_URL="https://locumtruerate-staging-66ba3177c382.herokuapp.com"
