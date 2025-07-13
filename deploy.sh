@@ -16,8 +16,8 @@ NC='\033[0m'
 REPO="michael-abdo/locumtruerate-app"
 STAGING_APP="locumtruerate-staging"
 STAGING_URL="https://locumtruerate-staging-66ba3177c382.herokuapp.com"
-PRODUCTION_APP="locumtruerate-demo-2e641e257df4"
-PRODUCTION_URL="https://locumtruerate-demo-2e641e257df4.herokuapp.com"
+PRODUCTION_APP="locumtruerate-vanilla-prod"
+PRODUCTION_URL="https://locumtruerate-vanilla-prod.herokuapp.com"
 
 # Function to show usage
 show_usage() {
