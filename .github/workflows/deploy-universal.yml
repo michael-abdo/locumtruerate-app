@@ -25,9 +25,9 @@ jobs:
             echo "heroku_url=https://git.heroku.com/locumtruerate-staging.git" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/production-deploy" ]]; then
             echo "environment=production" >> $GITHUB_OUTPUT
-            echo "app_name=locumtruerate-prod-demo" >> $GITHUB_OUTPUT
-            echo "app_url=https://locumtruerate-prod-demo.herokuapp.com" >> $GITHUB_OUTPUT
-            echo "heroku_url=https://git.heroku.com/locumtruerate-prod-demo.git" >> $GITHUB_OUTPUT
+            echo "app_name=locumtruerate-demo-2e641e257df4" >> $GITHUB_OUTPUT
+            echo "app_url=https://locumtruerate-demo-2e641e257df4.herokuapp.com" >> $GITHUB_OUTPUT
+            echo "heroku_url=https://git.heroku.com/locumtruerate-demo-2e641e257df4.git" >> $GITHUB_OUTPUT
           fi
           
       - name: Deploy to Heroku
@@ -51,8 +51,8 @@ jobs:
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
             curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
             
-            # Create production app if it doesn't exist (force recreate if needed)
-            heroku create ${{ steps.env.outputs.app_name }} --region us || echo "App already exists - will override"
+            # App already exists - will override with vanilla demos
+            echo "Overriding existing production app ${{ steps.env.outputs.app_name }} with vanilla demos"
             heroku config:set NODE_ENV=production -a ${{ steps.env.outputs.app_name }}
             heroku config:set APP_NAME="LocumTrueRate Production" -a ${{ steps.env.outputs.app_name }}
           fi
