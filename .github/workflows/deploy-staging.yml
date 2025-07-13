@@ -46,16 +46,16 @@ jobs:
           
           # Determine target environment
           if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            APP_NAME="locumtruerate-66ba3177c382"
-            TARGET_URL="https://git.heroku.com/locumtruerate-66ba3177c382.git"
+            APP_NAME="locumtruerate-demo-2e641e257df4"
+            TARGET_URL="https://git.heroku.com/locumtruerate-demo-2e641e257df4.git"
             echo "🚀 Deploying to PRODUCTION..."
             
             # Install Heroku CLI for app creation
             curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
             
             # Create production app if it doesn't exist
-            heroku create locumtruerate-66ba3177c382 --region us || echo "App already exists"
-            heroku config:set NODE_ENV=production -a locumtruerate-66ba3177c382 || true
+            heroku create locumtruerate-demo-2e641e257df4 --region us || echo "App already exists"
+            heroku config:set NODE_ENV=production -a locumtruerate-demo-2e641e257df4 || true
           else
             APP_NAME="locumtruerate-staging"
             TARGET_URL="https://git.heroku.com/locumtruerate-staging.git"
@@ -75,7 +75,7 @@ jobs:
           
           # Determine target URL for verification
           if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            TARGET_URL="https://locumtruerate-66ba3177c382.herokuapp.com"
+            TARGET_URL="https://locumtruerate-demo-2e641e257df4.herokuapp.com"
             ENV_NAME="PRODUCTION"
           else
             TARGET_URL="https://locumtruerate-staging-66ba3177c382.herokuapp.com"
