@@ -932,6 +932,7 @@
         }
 
         function calculatePaycheck() {
+            console.log('calculatePaycheck called');
             const multiplier = periodMultipliers[currentPeriod];
             
             // Get input values with validation
@@ -981,28 +982,47 @@
             
             // Net pay calculation
             const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
+            
+            console.log('Final values:', { grossTaxable, federalTax, stateTax, ficaTax, totalStipends, netPay });
 
             // Update display with proper currency formatting - FIXED calculations
-            document.getElementById('regularPay').textContent = formatCurrency(regularPay);
-            document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
-            document.getElementById('callPay').textContent = formatCurrency(callPay);
-            document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
-            document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
-            
-            // FIXED: Federal tax should show actual calculated amount, not overinflated
-            document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatNegativeCurrency(federalTax) : '$0.00';
-            
-            // FIXED: State tax now properly shows calculated amount
-            document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatNegativeCurrency(stateTax) : '$0.00';
-            
-            document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatNegativeCurrency(ficaTax) : '$0.00';
-            document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
-            document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
-            document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
-            
-            // FIXED: Net pay calculation logic
-            document.getElementById('netPayDisplay').textContent = formatCurrency(netPay);
-            document.getElementById('netPay').textContent = formatCurrency(netPay);
+            try {
+                console.log('Updating display elements');
+                document.getElementById('regularPay').textContent = formatCurrency(regularPay);
+                document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
+                document.getElementById('callPay').textContent = formatCurrency(callPay);
+                document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
+                document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
+                
+                // FIXED: Federal tax should show actual calculated amount, not overinflated
+                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatNegativeCurrency(federalTax) : '$0.00';
+                
+                // FIXED: State tax now properly shows calculated amount
+                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatNegativeCurrency(stateTax) : '$0.00';
+                
+                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatNegativeCurrency(ficaTax) : '$0.00';
+                document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
+                document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
+                document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
+                
+                // FIXED: Net pay calculation logic - CRITICAL FIX
+                document.getElementById('netPayDisplay').textContent = formatCurrency(netPay);
+                document.getElementById('netPay').textContent = formatCurrency(netPay);
+                
+                console.log('Display updated successfully');
+                
+                // Auto-scroll to results after calculation with significant changes
+                if (grossTaxable > 0) {
+                    setTimeout(() => {
+                        const resultsSection = document.querySelector('.calculator-results');
+                        if (resultsSection) {
+                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error updating display:', error);
+            }
             
             // Update tax labels with current rates for transparency
             document.getElementById('federalTaxLabel').textContent = `Federal Tax (${Math.round(federalTaxRate * 100)}%)`;
@@ -1097,20 +1117,21 @@
         }
 
         function exportToPDF() {
-            // Generate PDF content
-            const calculation = {
-                period: currentPeriod,
-                netPay: document.getElementById('netPay').textContent,
-                grossTaxable: document.getElementById('grossTaxable').textContent,
-                regularPay: document.getElementById('regularPay').textContent,
-                overtimePay: document.getElementById('overtimePay').textContent,
-                callPay: document.getElementById('callPay').textContent,
-                callbackPay: document.getElementById('callbackPay').textContent,
-                federalTax: document.getElementById('federalTax').textContent,
-                stateTax: document.getElementById('stateTax').textContent,
-                ficaTax: document.getElementById('ficaTax').textContent,
-                timestamp: new Date().toLocaleDateString()
-            };
+            try {
+                // Generate PDF content
+                const calculation = {
+                    period: currentPeriod,
+                    netPay: document.getElementById('netPay').textContent,
+                    grossTaxable: document.getElementById('grossTaxable').textContent,
+                    regularPay: document.getElementById('regularPay').textContent,
+                    overtimePay: document.getElementById('overtimePay').textContent,
+                    callPay: document.getElementById('callPay').textContent,
+                    callbackPay: document.getElementById('callbackPay').textContent,
+                    federalTax: document.getElementById('federalTax').textContent,
+                    stateTax: document.getElementById('stateTax').textContent,
+                    ficaTax: document.getElementById('ficaTax').textContent,
+                    timestamp: new Date().toLocaleDateString()
+                };
             
             // Create a simple text representation
             const pdfContent = `
@@ -1150,6 +1171,11 @@ NET PAY: ${calculation.netPay}
             document.body.removeChild(a);
             
             showNotification('Paycheck summary downloaded!');
+            console.log('Export completed successfully');
+            } catch (error) {
+                console.error('Error exporting PDF:', error);
+                showNotification('Error exporting file', 'error');
+            }
         }
 
         // Auto-calculate overtime rate
@@ -1163,7 +1189,10 @@ NET PAY: ${calculation.netPay}
 
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            calculatePaycheck();
+            // Force initial calculation
+            setTimeout(() => {
+                calculatePaycheck();
+            }, 100);
             
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
@@ -1211,11 +1240,8 @@ NET PAY: ${calculation.netPay}
                 
                 // Handle input events to prevent unintended appending
                 input.addEventListener('input', function(e) {
-                    // Validate immediately on input
-                    if (this.hasAttribute('oninput')) {
-                        const func = new Function('this', this.getAttribute('oninput'));
-                        func.call(this);
-                    }
+                    // Validate and calculate immediately on input
+                    validateAndCalculate(this);
                 });
                 
                 // Real-time validation on blur
