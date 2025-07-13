@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paycheck Calculator Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        .pass { border-left: 4px solid #10b981; }
+        .fail { border-left: 4px solid #ef4444; }
+        .pending { border-left: 4px solid #f59e0b; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Paycheck Calculator Validation Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Environment</h2>
+        <button onclick="loadCalculator()">Load Paycheck Calculator</button>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <iframe id="calculator-frame" src="paycheck-calculator.html" style="display: none;"></iframe>
+    </div>
+
+    <div class="test-section">
+        <h2>Validation Tests</h2>
+        <div id="test-results">
+            <div class="test-item pending" id="test-negative">
+                <strong>Test 1: Negative Value Validation</strong>
+                <p>Enter -5 in Regular Hours field → Should show error message and red border</p>
+                <button onclick="testNegativeValues()">Test</button>
+                <div id="negative-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-nonnumeric">
+                <strong>Test 2: Non-Numeric Input Validation</strong>
+                <p>Enter 'abc' in Regular Rate field → Should show error message</p>
+                <button onclick="testNonNumericInput()">Test</button>
+                <div id="nonnumeric-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-empty">
+                <strong>Test 3: Empty Required Field Validation</strong>
+                <p>Clear Regular Hours field → Should show required field error</p>
+                <button onclick="testEmptyFields()">Test</button>
+                <div id="empty-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-money">
+                <strong>Test 4: Money Formatting with Cents</strong>
+                <p>Check if all amounts display in $X,XXX.XX format</p>
+                <button onclick="testMoneyFormatting()">Test</button>
+                <div id="money-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-defaults">
+                <strong>Test 5: Default Values for Call/Callback Hours</strong>
+                <p>Verify Call Hours and Callback Hours default to 0</p>
+                <button onclick="testDefaultValues()">Test</button>
+                <div id="defaults-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-ctrl-a">
+                <strong>Test 6: Ctrl+A Selection Behavior</strong>
+                <p>Focus on input field and press Ctrl+A → Should select only field content</p>
+                <button onclick="testCtrlA()">Manual Test Required</button>
+                <div id="ctrla-result">Manual testing required: Focus on any input field and press Ctrl+A to verify only field content is selected.</div>
+            </div>
+            
+            <div class="test-item pending" id="test-precision">
+                <strong>Test 7: Decimal Precision</strong>
+                <p>Enter 37.5 hours and verify calculations are precise</p>
+                <button onclick="testDecimalPrecision()">Test</button>
+                <div id="precision-result"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-tax-label">
+                <strong>Test 8: Tax Rate Label Consistency</strong>
+                <p>Verify Federal Tax label shows correct percentage</p>
+                <button onclick="testTaxLabel()">Test</button>
+                <div id="taxlabel-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Summary</h2>
+        <div id="test-summary">
+            <p>Click "Run All Tests" to execute the test suite.</p>
+        </div>
+    </div>
+
+    <script>
+        let calculator = null;
+        let testResults = {};
+
+        function loadCalculator() {
+            const frame = document.getElementById('calculator-frame');
+            frame.style.display = 'block';
+            frame.onload = function() {
+                calculator = frame.contentWindow;
+                console.log('Calculator loaded');
+            };
+        }
+
+        function getCalculatorDocument() {
+            const frame = document.getElementById('calculator-frame');
+            return frame.contentDocument || frame.contentWindow.document;
+        }
+
+        function testNegativeValues() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                const errorElement = doc.getElementById('regularHours-error');
+                
+                // Set negative value
+                regularHours.value = '-5';
+                regularHours.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                // Wait a bit for validation to run
+                setTimeout(() => {
+                    const hasError = regularHours.classList.contains('error');
+                    const hasErrorMessage = errorElement && errorElement.classList.contains('show');
+                    
+                    if (hasError && hasErrorMessage) {
+                        updateTestResult('test-negative', 'pass', 'PASS: Negative value validation working correctly');
+                    } else {
+                        updateTestResult('test-negative', 'fail', 'FAIL: Negative value validation not working');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                updateTestResult('test-negative', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testNonNumericInput() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularRate = doc.getElementById('regularRate');
+                const errorElement = doc.getElementById('regularRate-error');
+                
+                // Set non-numeric value
+                regularRate.value = 'abc';
+                regularRate.dispatchEvent(new Event('input', { bubbles: true }));
+                regularRate.dispatchEvent(new Event('blur', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const hasError = regularRate.classList.contains('error');
+                    const hasErrorMessage = errorElement && errorElement.classList.contains('show');
+                    
+                    if (hasError && hasErrorMessage) {
+                        updateTestResult('test-nonnumeric', 'pass', 'PASS: Non-numeric input validation working correctly');
+                    } else {
+                        updateTestResult('test-nonnumeric', 'fail', 'FAIL: Non-numeric input validation not working');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                updateTestResult('test-nonnumeric', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testEmptyFields() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                const errorElement = doc.getElementById('regularHours-error');
+                
+                // Clear field
+                regularHours.value = '';
+                regularHours.dispatchEvent(new Event('blur', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const hasError = regularHours.classList.contains('error');
+                    const hasErrorMessage = errorElement && errorElement.classList.contains('show');
+                    
+                    if (hasError && hasErrorMessage) {
+                        updateTestResult('test-empty', 'pass', 'PASS: Empty field validation working correctly');
+                    } else {
+                        updateTestResult('test-empty', 'fail', 'FAIL: Empty field validation not working');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                updateTestResult('test-empty', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testMoneyFormatting() {
+            try {
+                const doc = getCalculatorDocument();
+                const netPay = doc.getElementById('netPay');
+                const regularPay = doc.getElementById('regularPay');
+                
+                // Check if amounts include decimal places
+                const netPayText = netPay.textContent;
+                const regularPayText = regularPay.textContent;
+                
+                const hasCents = netPayText.includes('.') && regularPayText.includes('.');
+                
+                if (hasCents) {
+                    updateTestResult('test-money', 'pass', 'PASS: Money formatting includes cents');
+                } else {
+                    updateTestResult('test-money', 'fail', 'FAIL: Money formatting missing cents');
+                }
+                
+            } catch (error) {
+                updateTestResult('test-money', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testDefaultValues() {
+            try {
+                const doc = getCalculatorDocument();
+                const callHours = doc.getElementById('callHours');
+                const callbackHours = doc.getElementById('callbackHours');
+                
+                const callHoursValue = callHours.value;
+                const callbackHoursValue = callbackHours.value;
+                
+                if (callHoursValue === '0' && callbackHoursValue === '0') {
+                    updateTestResult('test-defaults', 'pass', 'PASS: Call and Callback hours default to 0');
+                } else {
+                    updateTestResult('test-defaults', 'fail', `FAIL: Call Hours: ${callHoursValue}, Callback Hours: ${callbackHoursValue}`);
+                }
+                
+            } catch (error) {
+                updateTestResult('test-defaults', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testCtrlA() {
+            updateTestResult('test-ctrl-a', 'pending', 'Manual testing required: Focus on input field and press Ctrl+A to verify behavior');
+        }
+
+        function testDecimalPrecision() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                
+                // Set decimal hours
+                regularHours.value = '37.5';
+                regularHours.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const regularPay = doc.getElementById('regularPay');
+                    const payText = regularPay.textContent;
+                    
+                    // Check if calculation includes proper decimal precision
+                    if (payText.includes('.')) {
+                        updateTestResult('test-precision', 'pass', 'PASS: Decimal precision maintained in calculations');
+                    } else {
+                        updateTestResult('test-precision', 'fail', 'FAIL: Decimal precision lost in calculations');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                updateTestResult('test-precision', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function testTaxLabel() {
+            try {
+                const doc = getCalculatorDocument();
+                const federalTaxLabel = doc.getElementById('federalTaxLabel');
+                
+                const labelText = federalTaxLabel.textContent;
+                
+                if (labelText.includes('%') && labelText.includes('Federal Tax')) {
+                    updateTestResult('test-tax-label', 'pass', 'PASS: Tax label shows percentage');
+                } else {
+                    updateTestResult('test-tax-label', 'fail', 'FAIL: Tax label format incorrect');
+                }
+                
+            } catch (error) {
+                updateTestResult('test-tax-label', 'fail', 'FAIL: Error running test - ' + error.message);
+            }
+        }
+
+        function updateTestResult(testId, status, message) {
+            const testElement = document.getElementById(testId);
+            const resultElement = document.getElementById(testId.replace('test-', '') + '-result');
+            
+            testElement.className = `test-item ${status}`;
+            resultElement.innerHTML = message;
+            testResults[testId] = status;
+            
+            updateSummary();
+        }
+
+        function runAllTests() {
+            if (!calculator) {
+                alert('Please load the calculator first by clicking "Load Paycheck Calculator"');
+                return;
+            }
+            
+            testDefaultValues();
+            setTimeout(() => testMoneyFormatting(), 200);
+            setTimeout(() => testTaxLabel(), 400);
+            setTimeout(() => testNegativeValues(), 600);
+            setTimeout(() => testNonNumericInput(), 1000);
+            setTimeout(() => testEmptyFields(), 1400);
+            setTimeout(() => testDecimalPrecision(), 1800);
+        }
+
+        function clearResults() {
+            testResults = {};
+            const testItems = document.querySelectorAll('.test-item');
+            testItems.forEach(item => {
+                item.className = 'test-item pending';
+            });
+            const resultDivs = document.querySelectorAll('[id$="-result"]');
+            resultDivs.forEach(div => {
+                div.innerHTML = '';
+            });
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('test-summary');
+            const total = Object.keys(testResults).length;
+            const passed = Object.values(testResults).filter(r => r === 'pass').length;
+            const failed = Object.values(testResults).filter(r => r === 'fail').length;
+            
+            if (total === 0) {
+                summary.innerHTML = '<p>Click "Run All Tests" to execute the test suite.</p>';
+            } else {
+                summary.innerHTML = `
+                    <p><strong>Test Results:</strong></p>
+                    <p>Total: ${total} | Passed: ${passed} | Failed: ${failed}</p>
+                `;
+            }
+        }
+
+        // Auto-load calculator when page loads
+        window.onload = function() {
+            setTimeout(loadCalculator, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -236,6 +236,27 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
+        .form-input.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-input.error:focus {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         .form-select {
             appearance: none;
             background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
@@ -554,24 +575,28 @@
                             <!-- Hours & Rates -->
                             <div class="form-group">
                                 <label class="form-label">Regular Hours</label>
-                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="80" oninput="calculatePaycheck()">
+                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="80" oninput="validateAndCalculate(this)">
+                                <div class="error-message" id="regularHours-error"></div>
                                 <div class="form-help">Regular hours worked per pay period</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Regular Hourly Rate ($)</label>
-                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="calculatePaycheck()">
+                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                <div class="error-message" id="regularRate-error"></div>
                                 <div class="form-help">Base hourly rate for regular time</div>
                             </div>
 
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Overtime Hours</label>
-                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="overtimeHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="overtimeRate-error"></div>
                                 </div>
                             </div>
 
@@ -579,40 +604,47 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Call Hours</label>
-                                    <input type="number" class="form-input" id="callHours" value="24" min="0" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="callHours" value="0" min="0" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="callHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Call Rate ($)</label>
-                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="callRate-error"></div>
                                 </div>
                             </div>
 
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Callback Hours</label>
-                                    <input type="number" class="form-input" id="callbackHours" value="4" min="0" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="callbackHours" value="0" min="0" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="callbackHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Callback Rate ($)</label>
-                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="callbackRate-error"></div>
                                 </div>
                             </div>
 
                             <!-- Stipends & Allowances -->
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($)</label>
-                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculatePaycheck()">
+                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                <div class="error-message" id="housingStipend-error"></div>
                                 <div class="form-help">Tax-free housing allowance per pay period</div>
                             </div>
 
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Meal Stipend ($)</label>
-                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="mealStipend-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Mileage Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="error-message" id="mileageReimbursement-error"></div>
                                 </div>
                             </div>
 
@@ -620,7 +652,7 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Tax State</label>
-                                    <select class="form-input form-select" id="taxState" onchange="calculatePaycheck()">
+                                    <select class="form-input form-select" id="taxState" onchange="validateAndCalculate(this)">
                                         <option value="no-tax">No State Tax</option>
                                         <option value="low-tax">Low Tax State (3-5%)</option>
                                         <option value="medium-tax">Medium Tax State (6-8%)</option>
@@ -630,7 +662,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Filing Status</label>
-                                    <select class="form-input form-select" id="filingStatus" onchange="calculatePaycheck()">
+                                    <select class="form-input form-select" id="filingStatus" onchange="validateAndCalculate(this)">
                                         <option value="single">Single</option>
                                         <option value="married">Married Filing Jointly</option>
                                         <option value="head">Head of Household</option>
@@ -670,8 +702,8 @@
                                     <span class="result-value" id="grossTaxable">$5,530</span>
                                 </div>
                                 <div class="result-item">
-                                    <span class="result-label">Federal Tax (22%)</span>
-                                    <span class="result-value negative" id="federalTax">-$1,217</span>
+                                    <span class="result-label" id="federalTaxLabel">Federal Tax (22%)</span>
+                                    <span class="result-value negative" id="federalTax">-$1,217.00</span>
                                 </div>
                                 <div class="result-item">
                                     <span class="result-label">State Tax</span>
@@ -800,36 +832,94 @@
             calculatePaycheck();
         }
 
+        // Validation function for input fields
+        function validateInput(input) {
+            const value = input.value.trim();
+            const fieldId = input.id;
+            const errorElement = document.getElementById(fieldId + '-error');
+            let isValid = true;
+            let errorMessage = '';
+
+            // Clear previous error state
+            input.classList.remove('error');
+            if (errorElement) {
+                errorElement.classList.remove('show');
+                errorElement.textContent = '';
+            }
+
+            // Check if field is empty
+            if (value === '') {
+                // Only show error for required fields (hours and rates)
+                if (fieldId.includes('Hours') || fieldId.includes('Rate')) {
+                    isValid = false;
+                    errorMessage = 'This field is required';
+                }
+            } else {
+                // Check if input is numeric
+                const numValue = parseFloat(value);
+                if (isNaN(numValue)) {
+                    isValid = false;
+                    errorMessage = 'Please enter a valid number';
+                } else if (numValue < 0) {
+                    isValid = false;
+                    errorMessage = 'Value cannot be negative';
+                } else if (fieldId.includes('Hours') && numValue > 168) {
+                    isValid = false;
+                    errorMessage = 'Hours cannot exceed 168 per week';
+                } else if (fieldId.includes('Rate') && numValue > 1000) {
+                    isValid = false;
+                    errorMessage = 'Rate seems unusually high';
+                }
+            }
+
+            // Show error if validation failed
+            if (!isValid && errorElement) {
+                input.classList.add('error');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.add('show');
+            }
+
+            return isValid;
+        }
+
+        // Combined validation and calculation function
+        function validateAndCalculate(input) {
+            if (input) {
+                validateInput(input);
+            }
+            calculatePaycheck();
+        }
+
         function calculatePaycheck() {
             const multiplier = periodMultipliers[currentPeriod];
             
-            // Get input values
-            const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
-            const regularRate = parseFloat(document.getElementById('regularRate').value) || 0;
-            const overtimeHours = parseFloat(document.getElementById('overtimeHours').value) || 0;
-            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
-            const callHours = parseFloat(document.getElementById('callHours').value) || 0;
-            const callRate = parseFloat(document.getElementById('callRate').value) || 0;
-            const callbackHours = parseFloat(document.getElementById('callbackHours').value) || 0;
-            const callbackRate = parseFloat(document.getElementById('callbackRate').value) || 0;
-            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
-            const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
-            const mileageReimbursement = parseFloat(document.getElementById('mileageReimbursement').value) || 0;
+            // Get input values with validation
+            const regularHours = getValidatedValue('regularHours');
+            const regularRate = getValidatedValue('regularRate');
+            const overtimeHours = getValidatedValue('overtimeHours');
+            const overtimeRate = getValidatedValue('overtimeRate');
+            const callHours = getValidatedValue('callHours');
+            const callRate = getValidatedValue('callRate');
+            const callbackHours = getValidatedValue('callbackHours');
+            const callbackRate = getValidatedValue('callbackRate');
+            const housingStipend = getValidatedValue('housingStipend');
+            const mealStipend = getValidatedValue('mealStipend');
+            const mileageReimbursement = getValidatedValue('mileageReimbursement');
             const taxState = document.getElementById('taxState').value;
             const filingStatus = document.getElementById('filingStatus').value;
 
-            // Calculate pay components
-            const regularPay = (regularHours * regularRate) * multiplier;
-            const overtimePay = (overtimeHours * overtimeRate) * multiplier;
-            const callPay = (callHours * callRate) * multiplier;
-            const callbackPay = (callbackHours * callbackRate) * multiplier;
+            // Calculate pay components with precise decimal handling
+            const regularPay = Math.round((regularHours * regularRate * multiplier) * 100) / 100;
+            const overtimePay = Math.round((overtimeHours * overtimeRate * multiplier) * 100) / 100;
+            const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
+            const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
             
             // Taxable income
-            const grossTaxable = regularPay + overtimePay + callPay + callbackPay;
+            const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
             
             // Tax calculations
             const federalTaxRate = 0.22; // Simplified federal tax rate
-            const federalTax = grossTaxable * federalTaxRate;
+            const federalTax = Math.round((grossTaxable * federalTaxRate) * 100) / 100;
             
             let stateTaxRate = 0;
             switch(taxState) {
@@ -839,31 +929,49 @@
                 case 'california': stateTaxRate = 0.133; break;
                 default: stateTaxRate = 0;
             }
-            const stateTax = grossTaxable * stateTaxRate;
+            const stateTax = Math.round((grossTaxable * stateTaxRate) * 100) / 100;
             
             const ficaRate = 0.0765; // Social Security + Medicare
-            const ficaTax = grossTaxable * ficaRate;
+            const ficaTax = Math.round((grossTaxable * ficaRate) * 100) / 100;
             
             // Tax-free stipends
-            const totalStipends = (housingStipend + mealStipend + mileageReimbursement) * multiplier;
+            const totalStipends = Math.round(((housingStipend + mealStipend + mileageReimbursement) * multiplier) * 100) / 100;
             
             // Net pay calculation
-            const netPay = grossTaxable - federalTax - stateTax - ficaTax + totalStipends;
+            const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
 
-            // Update display
-            document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('federalTax').textContent = '-$' + federalTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('stateTax').textContent = stateTax > 0 ? '-$' + stateTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '$0';
-            document.getElementById('ficaTax').textContent = '-$' + ficaTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('mealStipendDisplay').textContent = '+$' + (mealStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('mileageDisplay').textContent = '+$' + (mileageReimbursement * multiplier).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('netPayDisplay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('netPay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            // Update display with proper currency formatting
+            document.getElementById('regularPay').textContent = formatCurrency(regularPay);
+            document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
+            document.getElementById('callPay').textContent = formatCurrency(callPay);
+            document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
+            document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
+            document.getElementById('federalTax').textContent = '-' + formatCurrency(federalTax);
+            document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
+            document.getElementById('ficaTax').textContent = '-' + formatCurrency(ficaTax);
+            document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
+            document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
+            document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
+            document.getElementById('netPayDisplay').textContent = formatCurrency(netPay);
+            document.getElementById('netPay').textContent = formatCurrency(netPay);
+            
+            // Update federal tax label with current rate
+            document.getElementById('federalTaxLabel').textContent = `Federal Tax (${Math.round(federalTaxRate * 100)}%)`;
+        }
+
+        // Helper function to get validated numeric value
+        function getValidatedValue(fieldId) {
+            const input = document.getElementById(fieldId);
+            const value = parseFloat(input.value.trim());
+            return isNaN(value) || value < 0 ? 0 : value;
+        }
+
+        // Helper function to format currency with cents
+        function formatCurrency(amount) {
+            return '$' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
         }
 
         function saveCalculation() {
@@ -917,7 +1025,7 @@
             const overtimeRate = regularRate * 1.5;
             document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
             document.getElementById('callbackRate').value = overtimeRate.toFixed(2);
-            calculatePaycheck();
+            validateAndCalculate(this);
         });
 
         // Initialize calculator
@@ -931,10 +1039,9 @@
                 input.addEventListener('keydown', function(e) {
                     if (e.ctrlKey && e.key === 'a') {
                         e.stopPropagation();
-                        // Let the default behavior select all text in the input
-                        setTimeout(() => {
-                            this.select();
-                        }, 0);
+                        e.preventDefault();
+                        // Select only the input field content
+                        this.select();
                     }
                 });
                 
@@ -944,14 +1051,17 @@
                     this.select();
                 });
                 
-                // Focus behavior
+                // Focus behavior - select all text
                 input.addEventListener('focus', function() {
                     // Small delay to ensure selection works, prevent scroll
                     setTimeout(() => {
-                        const scrollPosition = window.pageYOffset;
                         this.select();
-                        window.scrollTo(0, scrollPosition);
                     }, 50);
+                });
+                
+                // Real-time validation on blur
+                input.addEventListener('blur', function() {
+                    validateInput(this);
                 });
             });
             
