@@ -575,14 +575,14 @@
                             <!-- Hours & Rates -->
                             <div class="form-group">
                                 <label class="form-label">Regular Hours</label>
-                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="80" oninput="validateAndCalculate(this)">
+                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="168" oninput="validateAndCalculate(this)" tabindex="1">
                                 <div class="error-message" id="regularHours-error"></div>
                                 <div class="form-help">Regular hours worked per pay period</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Regular Hourly Rate ($)</label>
-                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="2">
                                 <div class="error-message" id="regularRate-error"></div>
                                 <div class="form-help">Base hourly rate for regular time</div>
                             </div>
@@ -590,12 +590,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Overtime Hours</label>
-                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="validateAndCalculate(this)" tabindex="3">
                                     <div class="error-message" id="overtimeHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="4">
                                     <div class="error-message" id="overtimeRate-error"></div>
                                 </div>
                             </div>
@@ -604,12 +604,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Call Hours</label>
-                                    <input type="number" class="form-input" id="callHours" value="0" min="0" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="callHours" value="0" min="0" oninput="validateAndCalculate(this)" tabindex="5">
                                     <div class="error-message" id="callHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Call Rate ($)</label>
-                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="6">
                                     <div class="error-message" id="callRate-error"></div>
                                 </div>
                             </div>
@@ -617,12 +617,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Callback Hours</label>
-                                    <input type="number" class="form-input" id="callbackHours" value="0" min="0" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="callbackHours" value="0" min="0" oninput="validateAndCalculate(this)" tabindex="7">
                                     <div class="error-message" id="callbackHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Callback Rate ($)</label>
-                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="8">
                                     <div class="error-message" id="callbackRate-error"></div>
                                 </div>
                             </div>
@@ -630,7 +630,7 @@
                             <!-- Stipends & Allowances -->
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($)</label>
-                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="9">
                                 <div class="error-message" id="housingStipend-error"></div>
                                 <div class="form-help">Tax-free housing allowance per pay period</div>
                             </div>
@@ -638,12 +638,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Meal Stipend ($)</label>
-                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="10">
                                     <div class="error-message" id="mealStipend-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Mileage Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="11">
                                     <div class="error-message" id="mileageReimbursement-error"></div>
                                 </div>
                             </div>
@@ -888,18 +888,33 @@
             
             if (input) {
                 const isValid = validateInput(input);
-                // Block calculation for hours > 168
-                if (input.id.includes('Hours') && !isValid) {
+                
+                // For hours fields, enforce limits strictly
+                if (input.id.includes('Hours')) {
                     const numValue = parseFloat(input.value);
                     if (numValue > 168) {
-                        shouldCalculate = false;
+                        input.value = '168'; // Auto-correct to maximum
+                        clearErrors(input);
+                        shouldCalculate = true;
+                    } else if (numValue < 0) {
+                        input.value = '0'; // Auto-correct negative
+                        clearErrors(input);
+                        shouldCalculate = true;
+                    }
+                }
+                
+                // For rates, auto-correct negatives without affecting other fields
+                if (input.id.includes('Rate')) {
+                    const numValue = parseFloat(input.value);
+                    if (numValue < 0) {
+                        input.value = '0';
+                        clearErrors(input);
+                        shouldCalculate = true;
                     }
                 }
             }
             
-            if (shouldCalculate) {
-                calculatePaycheck();
-            }
+            calculatePaycheck();
         }
 
         function calculatePaycheck() {
@@ -958,9 +973,9 @@
             document.getElementById('callPay').textContent = formatCurrency(callPay);
             document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
             document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
-            document.getElementById('federalTax').textContent = '-' + formatCurrency(federalTax);
-            document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
-            document.getElementById('ficaTax').textContent = '-' + formatCurrency(ficaTax);
+            document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatNegativeCurrency(federalTax) : '$0.00';
+            document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatNegativeCurrency(stateTax) : '$0.00';
+            document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatNegativeCurrency(ficaTax) : '$0.00';
             document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
             document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
             document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
@@ -998,10 +1013,25 @@
 
         // Helper function to format currency with cents
         function formatCurrency(amount) {
+            // Handle negative zero and very small negative values
+            if (amount === 0 || amount === -0 || (amount < 0 && amount > -0.01)) {
+                return '$0.00';
+            }
+            
             return '$' + amount.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+        }
+        
+        // Helper function to clear error states
+        function clearErrors(input) {
+            const errorElement = document.getElementById(input.id + '-error');
+            if (errorElement) {
+                input.classList.remove('error');
+                errorElement.textContent = '';
+                errorElement.classList.remove('show');
+            }
         }
 
         function saveCalculation() {
@@ -1116,8 +1146,23 @@ NET PAY: ${calculation.netPay}
                         e.stopPropagation();
                         e.preventDefault();
                         // Select only the input field content
-                        this.setSelectionRange(0, this.value.length);
+                        this.select();
                         return false;
+                    }
+                });
+                
+                // Handle digit input when text is selected
+                input.addEventListener('keydown', function(e) {
+                    // If user types a digit and text is selected, clear and replace
+                    if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+                        if (this.selectionStart !== this.selectionEnd) {
+                            // Clear the selected text first
+                            e.preventDefault();
+                            this.value = e.key;
+                            // Trigger input event to update calculations
+                            this.dispatchEvent(new Event('input', { bubbles: true }));
+                            return false;
+                        }
                     }
                 });
                 
@@ -1129,10 +1174,19 @@ NET PAY: ${calculation.netPay}
                 
                 // Focus behavior - select all text
                 input.addEventListener('focus', function() {
-                    // Small delay to ensure selection works, prevent scroll
+                    // Small delay to ensure selection works
                     setTimeout(() => {
                         this.select();
                     }, 50);
+                });
+                
+                // Handle input events to prevent unintended appending
+                input.addEventListener('input', function(e) {
+                    // Validate immediately on input
+                    if (this.hasAttribute('oninput')) {
+                        const func = new Function('this', this.getAttribute('oninput'));
+                        func.call(this);
+                    }
                 });
                 
                 // Real-time validation on blur
