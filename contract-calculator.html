@@ -258,6 +258,11 @@
             background-position: right 0.75rem center;
             background-size: 0.65rem;
             padding-right: 2.5rem;
+            cursor: pointer;
+        }
+        
+        .form-select:hover {
+            background-color: var(--gray-50);
         }
 
         .input-group {
@@ -896,10 +901,11 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison (login required)">📁 Save Analysis</button>
-                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare</button>
+                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
                                 <button class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
+                                <button class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
                                 <button class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
                                 <button class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
                             </div>
@@ -1143,10 +1149,27 @@
         // Update button states based on validation
         function updateButtonStates() {
             const isValid = areAllFieldsValid();
-            const buttons = document.querySelectorAll('.btn-primary, .btn-secondary, .btn-accent');
-            buttons.forEach(button => {
-                button.disabled = !isValid;
-            });
+            const hasCalculatedResults = parseFloat(document.getElementById('totalContractValue').textContent.replace(/[$,]/g, '')) > 0;
+            
+            // Save and Compare buttons require valid fields
+            const saveBtn = document.querySelector('.btn-primary[onclick="saveContract()"]');
+            const compareBtn = document.querySelector('.btn-secondary[onclick="compareContracts()"]');
+            const findJobsBtn = document.querySelector('.btn-accent[onclick="findSimilarJobs()"]');
+            
+            if (saveBtn) saveBtn.disabled = !isValid;
+            if (compareBtn) compareBtn.disabled = !isValid;
+            if (findJobsBtn) findJobsBtn.disabled = !isValid;
+            
+            // Export, Print, Email buttons enabled if we have calculated results
+            const exportBtn = document.querySelector('.btn-secondary[onclick="exportAnalysis()"]');
+            const exportCSVBtn = document.querySelector('.btn-secondary[onclick="exportCSV()"]');
+            const printBtn = document.querySelector('.btn-secondary[onclick="printResults()"]');
+            const emailBtn = document.querySelector('.btn-secondary[onclick="emailResults()"]');
+            
+            if (exportBtn) exportBtn.disabled = !hasCalculatedResults;
+            if (exportCSVBtn) exportCSVBtn.disabled = !hasCalculatedResults;
+            if (printBtn) printBtn.disabled = !hasCalculatedResults;
+            if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
         function calculateContract() {
@@ -1220,8 +1243,14 @@
             
             // Only calculate true hourly rate if values are positive and meaningful
             let trueHourlyRate = 0;
-            if (totalHours > 0 && totalContractValue > 0 && grossTaxableIncome >= 0) {
+            // Allow calculation even if only benefits exist (no taxable income)
+            if (totalHours > 0 && totalContractValue > 0) {
                 trueHourlyRate = totalContractValue / totalHours;
+            } else if (totalHours > 0 && (totalHousingStipend > 0 || otherStipends > 0)) {
+                // Calculate based on benefits only if no taxable income
+                const benefitsOnly = totalHousingStipend + otherStipends;
+                trueHourlyRate = benefitsOnly / totalHours;
+                console.log('💡 Calculating based on benefits only (no taxable income)');
             } else {
                 // Show zero values for invalid calculations
                 trueHourlyRate = 0;
@@ -1264,9 +1293,11 @@
                 document.querySelector('#callPay').parentElement.querySelector('.result-subtext').textContent = 'No call hours';
             }
             
-            // Calculate and display weekly gross pay
+            // Calculate and display weekly gross pay with proper rounding
             const weeklyGrossPay = contractWeeks > 0 ? (regularPay + overtimePay + callPay) / contractWeeks : 0;
-            document.getElementById('weeklyGrossPay').textContent = '$' + Math.max(0, weeklyGrossPay).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            // Round to 2 decimal places to avoid floating point precision issues
+            const roundedWeeklyGrossPay = Math.round(weeklyGrossPay * 100) / 100;
+            document.getElementById('weeklyGrossPay').textContent = '$' + Math.max(0, roundedWeeklyGrossPay).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             
             // Update tax label with current rate
             document.getElementById('taxesLabel').textContent = `Estimated Taxes (${taxRatePercent}%)`;
@@ -1559,6 +1590,77 @@
             
             showNotification('📧 Email client opened with contract analysis', 'success');
         }
+        
+        // Export CSV function
+        function exportCSV() {
+            // Gather all data for CSV export
+            const data = [
+                ['Contract Analysis Report'],
+                ['Generated', new Date().toLocaleDateString()],
+                [],
+                ['Contract Details'],
+                ['Position', document.getElementById('jobTitle').value],
+                ['Facility', document.getElementById('facility').value],
+                ['Contract Type', document.getElementById('contractType').value],
+                ['Work State', document.getElementById('workState').options[document.getElementById('workState').selectedIndex].text],
+                [],
+                ['Contract Terms'],
+                ['Hourly Rate', document.getElementById('hourlyRate').value],
+                ['Overtime Rate', document.getElementById('overtimeRate').value],
+                ['Hours per Week', document.getElementById('hoursPerWeek').value],
+                ['Contract Weeks', document.getElementById('contractWeeks').value],
+                ['Call Hours', document.getElementById('callHours').value],
+                ['Call Rate', document.getElementById('callRate').value],
+                [],
+                ['Benefits'],
+                ['Housing Stipend (Weekly)', document.getElementById('housingStipend').value],
+                ['Meal Stipend (Weekly)', document.getElementById('mealStipend').value],
+                ['Travel Reimbursement', document.getElementById('travelReimbursement').value],
+                ['CME Allowance', document.getElementById('cmeAllowance').value],
+                ['License Reimbursement', document.getElementById('licenseReimbursement').value],
+                [],
+                ['Calculated Results'],
+                ['Regular Pay', document.getElementById('regularPay').textContent],
+                ['Overtime Pay', document.getElementById('overtimePay').textContent],
+                ['Call Pay', document.getElementById('callPay').textContent],
+                ['Gross Taxable Income', document.getElementById('grossTaxableIncome').textContent],
+                ['Total Housing Stipend', document.getElementById('totalHousingStipend').textContent],
+                ['Other Stipends', document.getElementById('otherStipends').textContent],
+                ['Estimated Taxes', document.getElementById('estimatedTaxes').textContent],
+                ['Net Take-Home', document.getElementById('netTakeHome').textContent],
+                ['Total Contract Value', document.getElementById('totalContractValue').textContent],
+                ['True Hourly Rate', document.getElementById('trueHourlyRate').textContent],
+                ['Weekly Gross Pay', document.getElementById('weeklyGrossPay').textContent],
+                ['Annual Equivalent', document.getElementById('annualEquivalent').textContent]
+            ];
+            
+            // Convert data to CSV format
+            const csvContent = data.map(row => 
+                row.map(cell => {
+                    // Escape quotes and wrap in quotes if contains comma
+                    const cellStr = String(cell || '');
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return '"' + cellStr.replace(/"/g, '""') + '"';
+                    }
+                    return cellStr;
+                }).join(',')
+            ).join('\n');
+            
+            // Create and download CSV file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `contract_analysis_${document.getElementById('jobTitle').value.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('📊 CSV file downloaded successfully', 'success');
+        }
 
         function exportAnalysis() {
             // Generate comprehensive contract analysis for PDF export
@@ -1780,13 +1882,16 @@
         // Auto-calculate overtime rate based on regular rate (with negative check)
         document.getElementById('hourlyRate').addEventListener('input', function() {
             const regularRate = parseFloat(this.value) || 0;
+            const overtimeInput = document.getElementById('overtimeRate');
             // Only auto-calculate if rate is positive
             if (regularRate > 0) {
                 const overtimeRate = regularRate * 1.5;
-                document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+                overtimeInput.value = overtimeRate.toFixed(2);
             } else {
                 // Clear overtime rate if regular rate is negative or zero
-                document.getElementById('overtimeRate').value = '';
+                overtimeInput.value = '';
+                // Trigger validation on overtime field to show error
+                validateAndCalculate(overtimeInput);
             }
             validateAndCalculate(this);
         });
