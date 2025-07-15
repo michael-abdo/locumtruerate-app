@@ -668,6 +668,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            opacity: 1;
+            transition: opacity 0.2s ease;
         }
 
         .compose-modal-content {
@@ -678,6 +680,9 @@
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            transform: scale(1);
+            transition: transform 0.2s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         .compose-form {
@@ -3490,6 +3495,11 @@
 
         // Dashboard functionality
         function showNewJobForm() {
+            // Prevent multiple modals from opening
+            if (document.querySelector('.compose-modal')) {
+                return;
+            }
+            
             const modal = document.createElement('div');
             modal.className = 'compose-modal';
             modal.innerHTML = `
@@ -3626,13 +3636,69 @@
                 </div>
             `;
             
+            // Add backdrop click handler
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeJobModal();
+                }
+            });
+            
+            // Add escape key handler
+            const escapeHandler = function(e) {
+                if (e.key === 'Escape') {
+                    closeJobModal();
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+            
+            // Store escape handler for cleanup
+            modal.escapeHandler = escapeHandler;
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+            
+            // Add initial animation
+            modal.style.opacity = '0';
+            const modalContent = modal.querySelector('.compose-modal-content');
+            modalContent.style.transform = 'scale(0.9)';
+            
             document.body.appendChild(modal);
+            
+            // Animate in
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modalContent.style.transform = 'scale(1)';
+            }, 10);
+            
+            // Focus first input for better UX
+            setTimeout(() => {
+                const firstInput = modal.querySelector('input[type="text"]');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 200);
         }
 
         function closeJobModal() {
             const modal = document.querySelector('.compose-modal');
             if (modal) {
-                modal.remove();
+                // Clean up escape key handler
+                if (modal.escapeHandler) {
+                    document.removeEventListener('keydown', modal.escapeHandler);
+                }
+                
+                // Restore body scroll
+                document.body.style.overflow = '';
+                
+                // Remove modal with fade animation
+                modal.style.opacity = '0';
+                const modalContent = modal.querySelector('.compose-modal-content');
+                if (modalContent) {
+                    modalContent.style.transform = 'scale(0.9)';
+                }
+                setTimeout(() => {
+                    modal.remove();
+                }, 200);
             }
         }
 
