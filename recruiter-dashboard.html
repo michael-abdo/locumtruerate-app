@@ -2255,7 +2255,7 @@
                             <div class="action-title">View All Applicants</div>
                             <div class="action-description">Manage candidate applications</div>
                         </div>
-                        <div class="quick-action-card" onclick="scrollToSection('messages-section')">
+                        <div class="quick-action-card" onclick="showComposeMessage()">
                             <div class="action-icon">📧</div>
                             <div class="action-title">Send Message</div>
                             <div class="action-description">Contact clients or candidates</div>
@@ -4506,6 +4506,9 @@
         }
 
         function viewAllApplicants() {
+            // Show notification to confirm the function is being called
+            showNotification('Opening all applicants view...', 'info');
+            
             const modal = document.createElement('div');
             modal.className = 'compose-modal';
             modal.innerHTML = `
@@ -7255,10 +7258,11 @@ Dr. James Wilson`,
 
         function exportApplicantsList() {
             showNotification('Preparing applicants list for export...', 'info');
+            
+            // Call the working export function after a brief delay
             setTimeout(() => {
-                showNotification('Applicants list exported successfully!', 'success');
-                // In a real application, this would trigger a download
-            }, 1500);
+                exportApplicants();
+            }, 800);
         }
 
         function sendBulkMessage() {
@@ -7293,7 +7297,8 @@ Dr. James Wilson`,
             // Simulate API call
             setTimeout(() => {
                 // Update status indicator
-                statusIndicator.className = `status-indicator ${newStatus}`;
+                statusIndicator.classList.remove('new', 'reviewing', 'interviewing', 'shortlisted', 'offered', 'hired', 'rejected', 'withdrawn');
+                statusIndicator.classList.add(newStatus);
                 statusIndicator.textContent = getStatusDisplayText(newStatus);
                 
                 // Update card data attribute
