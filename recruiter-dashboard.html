@@ -40,6 +40,45 @@
             transition: opacity 0.3s ease;
         }
 
+        /* Global focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Specific focus styles for buttons and form elements */
+        button:focus,
+        input:focus,
+        select:focus,
+        textarea:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Modal-specific focus styles */
+        .compose-modal button:focus,
+        .compose-modal input:focus,
+        .compose-modal select:focus,
+        .compose-modal textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Remove default browser outline */
+        *:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* Focus visible for keyboard navigation only */
+        *:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
         /* Navigation */
         .navbar {
             background-color: var(--surface-color);
@@ -770,11 +809,14 @@
             height: 300px;
             background-color: var(--background-color);
             border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-style: italic;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #performance-chart {
+            display: block;
+            background: white;
+            border-radius: 0.75rem;
         }
 
         /* Footer */
@@ -2208,17 +2250,17 @@
                             <div class="action-title">Post New Job</div>
                             <div class="action-description">Create a new job posting</div>
                         </div>
-                        <div class="quick-action-card" onclick="showAllApplicantsModal()">
+                        <div class="quick-action-card" onclick="scrollToSection('applicants-section')">
                             <div class="action-icon">👥</div>
                             <div class="action-title">View All Applicants</div>
                             <div class="action-description">Manage candidate applications</div>
                         </div>
-                        <div class="quick-action-card" onclick="showComposeMessage()">
+                        <div class="quick-action-card" onclick="scrollToSection('messages-section')">
                             <div class="action-icon">📧</div>
                             <div class="action-title">Send Message</div>
                             <div class="action-description">Contact clients or candidates</div>
                         </div>
-                        <div class="quick-action-card" onclick="viewAnalytics()">
+                        <div class="quick-action-card" onclick="scrollToSection('analytics-section')">
                             <div class="action-icon">📊</div>
                             <div class="action-title">View Analytics</div>
                             <div class="action-description">Performance reports & insights</div>
@@ -2247,7 +2289,7 @@
                 </div>
 
                 <!-- Job Listings Management -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" id="jobs-section">
                     <div class="section-header">
                         <h2 class="section-title">Your Job Listings</h2>
                         <div class="section-actions">
@@ -2843,7 +2885,7 @@
                 </div>
 
                 <!-- Recent Applicants -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" id="applicants-section">
                     <div class="section-header">
                         <h2 class="section-title">Recent Applicants</h2>
                         <div class="section-actions">
@@ -3066,7 +3108,7 @@
                 </div>
 
                 <!-- Messaging Center -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" id="messages-section">
                     <div class="section-header">
                         <h2 class="section-title">Message Center</h2>
                         <div class="section-actions">
@@ -3163,7 +3205,7 @@
                 </div>
 
                 <!-- Performance Analytics -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" id="analytics-section">
                     <div class="section-header">
                         <h2 class="section-title">Performance Analytics</h2>
                         <div class="section-actions">
@@ -3491,6 +3533,30 @@
                 
                 showToast('KPIs refreshed successfully!', 'success');
             }, 2000);
+        }
+
+        // Smooth scroll to section
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                // Calculate offset accounting for fixed navbar
+                const navbar = document.querySelector('.navbar');
+                const navbarHeight = navbar ? navbar.offsetHeight : 0;
+                const sectionTop = section.offsetTop - navbarHeight - 20; // Extra 20px padding
+                
+                // Smooth scroll to section
+                window.scrollTo({
+                    top: sectionTop,
+                    behavior: 'smooth'
+                });
+                
+                // Brief highlight animation
+                section.style.transition = 'background-color 0.3s ease';
+                section.style.backgroundColor = 'rgba(37, 99, 235, 0.05)';
+                setTimeout(() => {
+                    section.style.backgroundColor = '';
+                }, 1000);
+            }
         }
 
         // Dashboard functionality
@@ -6276,7 +6342,22 @@ Dr. James Wilson`,
         // Performance Chart System
         function drawPerformanceChart(timeframe = 'month', customOptions = null) {
             const canvas = document.getElementById('performance-chart');
+            if (!canvas) {
+                console.error('Performance chart canvas not found');
+                return;
+            }
+            
             const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get 2D context for performance chart');
+                return;
+            }
+            
+            // Set canvas size based on container
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = Math.max(rect.width || 800, 400);
+            canvas.height = Math.max(rect.height || 300, 250);
             
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -6291,9 +6372,19 @@ Dr. James Wilson`,
             const startX = padding;
             const startY = padding;
             
+            // Make canvas visible and remove any loading states
+            canvas.style.display = 'block';
+            canvas.style.visibility = 'visible';
+            canvas.style.opacity = '1';
+            
             // Draw background
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw border to ensure canvas is visible
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
             
             // Draw grid
             drawGrid(ctx, startX, startY, chartWidth, chartHeight);
@@ -6498,6 +6589,45 @@ Dr. James Wilson`,
                 ctx.fillStyle = '#1e293b';
                 ctx.fillText(label, x + 20, legendY + 4);
             });
+        }
+
+        // Chart timeframe control functions
+        function changeTimeframe(timeframe) {
+            drawPerformanceChart(timeframe);
+        }
+
+        function applyCustomDateRange() {
+            const startDate = document.getElementById('analytics-start-date').value;
+            const endDate = document.getElementById('analytics-end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Start date must be before end date');
+                return;
+            }
+            
+            const customOptions = {
+                customRange: true,
+                startDate: startDate,
+                endDate: endDate
+            };
+            
+            // Determine granularity based on date range
+            const diffTime = Math.abs(new Date(endDate) - new Date(startDate));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let timeframe = 'month';
+            if (diffDays <= 14) {
+                timeframe = 'week';
+            } else if (diffDays > 93) {
+                timeframe = 'quarter';
+            }
+            
+            drawPerformanceChart(timeframe, customOptions);
         }
 
         // Pagination system
@@ -6966,6 +7096,148 @@ Dr. James Wilson`,
             }, 1500);
         }
 
+        function showAllApplicantsModal() {
+            const modal = document.createElement('div');
+            modal.className = 'compose-modal';
+            modal.innerHTML = `
+                <div class="compose-modal-content" style="max-width: 900px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="color: var(--primary-color);">👥 All Applicants</h2>
+                        <button onclick="closeQuickActionModal()" style="
+                            background: none;
+                            border: none;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            color: var(--text-secondary);
+                        ">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <select style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                                <option>All Statuses</option>
+                                <option>New Applicants</option>
+                                <option>Under Review</option>
+                                <option>Interview Scheduled</option>
+                                <option>Rejected</option>
+                            </select>
+                            <select style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                                <option>All Specialties</option>
+                                <option>Emergency Medicine</option>
+                                <option>Anesthesiology</option>
+                                <option>Internal Medicine</option>
+                                <option>General Surgery</option>
+                                <option>Cardiology</option>
+                            </select>
+                            <input type="text" placeholder="Search applicants..." style="
+                                flex: 1;
+                                min-width: 200px;
+                                padding: 0.5rem 1rem;
+                                border: 1px solid var(--border-color);
+                                border-radius: 0.5rem;
+                            ">
+                        </div>
+                    </div>
+                    
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: var(--background-color); position: sticky; top: 0;">
+                                <tr>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">
+                                        <input type="checkbox" style="cursor: pointer;">
+                                    </th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Name</th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Position</th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Experience</th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Status</th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Applied</th>
+                                    <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid var(--border-color);">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-light);">
+                                    <td style="padding: 0.75rem;">
+                                        <input type="checkbox" style="cursor: pointer;">
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">JD</div>
+                                            <span style="font-weight: 500;">Dr. John Doe</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.75rem;">Emergency Medicine</td>
+                                    <td style="padding: 0.75rem;">15 years</td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="padding: 0.25rem 0.75rem; background: #e3f2fd; color: #1976d2; border-radius: 1rem; font-size: 0.875rem;">Under Review</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">2 days ago</td>
+                                    <td style="padding: 0.75rem;">
+                                        <button class="btn-small primary" style="margin-right: 0.5rem;">View</button>
+                                        <button class="btn-small secondary">Contact</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-light);">
+                                    <td style="padding: 0.75rem;">
+                                        <input type="checkbox" style="cursor: pointer;">
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--success-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">SM</div>
+                                            <span style="font-weight: 500;">Dr. Sarah Miller</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.75rem;">Anesthesiology</td>
+                                    <td style="padding: 0.75rem;">12 years</td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="padding: 0.25rem 0.75rem; background: #e8f5e9; color: #388e3c; border-radius: 1rem; font-size: 0.875rem;">Interview Scheduled</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">3 days ago</td>
+                                    <td style="padding: 0.75rem;">
+                                        <button class="btn-small primary" style="margin-right: 0.5rem;">View</button>
+                                        <button class="btn-small secondary">Contact</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-light);">
+                                    <td style="padding: 0.75rem;">
+                                        <input type="checkbox" style="cursor: pointer;">
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--warning-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">RJ</div>
+                                            <span style="font-weight: 500;">Dr. Robert Johnson</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 0.75rem;">Cardiology</td>
+                                    <td style="padding: 0.75rem;">20 years</td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="padding: 0.25rem 0.75rem; background: #fff3e0; color: #f57c00; border-radius: 1rem; font-size: 0.875rem;">New</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">Today</td>
+                                    <td style="padding: 0.75rem;">
+                                        <button class="btn-small primary" style="margin-right: 0.5rem;">View</button>
+                                        <button class="btn-small secondary">Contact</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn secondary" onclick="exportApplicantsList()">Export List</button>
+                            <button class="btn secondary" onclick="sendBulkMessage()">Bulk Message</button>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <span style="color: var(--text-secondary);">Showing 3 of 156 applicants</span>
+                            <button class="btn primary" onclick="loadMoreApplicants()">Load More</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
         function closeQuickActionModal() {
             const modal = document.querySelector('.compose-modal');
             if (modal) {
@@ -6979,6 +7251,32 @@ Dr. James Wilson`,
                 showNotification('Interview invitations sent to 8 candidates!', 'success');
                 closeQuickActionModal();
             }, 2000);
+        }
+
+        function exportApplicantsList() {
+            showNotification('Preparing applicants list for export...', 'info');
+            setTimeout(() => {
+                showNotification('Applicants list exported successfully!', 'success');
+                // In a real application, this would trigger a download
+            }, 1500);
+        }
+
+        function sendBulkMessage() {
+            const selectedCount = document.querySelectorAll('.compose-modal tbody input[type="checkbox"]:checked').length;
+            if (selectedCount === 0) {
+                showNotification('Please select at least one applicant', 'warning');
+                return;
+            }
+            showNotification(`Preparing bulk message for ${selectedCount} applicants...`, 'info');
+            // In a real application, this would open a message composer
+        }
+
+        function loadMoreApplicants() {
+            showNotification('Loading more applicants...', 'info');
+            // In a real application, this would fetch and append more applicants
+            setTimeout(() => {
+                showNotification('Additional applicants loaded', 'success');
+            }, 1000);
         }
 
         // Applicant status management
@@ -7277,12 +7575,62 @@ Dr. James Wilson`,
         function updateFilterResults(visibleCount, totalCount) {
             const filterResults = document.getElementById('filter-results');
             const filterCount = document.getElementById('filter-count');
+            const applicantsGrid = document.getElementById('applicants-grid');
             
-            if (visibleCount < totalCount) {
+            // Check if any filters are active
+            const searchTerm = document.getElementById('applicant-search').value.trim();
+            const specialtyFilter = document.getElementById('specialty-filter').value;
+            const experienceFilter = document.getElementById('experience-filter').value;
+            const ratingFilter = document.getElementById('rating-filter').value;
+            const statusFilter = document.getElementById('status-filter')?.value || '';
+            
+            const hasActiveFilters = searchTerm || specialtyFilter || experienceFilter || ratingFilter || statusFilter;
+            
+            if (hasActiveFilters) {
                 filterResults.style.display = 'block';
-                filterCount.textContent = `${visibleCount} of ${totalCount} applicants shown`;
+                
+                if (visibleCount === 0) {
+                    // Show no results message
+                    filterCount.textContent = `No applicants match your filters`;
+                    filterCount.style.color = 'var(--error-color)';
+                    
+                    // Add a helpful empty state message
+                    if (!document.getElementById('no-results-message')) {
+                        const noResultsMsg = document.createElement('div');
+                        noResultsMsg.id = 'no-results-message';
+                        noResultsMsg.style.cssText = `
+                            text-align: center;
+                            padding: 3rem 2rem;
+                            color: var(--text-secondary);
+                            font-size: 1.1rem;
+                        `;
+                        noResultsMsg.innerHTML = `
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                            <div style="margin-bottom: 0.5rem;">No applicants found</div>
+                            <div style="font-size: 0.9rem;">Try adjusting your search criteria or <a href="#" onclick="clearApplicantFilters(); return false;" style="color: var(--primary-color); text-decoration: underline;">clear all filters</a></div>
+                        `;
+                        applicantsGrid.appendChild(noResultsMsg);
+                    }
+                } else {
+                    // Show normal count
+                    filterCount.textContent = `${visibleCount} of ${totalCount} applicants shown`;
+                    filterCount.style.color = 'var(--text-secondary)';
+                    
+                    // Remove no results message if it exists
+                    const noResultsMsg = document.getElementById('no-results-message');
+                    if (noResultsMsg) {
+                        noResultsMsg.remove();
+                    }
+                }
             } else {
+                // No filters active, hide the filter results
                 filterResults.style.display = 'none';
+                
+                // Remove no results message if it exists
+                const noResultsMsg = document.getElementById('no-results-message');
+                if (noResultsMsg) {
+                    noResultsMsg.remove();
+                }
             }
         }
 
@@ -7471,7 +7819,12 @@ Dr. James Wilson`,
                 
                 // Initialize performance chart
                 if (typeof drawPerformanceChart === 'function') {
-                    drawPerformanceChart('month');
+                    try {
+                        drawPerformanceChart('month');
+                        console.log('Performance chart initialized successfully');
+                    } catch (error) {
+                        console.error('Error initializing performance chart:', error);
+                    }
                 }
                 
                 // Initialize loading states for interactive elements
