@@ -1317,9 +1317,7 @@
             // Always allow saving, but warn if validation issues exist
             const hasValidationErrors = !areAllFieldsValid();
             if (hasValidationErrors) {
-                if (!confirm('Some fields have validation errors. Do you want to save anyway?')) {
-                    return;
-                }
+                showToast('Saving contract with validation errors', 'warning');
             }
             
             const contractData = {
@@ -1360,9 +1358,8 @@
             
             const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
             if (savedContracts.length === 0) {
-                if (confirm('📊 No saved contracts found. Save this contract first to enable comparisons.\n\nWould you like to save this contract now?')) {
-                    saveContract();
-                }
+                showToast('No saved contracts found. Save this contract first to enable comparisons.', 'info');
+                saveContract();
                 return;
             }
             
@@ -1944,9 +1941,7 @@
                     setTimeout(() => {
                         printWindow.print();
                         printWindow.onafterprint = function() {
-                            if (confirm('Close the PDF preview tab?')) {
-                                printWindow.close();
-                            }
+                            printWindow.close();
                         };
                     }, 500);
                     

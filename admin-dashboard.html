@@ -1905,9 +1905,7 @@
         }
 
         function suspendUser(userId) {
-            if (confirm('Are you sure you want to suspend this user?')) {
-                alert(`User ${userId} has been suspended.\n\n🚫 Actions taken:\n• Account access disabled\n• Active listings removed\n• Pending transactions frozen\n• User notified via email\n• Incident logged for review`);
-            }
+            alert(`User ${userId} has been suspended.\n\n🚫 Actions taken:\n• Account access disabled\n• Active listings removed\n• Pending transactions frozen\n• User notified via email\n• Incident logged for review`);
         }
 
         function reactivateUser(userId) {
@@ -1915,9 +1913,7 @@
         }
 
         function reinstateUser(userId) {
-            if (confirm('Reinstate this suspended user?')) {
-                alert(`User ${userId} has been reinstated.\n\n✅ Actions:\n• Suspension lifted\n• Full account access restored\n• Compliance review completed\n• User notified of reinstatement\n• Case closed and logged`);
-            }
+            alert(`User ${userId} has been reinstated.\n\n✅ Actions:\n• Suspension lifted\n• Full account access restored\n• Compliance review completed\n• User notified of reinstatement\n• Case closed and logged`);
         }
 
         function exportUsers() {
@@ -2053,13 +2049,11 @@
         }
 
         function expeditePayment(transactionId) {
-            if (confirm(`Expedite payment for transaction ${transactionId}?`)) {
-                showToast(`Payment ${transactionId} expedited`, 'success');
-                const row = event.target.closest('tr');
-                if (row) {
-                    const statusCell = row.cells[4];
-                    statusCell.innerHTML = '<span class="status-pill approved">Completed</span>';
-                }
+            showToast(`Payment ${transactionId} expedited`, 'success');
+            const row = event.target.closest('tr');
+            if (row) {
+                const statusCell = row.cells[4];
+                statusCell.innerHTML = '<span class="status-pill approved">Completed</span>';
             }
         }
 
@@ -2069,21 +2063,17 @@
         }
 
         function maintenanceMode() {
-            if (confirm('Enable maintenance mode? This will prevent user logins.')) {
-                showToast('Maintenance mode enabled', 'warning');
-                document.querySelector('.section-header button.warning').textContent = 'Exit Maintenance';
-            }
+            showToast('Maintenance mode enabled', 'warning');
+            document.querySelector('.section-header button.warning').textContent = 'Exit Maintenance';
         }
 
         function emergencyShutdown() {
             const code = prompt('Enter emergency shutdown authorization code:');
             if (code === 'EMERGENCY-2025') {
-                if (confirm('⚠️ FINAL WARNING: This will shut down the entire platform. Continue?')) {
-                    showToast('Emergency shutdown initiated...', 'error');
-                    setTimeout(() => {
-                        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#dc3545;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
-                    }, 3000);
-                }
+                showToast('Emergency shutdown initiated...', 'error');
+                setTimeout(() => {
+                    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#dc3545;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
+                }, 3000);
             } else if (code) {
                 showToast('Invalid authorization code', 'error');
             }
@@ -2140,18 +2130,16 @@
         }
 
         function unpublishContent(contentId, type) {
-            if (confirm(`Unpublish this ${type}?`)) {
-                const row = event.target.closest('tr');
-                if (row) {
-                    const statusCell = row.cells[2];
-                    statusCell.innerHTML = '<span class="status-pill pending">Draft</span>';
-                    const actionCell = row.cells[4];
-                    actionCell.innerHTML = `
-                        <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
-                        <button class="btn-small success" onclick="publishContent(${contentId}, '${type}')">Publish</button>
-                    `;
-                    showToast(`${type} unpublished`, 'info');
-                }
+            const row = event.target.closest('tr');
+            if (row) {
+                const statusCell = row.cells[2];
+                statusCell.innerHTML = '<span class="status-pill pending">Draft</span>';
+                const actionCell = row.cells[4];
+                actionCell.innerHTML = `
+                    <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
+                    <button class="btn-small success" onclick="publishContent(${contentId}, '${type}')">Publish</button>
+                `;
+                showToast(`${type} unpublished`, 'info');
             }
         }
 
@@ -2170,13 +2158,11 @@
         }
 
         function blockIP(ip) {
-            if (confirm(`Block IP address ${ip}?`)) {
-                showToast(`IP ${ip} has been blocked`, 'success');
-                event.target.textContent = 'Unblock';
-                event.target.onclick = () => unblockIP(ip);
-                event.target.classList.remove('error');
-                event.target.classList.add('success');
-            }
+            showToast(`IP ${ip} has been blocked`, 'success');
+            event.target.textContent = 'Unblock';
+            event.target.onclick = () => unblockIP(ip);
+            event.target.classList.remove('error');
+            event.target.classList.add('success');
         }
 
         function unblockIP(ip) {
@@ -2343,25 +2329,21 @@
             const isActive = button.textContent.includes('Disable');
             
             if (isActive) {
-                if (confirm('Disable maintenance mode and allow user access?')) {
-                    button.textContent = 'Enable Maintenance Mode';
-                    button.classList.remove('error');
-                    button.classList.add('warning');
-                    showToast('Maintenance mode disabled', 'success');
-                }
+                button.textContent = 'Enable Maintenance Mode';
+                button.classList.remove('error');
+                button.classList.add('warning');
+                showToast('Maintenance mode disabled', 'success');
             } else {
-                if (confirm('Enable maintenance mode? This will prevent user access.')) {
-                    button.textContent = 'Disable Maintenance Mode';
-                    button.classList.remove('warning');
-                    button.classList.add('error');
-                    showToast('Maintenance mode enabled', 'warning');
-                }
+                button.textContent = 'Disable Maintenance Mode';
+                button.classList.remove('warning');
+                button.classList.add('error');
+                showToast('Maintenance mode enabled', 'warning');
             }
         }
 
         function massUserSuspension() {
             const reason = prompt('Enter reason for mass suspension:');
-            if (reason && confirm('This will suspend ALL non-admin users. Continue?')) {
+            if (reason) {
                 showToast('Mass user suspension initiated...', 'warning');
                 
                 // Show progress
@@ -2397,12 +2379,10 @@
         function confirmEmergencyShutdown() {
             const code = prompt('Enter emergency shutdown authorization code:');
             if (code === 'SHUTDOWN-2025') {
-                if (confirm('⚠️ FINAL WARNING: This will shut down the entire platform. Continue?')) {
-                    showToast('Emergency shutdown initiated...', 'error');
-                    setTimeout(() => {
-                        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
-                    }, 3000);
-                }
+                showToast('Emergency shutdown initiated...', 'error');
+                setTimeout(() => {
+                    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
+                }, 3000);
             } else if (code) {
                 showToast('Invalid authorization code', 'error');
             }

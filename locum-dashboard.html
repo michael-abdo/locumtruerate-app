@@ -4046,18 +4046,15 @@ American Board of Internal Medicine</textarea>
         }
 
         function removeFromSaved(jobId) {
-            const confirmed = confirm('Are you sure you want to remove this job from your saved list?');
-            if (confirmed) {
-                const jobCard = document.querySelector(`.job-card[onclick*="${jobId}"]`)?.closest('.job-card');
-                if (jobCard) {
-                    jobCard.style.animation = 'fadeOut 0.3s ease-in-out';
-                    setTimeout(() => {
-                        jobCard.remove();
-                    }, 300);
-                }
-                console.log(`Removed job ${jobId} from saved list`);
-                showToast('Job removed from saved list', 'info');
+            const jobCard = document.querySelector(`.job-card[onclick*="${jobId}"]`)?.closest('.job-card');
+            if (jobCard) {
+                jobCard.style.animation = 'fadeOut 0.3s ease-in-out';
+                setTimeout(() => {
+                    jobCard.remove();
+                }, 300);
             }
+            console.log(`Removed job ${jobId} from saved list`);
+            showToast('Job removed from saved list', 'info');
         }
 
         function findNewJobs() {
@@ -4128,19 +4125,16 @@ American Board of Internal Medicine</textarea>
         }
 
         function withdrawApplication(applicationId) {
-            const confirmed = confirm('Are you sure you want to withdraw this application? This action cannot be undone.');
-            if (confirmed) {
-                console.log(`Withdrawing application ${applicationId}`);
-                showToast('Application withdrawn successfully', 'warning');
-                
-                // Update status to withdrawn
-                const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
-                if (applicationItem) {
-                    const statusPill = applicationItem.querySelector('.application-status-pill');
-                    statusPill.textContent = 'Withdrawn';
-                    statusPill.className = 'application-status-pill rejected';
-                    applicationItem.setAttribute('data-status', 'withdrawn');
-                }
+            console.log(`Withdrawing application ${applicationId}`);
+            showToast('Application withdrawn successfully', 'warning');
+            
+            // Update status to withdrawn
+            const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
+            if (applicationItem) {
+                const statusPill = applicationItem.querySelector('.application-status-pill');
+                statusPill.textContent = 'Withdrawn';
+                statusPill.className = 'application-status-pill rejected';
+                applicationItem.setAttribute('data-status', 'withdrawn');
             }
         }
 
@@ -4150,36 +4144,30 @@ American Board of Internal Medicine</textarea>
         }
 
         function acceptOffer(applicationId) {
-            const confirmed = confirm('Are you sure you want to accept this offer? This will commit you to the position.');
-            if (confirmed) {
-                console.log(`Accepting offer for application ${applicationId}`);
-                showToast('Offer accepted! Contract details will be sent shortly.', 'success');
-                
-                // Update status to accepted
-                const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
-                if (applicationItem) {
-                    const statusPill = applicationItem.querySelector('.application-status-pill');
-                    statusPill.textContent = 'Offer Accepted';
-                    statusPill.className = 'application-status-pill offer';
-                    applicationItem.setAttribute('data-status', 'accepted');
-                }
+            console.log(`Accepting offer for application ${applicationId}`);
+            showToast('Offer accepted! Contract details will be sent shortly.', 'success');
+            
+            // Update status to accepted
+            const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
+            if (applicationItem) {
+                const statusPill = applicationItem.querySelector('.application-status-pill');
+                statusPill.textContent = 'Offer Accepted';
+                statusPill.className = 'application-status-pill offer';
+                applicationItem.setAttribute('data-status', 'accepted');
             }
         }
 
         function declineOffer(applicationId) {
-            const confirmed = confirm('Are you sure you want to decline this offer?');
-            if (confirmed) {
-                console.log(`Declining offer for application ${applicationId}`);
-                showToast('Offer declined. Thank you message sent to employer.', 'info');
-                
-                // Update status to declined
-                const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
-                if (applicationItem) {
-                    const statusPill = applicationItem.querySelector('.application-status-pill');
-                    statusPill.textContent = 'Offer Declined';
-                    statusPill.className = 'application-status-pill rejected';
-                    applicationItem.setAttribute('data-status', 'declined');
-                }
+            console.log(`Declining offer for application ${applicationId}`);
+            showToast('Offer declined. Thank you message sent to employer.', 'info');
+            
+            // Update status to declined
+            const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
+            if (applicationItem) {
+                const statusPill = applicationItem.querySelector('.application-status-pill');
+                statusPill.textContent = 'Offer Declined';
+                statusPill.className = 'application-status-pill rejected';
+                applicationItem.setAttribute('data-status', 'declined');
             }
         }
 
@@ -4501,11 +4489,8 @@ American Board of Internal Medicine</textarea>
         }
 
         function deleteAccount() {
-            const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data, contracts, and history.');
-            if (confirmed) {
-                console.log('Account deletion process initiated');
-                showToast('Account deletion process initiated. You will receive a confirmation email.', 'warning');
-            }
+            console.log('Account deletion process initiated');
+            showToast('Account deletion process initiated. You will receive a confirmation email.', 'warning');
         }
 
         // Payment method management functions
@@ -4522,12 +4507,9 @@ American Board of Internal Medicine</textarea>
         }
 
         function removePaymentMethod(methodId) {
-            const confirmed = confirm('Are you sure you want to remove this payment method?');
-            if (confirmed) {
-                console.log(`Removing payment method: ${methodId}`);
-                showToast('Payment method removed successfully', 'success');
-                // In a real application, this would remove the method from the backend
-            }
+            console.log(`Removing payment method: ${methodId}`);
+            showToast('Payment method removed successfully', 'success');
+            // In a real application, this would remove the method from the backend
         }
 
         function setPrimaryPayment(methodId) {
