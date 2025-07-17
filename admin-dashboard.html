@@ -622,6 +622,411 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* Job Posting Management Styles */
+        .badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pill.pending {
+            background-color: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .status-pill.approved {
+            background-color: #d1fae5;
+            color: #10b981;
+        }
+
+        .status-pill.rejected {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Financial Overview Styles */
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .financial-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .financial-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .financial-value {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .financial-change {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .financial-change.positive {
+            color: var(--success-color);
+        }
+
+        .financial-change.negative {
+            color: var(--error-color);
+        }
+
+        /* System Administration Styles */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .admin-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .admin-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Content Management Styles */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .content-item {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .content-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .content-meta {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Security & Audit Styles */
+        .security-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .security-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .security-event {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .event-type.warning {
+            background-color: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .event-type.danger {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+
+        .event-user {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .event-time {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .permissions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: var(--background-color);
+            border-radius: 0.5rem;
+        }
+
+        /* Support Management Styles */
+        .support-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .support-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .priority {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .priority.high {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Data Management Styles */
+        .data-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .data-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        /* Integration & Compliance Styles */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .integration-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .integration-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .integration-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--background-color);
+            border-radius: 0.5rem;
+        }
+
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background-color: #d1fae5;
+            color: #10b981;
+        }
+
+        .status.inactive {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status.compliant {
+            background-color: #d1fae5;
+            color: #10b981;
+        }
+
+        .status.warning {
+            background-color: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .compliance-status {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .compliance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+        }
+
+        /* Emergency Controls Styles */
+        .danger-zone {
+            border: 2px solid var(--error-color);
+            background-color: #fef2f2;
+        }
+
+        .danger-zone .section-header {
+            background-color: #fee2e2;
+            margin: -2rem -2rem 2rem -2rem;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--error-color);
+        }
+
+        .warning-text {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .emergency-card {
+            background: white;
+            border: 1px solid #fecaca;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .emergency-card h4 {
+            color: var(--error-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .emergency-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Additional Button Styles */
+        .btn-small.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-small.success:hover {
+            background-color: #059669;
+        }
+
+        .btn-small.danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-small.danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-small.warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-small.warning:hover {
+            background-color: #d97706;
+        }
+
+        .btn.warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn.warning:hover {
+            background-color: #d97706;
+        }
+
+        .btn.danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn.danger:hover {
+            background-color: #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -968,6 +1373,468 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Job Posting Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Job Posting Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterJobs('all')">All Jobs</button>
+                            <button class="btn-small secondary" onclick="filterJobs('pending')">Pending</button>
+                            <button class="btn-small secondary" onclick="filterJobs('approved')">Approved</button>
+                            <button class="btn-small primary" onclick="exportJobData()">Export</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Recruiter</th>
+                                    <th>Posted Date</th>
+                                    <th>Applications</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="jobs-table-body">
+                                <tr data-status="pending" data-job-id="1">
+                                    <td>Emergency Medicine Physician</td>
+                                    <td>Sarah Johnson</td>
+                                    <td>Jan 15, 2025</td>
+                                    <td><span class="badge">12</span></td>
+                                    <td><span class="status-pill pending">Pending</span></td>
+                                    <td>
+                                        <button class="btn-small success" onclick="approveJob(1)">Approve</button>
+                                        <button class="btn-small danger" onclick="rejectJob(1)">Reject</button>
+                                        <button class="btn-small secondary" onclick="viewJobDetails(1)">View</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="approved" data-job-id="2">
+                                    <td>Internal Medicine Hospitalist</td>
+                                    <td>Michael Chen</td>
+                                    <td>Jan 14, 2025</td>
+                                    <td><span class="badge">28</span></td>
+                                    <td><span class="status-pill approved">Approved</span></td>
+                                    <td>
+                                        <button class="btn-small warning" onclick="suspendJob(2)">Suspend</button>
+                                        <button class="btn-small secondary" onclick="viewJobDetails(2)">View</button>
+                                        <button class="btn-small secondary" onclick="editJob(2)">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="pending" data-job-id="3">
+                                    <td>Pediatric Surgeon - Urgent</td>
+                                    <td>Jennifer Davis</td>
+                                    <td>Jan 16, 2025</td>
+                                    <td><span class="badge">5</span></td>
+                                    <td><span class="status-pill pending">Pending</span></td>
+                                    <td>
+                                        <button class="btn-small success" onclick="approveJob(3)">Approve</button>
+                                        <button class="btn-small danger" onclick="rejectJob(3)">Reject</button>
+                                        <button class="btn-small secondary" onclick="viewJobDetails(3)">View</button>
+                                    </td>
+                                </tr>
+                                <tr data-status="rejected">
+                                    <td>General Practitioner</td>
+                                    <td>Robert Martinez</td>
+                                    <td>Jan 13, 2025</td>
+                                    <td><span class="badge">0</span></td>
+                                    <td><span class="status-pill rejected">Rejected</span></td>
+                                    <td>
+                                        <button class="btn-small secondary" onclick="viewRejectionReason(4)">Reason</button>
+                                        <button class="btn-small secondary" onclick="viewJobDetails(4)">View</button>
+                                        <button class="btn-small primary" onclick="resubmitJob(4)">Resubmit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Financial Overview -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Financial Overview</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterFinancial('today')">Today</button>
+                            <button class="btn-small secondary" onclick="filterFinancial('week')">This Week</button>
+                            <button class="btn-small secondary" onclick="filterFinancial('month')">This Month</button>
+                            <button class="btn-small primary" onclick="exportFinancialReport()">Export Report</button>
+                        </div>
+                    </div>
+
+                    <div class="financial-grid">
+                        <div class="financial-card">
+                            <div class="financial-label">Total Revenue</div>
+                            <div class="financial-value">$847,325</div>
+                            <div class="financial-change positive">↗ +15.2% vs last month</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Platform Commissions</div>
+                            <div class="financial-value">$42,366</div>
+                            <div class="financial-change positive">↗ +8.7% vs last month</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Pending Payments</div>
+                            <div class="financial-value">$125,840</div>
+                            <div class="financial-change">Processing: 38 transactions</div>
+                        </div>
+                        <div class="financial-card">
+                            <div class="financial-label">Refunds/Disputes</div>
+                            <div class="financial-value">$3,240</div>
+                            <div class="financial-change negative">↘ 2 active disputes</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h4>Recent Transactions</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#TRX-2025-0142</td>
+                                    <td>Dr. Emily Chen</td>
+                                    <td>Commission</td>
+                                    <td>$1,250.00</td>
+                                    <td><span class="status-pill approved">Completed</span></td>
+                                    <td>Jan 16, 2025</td>
+                                    <td>
+                                        <button class="btn-small secondary" onclick="viewTransaction('TRX-2025-0142')">View</button>
+                                        <button class="btn-small secondary" onclick="downloadInvoice('TRX-2025-0142')">Invoice</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#TRX-2025-0141</td>
+                                    <td>RecruiterPro LLC</td>
+                                    <td>Subscription</td>
+                                    <td>$499.00</td>
+                                    <td><span class="status-pill pending">Processing</span></td>
+                                    <td>Jan 16, 2025</td>
+                                    <td>
+                                        <button class="btn-small secondary" onclick="viewTransaction('TRX-2025-0141')">View</button>
+                                        <button class="btn-small warning" onclick="expeditePayment('TRX-2025-0141')">Expedite</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- System Administration -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">System Administration</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="showSettings()">Settings</button>
+                            <button class="btn-small warning" onclick="maintenanceMode()">Maintenance Mode</button>
+                            <button class="btn-small danger" onclick="emergencyShutdown()">Emergency Stop</button>
+                        </div>
+                    </div>
+
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h4>Notification Management</h4>
+                            <p>Configure email templates and system notifications</p>
+                            <button class="btn secondary" onclick="manageNotifications()">Manage Templates</button>
+                        </div>
+                        <div class="admin-card">
+                            <h4>Backup & Restore</h4>
+                            <p>Automated backups: Daily at 2:00 AM EST</p>
+                            <button class="btn secondary" onclick="manualBackup()">Backup Now</button>
+                            <button class="btn secondary" onclick="restoreBackup()">Restore</button>
+                        </div>
+                        <div class="admin-card">
+                            <h4>System Maintenance</h4>
+                            <p>Schedule maintenance windows and updates</p>
+                            <button class="btn secondary" onclick="scheduleMaintenance()">Schedule</button>
+                        </div>
+                        <div class="admin-card">
+                            <h4>Platform Settings</h4>
+                            <p>Configure platform-wide settings and features</p>
+                            <button class="btn secondary" onclick="platformSettings()">Configure</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Content Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="viewContent('blog')">Blog</button>
+                            <button class="btn-small secondary" onclick="viewContent('news')">News</button>
+                            <button class="btn-small secondary" onclick="viewContent('faq')">FAQ</button>
+                            <button class="btn-small primary" onclick="createContent()">Create New</button>
+                        </div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="content-item">
+                            <h4>Latest Blog Post</h4>
+                            <p class="content-title">Understanding Locum Tenens Contracts</p>
+                            <p class="content-meta">Published: Jan 14, 2025 | Views: 1,234</p>
+                            <div class="content-actions">
+                                <button class="btn-small secondary" onclick="editContent('blog-1')">Edit</button>
+                                <button class="btn-small secondary" onclick="viewContent('blog-1')">View</button>
+                                <button class="btn-small danger" onclick="unpublishContent('blog-1')">Unpublish</button>
+                            </div>
+                        </div>
+                        <div class="content-item">
+                            <h4>Site Announcement</h4>
+                            <p class="content-title">New Features Released - January 2025</p>
+                            <p class="content-meta">Active until: Jan 31, 2025</p>
+                            <div class="content-actions">
+                                <button class="btn-small secondary" onclick="editContent('announcement-1')">Edit</button>
+                                <button class="btn-small warning" onclick="extendContent('announcement-1')">Extend</button>
+                                <button class="btn-small danger" onclick="removeContent('announcement-1')">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security & Audit -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Security & Audit</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="viewLogs('login')">Login Attempts</button>
+                            <button class="btn-small secondary" onclick="viewLogs('security')">Security Events</button>
+                            <button class="btn-small secondary" onclick="viewLogs('audit')">Audit Trail</button>
+                            <button class="btn-small primary" onclick="exportSecurityReport()">Export Report</button>
+                        </div>
+                    </div>
+
+                    <div class="security-overview">
+                        <div class="security-card">
+                            <h4>Recent Security Events</h4>
+                            <div class="security-event">
+                                <span class="event-type warning">Failed Login</span>
+                                <span class="event-user">john.doe@email.com</span>
+                                <span class="event-time">5 minutes ago</span>
+                                <button class="btn-small secondary" onclick="investigateEvent(1)">Investigate</button>
+                            </div>
+                            <div class="security-event">
+                                <span class="event-type danger">Suspicious Activity</span>
+                                <span class="event-user">IP: 192.168.1.100</span>
+                                <span class="event-time">12 minutes ago</span>
+                                <button class="btn-small danger" onclick="blockIP('192.168.1.100')">Block IP</button>
+                            </div>
+                        </div>
+
+                        <div class="security-card">
+                            <h4>User Permissions</h4>
+                            <div class="permissions-grid">
+                                <div class="permission-item">
+                                    <span>Admin Users: 5</span>
+                                    <button class="btn-small secondary" onclick="manageAdmins()">Manage</button>
+                                </div>
+                                <div class="permission-item">
+                                    <span>Moderators: 12</span>
+                                    <button class="btn-small secondary" onclick="manageModerators()">Manage</button>
+                                </div>
+                                <div class="permission-item">
+                                    <span>Support Staff: 8</span>
+                                    <button class="btn-small secondary" onclick="manageSupport()">Manage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Support Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="filterTickets('open')">Open</button>
+                            <button class="btn-small secondary" onclick="filterTickets('pending')">Pending</button>
+                            <button class="btn-small secondary" onclick="filterTickets('resolved')">Resolved</button>
+                            <button class="btn-small primary" onclick="createTicket()">Create Ticket</button>
+                        </div>
+                    </div>
+
+                    <div class="support-overview">
+                        <div class="support-stats">
+                            <div class="stat-card">
+                                <div class="stat-value">24</div>
+                                <div class="stat-label">Open Tickets</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">3.2h</div>
+                                <div class="stat-label">Avg Response Time</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">92%</div>
+                                <div class="stat-label">Satisfaction Rate</div>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <h4>Recent Support Tickets</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>User</th>
+                                        <th>Issue</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#SUP-2025-0089</td>
+                                        <td>Dr. Sarah Miller</td>
+                                        <td>Payment not received</td>
+                                        <td><span class="priority high">High</span></td>
+                                        <td><span class="status-pill pending">In Progress</span></td>
+                                        <td>
+                                            <button class="btn-small secondary" onclick="viewTicket('SUP-2025-0089')">View</button>
+                                            <button class="btn-small warning" onclick="escalateTicket('SUP-2025-0089')">Escalate</button>
+                                            <button class="btn-small primary" onclick="messageUser('SUP-2025-0089')">Message</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Data Management</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="dataImport()">Import Data</button>
+                            <button class="btn-small secondary" onclick="dataExport()">Export Data</button>
+                            <button class="btn-small warning" onclick="dataBackup()">Backup</button>
+                            <button class="btn-small danger" onclick="dataRestore()">Restore</button>
+                        </div>
+                    </div>
+
+                    <div class="data-management-grid">
+                        <div class="data-card">
+                            <h4>Import Tools</h4>
+                            <p>Bulk import users, jobs, and data</p>
+                            <input type="file" id="importFile" accept=".csv,.xlsx" style="display:none;" onchange="handleImport(event)">
+                            <button class="btn secondary" onclick="document.getElementById('importFile').click()">Select File</button>
+                        </div>
+                        <div class="data-card">
+                            <h4>Export Options</h4>
+                            <p>Export platform data in various formats</p>
+                            <select class="select-input" id="exportFormat">
+                                <option value="csv">CSV</option>
+                                <option value="xlsx">Excel</option>
+                                <option value="json">JSON</option>
+                            </select>
+                            <button class="btn secondary" onclick="performExport()">Export</button>
+                        </div>
+                        <div class="data-card">
+                            <h4>Backup Status</h4>
+                            <p>Last backup: Jan 16, 2025 02:00 AM</p>
+                            <p>Next scheduled: Jan 17, 2025 02:00 AM</p>
+                            <button class="btn secondary" onclick="viewBackupHistory()">View History</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integration & Compliance -->
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Integration & Compliance</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="viewIntegrations()">Integrations</button>
+                            <button class="btn-small secondary" onclick="viewCompliance()">Compliance</button>
+                            <button class="btn-small primary" onclick="runComplianceCheck()">Run Check</button>
+                        </div>
+                    </div>
+
+                    <div class="integration-grid">
+                        <div class="integration-card">
+                            <h4>Third-Party Integrations</h4>
+                            <div class="integration-list">
+                                <div class="integration-item">
+                                    <span>Stripe Payment Gateway</span>
+                                    <span class="status active">Active</span>
+                                    <button class="btn-small secondary" onclick="configureIntegration('stripe')">Configure</button>
+                                </div>
+                                <div class="integration-item">
+                                    <span>SendGrid Email Service</span>
+                                    <span class="status active">Active</span>
+                                    <button class="btn-small secondary" onclick="configureIntegration('sendgrid')">Configure</button>
+                                </div>
+                                <div class="integration-item">
+                                    <span>Google Analytics</span>
+                                    <span class="status inactive">Inactive</span>
+                                    <button class="btn-small primary" onclick="enableIntegration('analytics')">Enable</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="integration-card">
+                            <h4>HIPAA Compliance</h4>
+                            <div class="compliance-status">
+                                <div class="compliance-item">
+                                    <span>Data Encryption</span>
+                                    <span class="status compliant">Compliant</span>
+                                </div>
+                                <div class="compliance-item">
+                                    <span>Access Controls</span>
+                                    <span class="status compliant">Compliant</span>
+                                </div>
+                                <div class="compliance-item">
+                                    <span>Audit Logging</span>
+                                    <span class="status warning">Review Needed</span>
+                                </div>
+                            </div>
+                            <button class="btn secondary" onclick="viewComplianceReport()">Full Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Controls -->
+                <div class="dashboard-section danger-zone">
+                    <div class="section-header">
+                        <h2 class="section-title">Emergency Controls</h2>
+                        <div class="section-actions">
+                            <span class="warning-text">⚠️ Use with extreme caution</span>
+                        </div>
+                    </div>
+
+                    <div class="emergency-grid">
+                        <div class="emergency-card">
+                            <h4>Platform Maintenance</h4>
+                            <p>Enable maintenance mode for all users</p>
+                            <button class="btn warning" onclick="toggleMaintenanceMode()">Enable Maintenance</button>
+                        </div>
+                        <div class="emergency-card">
+                            <h4>Mass User Suspension</h4>
+                            <p>Suspend multiple user accounts</p>
+                            <button class="btn danger" onclick="massUserSuspension()">Suspend Users</button>
+                        </div>
+                        <div class="emergency-card">
+                            <h4>Emergency Shutdown</h4>
+                            <p>Immediately stop all platform operations</p>
+                            <button class="btn danger" onclick="confirmEmergencyShutdown()">Emergency Stop</button>
+                        </div>
+                        <div class="emergency-card">
+                            <h4>Data Purge</h4>
+                            <p>Remove sensitive data in emergency</p>
+                            <button class="btn danger" onclick="emergencyDataPurge()">Purge Data</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -1078,6 +1945,468 @@
             console.log('Admin dashboard loaded');
             updateDashboard();
         });
+
+        // Job Posting Management Functions
+        function approveJob(jobId) {
+            const row = document.querySelector(`tr[data-job-id="${jobId}"]`);
+            if (row) {
+                row.dataset.status = 'active';
+                const statusCell = row.cells[5];
+                statusCell.innerHTML = '<span class="status-pill success">Active</span>';
+                const actionCell = row.cells[6];
+                actionCell.innerHTML = '<button class="btn-small" onclick="viewJobDetails(' + jobId + ')">View</button>';
+                showToast(`Job posting #${jobId} approved successfully`, 'success');
+            }
+        }
+
+        function rejectJob(jobId) {
+            const row = document.querySelector(`tr[data-job-id="${jobId}"]`);
+            if (row) {
+                row.dataset.status = 'rejected';
+                const statusCell = row.cells[5];
+                statusCell.innerHTML = '<span class="status-pill error">Rejected</span>';
+                const actionCell = row.cells[6];
+                actionCell.innerHTML = '<button class="btn-small" onclick="viewJobDetails(' + jobId + ')">View</button>';
+                showToast(`Job posting #${jobId} rejected`, 'error');
+            }
+        }
+
+        function viewJobDetails(jobId) {
+            showToast(`Opening job details for posting #${jobId}`, 'info');
+            // In real app, would open modal or navigate to details page
+        }
+
+        function filterJobs() {
+            const filterValue = document.querySelector('.filter-group select')?.value || 'all';
+            const rows = document.querySelectorAll('.data-table tr[data-job-id]');
+            
+            rows.forEach(row => {
+                if (filterValue === 'all' || row.dataset.status === filterValue) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Financial Overview Functions
+        function filterFinancial(period) {
+            showToast(`Filtering financial data: ${period}`, 'info');
+            
+            // Update summary cards with filtered data
+            const revenue = period === 'today' ? 12500 : period === 'week' ? 87500 : 847325;
+            const commissions = period === 'today' ? 625 : period === 'week' ? 4375 : 42366;
+            const pending = period === 'today' ? 3500 : period === 'week' ? 24500 : 125840;
+            const refunds = period === 'today' ? 0 : period === 'week' ? 850 : 3240;
+            
+            document.querySelector('.financial-card:nth-child(1) .financial-value').textContent = '$' + revenue.toLocaleString();
+            document.querySelector('.financial-card:nth-child(2) .financial-value').textContent = '$' + commissions.toLocaleString();
+            document.querySelector('.financial-card:nth-child(3) .financial-value').textContent = '$' + pending.toLocaleString();
+            document.querySelector('.financial-card:nth-child(4) .financial-value').textContent = '$' + refunds.toLocaleString();
+        }
+
+        function exportFinancialReport() {
+            showToast('Generating financial report...', 'info');
+            setTimeout(() => {
+                const report = 'Financial Report\n' +
+                    '================\n' +
+                    'Period: Last 30 days\n' +
+                    'Total Revenue: $847,325\n' +
+                    'Platform Commissions: $42,366\n' +
+                    'Pending Payments: $125,840\n' +
+                    'Refunds/Disputes: $3,240\n' +
+                    'Total Transactions: 1,847\n\n' +
+                    'Top Revenue Sources:\n' +
+                    '- Direct Placements: $512,840\n' +
+                    '- Subscription Fees: $187,325\n' +
+                    '- Premium Listings: $147,160\n';
+                
+                const blob = new Blob([report], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `financial_report_${new Date().toISOString().split('T')[0]}.txt`;
+                a.click();
+                showToast('Financial report downloaded', 'success');
+            }, 1500);
+        }
+
+        function viewTransaction(transactionId) {
+            showToast(`Opening transaction details for #${transactionId}`, 'info');
+        }
+
+        function downloadInvoice(transactionId) {
+            showToast(`Downloading invoice for transaction #${transactionId}`, 'info');
+            setTimeout(() => {
+                const invoice = `Invoice #${transactionId}\n` +
+                    '========================\n' +
+                    `Date: ${new Date().toLocaleDateString()}\n` +
+                    `Transaction: ${transactionId}\n` +
+                    'Amount: See transaction details\n' +
+                    'Status: Completed\n';
+                
+                const blob = new Blob([invoice], { type: 'text/plain' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `invoice_${transactionId}.txt`;
+                a.click();
+            }, 1000);
+        }
+
+        function expeditePayment(transactionId) {
+            if (confirm(`Expedite payment for transaction ${transactionId}?`)) {
+                showToast(`Payment ${transactionId} expedited`, 'success');
+                const row = event.target.closest('tr');
+                if (row) {
+                    const statusCell = row.cells[4];
+                    statusCell.innerHTML = '<span class="status-pill approved">Completed</span>';
+                }
+            }
+        }
+
+        // System Administration Functions
+        function showSettings() {
+            showToast('Opening system settings', 'info');
+        }
+
+        function maintenanceMode() {
+            if (confirm('Enable maintenance mode? This will prevent user logins.')) {
+                showToast('Maintenance mode enabled', 'warning');
+                document.querySelector('.section-header button.warning').textContent = 'Exit Maintenance';
+            }
+        }
+
+        function emergencyShutdown() {
+            const code = prompt('Enter emergency shutdown authorization code:');
+            if (code === 'EMERGENCY-2025') {
+                if (confirm('⚠️ FINAL WARNING: This will shut down the entire platform. Continue?')) {
+                    showToast('Emergency shutdown initiated...', 'error');
+                    setTimeout(() => {
+                        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#dc3545;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
+                    }, 3000);
+                }
+            } else if (code) {
+                showToast('Invalid authorization code', 'error');
+            }
+        }
+
+        function manageNotifications() {
+            showToast('Opening notification management panel', 'info');
+        }
+
+        function manualBackup() {
+            showToast('Initiating manual backup...', 'info');
+            setTimeout(() => {
+                showToast('Backup completed successfully', 'success');
+                const backupTime = document.querySelector('.admin-card:nth-child(2) p');
+                if (backupTime) {
+                    const now = new Date().toLocaleString();
+                    backupTime.innerHTML = `Last backup: <strong>${now}</strong>`;
+                }
+            }, 3000);
+        }
+
+        function scheduleMaintenance() {
+            const input = prompt('Schedule maintenance window (e.g., "2025-02-01 02:00 AM"):');
+            if (input) {
+                showToast(`Maintenance scheduled for ${input}`, 'success');
+                const maintenanceInfo = document.querySelector('.admin-card:nth-child(3) p');
+                if (maintenanceInfo) {
+                    maintenanceInfo.innerHTML = `Next window: <strong>${input}</strong>`;
+                }
+            }
+        }
+
+        // Content Management Functions
+        function createContent() {
+            showToast('Opening content creation form', 'info');
+        }
+
+        function editContent(contentId, type) {
+            showToast(`Editing ${type} #${contentId}`, 'info');
+        }
+
+        function publishContent(contentId, type) {
+            const row = event.target.closest('tr');
+            if (row) {
+                const statusCell = row.cells[2];
+                statusCell.innerHTML = '<span class="status-pill success">Published</span>';
+                const actionCell = row.cells[4];
+                actionCell.innerHTML = `
+                    <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
+                    <button class="btn-small warning" onclick="unpublishContent(${contentId}, '${type}')">Unpublish</button>
+                `;
+                showToast(`${type} published successfully`, 'success');
+            }
+        }
+
+        function unpublishContent(contentId, type) {
+            if (confirm(`Unpublish this ${type}?`)) {
+                const row = event.target.closest('tr');
+                if (row) {
+                    const statusCell = row.cells[2];
+                    statusCell.innerHTML = '<span class="status-pill pending">Draft</span>';
+                    const actionCell = row.cells[4];
+                    actionCell.innerHTML = `
+                        <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
+                        <button class="btn-small success" onclick="publishContent(${contentId}, '${type}')">Publish</button>
+                    `;
+                    showToast(`${type} unpublished`, 'info');
+                }
+            }
+        }
+
+        function filterContent() {
+            const filterValue = document.querySelector('.content-section select')?.value || 'all';
+            showToast(`Filtering content: ${filterValue}`, 'info');
+        }
+
+        // Security & Audit Functions
+        function viewLogs() {
+            showToast('Opening detailed audit logs', 'info');
+        }
+
+        function investigateEvent(eventId) {
+            showToast(`Investigating security event #${eventId}`, 'info');
+        }
+
+        function blockIP(ip) {
+            if (confirm(`Block IP address ${ip}?`)) {
+                showToast(`IP ${ip} has been blocked`, 'success');
+                event.target.textContent = 'Unblock';
+                event.target.onclick = () => unblockIP(ip);
+                event.target.classList.remove('error');
+                event.target.classList.add('success');
+            }
+        }
+
+        function unblockIP(ip) {
+            showToast(`IP ${ip} has been unblocked`, 'success');
+            event.target.textContent = 'Block';
+            event.target.onclick = () => blockIP(ip);
+            event.target.classList.remove('success');
+            event.target.classList.add('error');
+        }
+
+        function manageAdmins() {
+            showToast('Opening admin role management', 'info');
+        }
+
+        // Support Management Functions
+        function filterTickets() {
+            const status = document.querySelector('.support-section select:nth-child(1)')?.value || 'all';
+            const priority = document.querySelector('.support-section select:nth-child(2)')?.value || 'all';
+            showToast(`Filtering tickets: ${status}, ${priority}`, 'info');
+            
+            const tickets = document.querySelectorAll('.support-table tbody tr');
+            tickets.forEach(ticket => {
+                const ticketStatus = ticket.cells[3]?.textContent.toLowerCase();
+                const ticketPriority = ticket.cells[2]?.textContent.toLowerCase();
+                
+                const statusMatch = status === 'all' || ticketStatus.includes(status);
+                const priorityMatch = priority === 'all' || ticketPriority.includes(priority);
+                
+                ticket.style.display = statusMatch && priorityMatch ? '' : 'none';
+            });
+        }
+
+        function viewTicket(ticketId) {
+            showToast(`Opening ticket #${ticketId}`, 'info');
+        }
+
+        function escalateTicket(ticketId) {
+            const row = event.target.closest('tr');
+            if (row) {
+                const priorityCell = row.cells[2];
+                priorityCell.innerHTML = '<span class="priority-high">High</span>';
+                showToast(`Ticket #${ticketId} escalated to high priority`, 'success');
+                event.target.disabled = true;
+                event.target.textContent = 'Escalated';
+            }
+        }
+
+        function messageUser(userId) {
+            const message = prompt('Enter message for user:');
+            if (message) {
+                showToast(`Message sent to user #${userId}`, 'success');
+            }
+        }
+
+        // Data Management Functions
+        function dataImport() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.json,.xml';
+            input.onchange = handleImport;
+            input.click();
+        }
+
+        function dataExport() {
+            const format = document.querySelector('.data-section select')?.value || 'csv';
+            showToast(`Exporting data in ${format.toUpperCase()} format...`, 'info');
+            setTimeout(() => {
+                const data = format === 'json' ? 
+                    JSON.stringify({
+                        users: { total: 5432, active: 4821, suspended: 611 },
+                        jobs: { total: 876, active: 432, filled: 444 },
+                        applications: { total: 2341, pending: 892, approved: 1449 }
+                    }, null, 2) :
+                    'Type,Total,Active,Other\nUsers,5432,4821,611\nJobs,876,432,444\nApplications,2341,892,1449';
+                
+                const blob = new Blob([data], { 
+                    type: format === 'json' ? 'application/json' : 'text/csv' 
+                });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `platform_export_${new Date().toISOString().split('T')[0]}.${format}`;
+                a.click();
+                showToast('Data export completed', 'success');
+            }, 2000);
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                showToast(`Importing ${file.name}...`, 'info');
+                
+                // Show progress
+                const progressContainer = document.createElement('div');
+                progressContainer.style.cssText = 'position:fixed;top:80px;right:20px;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:9999';
+                progressContainer.innerHTML = `
+                    <div>Importing data...</div>
+                    <div style="width:200px;height:4px;background:#e0e0e0;border-radius:2px;margin-top:10px;">
+                        <div id="import-progress" style="width:0%;height:100%;background:#4CAF50;border-radius:2px;transition:width 0.3s;"></div>
+                    </div>
+                `;
+                document.body.appendChild(progressContainer);
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 20;
+                    document.getElementById('import-progress').style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressContainer.remove();
+                            showToast(`Successfully imported ${file.name}`, 'success');
+                        }, 500);
+                    }
+                }, 400);
+            }
+        }
+
+        // Integration & Compliance Functions
+        function configureIntegration(integration) {
+            showToast(`Opening ${integration} configuration`, 'info');
+        }
+
+        function runComplianceCheck() {
+            showToast('Running compliance check...', 'info');
+            const progressBar = document.querySelector('.compliance-check .progress-fill');
+            const statusText = document.querySelector('.compliance-status');
+            let progress = 0;
+            
+            const checks = [
+                'Checking HIPAA compliance...',
+                'Verifying data encryption...',
+                'Validating access controls...',
+                'Reviewing audit logs...',
+                'Checking backup integrity...'
+            ];
+            
+            let checkIndex = 0;
+            const interval = setInterval(() => {
+                progress += 20;
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+                
+                if (statusText && checkIndex < checks.length) {
+                    statusText.textContent = checks[checkIndex];
+                    checkIndex++;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    if (statusText) {
+                        statusText.textContent = '✓ All systems compliant';
+                        statusText.style.color = '#4CAF50';
+                    }
+                    showToast('Compliance check completed - All systems compliant', 'success');
+                }
+            }, 800);
+        }
+
+        // Emergency Functions
+        function toggleMaintenanceMode() {
+            const button = event.target;
+            const isActive = button.textContent.includes('Disable');
+            
+            if (isActive) {
+                if (confirm('Disable maintenance mode and allow user access?')) {
+                    button.textContent = 'Enable Maintenance Mode';
+                    button.classList.remove('error');
+                    button.classList.add('warning');
+                    showToast('Maintenance mode disabled', 'success');
+                }
+            } else {
+                if (confirm('Enable maintenance mode? This will prevent user access.')) {
+                    button.textContent = 'Disable Maintenance Mode';
+                    button.classList.remove('warning');
+                    button.classList.add('error');
+                    showToast('Maintenance mode enabled', 'warning');
+                }
+            }
+        }
+
+        function massUserSuspension() {
+            const reason = prompt('Enter reason for mass suspension:');
+            if (reason && confirm('This will suspend ALL non-admin users. Continue?')) {
+                showToast('Mass user suspension initiated...', 'warning');
+                
+                // Show progress
+                const progressContainer = document.createElement('div');
+                progressContainer.style.cssText = 'position:fixed;top:80px;right:20px;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);z-index:9999';
+                progressContainer.innerHTML = `
+                    <div>Suspending users...</div>
+                    <div>0 / 5432 users processed</div>
+                `;
+                document.body.appendChild(progressContainer);
+                
+                let processed = 0;
+                const interval = setInterval(() => {
+                    processed += Math.floor(Math.random() * 500) + 200;
+                    if (processed > 5432) processed = 5432;
+                    
+                    progressContainer.innerHTML = `
+                        <div>Suspending users...</div>
+                        <div>${processed} / 5432 users processed</div>
+                    `;
+                    
+                    if (processed >= 5432) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressContainer.remove();
+                            showToast('All users suspended. Notification emails sent.', 'success');
+                        }, 500);
+                    }
+                }, 200);
+            }
+        }
+
+        function confirmEmergencyShutdown() {
+            const code = prompt('Enter emergency shutdown authorization code:');
+            if (code === 'SHUTDOWN-2025') {
+                if (confirm('⚠️ FINAL WARNING: This will shut down the entire platform. Continue?')) {
+                    showToast('Emergency shutdown initiated...', 'error');
+                    setTimeout(() => {
+                        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
+                    }, 3000);
+                }
+            } else if (code) {
+                showToast('Invalid authorization code', 'error');
+            }
+        }
     </script>
 
     <!-- Floating Logger Component -->
