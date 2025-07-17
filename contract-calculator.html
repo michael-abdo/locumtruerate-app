@@ -904,6 +904,7 @@
                                 <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
                                 <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
+                                <button class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
                                 <button class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
                                 <button class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
                                 <button class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
@@ -1159,13 +1160,15 @@
             if (compareBtn) compareBtn.disabled = !isValid;
             if (findJobsBtn) findJobsBtn.disabled = !isValid;
             
-            // Export, Email buttons enabled if we have calculated results
+            // Export, Print, Email buttons enabled if we have calculated results
             const exportBtn = document.querySelector('.btn-secondary[onclick="exportAnalysis()"]');
             const exportCSVBtn = document.querySelector('.btn-secondary[onclick="exportCSV()"]');
+            const printBtn = document.querySelector('.btn-secondary[onclick="printResults()"]');
             const emailBtn = document.querySelector('.btn-secondary[onclick="emailResults()"]');
             
             if (exportBtn) exportBtn.disabled = !hasCalculatedResults;
             if (exportCSVBtn) exportCSVBtn.disabled = !hasCalculatedResults;
+            if (printBtn) printBtn.disabled = !hasCalculatedResults;
             if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
@@ -1666,6 +1669,135 @@
                     showNotification('⚠️ Pop-ups blocked. Printing current page...', 'info');
                     setTimeout(printPage, 500);
                 }
+            } catch (error) {
+                console.error('Print error:', error);
+                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+            }
+        }
+        
+        // Print Results function
+        function printResults() {
+            try {
+                // Create a print-friendly version of the results
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                            .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+                            .contract-details { margin-bottom: 20px; }
+                            .results-section { margin-bottom: 20px; }
+                            .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
+                            .result-label { font-weight: bold; color: #2563eb; }
+                            .result-value { float: right; font-weight: bold; }
+                            .tax-breakdown { margin-top: 15px; }
+                            .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
+                            @media print { 
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Contract Analysis Report</h1>
+                            <p>Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                        
+                        <div class="contract-details">
+                            <h2>Contract Details</h2>
+                            <div class="result-item">
+                                <span class="result-label">Position:</span>
+                                <span class="result-value">${document.getElementById('jobTitle').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Facility:</span>
+                                <span class="result-value">${document.getElementById('facility').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Hourly Rate:</span>
+                                <span class="result-value">$${document.getElementById('hourlyRate').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Hours per Week:</span>
+                                <span class="result-value">${document.getElementById('hoursPerWeek').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Contract Length:</span>
+                                <span class="result-value">${document.getElementById('contractWeeks').value} weeks</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Housing Stipend:</span>
+                                <span class="result-value">$${document.getElementById('housingStipend').value}/week</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Travel Reimbursement:</span>
+                                <span class="result-value">$${document.getElementById('travelReimbursement').value}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="results-section">
+                            <h2>Financial Analysis</h2>
+                            <div class="result-item">
+                                <span class="result-label">Weekly Gross Pay:</span>
+                                <span class="result-value">${document.getElementById('weeklyGrossPay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Contract Value:</span>
+                                <span class="result-value">${document.getElementById('totalContractValue').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">True Hourly Rate:</span>
+                                <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Net Take-Home:</span>
+                                <span class="result-value">${document.getElementById('netTakeHome').textContent}</span>
+                            </div>
+                            
+                            <div class="tax-breakdown">
+                                <h3>Tax Breakdown</h3>
+                                <div class="result-item">
+                                    <span class="result-label">Federal Tax:</span>
+                                    <span class="result-value">${document.getElementById('federalTax').textContent}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">State Tax:</span>
+                                    <span class="result-value">${document.getElementById('stateTax').textContent}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">FICA Tax:</span>
+                                    <span class="result-value">${document.getElementById('ficaTax').textContent}</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Total Tax:</span>
+                                    <span class="result-value">${document.getElementById('totalTax').textContent}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>This analysis was generated using LocumTrueRate Contract Calculator</p>
+                            <p>Visit <strong>locumtruerate.com</strong> for more tools and job opportunities</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                
+                // Wait for content to load, then print
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+                
+                showNotification('🖨️ Print dialog opened', 'success');
+                
             } catch (error) {
                 console.error('Print error:', error);
                 showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
