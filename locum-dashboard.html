@@ -2638,6 +2638,7 @@
                             <div class="contract-actions">
                                 <button class="action-btn primary" onclick="viewContract(1)">View Details</button>
                                 <button class="action-btn accent" onclick="calculateEarnings(1)">Calculate</button>
+                                <button class="action-btn secondary" onclick="downloadAssignmentDocuments(1)" aria-label="Download assignment documents">📄 Documents</button>
                                 <button class="action-btn secondary" onclick="extendContract(1)">Extend</button>
                             </div>
                         </div>
@@ -2670,6 +2671,7 @@
                             <div class="contract-actions">
                                 <button class="action-btn primary" onclick="viewContract(2)">View Details</button>
                                 <button class="action-btn accent" onclick="calculateEarnings(2)">Calculate</button>
+                                <button class="action-btn secondary" onclick="downloadAssignmentDocuments(2)" aria-label="Download assignment documents">📄 Documents</button>
                                 <button class="action-btn secondary" onclick="prepareContract(2)">Prepare</button>
                             </div>
                         </div>
@@ -2701,7 +2703,7 @@
                             </div>
                             <div class="contract-actions">
                                 <button class="action-btn primary" onclick="viewContract(3)">View Details</button>
-                                <button class="action-btn secondary" onclick="downloadContract(3)">Download</button>
+                                <button class="action-btn secondary" onclick="downloadAssignmentDocuments(3)" aria-label="Download assignment documents">📄 Documents</button>
                                 <button class="action-btn accent" onclick="renewContract(3)">Renew</button>
                             </div>
                         </div>
@@ -5225,6 +5227,42 @@ American Board of Internal Medicine</textarea>
 
         function renewContract(contractId) {
             alert(`Initiating contract renewal for Contract ${contractId}...\n\n🔄 Renewal process:\n• Express interest to recruiter\n• Review updated terms\n• Negotiate improvements\n• Confirm dates and rates`);
+        }
+
+        function downloadAssignmentDocuments(assignmentId) {
+            console.log(`Downloading assignment documents for assignment ${assignmentId}`);
+            
+            // Simulate document download
+            const documentTypes = [
+                'Assignment Contract',
+                'Facility Orientation Guide',
+                'Credentialing Requirements',
+                'Housing Information',
+                'Local Area Guide',
+                'Emergency Contacts',
+                'Parking & Access Instructions',
+                'Shift Schedules',
+                'Policy Handbook'
+            ];
+            
+            showToast(`Downloading assignment documents package for Assignment ${assignmentId}`, 'info');
+            
+            // Create a mock download
+            setTimeout(() => {
+                const blob = new Blob([`Assignment ${assignmentId} Documents Package\n\nIncluded files:\n${documentTypes.map(doc => `• ${doc}.pdf`).join('\n')}\n\nGenerated: ${new Date().toLocaleString()}`], 
+                    { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Assignment_${assignmentId}_Documents.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('Assignment documents downloaded successfully', 'success');
+                announceToScreenReader(`Assignment ${assignmentId} documents downloaded`);
+            }, 1000);
         }
 
         function viewCalculation(calcId) {
