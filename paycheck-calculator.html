@@ -698,6 +698,14 @@
                                     <span class="result-value" id="callbackPay">$510</span>
                                 </div>
                                 <div class="result-item highlight">
+                                    <span class="result-label">Total Gross Pay</span>
+                                    <span class="result-value" id="totalGrossPay">$5,530</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Weekly Stipends</span>
+                                    <span class="result-value positive" id="weeklyStipends">+$1,650</span>
+                                </div>
+                                <div class="result-item highlight">
                                     <span class="result-label">Gross Taxable Income</span>
                                     <span class="result-value" id="grossTaxable">$5,530</span>
                                 </div>
@@ -733,7 +741,9 @@
 
                             <div class="action-buttons">
                                 <button class="btn-primary" onclick="saveCalculation()">Save Calculation</button>
+                                <button class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
                                 <button class="btn-secondary" onclick="exportToPDF()">Export PDF</button>
+                                <button class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -992,15 +1002,22 @@
                 document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
                 document.getElementById('callPay').textContent = formatCurrency(callPay);
                 document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
+                
+                // Calculate and display Total Gross Pay (same as grossTaxable)
+                document.getElementById('totalGrossPay').textContent = formatCurrency(grossTaxable);
+                
+                // Display weekly stipends total
+                document.getElementById('weeklyStipends').textContent = '+' + formatCurrency(totalStipends);
+                
                 document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
                 
-                // FIXED: Federal tax should show actual calculated amount, not overinflated
-                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatNegativeCurrency(federalTax) : '$0.00';
+                // FIXED: Federal tax should show actual calculated amount
+                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatCurrency(federalTax) : '$0.00';
                 
                 // FIXED: State tax now properly shows calculated amount
-                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatNegativeCurrency(stateTax) : '$0.00';
+                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
                 
-                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatNegativeCurrency(ficaTax) : '$0.00';
+                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatCurrency(ficaTax) : '$0.00';
                 document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
                 document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
                 document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
@@ -1193,6 +1210,191 @@ NET PAY: ${calculation.netPay}
             } catch (error) {
                 console.error('Error exporting PDF:', error);
                 showNotification('Error exporting file', 'error');
+            }
+        }
+
+        // Print Results function
+        function printResults() {
+            try {
+                // Create a print-friendly version of the results
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                
+                const currentInputs = {
+                    regularHours: document.getElementById('regularHours').value,
+                    regularRate: document.getElementById('regularRate').value,
+                    overtimeHours: document.getElementById('overtimeHours').value,
+                    overtimeRate: document.getElementById('overtimeRate').value,
+                    callHours: document.getElementById('callHours').value,
+                    callRate: document.getElementById('callRate').value,
+                    callbackHours: document.getElementById('callbackHours').value,
+                    callbackRate: document.getElementById('callbackRate').value
+                };
+                
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Paycheck Analysis - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                            .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+                            .input-details { margin-bottom: 20px; }
+                            .results-section { margin-bottom: 20px; }
+                            .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
+                            .result-label { font-weight: bold; color: #2563eb; }
+                            .result-value { float: right; font-weight: bold; }
+                            .highlight { background: #e3f2fd !important; }
+                            .positive { color: #10b981; }
+                            .negative { color: #ef4444; }
+                            .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
+                            @media print { 
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Paycheck Analysis Report</h1>
+                            <p>Period: ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}</p>
+                            <p>Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                        
+                        <div class="input-details">
+                            <h2>Input Parameters</h2>
+                            <div class="result-item">
+                                <span class="result-label">Regular Hours:</span>
+                                <span class="result-value">${currentInputs.regularHours}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Regular Rate:</span>
+                                <span class="result-value">$${currentInputs.regularRate}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Overtime Hours:</span>
+                                <span class="result-value">${currentInputs.overtimeHours}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Overtime Rate:</span>
+                                <span class="result-value">$${currentInputs.overtimeRate}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="results-section">
+                            <h2>Paycheck Breakdown</h2>
+                            <div class="result-item">
+                                <span class="result-label">Regular Pay:</span>
+                                <span class="result-value">${document.getElementById('regularPay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Overtime Pay:</span>
+                                <span class="result-value">${document.getElementById('overtimePay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Call Pay:</span>
+                                <span class="result-value">${document.getElementById('callPay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Callback Pay:</span>
+                                <span class="result-value">${document.getElementById('callbackPay').textContent}</span>
+                            </div>
+                            <div class="result-item highlight">
+                                <span class="result-label">Total Gross Pay:</span>
+                                <span class="result-value">${document.getElementById('totalGrossPay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Weekly Stipends:</span>
+                                <span class="result-value positive">${document.getElementById('weeklyStipends').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Federal Tax:</span>
+                                <span class="result-value negative">${document.getElementById('federalTax').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">State Tax:</span>
+                                <span class="result-value negative">${document.getElementById('stateTax').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">FICA Tax:</span>
+                                <span class="result-value negative">${document.getElementById('ficaTax').textContent}</span>
+                            </div>
+                            <div class="result-item highlight">
+                                <span class="result-label">Net Take-Home Pay:</span>
+                                <span class="result-value">${document.getElementById('netPayDisplay').textContent}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>This analysis was generated using LocumTrueRate Paycheck Calculator</p>
+                            <p>Visit <strong>locumtruerate.com</strong> for more tools and job opportunities</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                
+                // Wait for content to load, then print
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+                
+                showNotification('🖨️ Print dialog opened', 'success');
+                
+            } catch (error) {
+                console.error('Print error:', error);
+                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+            }
+        }
+
+        // Email Results function
+        function emailResults() {
+            try {
+                const subject = `Paycheck Analysis - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}`;
+                const body = `Paycheck Analysis Summary:
+
+Period: ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}
+
+EARNINGS:
+Regular Pay: ${document.getElementById('regularPay').textContent}
+Overtime Pay: ${document.getElementById('overtimePay').textContent}
+Call Pay: ${document.getElementById('callPay').textContent}
+Callback Pay: ${document.getElementById('callbackPay').textContent}
+Total Gross Pay: ${document.getElementById('totalGrossPay').textContent}
+Weekly Stipends: ${document.getElementById('weeklyStipends').textContent}
+
+DEDUCTIONS:
+Federal Tax: ${document.getElementById('federalTax').textContent}
+State Tax: ${document.getElementById('stateTax').textContent}
+FICA Tax: ${document.getElementById('ficaTax').textContent}
+
+NET PAY: ${document.getElementById('netPayDisplay').textContent}
+
+Generated: ${new Date().toLocaleDateString()}
+From: LocumTrueRate Paycheck Calculator`;
+                    
+                const mailtoLink = \`mailto:?subject=\${encodeURIComponent(subject)}&body=\${encodeURIComponent(body)}\`;
+                
+                // Try to open email client
+                const link = document.createElement('a');
+                link.href = mailtoLink;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show feedback
+                showNotification('📧 Opening email client...', 'info');
+                
+                // Show fallback instructions
+                setTimeout(() => {
+                    showNotification('💡 If email didn\\'t open, copy this data manually from the results above', 'info');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Email error:', error);
+                showNotification('⚠️ Email failed. Please copy the analysis data manually.', 'error');
             }
         }
 
