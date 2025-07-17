@@ -137,6 +137,115 @@
             color: var(--primary-color);
         }
 
+        /* Navigation Search */
+        .nav-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .search-input {
+            padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: white;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            width: 300px;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        .search-button:hover,
+        .search-button:focus {
+            color: var(--primary-color);
+            outline: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-result-item:hover,
+        .search-result-item:focus {
+            background-color: var(--background-secondary);
+            outline: none;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .search-result-context {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .search-result-section {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-no-results {
+            padding: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
         /* Layout */
         .page-container {
             min-height: 100vh;
@@ -153,6 +262,57 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 1rem;
+        }
+
+        /* Breadcrumb Navigation */
+        .breadcrumb-nav {
+            background-color: var(--background-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .breadcrumb-link:hover,
+        .breadcrumb-link:focus {
+            color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.current {
+            color: var(--text-primary);
         }
 
         /* Dashboard Header */
@@ -314,6 +474,38 @@
         .section-actions {
             display: flex;
             gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls,
+        .view-controls,
+        .sort-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .sort-select {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: white;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .sort-select:hover {
+            border-color: var(--text-secondary);
         }
 
         .btn-small {
@@ -1561,6 +1753,72 @@
             accent-color: var(--primary-color);
         }
 
+        /* Payment Methods */
+        .payment-methods-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            background: var(--background-color);
+            transition: all 0.2s ease;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .payment-type {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .payment-icon {
+            font-size: 1.5rem;
+        }
+
+        .payment-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .payment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: var(--background-secondary);
+            color: var(--text-secondary);
+        }
+
+        .payment-status.primary {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         /* Accessibility */
         .sr-only {
             position: absolute;
@@ -1581,9 +1839,62 @@
         select:focus,
         textarea:focus,
         [tabindex]:focus {
-            outline: 2px solid var(--primary-color);
+            outline: 3px solid var(--primary-color);
             outline-offset: 2px;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.25);
+            transition: all 0.15s ease-in-out;
+        }
+
+        /* Focus within compound elements */
+        .stat-card:focus-within,
+        .application-item:focus-within,
+        .payment-item:focus-within,
+        .job-item:focus-within,
+        .credential-item:focus-within,
+        .message-item:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* High contrast focus for critical actions */
+        .btn-primary:focus,
+        .btn-danger:focus {
+            outline-color: var(--warning-color);
+            box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Enhanced focus for navigation elements */
+        .nav-link:focus,
+        .breadcrumb-link:focus {
+            background-color: rgba(37, 99, 235, 0.1);
+            border-radius: 0.25rem;
+        }
+
+        /* Focus indicators for cards and interactive elements */
+        .dashboard-section:focus-within {
+            border-left: 4px solid var(--primary-color);
+            padding-left: calc(2rem - 4px);
+        }
+
+        /* Visible focus for screen reader users */
+        .focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Focus trap styling for modals */
+        .modal:focus-within {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Keyboard-only focus indicators (hide mouse focus) */
+        .js-focus-visible button:focus:not(.focus-visible),
+        .js-focus-visible a:focus:not(.focus-visible),
+        .js-focus-visible input:focus:not(.focus-visible),
+        .js-focus-visible select:focus:not(.focus-visible),
+        .js-focus-visible textarea:focus:not(.focus-visible) {
+            outline: none;
+            box-shadow: none;
         }
 
         /* Skip to main content link */
@@ -2059,6 +2370,41 @@
                         </ul>
                     </li>
                 </ul>
+                <div class="nav-search" role="search">
+                    <input type="search" 
+                           id="global-search" 
+                           class="search-input" 
+                           placeholder="Search dashboard..." 
+                           aria-label="Search across dashboard content"
+                           onkeyup="performGlobalSearch(event)"
+                           autocomplete="off">
+                    <button type="button" 
+                            class="search-button" 
+                            onclick="performGlobalSearch()"
+                            aria-label="Execute search">
+                        🔍
+                    </button>
+                    <div id="search-results" class="search-results" role="listbox" aria-label="Search results"></div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" role="navigation" aria-label="Breadcrumb navigation">
+            <div class="container">
+                <ol class="breadcrumb-list" role="list">
+                    <li class="breadcrumb-item" role="listitem">
+                        <a href="index.html" class="breadcrumb-link" aria-label="Go to homepage">Home</a>
+                    </li>
+                    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+                    <li class="breadcrumb-item" role="listitem">
+                        <a href="#" class="breadcrumb-link" aria-label="Dashboards section">Dashboards</a>
+                    </li>
+                    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+                    <li class="breadcrumb-item current" role="listitem" aria-current="page">
+                        <span class="breadcrumb-current">Locum Dashboard</span>
+                    </li>
+                </ol>
             </div>
         </nav>
 
@@ -2107,12 +2453,12 @@
                 </section>
 
                 <!-- Profile & Earnings Overview -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" role="region" aria-labelledby="profile-heading">
                     <div class="section-header">
-                        <h2 class="section-title">Profile Overview</h2>
-                        <div class="section-actions">
-                            <button class="btn-small secondary" onclick="exportProfile()">Export Resume</button>
-                            <button class="btn-small primary" onclick="updateProfile()">Edit Profile</button>
+                        <h2 id="profile-heading" class="section-title">Profile Overview</h2>
+                        <div class="section-actions" role="group" aria-label="Profile management actions">
+                            <button class="btn-small secondary" onclick="exportProfile()" aria-describedby="profile-heading">Export Resume</button>
+                            <button class="btn-small primary" onclick="updateProfile()" aria-describedby="profile-heading">Edit Profile</button>
                         </div>
                     </div>
 
@@ -2252,14 +2598,14 @@
                 </div>
 
                 <!-- Contract Management -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" role="region" aria-labelledby="contracts-heading">
                     <div class="section-header">
-                        <h2 class="section-title">Your Contracts</h2>
-                        <div class="section-actions">
-                            <button class="btn-small secondary" onclick="filterContracts('all')">All</button>
-                            <button class="btn-small secondary" onclick="filterContracts('active')">Active</button>
-                            <button class="btn-small secondary" onclick="filterContracts('upcoming')">Upcoming</button>
-                            <button class="btn-small accent" onclick="analyzeContracts()">Analyze All</button>
+                        <h2 id="contracts-heading" class="section-title">Your Contracts</h2>
+                        <div class="section-actions" role="group" aria-label="Contract filtering and analysis tools">
+                            <button class="btn-small secondary" onclick="filterContracts('all')" aria-label="Show all contracts">All</button>
+                            <button class="btn-small secondary" onclick="filterContracts('active')" aria-label="Show active contracts only">Active</button>
+                            <button class="btn-small secondary" onclick="filterContracts('upcoming')" aria-label="Show upcoming contracts only">Upcoming</button>
+                            <button class="btn-small accent" onclick="analyzeContracts()" aria-label="Analyze all contracts for insights">Analyze All</button>
                         </div>
                     </div>
 
@@ -2363,14 +2709,14 @@
                 </div>
 
                 <!-- Saved Jobs -->
-                <div class="dashboard-section">
+                <div class="dashboard-section" role="region" aria-labelledby="saved-jobs-heading">
                     <div class="section-header">
-                        <h2 class="section-title">Saved Jobs</h2>
-                        <div class="section-actions">
-                            <button class="btn-small secondary" onclick="filterSavedJobs('all')">All</button>
-                            <button class="btn-small secondary" onclick="filterSavedJobs('urgent')">Urgent</button>
-                            <button class="btn-small secondary" onclick="filterSavedJobs('recent')">Recent</button>
-                            <button class="btn-small primary" onclick="findNewJobs()">Find More Jobs</button>
+                        <h2 id="saved-jobs-heading" class="section-title">Saved Jobs</h2>
+                        <div class="section-actions" role="group" aria-label="Job filtering and search options">
+                            <button class="btn-small secondary" onclick="filterSavedJobs('all')" aria-label="Show all saved jobs">All</button>
+                            <button class="btn-small secondary" onclick="filterSavedJobs('urgent')" aria-label="Show urgent jobs only">Urgent</button>
+                            <button class="btn-small secondary" onclick="filterSavedJobs('recent')" aria-label="Show recently saved jobs">Recent</button>
+                            <button class="btn-small primary" onclick="findNewJobs()" aria-label="Search for new job opportunities">Find More Jobs</button>
                         </div>
                     </div>
 
@@ -2478,9 +2824,23 @@
                     <div class="section-header">
                         <h2 class="section-title">Application Status</h2>
                         <div class="section-actions">
-                            <button class="btn-small secondary" onclick="filterApplications('all')">All</button>
-                            <button class="btn-small secondary" onclick="filterApplications('active')">Active</button>
-                            <button class="btn-small secondary" onclick="filterApplications('interview')">Interview</button>
+                            <div class="filter-controls">
+                                <button class="btn-small secondary" onclick="filterApplications('all')">All</button>
+                                <button class="btn-small secondary" onclick="filterApplications('active')">Active</button>
+                                <button class="btn-small secondary" onclick="filterApplications('interview')">Interview</button>
+                            </div>
+                            <div class="sort-controls">
+                                <label for="app-sort-select" class="sr-only">Sort applications by</label>
+                                <select id="app-sort-select" class="sort-select" onchange="sortApplications(this.value)" aria-label="Sort applications">
+                                    <option value="date-desc">Date Applied (Latest)</option>
+                                    <option value="date-asc">Date Applied (Oldest)</option>
+                                    <option value="rate-desc">Rate (Highest)</option>
+                                    <option value="rate-asc">Rate (Lowest)</option>
+                                    <option value="name-asc">Position (A-Z)</option>
+                                    <option value="name-desc">Position (Z-A)</option>
+                                    <option value="status-asc">Status</option>
+                                </select>
+                            </div>
                             <button class="btn-small primary" onclick="refreshApplications()">Refresh</button>
                         </div>
                     </div>
@@ -3064,8 +3424,21 @@
                     <div class="section-header">
                         <h2 class="section-title">Financial Tracking</h2>
                         <div class="section-actions">
-                            <button class="btn-small secondary" onclick="switchFinancialView('payments')">Payments</button>
-                            <button class="btn-small secondary" onclick="switchFinancialView('expenses')">Expenses</button>
+                            <div class="view-controls">
+                                <button class="btn-small secondary" onclick="switchFinancialView('payments')">Payments</button>
+                                <button class="btn-small secondary" onclick="switchFinancialView('expenses')">Expenses</button>
+                            </div>
+                            <div class="sort-controls">
+                                <label for="payment-sort-select" class="sr-only">Sort payments by</label>
+                                <select id="payment-sort-select" class="sort-select" onchange="sortPayments(this.value)" aria-label="Sort payments">
+                                    <option value="date-desc">Date (Latest)</option>
+                                    <option value="date-asc">Date (Oldest)</option>
+                                    <option value="amount-desc">Amount (Highest)</option>
+                                    <option value="amount-asc">Amount (Lowest)</option>
+                                    <option value="facility-asc">Facility (A-Z)</option>
+                                    <option value="status-asc">Status</option>
+                                </select>
+                            </div>
                             <button class="btn-small primary" onclick="exportFinancialData()">Export</button>
                         </div>
                     </div>
@@ -3244,6 +3617,7 @@
                             <button class="btn-small secondary" onclick="switchSettingsView('profile')">Profile</button>
                             <button class="btn-small secondary" onclick="switchSettingsView('privacy')">Privacy</button>
                             <button class="btn-small secondary" onclick="switchSettingsView('preferences')">Preferences</button>
+                            <button class="btn-small secondary" onclick="switchSettingsView('payments')">Payment Methods</button>
                             <button class="btn-small primary" onclick="saveAllSettings()">Save Changes</button>
                         </div>
                     </div>
@@ -3447,6 +3821,123 @@ American Board of Internal Medicine</textarea>
                                         <input type="checkbox" checked onchange="markSettingsChanged()">
                                         <span>Show performance metrics</span>
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods Settings -->
+                    <div id="payments-view" class="settings-view">
+                        <div class="settings-grid">
+                            <div class="settings-section">
+                                <h4>Payment Methods</h4>
+                                <div class="payment-methods-list">
+                                    <div class="payment-method">
+                                        <div class="payment-info">
+                                            <div class="payment-type">
+                                                <span class="payment-icon">💳</span>
+                                                <div>
+                                                    <strong>Bank Account (Primary)</strong>
+                                                    <div class="payment-details">Wells Fargo ****1234</div>
+                                                </div>
+                                            </div>
+                                            <span class="payment-status primary">Primary</span>
+                                        </div>
+                                        <div class="payment-actions">
+                                            <button class="btn-small secondary" onclick="editPaymentMethod('bank1')">Edit</button>
+                                            <button class="btn-small danger" onclick="removePaymentMethod('bank1')">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="payment-method">
+                                        <div class="payment-info">
+                                            <div class="payment-type">
+                                                <span class="payment-icon">💳</span>
+                                                <div>
+                                                    <strong>Debit Card</strong>
+                                                    <div class="payment-details">Visa ****5678</div>
+                                                </div>
+                                            </div>
+                                            <span class="payment-status">Backup</span>
+                                        </div>
+                                        <div class="payment-actions">
+                                            <button class="btn-small secondary" onclick="editPaymentMethod('card1')">Edit</button>
+                                            <button class="btn-small secondary" onclick="setPrimaryPayment('card1')">Make Primary</button>
+                                            <button class="btn-small danger" onclick="removePaymentMethod('card1')">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn primary" onclick="addPaymentMethod()">
+                                    <span>+</span> Add New Payment Method
+                                </button>
+                            </div>
+
+                            <div class="settings-section">
+                                <h4>Payment Preferences</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Payment Frequency</label>
+                                        <select class="settings-input" onchange="markSettingsChanged()">
+                                            <option>Weekly</option>
+                                            <option selected>Bi-weekly</option>
+                                            <option>Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Payment Day</label>
+                                        <select class="settings-input" onchange="markSettingsChanged()">
+                                            <option>Monday</option>
+                                            <option>Tuesday</option>
+                                            <option>Wednesday</option>
+                                            <option>Thursday</option>
+                                            <option selected>Friday</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Currency</label>
+                                        <select class="settings-input" onchange="markSettingsChanged()">
+                                            <option selected>USD ($)</option>
+                                            <option>CAD ($)</option>
+                                            <option>EUR (€)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="preference-toggles">
+                                    <label class="preference-toggle">
+                                        <input type="checkbox" checked onchange="markSettingsChanged()">
+                                        <span>Email payment notifications</span>
+                                    </label>
+                                    <label class="preference-toggle">
+                                        <input type="checkbox" checked onchange="markSettingsChanged()">
+                                        <span>SMS payment alerts</span>
+                                    </label>
+                                    <label class="preference-toggle">
+                                        <input type="checkbox" onchange="markSettingsChanged()">
+                                        <span>Auto-deposit when available</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h4>Tax Information</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Tax ID / SSN</label>
+                                        <input type="text" value="***-**-1234" class="settings-input" onchange="markSettingsChanged()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tax Filing Status</label>
+                                        <select class="settings-input" onchange="markSettingsChanged()">
+                                            <option>Single</option>
+                                            <option selected>Married Filing Jointly</option>
+                                            <option>Married Filing Separately</option>
+                                            <option>Head of Household</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Additional Tax Withholding</label>
+                                        <input type="number" value="0" min="0" step="0.01" class="settings-input" onchange="markSettingsChanged()">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4015,6 +4506,286 @@ American Board of Internal Medicine</textarea>
             }
         }
 
+        // Payment method management functions
+        function addPaymentMethod() {
+            console.log('Opening add payment method form...');
+            showToast('Add payment method form would open here', 'info');
+            // In a real application, this would open a modal or navigate to a secure form
+        }
+
+        function editPaymentMethod(methodId) {
+            console.log(`Editing payment method: ${methodId}`);
+            showToast(`Editing payment method ${methodId}`, 'info');
+            // In a real application, this would open an edit form with encrypted data
+        }
+
+        function removePaymentMethod(methodId) {
+            const confirmed = confirm('Are you sure you want to remove this payment method?');
+            if (confirmed) {
+                console.log(`Removing payment method: ${methodId}`);
+                showToast('Payment method removed successfully', 'success');
+                // In a real application, this would remove the method from the backend
+            }
+        }
+
+        function setPrimaryPayment(methodId) {
+            console.log(`Setting payment method ${methodId} as primary`);
+            showToast('Primary payment method updated', 'success');
+            // In a real application, this would update the primary payment method
+            // Update UI to reflect the change
+            document.querySelectorAll('.payment-status').forEach(status => {
+                status.textContent = 'Backup';
+                status.classList.remove('primary');
+            });
+            // Find and update the selected method (simplified for demo)
+            showToast('Payment method set as primary', 'success');
+        }
+
+        // Global search functionality
+        let searchData = [
+            { title: 'Current Assignments', section: 'Assignments', context: 'View and manage your active contracts and assignments' },
+            { title: 'Payment History', section: 'Financial', context: 'Track your earnings and payment history' },
+            { title: 'Saved Jobs', section: 'Jobs', context: 'Manage your bookmarked job opportunities' },
+            { title: 'Application Status', section: 'Jobs', context: 'Track the status of your job applications' },
+            { title: 'Calendar & Scheduling', section: 'Schedule', context: 'View your schedule and availability' },
+            { title: 'Credentials & Licenses', section: 'Profile', context: 'Manage your professional credentials' },
+            { title: 'Messages', section: 'Communication', context: 'View messages from recruiters and facilities' },
+            { title: 'Account Settings', section: 'Settings', context: 'Update your profile and preferences' },
+            { title: 'Payment Methods', section: 'Settings', context: 'Manage your payment and tax information' },
+            { title: 'Notification Preferences', section: 'Settings', context: 'Control how you receive notifications' },
+            { title: 'Privacy Settings', section: 'Settings', context: 'Manage your privacy and security settings' },
+            { title: 'Expense Tracking', section: 'Financial', context: 'Track and categorize your business expenses' },
+            { title: 'Active Contracts', section: 'Assignments', context: '3 active contracts currently running' },
+            { title: 'Total Earnings', section: 'Financial', context: '$847K year-to-date earnings' },
+            { title: 'Available Jobs', section: 'Jobs', context: '28 jobs currently available' },
+            { title: 'Upcoming Payments', section: 'Financial', context: 'Next payment due in 3 days' }
+        ];
+
+        function performGlobalSearch(event) {
+            const searchInput = document.getElementById('global-search');
+            const searchResults = document.getElementById('search-results');
+            const query = event ? event.target.value : searchInput.value;
+
+            // Handle Enter key
+            if (event && event.key === 'Enter') {
+                event.preventDefault();
+                performSearch(query, searchResults);
+                return;
+            }
+
+            // Only search on Enter or button click for this demo
+            if (!event || event.type === 'click') {
+                performSearch(query, searchResults);
+            }
+        }
+
+        function performSearch(query, resultsContainer) {
+            if (!query || query.length < 2) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) ||
+                item.section.toLowerCase().includes(query.toLowerCase()) ||
+                item.context.toLowerCase().includes(query.toLowerCase())
+            );
+
+            displaySearchResults(results, resultsContainer, query);
+        }
+
+        function displaySearchResults(results, container, query) {
+            container.innerHTML = '';
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="search-no-results">No results found for "' + query + '"</div>';
+                container.classList.add('active');
+                return;
+            }
+
+            results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+                resultItem.setAttribute('tabindex', '0');
+                resultItem.setAttribute('role', 'option');
+                resultItem.setAttribute('aria-labelledby', `search-result-${index}`);
+                
+                resultItem.innerHTML = `
+                    <div class="search-result-section">${result.section}</div>
+                    <div class="search-result-title" id="search-result-${index}">${result.title}</div>
+                    <div class="search-result-context">${result.context}</div>
+                `;
+                
+                resultItem.addEventListener('click', () => {
+                    navigateToResult(result);
+                    hideSearchResults();
+                });
+                
+                resultItem.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        navigateToResult(result);
+                        hideSearchResults();
+                    }
+                });
+                
+                container.appendChild(resultItem);
+            });
+
+            container.classList.add('active');
+        }
+
+        function navigateToResult(result) {
+            console.log(`Navigating to: ${result.title} in ${result.section}`);
+            
+            // Scroll to relevant section based on result
+            const sectionMap = {
+                'Assignments': '.assignments-section',
+                'Financial': '.financial-section',
+                'Jobs': '.jobs-section',
+                'Schedule': '.calendar-section',
+                'Profile': '.credentials-section',
+                'Communication': '.messages-section',
+                'Settings': '.account-settings'
+            };
+            
+            const targetSelector = sectionMap[result.section];
+            if (targetSelector) {
+                const targetElement = document.querySelector(targetSelector);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    showToast(`Navigated to ${result.title}`, 'info');
+                } else {
+                    showToast(`${result.title} section found`, 'info');
+                }
+            } else {
+                showToast(`Found: ${result.title}`, 'info');
+            }
+        }
+
+        function hideSearchResults() {
+            const searchResults = document.getElementById('search-results');
+            const searchInput = document.getElementById('global-search');
+            searchResults.classList.remove('active');
+            searchInput.value = '';
+        }
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.querySelector('.nav-search');
+            const searchResults = document.getElementById('search-results');
+            
+            if (!searchContainer.contains(event.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Table sorting functionality
+        function sortApplications(sortBy) {
+            const container = document.querySelector('.applications-list');
+            const items = Array.from(container.querySelectorAll('.application-item'));
+            
+            items.sort((a, b) => {
+                switch (sortBy) {
+                    case 'date-desc':
+                        return compareDates(getApplicationDate(b), getApplicationDate(a));
+                    case 'date-asc':
+                        return compareDates(getApplicationDate(a), getApplicationDate(b));
+                    case 'rate-desc':
+                        return getApplicationRate(b) - getApplicationRate(a);
+                    case 'rate-asc':
+                        return getApplicationRate(a) - getApplicationRate(b);
+                    case 'name-asc':
+                        return getApplicationName(a).localeCompare(getApplicationName(b));
+                    case 'name-desc':
+                        return getApplicationName(b).localeCompare(getApplicationName(a));
+                    case 'status-asc':
+                        return getApplicationStatus(a).localeCompare(getApplicationStatus(b));
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Remove all items and re-add in sorted order
+            items.forEach(item => item.remove());
+            items.forEach(item => container.appendChild(item));
+            
+            showToast(`Applications sorted by ${sortBy}`, 'info');
+        }
+
+        function sortPayments(sortBy) {
+            const container = document.querySelector('#payments-view .payment-list');
+            if (!container) return;
+            
+            const items = Array.from(container.querySelectorAll('.payment-item'));
+            
+            items.sort((a, b) => {
+                switch (sortBy) {
+                    case 'date-desc':
+                        return compareDates(getPaymentDate(b), getPaymentDate(a));
+                    case 'date-asc':
+                        return compareDates(getPaymentDate(a), getPaymentDate(b));
+                    case 'amount-desc':
+                        return getPaymentAmount(b) - getPaymentAmount(a);
+                    case 'amount-asc':
+                        return getPaymentAmount(a) - getPaymentAmount(b);
+                    case 'facility-asc':
+                        return getPaymentFacility(a).localeCompare(getPaymentFacility(b));
+                    case 'status-asc':
+                        return getPaymentStatus(a).localeCompare(getPaymentStatus(b));
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Remove all items and re-add in sorted order
+            items.forEach(item => item.remove());
+            items.forEach(item => container.appendChild(item));
+            
+            showToast(`Payments sorted by ${sortBy}`, 'info');
+        }
+
+        // Helper functions for extracting sort values
+        function getApplicationDate(item) {
+            const dateText = item.querySelector('.application-date')?.textContent || '';
+            const dateMatch = dateText.match(/(\w{3} \d{1,2}, \d{4})/);
+            return dateMatch ? new Date(dateMatch[1]) : new Date(0);
+        }
+
+        function getApplicationRate(item) {
+            const rateText = item.querySelector('.application-rate')?.textContent || '$0';
+            return parseFloat(rateText.replace(/[$,/hr]/g, '')) || 0;
+        }
+
+        function getApplicationName(item) {
+            return item.querySelector('h3')?.textContent || '';
+        }
+
+        function getApplicationStatus(item) {
+            return item.getAttribute('data-status') || '';
+        }
+
+        function getPaymentDate(item) {
+            const dateText = item.querySelector('.payment-date')?.textContent || '';
+            return new Date(dateText) || new Date(0);
+        }
+
+        function getPaymentAmount(item) {
+            const amountText = item.querySelector('.payment-amount')?.textContent || '$0';
+            return parseFloat(amountText.replace(/[$,]/g, '')) || 0;
+        }
+
+        function getPaymentFacility(item) {
+            return item.querySelector('.payment-facility')?.textContent || '';
+        }
+
+        function getPaymentStatus(item) {
+            return item.querySelector('.payment-status')?.textContent || '';
+        }
+
+        function compareDates(date1, date2) {
+            return date1.getTime() - date2.getTime();
+        }
+
         // Accessibility and keyboard navigation
         function initializeAccessibility() {
             // Add keyboard navigation to calendar days
@@ -4060,6 +4831,90 @@ American Board of Internal Medicine</textarea>
                 });
             });
 
+            // Add keyboard navigation to application items
+            const applicationItems = document.querySelectorAll('.application-item');
+            applicationItems.forEach(item => {
+                item.setAttribute('tabindex', '0');
+                item.setAttribute('role', 'listitem');
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const primaryButton = item.querySelector('.btn-primary');
+                        if (primaryButton) primaryButton.click();
+                    }
+                });
+            });
+
+            // Add keyboard navigation to payment items
+            const paymentItems = document.querySelectorAll('.payment-item');
+            paymentItems.forEach(item => {
+                item.setAttribute('tabindex', '0');
+                item.setAttribute('role', 'listitem');
+                item.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        const button = item.querySelector('button');
+                        if (button) button.click();
+                    }
+                });
+            });
+
+            // Enhanced keyboard navigation for form elements
+            const formElements = document.querySelectorAll('input, select, textarea');
+            formElements.forEach(element => {
+                element.addEventListener('keydown', function(e) {
+                    // Add escape key functionality
+                    if (e.key === 'Escape') {
+                        element.blur();
+                    }
+                });
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Alt + S for search
+                if (e.altKey && e.key === 's') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('global-search');
+                    if (searchInput) {
+                        searchInput.focus();
+                        announceToScreenReader('Search input focused');
+                    }
+                }
+                
+                // Alt + M for main content
+                if (e.altKey && e.key === 'm') {
+                    e.preventDefault();
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        mainContent.focus();
+                        announceToScreenReader('Jumped to main content');
+                    }
+                }
+                
+                // Escape to close modals/dropdowns
+                if (e.key === 'Escape') {
+                    const activeModal = document.querySelector('.modal.active');
+                    const activeDropdown = document.querySelector('.dropdown-menu:hover');
+                    const activeSearch = document.querySelector('.search-results.active');
+                    
+                    if (activeModal) {
+                        activeModal.querySelector('.modal-close')?.click();
+                    } else if (activeDropdown) {
+                        activeDropdown.style.display = 'none';
+                    } else if (activeSearch) {
+                        hideSearchResults();
+                    }
+                }
+            });
+
+            // Enhanced focus management
+            let lastFocusedElement = null;
+            document.addEventListener('focusin', function(e) {
+                lastFocusedElement = e.target;
+            });
+
+            // Enhanced ARIA labeling for interactive elements
+            enhanceAriaLabels();
+
             // Add ARIA labels to buttons without explicit labels
             const buttons = document.querySelectorAll('button:not([aria-label])');
             buttons.forEach(button => {
@@ -4076,7 +4931,127 @@ American Board of Internal Medicine</textarea>
             liveRegion.className = 'sr-only';
             document.body.appendChild(liveRegion);
 
-            console.log('Accessibility features initialized');
+            // Initialize focus-visible polyfill behavior
+            document.body.classList.add('js-focus-visible');
+
+            console.log('Enhanced accessibility features initialized');
+        }
+
+        // Enhanced ARIA labeling function
+        function enhanceAriaLabels() {
+            // Add ARIA labels to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                const value = card.querySelector('.stat-value')?.textContent || '';
+                const label = card.querySelector('.stat-label')?.textContent || '';
+                const change = card.querySelector('.stat-change')?.textContent || '';
+                const fullLabel = `${label}: ${value}. ${change}`;
+                card.setAttribute('aria-label', fullLabel);
+                card.setAttribute('role', 'img');
+            });
+
+            // Add ARIA labels to job cards
+            const jobCards = document.querySelectorAll('.job-card');
+            jobCards.forEach(card => {
+                const title = card.querySelector('h3')?.textContent || '';
+                const facility = card.querySelector('.job-facility')?.textContent || '';
+                const location = card.querySelector('.job-location')?.textContent || '';
+                const rate = card.querySelector('.job-rate')?.textContent || '';
+                const status = card.querySelector('.job-status')?.textContent || '';
+                
+                const description = `${title} at ${facility}, ${location}. Rate: ${rate}. Status: ${status}`;
+                card.setAttribute('aria-label', description);
+                card.setAttribute('role', 'article');
+            });
+
+            // Add ARIA labels to application items
+            const applicationItems = document.querySelectorAll('.application-item');
+            applicationItems.forEach(item => {
+                const title = item.querySelector('h3')?.textContent || '';
+                const facility = item.querySelector('.application-facility')?.textContent || '';
+                const location = item.querySelector('.application-location')?.textContent || '';
+                const date = item.querySelector('.application-date')?.textContent || '';
+                const rate = item.querySelector('.application-rate')?.textContent || '';
+                const status = item.querySelector('.application-status-pill')?.textContent || '';
+                
+                const description = `Application for ${title} at ${facility}, ${location}. ${date}. Rate: ${rate}. Status: ${status}`;
+                item.setAttribute('aria-label', description);
+                item.setAttribute('role', 'article');
+            });
+
+            // Add ARIA labels to payment items
+            const paymentItems = document.querySelectorAll('.payment-item');
+            paymentItems.forEach(item => {
+                const amount = item.querySelector('.payment-amount')?.textContent || '';
+                const facility = item.querySelector('.payment-facility')?.textContent || '';
+                const date = item.querySelector('.payment-date')?.textContent || '';
+                const status = item.querySelector('.payment-status')?.textContent || '';
+                
+                const description = `Payment of ${amount} from ${facility} on ${date}. Status: ${status}`;
+                item.setAttribute('aria-label', description);
+                item.setAttribute('role', 'listitem');
+            });
+
+            // Add ARIA labels to credential items
+            const credentialItems = document.querySelectorAll('.credential-item');
+            credentialItems.forEach(item => {
+                const title = item.querySelector('.credential-title')?.textContent || '';
+                const status = item.querySelector('.credential-status')?.textContent || '';
+                const expiry = item.querySelector('.credential-expiry')?.textContent || '';
+                
+                const description = `Credential: ${title}. Status: ${status}. ${expiry}`;
+                item.setAttribute('aria-label', description);
+                item.setAttribute('role', 'listitem');
+            });
+
+            // Add ARIA labels to contract cards
+            const contractCards = document.querySelectorAll('.contract-card');
+            contractCards.forEach(card => {
+                const facility = card.querySelector('.contract-facility')?.textContent || '';
+                const dates = card.querySelector('.contract-dates')?.textContent || '';
+                const rate = card.querySelector('.contract-rate')?.textContent || '';
+                const status = card.querySelector('.contract-status')?.textContent || '';
+                
+                const description = `Contract at ${facility}. ${dates}. Rate: ${rate}. Status: ${status}`;
+                card.setAttribute('aria-label', description);
+                card.setAttribute('role', 'article');
+            });
+
+            // Add ARIA describedby relationships
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    const label = form.querySelector(`label[for="${input.id}"]`);
+                    if (label) {
+                        input.setAttribute('aria-describedby', label.id || '');
+                    }
+                });
+            });
+
+            // Add ARIA expanded states to expandable elements
+            const expandableButtons = document.querySelectorAll('[aria-haspopup]');
+            expandableButtons.forEach(button => {
+                button.setAttribute('aria-expanded', 'false');
+                button.addEventListener('click', function() {
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', (!isExpanded).toString());
+                });
+            });
+
+            // Add role landmarks to main content areas
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent && !mainContent.getAttribute('role')) {
+                mainContent.setAttribute('role', 'main');
+            }
+
+            // Add complementary role to sidebars
+            const sidebars = document.querySelectorAll('.sidebar');
+            sidebars.forEach(sidebar => {
+                sidebar.setAttribute('role', 'complementary');
+            });
+
+            console.log('Enhanced ARIA labels applied');
         }
 
         // Announce content changes to screen readers
@@ -4285,9 +5260,178 @@ American Board of Internal Medicine</textarea>
         }
 
         // Initialize dashboard
+        // Error handling and validation functions
+        function handleError(error, context = 'Unknown') {
+            console.error(`Error in ${context}:`, error);
+            
+            const errorMessage = error.message || 'An unexpected error occurred';
+            const userMessage = getUserFriendlyErrorMessage(errorMessage, context);
+            
+            showToast(userMessage, 'error');
+            announceToScreenReader(`Error: ${userMessage}`);
+            
+            // Log error for monitoring
+            logErrorForAnalytics(error, context);
+        }
+
+        function getUserFriendlyErrorMessage(errorMessage, context) {
+            const errorMappings = {
+                'Network error': 'Unable to connect. Please check your internet connection.',
+                'Validation failed': 'Please check your input and try again.',
+                'Authentication failed': 'Please log in again to continue.',
+                'Permission denied': 'You don\'t have permission to perform this action.',
+                'File upload failed': 'Unable to upload file. Please try again.',
+                'Search failed': 'Search temporarily unavailable. Please try again.',
+                'Save failed': 'Unable to save changes. Please try again.',
+                'Load failed': 'Unable to load data. Please refresh the page.',
+                'Export failed': 'Unable to export data. Please try again.'
+            };
+            
+            // Context-specific messages
+            const contextMappings = {
+                'payment': 'Payment processing error. Please contact support.',
+                'upload': 'File upload failed. Please check file size and format.',
+                'calendar': 'Calendar unavailable. Please try again later.',
+                'settings': 'Unable to save settings. Please try again.',
+                'search': 'Search is temporarily unavailable.',
+                'application': 'Unable to process application. Please try again.'
+            };
+            
+            return contextMappings[context] || 
+                   errorMappings[errorMessage] || 
+                   'Something went wrong. Please try again or contact support.';
+        }
+
+        function logErrorForAnalytics(error, context) {
+            // In a real application, this would send to an analytics service
+            const errorData = {
+                message: error.message,
+                stack: error.stack,
+                context: context,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                url: window.location.href
+            };
+            console.log('Error logged:', errorData);
+        }
+
+        function validateInput(value, type) {
+            try {
+                switch (type) {
+                    case 'email':
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(value)) {
+                            throw new Error('Please enter a valid email address');
+                        }
+                        break;
+                    case 'phone':
+                        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                        if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+                            throw new Error('Please enter a valid phone number');
+                        }
+                        break;
+                    case 'required':
+                        if (!value || value.trim() === '') {
+                            throw new Error('This field is required');
+                        }
+                        break;
+                    case 'number':
+                        if (isNaN(value) || value < 0) {
+                            throw new Error('Please enter a valid number');
+                        }
+                        break;
+                    case 'date':
+                        if (isNaN(Date.parse(value))) {
+                            throw new Error('Please enter a valid date');
+                        }
+                        break;
+                }
+                return true;
+            } catch (error) {
+                showFieldError(error.message);
+                return false;
+            }
+        }
+
+        function showFieldError(message) {
+            showToast(message, 'error');
+            announceToScreenReader(`Validation error: ${message}`);
+        }
+
+        function validateForm(formElement) {
+            const inputs = formElement.querySelectorAll('input[required], select[required], textarea[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                const value = input.value.trim();
+                const type = input.type || 'text';
+                
+                if (!validateInput(value, 'required')) {
+                    isValid = false;
+                    input.focus();
+                    input.setAttribute('aria-invalid', 'true');
+                } else if (type === 'email' && !validateInput(value, 'email')) {
+                    isValid = false;
+                    input.focus();
+                    input.setAttribute('aria-invalid', 'true');
+                } else {
+                    input.removeAttribute('aria-invalid');
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Enhanced error handling for existing functions
+        function safeExecute(func, context = 'Unknown') {
+            try {
+                return func();
+            } catch (error) {
+                handleError(error, context);
+                return null;
+            }
+        }
+
+        // Network error handling
+        function handleNetworkError(response, context = 'Network request') {
+            if (!response.ok) {
+                const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                handleError(error, context);
+                return false;
+            }
+            return true;
+        }
+
+        // Retry mechanism for failed operations
+        function retryOperation(operation, maxRetries = 3, delay = 1000) {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                
+                const attemptOperation = () => {
+                    attempts++;
+                    operation()
+                        .then(resolve)
+                        .catch(error => {
+                            if (attempts < maxRetries) {
+                                console.log(`Attempt ${attempts} failed, retrying in ${delay}ms...`);
+                                setTimeout(attemptOperation, delay);
+                            } else {
+                                reject(error);
+                            }
+                        });
+                };
+                
+                attemptOperation();
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Locum dashboard loaded');
-            // Load saved data, update stats, etc.
+            try {
+                initializeAccessibility();
+                console.log('Locum dashboard loaded successfully');
+            } catch (error) {
+                handleError(error, 'Dashboard initialization');
+            }
         });
     </script>
 
