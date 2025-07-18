@@ -828,6 +828,15 @@
             'monthly': 4.33
         };
         
+        // CRITICAL: Define validateAndCalculate in global scope IMMEDIATELY
+        // This must be available before ANY HTML references it
+        window.validateAndCalculate = function(input) {
+            // Forward to the actual implementation once it's defined
+            if (typeof validateAndCalculateImpl === 'function') {
+                validateAndCalculateImpl(input);
+            }
+        };
+        
         // Core calculation functions defined first
         function calculatePaycheck() {
             console.log('calculatePaycheck called at', new Date().toISOString());
@@ -1116,7 +1125,7 @@
         }
 
         // Combined validation and calculation function
-        function validateAndCalculate(input) {
+        function validateAndCalculateImpl(input) {
             console.log('validateAndCalculate called with input:', input);
             if (input) {
                 // Remove non-numeric characters except decimal point and minus
@@ -1178,8 +1187,8 @@
             calculatePaycheck();
         }
         
-        // Make function globally accessible for inline event handlers
-        window.validateAndCalculate = validateAndCalculate;
+        // Update the global function to use the actual implementation
+        window.validateAndCalculate = validateAndCalculateImpl;
 
 
         window.saveCalculation = function() {
