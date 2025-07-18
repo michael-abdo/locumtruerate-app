@@ -835,25 +835,45 @@
                 const multiplier = periodMultipliers[currentPeriod];
             
             // Get input values with validation
+            console.log('=== GETTING INPUT VALUES ===');
             const regularHours = getValidatedValue('regularHours');
+            console.log('regularHours:', regularHours);
             const regularRate = getValidatedValue('regularRate');
+            console.log('regularRate:', regularRate);
             const overtimeHours = getValidatedValue('overtimeHours');
+            console.log('overtimeHours:', overtimeHours);
             const overtimeRate = getValidatedValue('overtimeRate');
+            console.log('overtimeRate:', overtimeRate);
             const callHours = getValidatedValue('callHours');
+            console.log('callHours:', callHours);
             const callRate = getValidatedValue('callRate');
+            console.log('callRate:', callRate);
             const callbackHours = getValidatedValue('callbackHours');
+            console.log('callbackHours:', callbackHours);
             const callbackRate = getValidatedValue('callbackRate');
+            console.log('callbackRate:', callbackRate);
             const housingStipend = getValidatedValue('housingStipend');
+            console.log('housingStipend:', housingStipend);
             const mealStipend = getValidatedValue('mealStipend');
+            console.log('mealStipend:', mealStipend);
             const mileageReimbursement = getValidatedValue('mileageReimbursement');
+            console.log('mileageReimbursement:', mileageReimbursement);
             const taxState = document.getElementById('taxState').value;
+            console.log('taxState:', taxState);
             const filingStatus = document.getElementById('filingStatus').value;
+            console.log('filingStatus:', filingStatus);
 
             // Calculate pay components with precise decimal handling
+            console.log('=== CALCULATING PAY COMPONENTS ===');
+            console.log('multiplier:', multiplier);
             const regularPay = Math.round((regularHours * regularRate * multiplier) * 100) / 100;
+            console.log('regularPay calculation:', regularHours, '*', regularRate, '*', multiplier, '=', regularPay);
             const overtimePay = Math.round((overtimeHours * overtimeRate * multiplier) * 100) / 100;
+            console.log('overtimePay calculation:', overtimeHours, '*', overtimeRate, '*', multiplier, '=', overtimePay);
             const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
+            console.log('callPay calculation:', callHours, '*', callRate, '*', multiplier, '=', callPay);
             const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
+            console.log('callbackPay calculation:', callbackHours, '*', callbackRate, '*', multiplier, '=', callbackPay);
             
             // Taxable income - includes all pay types
             const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
@@ -964,31 +984,39 @@
 
         // Helper function to get validated numeric value
         function getValidatedValue(fieldId) {
+            console.log('DEBUG getValidatedValue called for:', fieldId);
             const input = document.getElementById(fieldId);
             if (!input) {
-                console.warn('Input not found:', fieldId);
+                console.error('❌ Input element not found for ID:', fieldId);
                 return 0;
             }
+            console.log('✅ Found input element:', input);
             
             const value = input.value.trim();
+            console.log('Raw input value:', value);
             
             // If field is empty, return 0
             if (value === '') {
+                console.log('❌ Field is empty, returning 0');
                 return 0;
             }
             
             const numValue = parseFloat(value);
+            console.log('Parsed numeric value:', numValue);
             
             // Block invalid values
             if (isNaN(numValue) || numValue < 0) {
+                console.log('❌ Invalid value (NaN or negative), returning 0');
                 return 0;
             }
             
             // Hours > 168 should return 168 (handled in validation)
             if (fieldId.includes('Hours') && numValue > 168) {
+                console.log('⚠️ Hours capped at 168');
                 return 168;
             }
             
+            console.log('✅ Returning valid value:', numValue);
             return numValue;
         }
 
