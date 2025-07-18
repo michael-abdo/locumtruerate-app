@@ -1110,6 +1110,7 @@
 
         // Combined validation and calculation function
         window.validateAndCalculate = function(input) {
+            console.log('🎯 validateAndCalculate called with input:', input);
             if (input) {
                 // Remove non-numeric characters except decimal point and minus
                 let value = input.value.replace(/[^0-9.-]/g, '');
@@ -1569,8 +1570,12 @@ From: LocumTrueRate Paycheck Calculator`;
             
             // Run initial calculation after DOM is ready
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', calculatePaycheck);
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('🚀 DOM loaded, calling calculatePaycheck');
+                    calculatePaycheck();
+                });
             } else {
+                console.log('🚀 DOM already ready, calling calculatePaycheck');
                 calculatePaycheck();
             }
         })();
