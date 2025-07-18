@@ -698,7 +698,7 @@
                                     <span class="result-value" id="callbackPay">$510</span>
                                 </div>
                                 <div class="result-item highlight">
-                                    <span class="result-label">Total Gross Pay</span>
+                                    <span class="result-label">Total Gross Pay <small>(Taxable)</small></span>
                                     <span class="result-value" id="totalGrossPay">$0.00</span>
                                 </div>
                                 <div class="result-item">
@@ -739,6 +739,7 @@
                                 </div>
                             </div>
 
+                            <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Actions</h3>
                             <div class="action-buttons">
                                 <button class="btn-primary" onclick="saveCalculation()">Save Calculation</button>
                                 <button class="btn-secondary" onclick="printResults()">[PRINT] Print Results</button>
@@ -925,7 +926,8 @@
                 document.getElementById('callPay').textContent = formatCurrency(callPay);
                 document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
                 
-                // Calculate Total Gross Pay correctly (sum of all taxable pay components only)
+                // Calculate Total Gross Pay (TAXABLE income only - does NOT include tax-free stipends)
+                // Stipends are shown separately as they are tax-free benefits
                 const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
                 console.log('Total Gross Pay calculated:', totalGrossPay);
                 document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
@@ -1047,6 +1049,63 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+        }
+        
+        // Notification system - MUST be defined before validateAndCalculate uses it
+        function showNotification(message, type = 'success') {
+            // Remove any existing notifications
+            const existingNotif = document.querySelector('.notification-toast');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.textContent = message;
+            
+            let backgroundColor;
+            switch(type) {
+                case 'success': backgroundColor = '#10b981'; break;
+                case 'warning': backgroundColor = '#f59e0b'; break;
+                case 'error': backgroundColor = '#ef4444'; break;
+                default: backgroundColor = '#10b981';
+            }
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${backgroundColor};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
         
         // Helper function to clear error states
@@ -1617,62 +1676,6 @@ From: LocumTrueRate Paycheck Calculator`;
             initializeCalculator();
         }
         
-        // Notification system
-        function showNotification(message, type = 'success') {
-            // Remove any existing notifications
-            const existingNotif = document.querySelector('.notification-toast');
-            if (existingNotif) {
-                existingNotif.remove();
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification-toast ${type}`;
-            notification.textContent = message;
-            
-            let backgroundColor;
-            switch(type) {
-                case 'success': backgroundColor = '#10b981'; break;
-                case 'warning': backgroundColor = '#f59e0b'; break;
-                case 'error': backgroundColor = '#ef4444'; break;
-                default: backgroundColor = '#10b981';
-            }
-            
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${backgroundColor};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 10000;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            // Add animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
     </script>
 
     <!-- Floating Logger Component -->
