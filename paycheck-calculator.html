@@ -654,9 +654,9 @@
                                     <label class="form-label">Tax State</label>
                                     <select class="form-input form-select" id="taxState" onchange="validateAndCalculate(this)">
                                         <option value="no-tax">No State Tax</option>
-                                        <option value="low-tax">Low Tax State (3-5%)</option>
-                                        <option value="medium-tax">Medium Tax State (6-8%)</option>
-                                        <option value="high-tax">High Tax State (9-13%)</option>
+                                        <option value="low-tax">Low Tax State (4%)</option>
+                                        <option value="medium-tax">Medium Tax State (7%)</option>
+                                        <option value="high-tax">High Tax State (11%)</option>
                                         <option value="california">California (13.3%)</option>
                                     </select>
                                 </div>
@@ -955,7 +955,7 @@
         }
 
         function calculatePaycheck() {
-            console.log('calculatePaycheck called');
+            console.log('calculatePaycheck called at', new Date().toISOString());
             const multiplier = periodMultipliers[currentPeriod];
             
             // Get input values with validation
@@ -1016,8 +1016,8 @@
                 document.getElementById('callPay').textContent = formatCurrency(callPay);
                 document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
                 
-                // Calculate Total Gross Pay correctly (sum of all pay components)
-                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay + (housingStipend * multiplier) + (mealStipend * multiplier) + (mileageReimbursement * multiplier);
+                // Calculate Total Gross Pay correctly (sum of all taxable pay components only)
+                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
                 document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
                 
                 // Display weekly stipends total
@@ -1444,21 +1444,12 @@ From: LocumTrueRate Paycheck Calculator`;
             }
         }
 
-        // Auto-calculate overtime rate
-        document.getElementById('regularRate').addEventListener('input', function() {
-            const regularRate = parseFloat(this.value) || 0;
-            const overtimeRate = regularRate * 1.5;
-            document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
-            document.getElementById('callbackRate').value = overtimeRate.toFixed(2);
-            validateAndCalculate(this);
-        });
+        // Auto-calculate overtime rate is now handled in validateAndCalculate function
 
-        // Initialize calculator
-        document.addEventListener('DOMContentLoaded', function() {
-            // Force initial calculation
-            setTimeout(() => {
-                calculatePaycheck();
-            }, 100);
+        // Initialize calculator immediately
+        (function initializeCalculator() {
+            // Initial calculation
+            calculatePaycheck();
             
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
@@ -1504,15 +1495,21 @@ From: LocumTrueRate Paycheck Calculator`;
                     }, 50);
                 });
                 
-                // Handle input events to prevent unintended appending
-                input.addEventListener('input', function(e) {
-                    // Validate and calculate immediately on input
-                    validateAndCalculate(this);
-                });
+                // Note: input events are already handled by oninput attributes
                 
                 // Real-time validation on blur
                 input.addEventListener('blur', function() {
-                    validateInput(this);
+                    // Only validate required fields on blur
+                    if (this.id === 'regularHours' || this.id === 'regularRate') {
+                        if (this.value.trim() === '') {
+                            this.classList.add('error');
+                            const errorEl = document.getElementById(this.id + '-error');
+                            if (errorEl) {
+                                errorEl.textContent = 'This field is required';
+                                errorEl.classList.add('show');
+                            }
+                        }
+                    }
                 });
             });
             
@@ -1531,7 +1528,14 @@ From: LocumTrueRate Paycheck Calculator`;
                     }, 500);
                 });
             });
-        });
+            
+            // Run initial calculation after DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', calculatePaycheck);
+            } else {
+                calculatePaycheck();
+            }
+        })();
     </script>
 
         // Notification system
