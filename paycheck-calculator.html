@@ -699,7 +699,7 @@
                                 </div>
                                 <div class="result-item highlight">
                                     <span class="result-label">Total Gross Pay</span>
-                                    <span class="result-value" id="totalGrossPay">$5,530</span>
+                                    <span class="result-value" id="totalGrossPay">$0.00</span>
                                 </div>
                                 <div class="result-item">
                                     <span class="result-label">Weekly Stipends</span>
@@ -894,50 +894,63 @@
 
         // Combined validation and calculation function
         function validateAndCalculate(input) {
-            let shouldCalculate = true;
-            
             if (input) {
-                const isValid = validateInput(input);
+                // Remove non-numeric characters except decimal point and minus
+                let value = input.value.replace(/[^0-9.-]/g, '');
                 
-                // For hours fields, enforce limits strictly
-                if (input.id.includes('Hours')) {
-                    const numValue = parseFloat(input.value);
-                    if (numValue > 168) {
-                        input.value = '168'; // Auto-correct to maximum
-                        clearErrors(input);
-                        showNotification('Hours auto-corrected to maximum (168)', 'warning');
-                        shouldCalculate = true;
-                    } else if (numValue < 0) {
-                        input.value = '0'; // Auto-correct negative
-                        clearErrors(input);
-                        showNotification('Negative hours auto-corrected to 0', 'warning');
-                        shouldCalculate = true;
+                // Handle multiple decimal points
+                const decimalCount = (value.match(/\./g) || []).length;
+                if (decimalCount > 1) {
+                    // Keep only first decimal
+                    const parts = value.split('.');
+                    value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                
+                // Update input value if cleaned
+                if (input.value !== value) {
+                    input.value = value;
+                    showNotification('Non-numeric characters removed', 'warning');
+                }
+                
+                const numValue = parseFloat(value) || 0;
+                
+                // Clear any previous errors
+                clearErrors(input);
+                
+                // Validate and auto-correct
+                if (value !== '') {
+                    // For hours fields, enforce limits
+                    if (input.id.includes('Hours')) {
+                        if (numValue > 168) {
+                            input.value = '168';
+                            showNotification('Hours limited to 168 per week', 'warning');
+                        } else if (numValue < 0) {
+                            input.value = '0';
+                            showNotification('Negative hours not allowed', 'warning');
+                        }
+                    }
+                    // For rates and stipends, prevent negatives
+                    else if (numValue < 0) {
+                        input.value = '0';
+                        showNotification('Negative values not allowed', 'warning');
+                    }
+                    // Check for very large numbers
+                    else if (numValue > 999999) {
+                        input.value = '999999';
+                        showNotification('Value too large', 'warning');
                     }
                 }
                 
-                // For rates, auto-correct negatives without affecting other fields
-                if (input.id.includes('Rate')) {
-                    const numValue = parseFloat(input.value);
-                    if (numValue < 0) {
-                        input.value = '0';
-                        clearErrors(input);
-                        showNotification('Negative rate auto-corrected to 0', 'warning');
-                        shouldCalculate = true;
-                    }
-                }
-                
-                // For stipends and allowances, also show notification
-                if ((input.id.includes('Stipend') || input.id.includes('Reimbursement')) && parseFloat(input.value) < 0) {
-                    const numValue = parseFloat(input.value);
-                    if (numValue < 0) {
-                        input.value = '0';
-                        clearErrors(input);
-                        showNotification('Negative amount auto-corrected to 0', 'warning');
-                        shouldCalculate = true;
-                    }
+                // Special handling for regular rate to update overtime rates
+                if (input.id === 'regularRate') {
+                    const rate = parseFloat(input.value) || 0;
+                    const overtimeRate = rate * 1.5;
+                    document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+                    document.getElementById('callbackRate').value = overtimeRate.toFixed(2);
                 }
             }
             
+            // Always recalculate
             calculatePaycheck();
         }
 
@@ -1003,8 +1016,9 @@
                 document.getElementById('callPay').textContent = formatCurrency(callPay);
                 document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
                 
-                // Calculate and display Total Gross Pay (same as grossTaxable)
-                document.getElementById('totalGrossPay').textContent = formatCurrency(grossTaxable);
+                // Calculate Total Gross Pay correctly (sum of all pay components)
+                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay + (housingStipend * multiplier) + (mealStipend * multiplier) + (mileageReimbursement * multiplier);
+                document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
                 
                 // Display weekly stipends total
                 document.getElementById('weeklyStipends').textContent = '+' + formatCurrency(totalStipends);
