@@ -1634,11 +1634,11 @@ From: LocumTrueRate Paycheck Calculator`;
     </script>
 
     <!-- Floating Logger Component -->
-    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger" style="display: none;">
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger" style="display: flex;">
         <span id="fab-icon">🔍</span>
     </button>
     
-    <div id="floating-logger" class="floating-logger" style="display: none;">
+    <div id="floating-logger" class="floating-logger" style="display: block;">
         <div class="logger-header">
             <span class="logger-title">Console Logger</span>
             <div class="logger-controls">
@@ -2022,10 +2022,20 @@ From: LocumTrueRate Paycheck Calculator`;
                 document.addEventListener('DOMContentLoaded', () => {
                     initLogger();
                     makeLoggerDraggable();
+                    // Show logger by default for debugging
+                    const logger = document.getElementById('floating-logger');
+                    const fab = document.getElementById('logger-toggle-fab');
+                    if (logger) logger.style.display = 'block';
+                    if (fab) fab.style.display = 'flex';
                 });
             } else {
                 initLogger();
                 makeLoggerDraggable();
+                // Show logger by default for debugging
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                if (logger) logger.style.display = 'block';
+                if (fab) fab.style.display = 'flex';
             }
         })();
     </script>
