@@ -367,7 +367,7 @@
         /* Action Buttons */
         .action-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -1132,12 +1132,40 @@
         }
 
         function saveCalculation() {
+            // Validate required fields first
+            const regularHours = document.getElementById('regularHours').value.trim();
+            const regularRate = document.getElementById('regularRate').value.trim();
+            
+            if (!regularHours || !regularRate) {
+                showNotification('Please fill in Regular Hours and Regular Rate', 'error');
+                // Highlight required fields
+                if (!regularHours) {
+                    const input = document.getElementById('regularHours');
+                    input.classList.add('error');
+                    const errorEl = document.getElementById('regularHours-error');
+                    if (errorEl) {
+                        errorEl.textContent = 'This field is required';
+                        errorEl.classList.add('show');
+                    }
+                }
+                if (!regularRate) {
+                    const input = document.getElementById('regularRate');
+                    input.classList.add('error');
+                    const errorEl = document.getElementById('regularRate-error');
+                    if (errorEl) {
+                        errorEl.textContent = 'This field is required';
+                        errorEl.classList.add('show');
+                    }
+                }
+                return;
+            }
+            
             const calculation = {
                 period: currentPeriod,
                 timestamp: new Date().toISOString(),
                 inputs: {
-                    regularHours: document.getElementById('regularHours').value,
-                    regularRate: document.getElementById('regularRate').value,
+                    regularHours: regularHours,
+                    regularRate: regularRate,
                     overtimeHours: document.getElementById('overtimeHours').value,
                     overtimeRate: document.getElementById('overtimeRate').value,
                     callHours: document.getElementById('callHours').value,
@@ -1152,7 +1180,11 @@
                 },
                 results: {
                     netPay: document.getElementById('netPay').textContent,
-                    grossTaxable: document.getElementById('grossTaxable').textContent
+                    grossTaxable: document.getElementById('grossTaxable').textContent,
+                    totalGrossPay: document.getElementById('totalGrossPay').textContent,
+                    federalTax: document.getElementById('federalTax').textContent,
+                    stateTax: document.getElementById('stateTax').textContent,
+                    ficaTax: document.getElementById('ficaTax').textContent
                 }
             };
 
@@ -1162,7 +1194,7 @@
             localStorage.setItem('paycheckCalculations', JSON.stringify(savedCalculations));
             
             // Show success message
-            showNotification('Calculation saved successfully!');
+            showNotification('Calculation saved successfully!', 'success');
         }
 
         function exportToPDF() {
