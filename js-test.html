@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Test</title>
+</head>
+<body>
+    <h1>JavaScript Execution Test</h1>
+    <div id="test-output"></div>
+    
+    <script>
+        console.log('🔧 Script 1: Basic test started');
+        
+        // Test if basic JS works
+        try {
+            console.log('✅ Script 1: Basic console.log works');
+            
+            // Test DOM manipulation
+            document.getElementById('test-output').innerHTML = 'JavaScript is working!';
+            console.log('✅ Script 1: DOM manipulation works');
+            
+            // Test function definition
+            function testFunction() {
+                console.log('✅ Script 1: Function definition works');
+                return 'Function executed successfully';
+            }
+            
+            // Test function execution
+            const result = testFunction();
+            console.log('✅ Script 1: Function execution result:', result);
+            
+        } catch (error) {
+            console.error('❌ Script 1: Error occurred:', error);
+        }
+        
+        console.log('🔧 Script 1: Test completed');
+    </script>
+    
+    <script>
+        console.log('🔧 Script 2: Starting second script');
+        
+        // Test if second script can access first script's functions
+        try {
+            if (typeof testFunction === 'function') {
+                console.log('✅ Script 2: Can access first script function');
+                testFunction();
+            } else {
+                console.log('❌ Script 2: Cannot access first script function');
+            }
+        } catch (error) {
+            console.error('❌ Script 2: Error accessing first script:', error);
+        }
+        
+        console.log('🔧 Script 2: Test completed');
+    </script>
+</body>
+</html>
