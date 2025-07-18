@@ -1634,7 +1634,7 @@ From: LocumTrueRate Paycheck Calculator`;
     </script>
 
     <!-- Floating Logger Component -->
-    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger" style="display: flex;">
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger" style="display: none;">
         <span id="fab-icon">🔍</span>
     </button>
     
@@ -2026,7 +2026,7 @@ From: LocumTrueRate Paycheck Calculator`;
                     const logger = document.getElementById('floating-logger');
                     const fab = document.getElementById('logger-toggle-fab');
                     if (logger) logger.style.display = 'block';
-                    if (fab) fab.style.display = 'flex';
+                    if (fab) fab.style.display = 'none';
                 });
             } else {
                 initLogger();
@@ -2035,7 +2035,7 @@ From: LocumTrueRate Paycheck Calculator`;
                 const logger = document.getElementById('floating-logger');
                 const fab = document.getElementById('logger-toggle-fab');
                 if (logger) logger.style.display = 'block';
-                if (fab) fab.style.display = 'flex';
+                if (fab) fab.style.display = 'none';
             }
         })();
     </script>
