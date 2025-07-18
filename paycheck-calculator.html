@@ -820,14 +820,17 @@
     </div>
 
     <script>
+        // Define all functions before they're used
         let currentPeriod = 'weekly';
         const periodMultipliers = {
             'weekly': 1,
             'biweekly': 2,
             'monthly': 4.33
         };
+        
+        // Functions will be attached to window object after definition
 
-        function setPeriod(period) {
+        window.setPeriod = function(period) {
             currentPeriod = period;
             
             // Update tab styling
@@ -840,7 +843,7 @@
             document.getElementById('periodLabel').textContent = `${period.charAt(0).toUpperCase() + period.slice(1)} Net Pay`;
             
             calculatePaycheck();
-        }
+        };
 
         // Validation function for input fields
         function validateInput(input) {
@@ -893,7 +896,7 @@
         }
 
         // Combined validation and calculation function
-        function validateAndCalculate(input) {
+        window.validateAndCalculate = function(input) {
             if (input) {
                 // Remove non-numeric characters except decimal point and minus
                 let value = input.value.replace(/[^0-9.-]/g, '');
@@ -952,11 +955,12 @@
             
             // Always recalculate
             calculatePaycheck();
-        }
+        };
 
         function calculatePaycheck() {
             console.log('calculatePaycheck called at', new Date().toISOString());
-            const multiplier = periodMultipliers[currentPeriod];
+            try {
+                const multiplier = periodMultipliers[currentPeriod];
             
             // Get input values with validation
             const regularHours = getValidatedValue('regularHours');
@@ -1018,6 +1022,7 @@
                 
                 // Calculate Total Gross Pay correctly (sum of all taxable pay components only)
                 const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+                console.log('Total Gross Pay calculated:', totalGrossPay);
                 document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
                 
                 // Display weekly stipends total
@@ -1066,6 +1071,9 @@
                 }
             } catch (error) {
                 console.error('Error updating display:', error);
+            }
+            } catch (error) {
+                console.error('Error in calculatePaycheck:', error);
             }
             
             // Update tax labels with current rates for transparency
@@ -1131,7 +1139,7 @@
             }
         }
 
-        function saveCalculation() {
+        window.saveCalculation = function() {
             // Validate required fields first
             const regularHours = document.getElementById('regularHours').value.trim();
             const regularRate = document.getElementById('regularRate').value.trim();
@@ -1197,7 +1205,7 @@
             showNotification('Calculation saved successfully!', 'success');
         }
 
-        function exportToPDF() {
+        window.exportToPDF = function() {
             try {
                 // Generate PDF content
                 const calculation = {
@@ -1257,10 +1265,10 @@ NET PAY: ${calculation.netPay}
                 console.error('Error exporting PDF:', error);
                 showNotification('Error exporting file', 'error');
             }
-        }
+        };
 
         // Print Results function
-        function printResults() {
+        window.printResults = function() {
             try {
                 // Create a print-friendly version of the results
                 const printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -1392,10 +1400,10 @@ NET PAY: ${calculation.netPay}
                 console.error('Print error:', error);
                 showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
             }
-        }
+        };
 
         // Email Results function
-        function emailResults() {
+        window.emailResults = function() {
             try {
                 const subject = `Paycheck Analysis - ${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}`;
                 const body = `Paycheck Analysis Summary:
@@ -1442,7 +1450,7 @@ From: LocumTrueRate Paycheck Calculator`;
                 console.error('Email error:', error);
                 showNotification('⚠️ Email failed. Please copy the analysis data manually.', 'error');
             }
-        }
+        };
 
         // Auto-calculate overtime rate is now handled in validateAndCalculate function
 
