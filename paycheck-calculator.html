@@ -830,9 +830,13 @@
         
         // Core calculation functions defined first
         function calculatePaycheck() {
-            console.log('calculatePaycheck called at', new Date().toISOString());
+            console.log('🧮 calculatePaycheck called at', new Date().toISOString());
+            console.log('Current period:', currentPeriod);
+            console.log('Period multipliers:', periodMultipliers);
+            
             try {
                 const multiplier = periodMultipliers[currentPeriod];
+                console.log('Using multiplier:', multiplier);
             
             // Get input values with validation
             console.log('=== GETTING INPUT VALUES ===');
@@ -964,9 +968,9 @@
             } catch (error) {
                 console.error('Error updating display:', error);
             }
-            } catch (error) {
-                console.error('Error in calculatePaycheck:', error);
-            }
+        } catch (error) {
+            console.error('Error in calculatePaycheck:', error);
+        }
             
             // Update tax labels with current rates for transparency
             try {
@@ -984,13 +988,16 @@
 
         // Helper function to get validated numeric value
         function getValidatedValue(fieldId) {
-            console.log('DEBUG getValidatedValue called for:', fieldId);
+            console.log('🔍 getValidatedValue called for:', fieldId);
+            console.log('DOM state:', document.readyState);
+            
             const input = document.getElementById(fieldId);
             if (!input) {
                 console.error('❌ Input element not found for ID:', fieldId);
+                console.log('Available IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id).slice(0, 10));
                 return 0;
             }
-            console.log('✅ Found input element:', input);
+            console.log('✅ Found input element:', input.tagName, input.type, input.value);
             
             const value = input.value.trim();
             console.log('Raw input value:', value);
@@ -1488,97 +1495,115 @@ From: LocumTrueRate Paycheck Calculator`;
         // Auto-calculate overtime rate is now handled in validateAndCalculate function
 
         // Initialize calculator when DOM is ready
-        (function initializeCalculator() {
+        function initializeCalculator() {
+            console.log('🚀 initializeCalculator called');
+            console.log('document.readyState:', document.readyState);
             
-            // Fix input field usability issues
-            const numberInputs = document.querySelectorAll('input[type="number"]');
-            numberInputs.forEach(input => {
-                // Prevent Ctrl+A from selecting entire page when input is focused
-                input.addEventListener('keydown', function(e) {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        e.preventDefault();
-                        // Select only the input field content
-                        this.select();
-                        return false;
-                    }
-                }, true);
+            try {
+                // Fix input field usability issues
+                const numberInputs = document.querySelectorAll('input[type="number"]');
+                console.log('Found', numberInputs.length, 'number inputs');
                 
-                // Handle digit input when text is selected
-                input.addEventListener('keydown', function(e) {
-                    // If user types a digit and text is selected, clear and replace
-                    if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
-                        if (this.selectionStart !== this.selectionEnd) {
-                            // Clear the selected text first
+                numberInputs.forEach(input => {
+                    // Prevent Ctrl+A from selecting entire page when input is focused
+                    input.addEventListener('keydown', function(e) {
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
                             e.preventDefault();
-                            this.value = e.key;
-                            // Trigger input event to update calculations
-                            this.dispatchEvent(new Event('input', { bubbles: true }));
+                            // Select only the input field content
+                            this.select();
                             return false;
                         }
-                    }
-                });
-                
-                // Better double-click behavior
-                input.addEventListener('dblclick', function(e) {
-                    e.preventDefault();
-                    this.select();
-                });
-                
-                // Focus behavior - select all text
-                input.addEventListener('focus', function() {
-                    // Small delay to ensure selection works
-                    setTimeout(() => {
-                        this.select();
-                    }, 50);
-                });
-                
-                // Note: input events are already handled by oninput attributes
-                
-                // Real-time validation on blur
-                input.addEventListener('blur', function() {
-                    // Only validate required fields on blur
-                    if (this.id === 'regularHours' || this.id === 'regularRate') {
-                        if (this.value.trim() === '') {
-                            this.classList.add('error');
-                            const errorEl = document.getElementById(this.id + '-error');
-                            if (errorEl) {
-                                errorEl.textContent = 'This field is required';
-                                errorEl.classList.add('show');
+                    }, true);
+                    
+                    // Handle digit input when text is selected
+                    input.addEventListener('keydown', function(e) {
+                        // If user types a digit and text is selected, clear and replace
+                        if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+                            if (this.selectionStart !== this.selectionEnd) {
+                                // Clear the selected text first
+                                e.preventDefault();
+                                this.value = e.key;
+                                // Trigger input event to update calculations
+                                this.dispatchEvent(new Event('input', { bubbles: true }));
+                                return false;
                             }
                         }
-                    }
-                });
-            });
-            
-            // Fix button click reliability (prevent rapid double-clicks only)
-            const buttons = document.querySelectorAll('a[href], button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    // Prevent rapid double-clicking issues
-                    if (this.dataset.clicking) {
+                    });
+                    
+                    // Better double-click behavior
+                    input.addEventListener('dblclick', function(e) {
                         e.preventDefault();
-                        return false;
-                    }
-                    this.dataset.clicking = 'true';
-                    setTimeout(() => {
-                        delete this.dataset.clicking;
-                    }, 500);
+                        this.select();
+                    });
+                    
+                    // Focus behavior - select all text
+                    input.addEventListener('focus', function() {
+                        // Small delay to ensure selection works
+                        setTimeout(() => {
+                            this.select();
+                        }, 50);
+                    });
+                    
+                    // Note: input events are already handled by oninput attributes
+                    
+                    // Real-time validation on blur
+                    input.addEventListener('blur', function() {
+                        // Only validate required fields on blur
+                        if (this.id === 'regularHours' || this.id === 'regularRate') {
+                            if (this.value.trim() === '') {
+                                this.classList.add('error');
+                                const errorEl = document.getElementById(this.id + '-error');
+                                if (errorEl) {
+                                    errorEl.textContent = 'This field is required';
+                                    errorEl.classList.add('show');
+                                }
+                            }
+                        }
+                    });
                 });
-            });
-            
-            // Run initial calculation after DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                    console.log('🚀 DOM loaded, calling calculatePaycheck');
-                    calculatePaycheck();
+                
+                // Fix button click reliability (prevent rapid double-clicks only)
+                const buttons = document.querySelectorAll('a[href], button');
+                console.log('Found', buttons.length, 'buttons');
+                
+                buttons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        // Prevent rapid double-clicking issues
+                        if (this.dataset.clicking) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        this.dataset.clicking = 'true';
+                        setTimeout(() => {
+                            delete this.dataset.clicking;
+                        }, 500);
+                    });
                 });
-            } else {
-                console.log('🚀 DOM already ready, calling calculatePaycheck');
+                
+                console.log('✅ All event listeners attached successfully');
+                
+                // Run initial calculation
+                console.log('🧮 Running initial calculation...');
                 calculatePaycheck();
+                
+            } catch (error) {
+                console.error('❌ Error in initializeCalculator:', error);
             }
-        })();
+        }
+        
+        // Simple DOM ready logic
+        if (document.readyState === 'loading') {
+            console.log('⏳ DOM is loading, adding event listener');
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('✅ DOM loaded, initializing calculator');
+                initializeCalculator();
+            });
+        } else {
+            console.log('✅ DOM already ready, initializing calculator');
+            initializeCalculator();
+        }
         
         // Notification system
         function showNotification(message, type = 'success') {
