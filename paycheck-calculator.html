@@ -821,7 +821,7 @@
 
     <script>
         // URGENT DEBUG: Test if script starts at all
-        console.log('🟢 SCRIPT START - First line executed');
+        console.log('SCRIPT START - First line executed');
         
         // Define all functions before they're used
         let currentPeriod = 'weekly';
@@ -832,9 +832,9 @@
         };
         
         // Core calculation functions defined first
-        console.log('🟢 SCRIPT - About to define calculatePaycheck');
+        console.log('SCRIPT - About to define calculatePaycheck');
         function calculatePaycheck() {
-            console.log('🧮 calculatePaycheck called at', new Date().toISOString());
+            console.log('calculatePaycheck called at', new Date().toISOString());
             console.log('Current period:', currentPeriod);
             console.log('Period multipliers:', periodMultipliers);
             
@@ -1598,7 +1598,7 @@ From: LocumTrueRate Paycheck Calculator`;
         }
         
         // Simple DOM ready logic
-        console.log('🟢 SCRIPT - Reached DOM ready check');
+        console.log('SCRIPT - Reached DOM ready check');
         if (document.readyState === 'loading') {
             console.log('⏳ DOM is loading, adding event listener');
             document.addEventListener('DOMContentLoaded', function() {
