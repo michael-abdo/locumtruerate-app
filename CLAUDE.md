@@ -83,6 +83,36 @@ function deleteItem(id) {
 - `paycheck-calculator.html` - Paycheck calculation tool
 - `job-board.html` - Job listing interface
 
+## 🚨 CRITICAL: Request Clarity Requirements
+
+### Before ANY Work Begins
+Claude MUST refuse to proceed unless the user provides:
+
+1. **SPECIFIC GOAL**: What exactly should the end result be?
+   - ❌ "Fix this" or "Make it work" 
+   - ✅ "I want the calculator to update Total Gross Pay in real-time when users change input values"
+
+2. **CLEAR UX EXPECTATION**: What should the user experience?
+   - ❌ "It's broken" or "This isn't working"
+   - ✅ "When a user types in the Regular Hours field, I want to see the Total Gross Pay amount update immediately without any page refresh"
+
+3. **SUCCESS CRITERIA**: How will we know it's working?
+   - ❌ Vague complaints about functionality
+   - ✅ "I'll know it's working when I can change any input field and see all calculations update within 1 second"
+
+### If User Cannot Provide Clarity
+Claude should help the user discover what they want by asking:
+- "What specific behavior do you expect to see?"
+- "Can you describe step-by-step what should happen when a user interacts with this?"
+- "What would the ideal user experience look like?"
+- "How will you know when this is working correctly?"
+
+### NO CODING Until Direction Is Clear
+- Never start coding based on complaints like "this is broken"
+- Never guess what the user wants
+- Always confirm the specific goal and user experience before proceeding
+- Help the user articulate their vision if they're struggling to express it
+
 ## Important Notes
 - All user interactions should be smooth and non-interrupting
 - Maintain consistent UX patterns across all interfaces
