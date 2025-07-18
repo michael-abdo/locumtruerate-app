@@ -1454,10 +1454,8 @@ From: LocumTrueRate Paycheck Calculator`;
 
         // Auto-calculate overtime rate is now handled in validateAndCalculate function
 
-        // Initialize calculator immediately
+        // Initialize calculator when DOM is ready
         (function initializeCalculator() {
-            // Initial calculation
-            calculatePaycheck();
             
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
