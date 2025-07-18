@@ -828,7 +828,192 @@
             'monthly': 4.33
         };
         
-        // Functions will be attached to window object after definition
+        // Core calculation functions defined first
+        function calculatePaycheck() {
+            console.log('calculatePaycheck called at', new Date().toISOString());
+            try {
+                const multiplier = periodMultipliers[currentPeriod];
+            
+            // Get input values with validation
+            const regularHours = getValidatedValue('regularHours');
+            const regularRate = getValidatedValue('regularRate');
+            const overtimeHours = getValidatedValue('overtimeHours');
+            const overtimeRate = getValidatedValue('overtimeRate');
+            const callHours = getValidatedValue('callHours');
+            const callRate = getValidatedValue('callRate');
+            const callbackHours = getValidatedValue('callbackHours');
+            const callbackRate = getValidatedValue('callbackRate');
+            const housingStipend = getValidatedValue('housingStipend');
+            const mealStipend = getValidatedValue('mealStipend');
+            const mileageReimbursement = getValidatedValue('mileageReimbursement');
+            const taxState = document.getElementById('taxState').value;
+            const filingStatus = document.getElementById('filingStatus').value;
+
+            // Calculate pay components with precise decimal handling
+            const regularPay = Math.round((regularHours * regularRate * multiplier) * 100) / 100;
+            const overtimePay = Math.round((overtimeHours * overtimeRate * multiplier) * 100) / 100;
+            const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
+            const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
+            
+            // Taxable income - includes all pay types
+            const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
+            
+            // Tax calculations - FIXED: Correct calculation logic
+            const federalTaxRate = 0.22; // 22% federal tax rate  
+            const federalTax = grossTaxable > 0 ? Math.round((grossTaxable * federalTaxRate) * 100) / 100 : 0;
+            
+            // State tax calculation - FIXED: Now properly applies selected state tax
+            let stateTaxRate = 0;
+            switch(taxState) {
+                case 'low-tax': stateTaxRate = 0.04; break;    // 4%
+                case 'medium-tax': stateTaxRate = 0.07; break; // 7%
+                case 'high-tax': stateTaxRate = 0.11; break;   // 11%
+                case 'california': stateTaxRate = 0.133; break; // 13.3%
+                default: stateTaxRate = 0; // No state tax
+            }
+            const stateTax = grossTaxable > 0 ? Math.round((grossTaxable * stateTaxRate) * 100) / 100 : 0;
+            
+            const ficaRate = 0.0765; // Social Security + Medicare
+            const ficaTax = grossTaxable > 0 ? Math.round((grossTaxable * ficaRate) * 100) / 100 : 0;
+            
+            // Tax-free stipends
+            const totalStipends = Math.round(((housingStipend + mealStipend + mileageReimbursement) * multiplier) * 100) / 100;
+            
+            // Net pay calculation
+            const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
+            
+            console.log('Final values:', { grossTaxable, federalTax, stateTax, ficaTax, totalStipends, netPay });
+
+            // Update display with proper currency formatting - FIXED calculations
+            try {
+                console.log('Updating display elements');
+                document.getElementById('regularPay').textContent = formatCurrency(regularPay);
+                document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
+                document.getElementById('callPay').textContent = formatCurrency(callPay);
+                document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
+                
+                // Calculate Total Gross Pay correctly (sum of all taxable pay components only)
+                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+                console.log('Total Gross Pay calculated:', totalGrossPay);
+                document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
+                
+                // Display weekly stipends total
+                document.getElementById('weeklyStipends').textContent = '+' + formatCurrency(totalStipends);
+                
+                document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
+                
+                // FIXED: Federal tax should show actual calculated amount
+                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatCurrency(federalTax) : '$0.00';
+                
+                // FIXED: State tax now properly shows calculated amount
+                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
+                
+                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatCurrency(ficaTax) : '$0.00';
+                document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
+                document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
+                document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
+                
+                // CRITICAL FIX: Update BOTH Net Pay displays consistently
+                const netPayFormatted = formatCurrency(netPay);
+                document.getElementById('netPayDisplay').textContent = netPayFormatted;
+                document.getElementById('netPay').textContent = netPayFormatted;
+                
+                console.log('Updated both netPay displays:', netPayFormatted);
+                
+                console.log('Display updated successfully');
+                
+                // FORCE refresh of the blue Net Pay card to ensure it updates
+                const netPayCard = document.getElementById('netPay');
+                if (netPayCard) {
+                    netPayCard.textContent = netPayFormatted;
+                    netPayCard.style.opacity = '0.8';
+                    setTimeout(() => {
+                        netPayCard.style.opacity = '1';
+                    }, 100);
+                }
+                
+                // Auto-scroll to results after calculation with significant changes
+                if (grossTaxable > 0) {
+                    setTimeout(() => {
+                        const resultsSection = document.querySelector('.calculator-results');
+                        if (resultsSection) {
+                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Error updating display:', error);
+            }
+            } catch (error) {
+                console.error('Error in calculatePaycheck:', error);
+            }
+            
+            // Update tax labels with current rates for transparency
+            try {
+                document.getElementById('federalTaxLabel').textContent = `Federal Tax (${Math.round(federalTaxRate * 100)}%)`;
+                
+                // Also update state tax label if state is selected
+                const stateTaxElement = document.querySelector('span[id*="stateTax"]')?.parentElement?.querySelector('.result-label');
+                if (stateTaxElement && stateTaxRate > 0) {
+                    stateTaxElement.textContent = `State Tax (${Math.round(stateTaxRate * 100)}%)`;
+                }
+            } catch (error) {
+                console.error('Error updating tax labels:', error);
+            }
+        }
+
+        // Helper function to get validated numeric value
+        function getValidatedValue(fieldId) {
+            const input = document.getElementById(fieldId);
+            if (!input) {
+                console.warn('Input not found:', fieldId);
+                return 0;
+            }
+            
+            const value = input.value.trim();
+            
+            // If field is empty, return 0
+            if (value === '') {
+                return 0;
+            }
+            
+            const numValue = parseFloat(value);
+            
+            // Block invalid values
+            if (isNaN(numValue) || numValue < 0) {
+                return 0;
+            }
+            
+            // Hours > 168 should return 168 (handled in validation)
+            if (fieldId.includes('Hours') && numValue > 168) {
+                return 168;
+            }
+            
+            return numValue;
+        }
+
+        // Helper function to format currency with cents
+        function formatCurrency(amount) {
+            // Handle negative zero and very small negative values
+            if (amount === 0 || amount === -0 || (amount < 0 && amount > -0.01)) {
+                return '$0.00';
+            }
+            
+            return '$' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Helper function to clear error states
+        function clearErrors(input) {
+            const errorElement = document.getElementById(input.id + '-error');
+            if (errorElement) {
+                input.classList.remove('error');
+                errorElement.textContent = '';
+                errorElement.classList.remove('show');
+            }
+        }
 
         window.setPeriod = function(period) {
             currentPeriod = period;
@@ -957,187 +1142,6 @@
             calculatePaycheck();
         };
 
-        function calculatePaycheck() {
-            console.log('calculatePaycheck called at', new Date().toISOString());
-            try {
-                const multiplier = periodMultipliers[currentPeriod];
-            
-            // Get input values with validation
-            const regularHours = getValidatedValue('regularHours');
-            const regularRate = getValidatedValue('regularRate');
-            const overtimeHours = getValidatedValue('overtimeHours');
-            const overtimeRate = getValidatedValue('overtimeRate');
-            const callHours = getValidatedValue('callHours');
-            const callRate = getValidatedValue('callRate');
-            const callbackHours = getValidatedValue('callbackHours');
-            const callbackRate = getValidatedValue('callbackRate');
-            const housingStipend = getValidatedValue('housingStipend');
-            const mealStipend = getValidatedValue('mealStipend');
-            const mileageReimbursement = getValidatedValue('mileageReimbursement');
-            const taxState = document.getElementById('taxState').value;
-            const filingStatus = document.getElementById('filingStatus').value;
-
-            // Calculate pay components with precise decimal handling
-            const regularPay = Math.round((regularHours * regularRate * multiplier) * 100) / 100;
-            const overtimePay = Math.round((overtimeHours * overtimeRate * multiplier) * 100) / 100;
-            const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
-            const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
-            
-            // Taxable income - includes all pay types
-            const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
-            
-            // Tax calculations - FIXED: Correct calculation logic
-            const federalTaxRate = 0.22; // 22% federal tax rate  
-            const federalTax = grossTaxable > 0 ? Math.round((grossTaxable * federalTaxRate) * 100) / 100 : 0;
-            
-            // State tax calculation - FIXED: Now properly applies selected state tax
-            let stateTaxRate = 0;
-            switch(taxState) {
-                case 'low-tax': stateTaxRate = 0.04; break;    // 4%
-                case 'medium-tax': stateTaxRate = 0.07; break; // 7%
-                case 'high-tax': stateTaxRate = 0.11; break;   // 11%
-                case 'california': stateTaxRate = 0.133; break; // 13.3%
-                default: stateTaxRate = 0; // No state tax
-            }
-            const stateTax = grossTaxable > 0 ? Math.round((grossTaxable * stateTaxRate) * 100) / 100 : 0;
-            
-            const ficaRate = 0.0765; // Social Security + Medicare
-            const ficaTax = grossTaxable > 0 ? Math.round((grossTaxable * ficaRate) * 100) / 100 : 0;
-            
-            // Tax-free stipends
-            const totalStipends = Math.round(((housingStipend + mealStipend + mileageReimbursement) * multiplier) * 100) / 100;
-            
-            // Net pay calculation
-            const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
-            
-            console.log('Final values:', { grossTaxable, federalTax, stateTax, ficaTax, totalStipends, netPay });
-
-            // Update display with proper currency formatting - FIXED calculations
-            try {
-                console.log('Updating display elements');
-                document.getElementById('regularPay').textContent = formatCurrency(regularPay);
-                document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
-                document.getElementById('callPay').textContent = formatCurrency(callPay);
-                document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
-                
-                // Calculate Total Gross Pay correctly (sum of all taxable pay components only)
-                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
-                console.log('Total Gross Pay calculated:', totalGrossPay);
-                document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
-                
-                // Display weekly stipends total
-                document.getElementById('weeklyStipends').textContent = '+' + formatCurrency(totalStipends);
-                
-                document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
-                
-                // FIXED: Federal tax should show actual calculated amount
-                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatCurrency(federalTax) : '$0.00';
-                
-                // FIXED: State tax now properly shows calculated amount
-                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
-                
-                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatCurrency(ficaTax) : '$0.00';
-                document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
-                document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
-                document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
-                
-                // CRITICAL FIX: Update BOTH Net Pay displays consistently
-                const netPayFormatted = formatCurrency(netPay);
-                document.getElementById('netPayDisplay').textContent = netPayFormatted;
-                document.getElementById('netPay').textContent = netPayFormatted;
-                
-                console.log('Updated both netPay displays:', netPayFormatted);
-                
-                console.log('Display updated successfully');
-                
-                // FORCE refresh of the blue Net Pay card to ensure it updates
-                const netPayCard = document.getElementById('netPay');
-                if (netPayCard) {
-                    netPayCard.textContent = netPayFormatted;
-                    netPayCard.style.opacity = '0.8';
-                    setTimeout(() => {
-                        netPayCard.style.opacity = '1';
-                    }, 100);
-                }
-                
-                // Auto-scroll to results after calculation with significant changes
-                if (grossTaxable > 0) {
-                    setTimeout(() => {
-                        const resultsSection = document.querySelector('.calculator-results');
-                        if (resultsSection) {
-                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }
-                    }, 300);
-                }
-            } catch (error) {
-                console.error('Error updating display:', error);
-            }
-            } catch (error) {
-                console.error('Error in calculatePaycheck:', error);
-            }
-            
-            // Update tax labels with current rates for transparency
-            document.getElementById('federalTaxLabel').textContent = `Federal Tax (${Math.round(federalTaxRate * 100)}%)`;
-            
-            // Also update state tax label if state is selected
-            const stateTaxElement = document.querySelector('span[id*="stateTax"]')?.parentElement?.querySelector('.result-label');
-            if (stateTaxElement && stateTaxRate > 0) {
-                stateTaxElement.textContent = `State Tax (${Math.round(stateTaxRate * 100)}%)`;
-            }
-        }
-
-        // Helper function to get validated numeric value
-        function getValidatedValue(fieldId) {
-            const input = document.getElementById(fieldId);
-            if (!input) {
-                console.warn('Input not found:', fieldId);
-                return 0;
-            }
-            
-            const value = input.value.trim();
-            
-            // If field is empty, return 0
-            if (value === '') {
-                return 0;
-            }
-            
-            const numValue = parseFloat(value);
-            
-            // Block invalid values
-            if (isNaN(numValue) || numValue < 0) {
-                return 0;
-            }
-            
-            // Hours > 168 should return 168 (handled in validation)
-            if (fieldId.includes('Hours') && numValue > 168) {
-                return 168;
-            }
-            
-            return numValue;
-        }
-
-        // Helper function to format currency with cents
-        function formatCurrency(amount) {
-            // Handle negative zero and very small negative values
-            if (amount === 0 || amount === -0 || (amount < 0 && amount > -0.01)) {
-                return '$0.00';
-            }
-            
-            return '$' + amount.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-        
-        // Helper function to clear error states
-        function clearErrors(input) {
-            const errorElement = document.getElementById(input.id + '-error');
-            if (errorElement) {
-                input.classList.remove('error');
-                errorElement.textContent = '';
-                errorElement.classList.remove('show');
-            }
-        }
 
         window.saveCalculation = function() {
             // Validate required fields first
