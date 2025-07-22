@@ -832,7 +832,7 @@
         // Global error capture for debugging
         window.addEventListener('error', function(e) {
             console.error('GLOBAL ERROR:', e.message, 'at', e.filename + ':' + e.lineno);
-            alert('JavaScript Error: ' + e.message + ' at line ' + e.lineno);
+            showNotification('JavaScript Error: ' + e.message + ' at line ' + e.lineno, 'error');
         });
         
         // CRITICAL: Define validateAndCalculate in global scope IMMEDIATELY
@@ -848,7 +848,7 @@
                 }
             } catch (error) {
                 console.error('ERROR in validateAndCalculate wrapper:', error);
-                alert('Calculation Error: ' + error.message);
+                showNotification('Calculation Error: ' + error.message, 'error');
             }
         };
         
@@ -1263,12 +1263,11 @@
             
             } catch (error) {
                 console.error('ERROR in validateAndCalculateImpl:', error);
-                alert('Validation Error: ' + error.message);
+                showNotification('Validation Error: ' + error.message, 'error');
             }
         }
         
-        // Update the global function to use the actual implementation
-        window.validateAndCalculate = validateAndCalculateImpl;
+        // DO NOT overwrite the forward reference stub - it already forwards to this implementation
 
 
         window.saveCalculation = function() {
