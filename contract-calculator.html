@@ -1584,20 +1584,16 @@
                 const subject = `Contract Analysis - ${document.getElementById('jobTitle').value}`;
                 const body = `Contract Analysis Summary:
 
-` +
-                    `Position: ${document.getElementById('jobTitle').value}
-                    `Contract: ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week`
+Position: ${document.getElementById('jobTitle').value}
+Contract: ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week
 
-` +
-                    `Total Contract Value: ${document.getElementById('totalContractValue').textContent}
-` +
-                    `True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
-` +
-                    `Weekly Gross Pay: ${document.getElementById('weeklyGrossPay').textContent}
-` +
-                    `Generated: ${new Date().toLocaleDateString()}
-` +
-                    `From: LocumTrueRate Contract Calculator`;
+Total Contract Value: ${document.getElementById('totalContractValue').textContent}
+True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
+Weekly Gross Pay: ${document.getElementById('weeklyGrossPay').textContent}
+
+Generated: ${new Date().toLocaleDateString()}
+
+From: LocumTrueRate Contract Calculator`;
                     
                 const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 
