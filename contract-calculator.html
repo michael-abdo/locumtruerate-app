@@ -1047,14 +1047,41 @@
             // Log input values for debugging
             console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
             
-            // Simple validation warnings (non-blocking)
-            if (hourlyRate <= 0) console.warn('⚠️ Hourly rate should be greater than $0');
-            if (hoursPerWeek <= 0) console.warn('⚠️ Hours per week should be greater than 0'); 
-            if (hoursPerWeek > 168) console.warn('⚠️ Cannot exceed 168 hours per week');
-            if (contractWeeks <= 0) console.warn('⚠️ Contract length should be at least 1 week');
-            if (contractWeeks > 52) console.warn('⚠️ Contract length over 1 year');
+            // Validation with visible error messages
+            let hasErrors = false;
+            const validationErrors = [];
+            
+            if (hourlyRate <= 0) {
+                validationErrors.push('Hourly rate must be greater than $0');
+                hasErrors = true;
+            }
+            if (hoursPerWeek <= 0) {
+                validationErrors.push('Hours per week must be greater than 0');
+                hasErrors = true;
+            }
+            if (hoursPerWeek > 168) {
+                validationErrors.push('Hours per week cannot exceed 168');
+                hasErrors = true;
+            }
+            if (contractWeeks <= 0) {
+                validationErrors.push('Contract length must be at least 1 week');
+                hasErrors = true;
+            }
+            if (contractWeeks > 52) {
+                console.warn('⚠️ Contract length over 1 year');
+            }
             if (travelReimbursement < 0 || otherStipends < 0 || housingStipend < 0) {
-                console.warn('⚠️ Negative values detected');
+                validationErrors.push('Values cannot be negative');
+                hasErrors = true;
+            }
+            
+            // Show validation errors
+            if (hasErrors) {
+                console.error('❌ Validation errors:', validationErrors);
+                // Show first error as notification
+                if (typeof showNotification === 'function' && validationErrors.length > 0) {
+                    showNotification(`❌ ${validationErrors[0]}`, 'error');
+                }
             }
             
             // Simple gross calculations only
@@ -1072,11 +1099,15 @@
 
             // Update display elements - only update elements that exist
             const elements = {
+                'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+                'grossTaxableIncome': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'netTakeHome': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
-                'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
             };
 
