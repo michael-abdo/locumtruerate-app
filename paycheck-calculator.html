@@ -575,14 +575,14 @@
                             <!-- Hours & Rates -->
                             <div class="form-group">
                                 <label class="form-label">Regular Hours</label>
-                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="168" oninput="validateAndCalculate(this)" tabindex="1">
+                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="168" data-validate="true" tabindex="1">
                                 <div class="error-message" id="regularHours-error"></div>
                                 <div class="form-help">Regular hours worked per pay period</div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Regular Hourly Rate ($)</label>
-                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="2">
+                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" data-validate="true" tabindex="2">
                                 <div class="error-message" id="regularRate-error"></div>
                                 <div class="form-help">Base hourly rate for regular time</div>
                             </div>
@@ -590,12 +590,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Overtime Hours</label>
-                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="validateAndCalculate(this)" tabindex="3">
+                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" data-validate="true" tabindex="3">
                                     <div class="error-message" id="overtimeHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="4">
+                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0" step="0.01" data-validate="true" tabindex="4">
                                     <div class="error-message" id="overtimeRate-error"></div>
                                 </div>
                             </div>
@@ -604,12 +604,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Call Hours</label>
-                                    <input type="number" class="form-input" id="callHours" value="0" min="0" oninput="validateAndCalculate(this)" tabindex="5">
+                                    <input type="number" class="form-input" id="callHours" value="0" min="0" data-validate="true" tabindex="5">
                                     <div class="error-message" id="callHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Call Rate ($)</label>
-                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="6">
+                                    <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" data-validate="true" tabindex="6">
                                     <div class="error-message" id="callRate-error"></div>
                                 </div>
                             </div>
@@ -617,12 +617,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Callback Hours</label>
-                                    <input type="number" class="form-input" id="callbackHours" value="0" min="0" oninput="validateAndCalculate(this)" tabindex="7">
+                                    <input type="number" class="form-input" id="callbackHours" value="0" min="0" data-validate="true" tabindex="7">
                                     <div class="error-message" id="callbackHours-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Callback Rate ($)</label>
-                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="8">
+                                    <input type="number" class="form-input" id="callbackRate" value="127.50" min="0" step="0.01" data-validate="true" tabindex="8">
                                     <div class="error-message" id="callbackRate-error"></div>
                                 </div>
                             </div>
@@ -630,7 +630,7 @@
                             <!-- Stipends & Allowances -->
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($)</label>
-                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="9">
+                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" data-validate="true" tabindex="9">
                                 <div class="error-message" id="housingStipend-error"></div>
                                 <div class="form-help">Tax-free housing allowance per pay period</div>
                             </div>
@@ -638,12 +638,12 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Meal Stipend ($)</label>
-                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="10">
+                                    <input type="number" class="form-input" id="mealStipend" value="300" min="0" step="0.01" data-validate="true" tabindex="10">
                                     <div class="error-message" id="mealStipend-error"></div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Mileage Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" oninput="validateAndCalculate(this)" tabindex="11">
+                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01" data-validate="true" tabindex="11">
                                     <div class="error-message" id="mileageReimbursement-error"></div>
                                 </div>
                             </div>
@@ -652,7 +652,7 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Tax State</label>
-                                    <select class="form-input form-select" id="taxState" onchange="validateAndCalculate(this)">
+                                    <select class="form-input form-select" id="taxState" data-validate="true">
                                         <option value="no-tax">No State Tax</option>
                                         <option value="low-tax">Low Tax State (4%)</option>
                                         <option value="medium-tax">Medium Tax State (7%)</option>
@@ -662,7 +662,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Filing Status</label>
-                                    <select class="form-input form-select" id="filingStatus" onchange="validateAndCalculate(this)">
+                                    <select class="form-input form-select" id="filingStatus" data-validate="true">
                                         <option value="single">Single</option>
                                         <option value="married">Married Filing Jointly</option>
                                         <option value="head">Head of Household</option>
@@ -741,10 +741,10 @@
 
                             <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-primary);">Actions</h3>
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveCalculation()">Save Calculation</button>
-                                <button class="btn-secondary" onclick="printResults()">[PRINT] Print Results</button>
-                                <button class="btn-secondary" onclick="exportToPDF()">Export PDF</button>
-                                <button class="btn-secondary" onclick="emailResults()">[EMAIL] Email Results</button>
+                                <button class="btn-primary" data-action="saveCalculation">Save Calculation</button>
+                                <button class="btn-secondary" data-action="printResults">[PRINT] Print Results</button>
+                                <button class="btn-secondary" data-action="exportToPDF">Export PDF</button>
+                                <button class="btn-secondary" data-action="emailResults">[EMAIL] Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -829,28 +829,70 @@
             'monthly': 4.33
         };
         
+        // Notification system - MUST be defined FIRST before any error handlers
+        function showNotification(message, type = 'success') {
+            // Remove any existing notifications
+            const existingNotif = document.querySelector('.notification-toast');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.textContent = message;
+            
+            let backgroundColor;
+            switch(type) {
+                case 'success': backgroundColor = '#10b981'; break;
+                case 'warning': backgroundColor = '#f59e0b'; break;
+                case 'error': backgroundColor = '#ef4444'; break;
+                default: backgroundColor = '#10b981';
+            }
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${backgroundColor};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
         // Global error capture for debugging
         window.addEventListener('error', function(e) {
             console.error('GLOBAL ERROR:', e.message, 'at', e.filename + ':' + e.lineno);
             showNotification('JavaScript Error: ' + e.message + ' at line ' + e.lineno, 'error');
         });
         
-        // CRITICAL: Define validateAndCalculate in global scope IMMEDIATELY
-        // This must be available before ANY HTML references it
-        window.validateAndCalculate = function(input) {
-            try {
-                console.log('validateAndCalculate called - forwarding to implementation');
-                // Forward to the actual implementation once it's defined
-                if (typeof validateAndCalculateImpl === 'function') {
-                    validateAndCalculateImpl(input);
-                } else {
-                    console.error('validateAndCalculateImpl not yet defined!');
-                }
-            } catch (error) {
-                console.error('ERROR in validateAndCalculate wrapper:', error);
-                showNotification('Calculation Error: ' + error.message, 'error');
-            }
-        };
+        // validateAndCalculate will be defined later and bound programmatically
         
         // Core calculation functions defined first
         function calculatePaycheck() {
@@ -1065,63 +1107,6 @@
             });
         }
         
-        // Notification system - MUST be defined before validateAndCalculate uses it
-        function showNotification(message, type = 'success') {
-            // Remove any existing notifications
-            const existingNotif = document.querySelector('.notification-toast');
-            if (existingNotif) {
-                existingNotif.remove();
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification-toast ${type}`;
-            notification.textContent = message;
-            
-            let backgroundColor;
-            switch(type) {
-                case 'success': backgroundColor = '#10b981'; break;
-                case 'warning': backgroundColor = '#f59e0b'; break;
-                case 'error': backgroundColor = '#ef4444'; break;
-                default: backgroundColor = '#10b981';
-            }
-            
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${backgroundColor};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                z-index: 10000;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            // Add animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes slideOut {
-                    from { transform: translateX(0); opacity: 1; }
-                    to { transform: translateX(100%); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
         // Helper function to clear error states
         function clearErrors(input) {
             const errorElement = document.getElementById(input.id + '-error');
@@ -1198,8 +1183,8 @@
         }
 
         // Combined validation and calculation function
-        function validateAndCalculateImpl(input) {
-            console.log('validateAndCalculateImpl called with input:', input);
+        window.validateAndCalculate = function(input) {
+            console.log('validateAndCalculate called with input:', input);
             
             try {
             if (input) {
@@ -1262,12 +1247,10 @@
             calculatePaycheck();
             
             } catch (error) {
-                console.error('ERROR in validateAndCalculateImpl:', error);
+                console.error('ERROR in validateAndCalculate:', error);
                 showNotification('Validation Error: ' + error.message, 'error');
             }
         }
-        
-        // DO NOT overwrite the forward reference stub - it already forwards to this implementation
 
 
         window.saveCalculation = function() {
@@ -1670,6 +1653,35 @@ From: LocumTrueRate Paycheck Calculator`;
                         setTimeout(() => {
                             delete this.dataset.clicking;
                         }, 500);
+                    });
+                });
+                
+                // Bind validation events to all inputs with data-validate
+                console.log('[BIND] Binding validation events...');
+                document.querySelectorAll('[data-validate="true"]').forEach(element => {
+                    const eventType = element.tagName === 'SELECT' ? 'change' : 'input';
+                    element.addEventListener(eventType, function() {
+                        console.log(`[EVENT] ${eventType} on ${this.id}, value: ${this.value}`);
+                        validateAndCalculate(this);
+                    });
+                });
+                
+                // Bind action buttons
+                console.log('[BIND] Binding action buttons...');
+                document.querySelectorAll('[data-action]').forEach(button => {
+                    const action = button.dataset.action;
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log(`[ACTION] ${action} clicked`);
+                        
+                        // Special handling for setPeriod
+                        if (action === 'setPeriod' && this.dataset.period) {
+                            window.setPeriod(this.dataset.period);
+                        } else if (typeof window[action] === 'function') {
+                            window[action]();
+                        } else {
+                            console.error(`[ERROR] Function ${action} not found`);
+                        }
                     });
                 });
                 
