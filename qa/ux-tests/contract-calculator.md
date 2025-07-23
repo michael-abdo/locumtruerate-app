@@ -224,3 +224,8 @@ Step [#]: [Describe exact failure]
 [Only if ❌ failures exist; otherwise omit]
 
 ✅ **QA Status: Complete** if no ❌, else **Incomplete**
+
+---
+
+**Test Run ID:** [Generate unique ID: `CC-QA-YYYYMMDD-HHMMSS-XXXX`]
+**Completed:** [Date/Time in format: Month DD, YYYY at HH:MM:SS UTC]
