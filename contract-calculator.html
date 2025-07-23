@@ -667,13 +667,13 @@
                             <div class="form-group">
                                 <label class="form-label">Job Title</label>
                                 <select class="form-input form-select" id="jobTitle" onchange="calculateContract()">
-                                    <option value="Emergency Medicine">Emergency Medicine</option>
-                                    <option value="Internal Medicine">Internal Medicine</option>
-                                    <option value="Surgery">Surgery (General Surgery)</option>
-                                    <option value="Radiology">Radiology</option>
-                                    <option value="Anesthesiology">Anesthesiology</option>
-                                    <option value="Family Medicine">Family Medicine</option>
-                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="MD">MD (Medical Doctor)</option>
+                                    <option value="CRNA">CRNA (Certified Registered Nurse Anesthetist)</option>
+                                    <option value="NP">NP (Nurse Practitioner)</option>
+                                    <option value="PA">PA (Physician Assistant)</option>
+                                    <option value="RN">RN (Registered Nurse)</option>
+                                    <option value="AA">AA (Anesthesiologist Assistant)</option>
+                                    <option value="Tech">Tech (Medical Technician)</option>
                                 </select>
                             </div>
 
@@ -945,7 +945,7 @@
             const resultElements = [
                 'regularPay', 'overtimePay', 'callPay', 'weeklyGrossPay', 
                 'grossTaxableIncome', 'totalHousingStipend', 'otherStipends', 
-                'estimatedTaxes', 'netTakeHome', 'totalContractValue', 
+                'netTakeHome', 'totalContractValue', 
                 'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
             ];
             
@@ -1571,7 +1571,6 @@
                     [],
                     ['Contract Details'],
                     ['Position', document.getElementById('jobTitle').value],
-                    ['Facility', document.getElementById('facility').value],
                     ['Contract Type', document.getElementById('contractType').value],
                     ['Work State', document.getElementById('workState').options[document.getElementById('workState').selectedIndex].text],
                     [],
@@ -1842,7 +1841,6 @@
                 if (data.contractWeeks) document.getElementById('contractWeeks').value = data.contractWeeks;
                 if (data.housingStipend) document.getElementById('housingStipend').value = data.housingStipend;
                 if (data.jobTitle) document.getElementById('jobTitle').value = data.jobTitle;
-                if (data.facility) document.getElementById('facility').value = data.facility;
                 
                 // Show alert
                 document.getElementById('prefilledAlert').classList.add('show');
