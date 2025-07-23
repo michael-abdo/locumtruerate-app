@@ -682,13 +682,13 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Regular Hourly Rate ($)</label>
-                                    <input type="number" class="form-input" id="hourlyRate" value="350" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hourly rate" required>
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hourly rate" required>
                                     <div class="form-error" id="hourlyRate-error"></div>
                                     <div class="form-help">Base hourly rate for regular hours</div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="525" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Auto-calculated" required>
+                                    <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0.01" step="0.01" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Auto-calculated" required>
                                     <div class="form-error" id="overtimeRate-error"></div>
                                     <div class="form-help">Rate for hours over 40/week</div>
                                 </div>
@@ -698,7 +698,7 @@
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
-                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0.01" max="168" step="0.5" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hours per week" required>
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" oninput="validateAndCalculate(this)" onkeyup="validateAndCalculate(this)" onchange="validateAndCalculate(this)" placeholder="Enter hours per week" required>
                                     <div class="form-error" id="hoursPerWeek-error"></div>
                                 </div>
                                 <div class="form-group">
@@ -711,7 +711,7 @@
                             <!-- Stipends -->
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($ per week)</label>
-                                <input type="number" class="form-input" id="housingStipend" value="1800" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="validateAndCalculate(this)">
                                 <div class="form-help">Tax-free housing allowance</div>
                             </div>
 
@@ -723,6 +723,11 @@
                                 <div class="form-group">
                                     <label class="form-label">Travel Reimbursement ($)</label>
                                     <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Other Stipends ($ per week)</label>
+                                    <input type="number" class="form-input" id="otherStipendsInput" value="500" min="0" step="0.01" oninput="validateAndCalculate(this)">
+                                    <div class="form-help">Meals, travel expenses</div>
                                 </div>
                             </div>
 
@@ -815,8 +820,8 @@
                             
                             <div class="results-summary">
                                 <h3>Total Contract Value</h3>
-                                <div class="amount" id="totalContractValue">$298,400</div>
-                                <div class="rate">True Hourly Rate: <span id="trueHourlyRate">$476.83</span></div>
+                                <div class="amount" id="totalContractValue">$0</div>
+                                <div class="rate">True Hourly Rate: <span id="trueHourlyRate">$0.00</span></div>
                             </div>
 
                             <div class="results-breakdown">
@@ -825,49 +830,49 @@
                                         <span class="result-label">Regular Pay</span>
                                         <div class="result-subtext">40 hrs/week × $350/hr</div>
                                     </div>
-                                    <span class="result-value" id="regularPay">$182,000</span>
+                                    <span class="result-value" id="regularPay">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Overtime Pay</span>
                                         <div class="result-subtext">8 hrs/week × $525/hr</div>
                                     </div>
-                                    <span class="result-value" id="overtimePay">$54,600</span>
+                                    <span class="result-value" id="overtimePay">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Call Pay</span>
                                         <div class="result-subtext">24 hrs/week × $25/hr</div>
                                     </div>
-                                    <span class="result-value" id="callPay">$7,800</span>
+                                    <span class="result-value" id="callPay">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Weekly Gross Pay</span>
                                         <div class="result-subtext">Taxable income per week</div>
                                     </div>
-                                    <span class="result-value" id="weeklyGrossPay">$5,092</span>
+                                    <span class="result-value" id="weeklyGrossPay">$0.00</span>
                                 </div>
                                 <div class="result-item highlight">
                                     <div>
                                         <span class="result-label">Gross Taxable Income</span>
                                         <div class="result-subtext">Subject to federal/state taxes</div>
                                     </div>
-                                    <span class="result-value" id="grossTaxableIncome">$244,400</span>
+                                    <span class="result-value" id="grossTaxableIncome">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Housing Stipend</span>
                                         <div class="result-subtext">Tax-free benefit</div>
                                     </div>
-                                    <span class="result-value" id="totalHousingStipend">$23,400</span>
+                                    <span class="result-value" id="totalHousingStipend">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Other Stipends</span>
                                         <div class="result-subtext">Meals, travel</div>
                                     </div>
-                                    <span class="result-value" id="otherStipends">$30,600</span>
+                                    <span class="result-value" id="otherStipends">$0</span>
                                 </div>
                             </div>
 
@@ -891,7 +896,7 @@
                         <div class="comparison-grid">
                             <div class="comparison-card">
                                 <h4>Your Contract</h4>
-                                <div class="comparison-value" id="yourContractRate">$476.83</div>
+                                <div class="comparison-value" id="yourContractRate">$0.00</div>
                                 <p style="color: var(--text-secondary); font-size: 0.9rem;">True Hourly Rate</p>
                             </div>
                             <div class="comparison-card">
@@ -906,7 +911,7 @@
                             </div>
                             <div class="comparison-card">
                                 <h4>Annual Equivalent</h4>
-                                <div class="comparison-value" id="annualEquivalent">$992,206</div>
+                                <div class="comparison-value" id="annualEquivalent">$0</div>
                                 <p style="color: var(--text-secondary); font-size: 0.9rem;">If worked year-round</p>
                             </div>
                         </div>
@@ -1070,13 +1075,8 @@
             // Update button states
             updateButtonStates();
             
-            // Calculate if all fields are valid
-            if (areAllFieldsValid()) {
-                calculateContract();
-            } else {
-                // Clear results if validation fails
-                clearResults();
-            }
+            // Always calculate to provide real-time feedback, even with validation errors
+            calculateContract();
             
             return isValid;
         }
@@ -1135,39 +1135,46 @@
         }
 
         function calculateContract() {
+            console.log('🔄 Calculating contract...');
+            
             // Get input values
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
             const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
             const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
             const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
             
-            // Strict validation for impossible values - don't calculate at all
-            if (hourlyRate <= 0 || overtimeRate <= 0) {
-                showNotification('⚠️ Error: Hourly rates must be greater than $0', 'error');
-                clearResults();
-                return;
+            // Log input values for debugging
+            console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks, OT: $${overtimeRate}/hr`);
+            
+            // Validation with notifications but continue calculating
+            let hasErrors = false;
+            if (hourlyRate <= 0) {
+                showNotification('⚠️ Error: Hourly rate must be greater than $0', 'error');
+                hasErrors = true;
             }
             if (hoursPerWeek <= 0) {
                 showNotification('⚠️ Error: Hours per week must be greater than 0', 'error');
-                clearResults();
-                return;
-            }
-            if (hoursPerWeek > 168) {
-                showNotification('⚠️ Error: Cannot exceed 168 hours per week (impossible)', 'error');
-                clearResults();
-                return;
-            }
-            if (hoursPerWeek > 80) {
+                hasErrors = true;
+            } else if (hoursPerWeek > 168) {
+                showNotification('⚠️ Error: Cannot exceed 168 hours per week', 'error');
+                hasErrors = true;
+            } else if (hoursPerWeek > 80) {
                 showNotification('⚠️ Warning: Very high hours (>80/week)', 'info');
             }
             if (contractWeeks <= 0) {
                 showNotification('⚠️ Error: Contract must be at least 1 week', 'error');
+                hasErrors = true;
+            }
+            
+            // If critical errors exist, clear results and return
+            if (hasErrors && (hourlyRate <= 0 || hoursPerWeek <= 0 || contractWeeks <= 0)) {
                 clearResults();
                 return;
             }
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
             const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
+            const otherStipendsWeekly = parseFloat(document.getElementById('otherStipendsInput').value) || 0;
             const callHours = parseFloat(document.getElementById('callHours').value) || 0;
             const callRate = parseFloat(document.getElementById('callRate').value) || 0;
 
@@ -1183,7 +1190,8 @@
             // Tax-free benefits
             const totalHousingStipend = housingStipend * contractWeeks;
             const totalMealStipend = mealStipend * contractWeeks;
-            const otherStipends = totalMealStipend + travelReimbursement;
+            const totalOtherStipends = otherStipendsWeekly * contractWeeks;
+            const otherStipends = totalMealStipend + travelReimbursement + totalOtherStipends;
             
             // Total gross income (no tax calculations)
             const grossTaxableIncome = regularPay + overtimePay + callPay;
