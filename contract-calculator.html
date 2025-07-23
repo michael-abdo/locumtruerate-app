@@ -931,13 +931,36 @@
         
         // Check if all required fields are valid
         function areAllFieldsValid() {
+            console.log('🔍 areAllFieldsValid() called');
             const requiredFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks'];
-            return requiredFields.every(fieldId => {
+            let allValid = true;
+            
+            requiredFields.forEach(fieldId => {
                 const input = document.getElementById(fieldId);
-                if (!input) return false;
+                if (!input) {
+                    console.error(`❌ VALIDATION FAILED: Required field element not found: ${fieldId}`);
+                    allValid = false;
+                    return;
+                }
+                
                 const value = parseFloat(input.value.trim());
-                return !isNaN(value) && value > 0;
+                let isValid = !isNaN(value) && value > 0;
+                
+                // Special validation for specific fields
+                if (fieldId === 'hoursPerWeek' && value > 168) {
+                    isValid = false;
+                    console.error(`❌ VALIDATION FAILED: ${fieldId} = ${value} (exceeds 168 hours/week)`);
+                } else if (fieldId === 'contractWeeks' && value > 52) {
+                    console.warn(`⚠️ WARNING: ${fieldId} = ${value} (exceeds 52 weeks)`);
+                } else if (!isValid) {
+                    console.error(`❌ VALIDATION FAILED: ${fieldId} = ${value} (must be > 0)`);
+                }
+                
+                if (!isValid) allValid = false;
             });
+            
+            console.log(allValid ? '✅ All fields are valid' : '❌ Some fields failed validation');
+            return allValid;
         }
         
         // Clear results when validation fails
@@ -1001,12 +1024,25 @@
             console.log('🔄 Calculating contract (simplified gross only)...');
             
             // Get input values - simplified fields only
-            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
-            const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
-            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
-            const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
-            const otherStipends = parseFloat(document.getElementById('otherStipends').value) || 0;
+            console.log('📊 Getting input values...');
+            
+            const getInputValue = (id, defaultValue = 0) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    console.error(`❌ CRITICAL: Cannot find input element: ${id}`);
+                    return defaultValue;
+                }
+                const value = parseFloat(elem.value) || defaultValue;
+                console.log(`🔹 ${id}: ${value}`);
+                return value;
+            };
+            
+            const hourlyRate = getInputValue('hourlyRate');
+            const hoursPerWeek = getInputValue('hoursPerWeek');
+            const contractWeeks = getInputValue('contractWeeks');
+            const housingStipend = getInputValue('housingStipend');
+            const travelReimbursement = getInputValue('travelReimbursement');
+            const otherStipends = getInputValue('otherStipends');
             
             // Log input values for debugging
             console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
@@ -1046,15 +1082,23 @@
 
             // Safely update each element
             console.log('📊 Updating result display elements...');
+            const failedUpdates = [];
             Object.keys(elements).forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = elements[id];
                     console.log(`✅ Updated ${id}: ${elements[id]}`);
                 } else {
-                    console.error(`❌ Result element not found: ${id}`);
+                    failedUpdates.push(id);
+                    console.error(`❌ FAILED TO UPDATE: Result element not found: ${id}`);
                 }
             });
+            
+            if (failedUpdates.length > 0) {
+                console.error(`❌❌❌ CRITICAL: Failed to update ${failedUpdates.length} result elements!`);
+                console.error(`Failed elements: ${failedUpdates.join(', ')}`);
+                console.error('This is why calculations appear as $0!');
+            }
             
             // Log calculation results
             console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
@@ -1878,6 +1922,96 @@
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📄 DOMContentLoaded event fired');
+            
+            // Comprehensive element checking
+            console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
+            
+            // Check all input elements
+            const inputElements = {
+                'jobTitle': 'Job Title dropdown',
+                'hourlyRate': 'Hourly Rate input',
+                'hoursPerWeek': 'Hours per Week input',
+                'contractWeeks': 'Contract Weeks input',
+                'housingStipend': 'Housing Stipend input',
+                'travelReimbursement': 'Travel Reimbursement input',
+                'otherStipends': 'Other Stipends input',
+                'contractType': 'Contract Type dropdown',
+                'workState': 'Work State dropdown'
+            };
+            
+            console.log('🔍 Checking input elements...');
+            const missingInputs = [];
+            Object.entries(inputElements).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingInputs.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING INPUT: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Check all result display elements
+            console.log('🔍 Checking result display elements...');
+            const resultElements = {
+                'weeklyGrossPay': 'Weekly Gross Pay',
+                'totalContractValue': 'Total Contract Value',
+                'trueHourlyRate': 'True Hourly Rate',
+                'yourContractRate': 'Your Contract Rate',
+                'annualEquivalent': 'Annual Equivalent',
+                'totalHousingStipend': 'Total Housing Stipend',
+                'otherStipends': 'Other Stipends Result',
+                'grossTaxableIncome': 'Gross Taxable Income',
+                'netTakeHome': 'Net Take Home',
+                'regularPay': 'Regular Pay',
+                'overtimePay': 'Overtime Pay',
+                'callPay': 'Call Pay'
+            };
+            
+            const missingResults = [];
+            Object.entries(resultElements).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingResults.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING RESULT ELEMENT: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Check action buttons
+            console.log('🔍 Checking action buttons...');
+            const actionButtons = {
+                'saveButton': 'Save Button',
+                'compareButton': 'Compare Button',
+                'printButton': 'Print Button',
+                'exportPdfButton': 'Export PDF Button',
+                'exportCsvButton': 'Export CSV Button',
+                'shareButton': 'Share Button'
+            };
+            
+            const missingButtons = [];
+            Object.entries(actionButtons).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingButtons.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING BUTTON: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Summary
+            console.log('📊 ELEMENT CHECK SUMMARY:');
+            console.log(`🔵 Missing ${missingInputs.length} input elements`);
+            console.log(`🔴 Missing ${missingResults.length} result elements`);
+            console.log(`🟠 Missing ${missingButtons.length} action buttons`);
+            
+            if (missingInputs.length > 0 || missingResults.length > 0) {
+                console.error('❌❌❌ CRITICAL FAILURES DETECTED! Calculator cannot function properly!');
+                console.error('Missing elements will cause JavaScript errors and prevent calculations');
+            }
+            
             try {
                 console.log('🔍 Calling checkPrefilledData()...');
                 checkPrefilledData();
