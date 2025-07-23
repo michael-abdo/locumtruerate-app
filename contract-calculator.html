@@ -703,7 +703,7 @@
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($ per week)</label>
                                 <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculateContract()">
-                                <div class="form-help">Tax-free housing allowance</div>
+                                <div class="form-help">Weekly housing allowance</div>
                             </div>
 
                             <div class="input-group">
@@ -810,36 +810,22 @@
                                 </div>
                                 <div class="result-item">
                                     <div>
-                                        <span class="result-label">Overtime Pay</span>
-                                        <div class="result-subtext">8 hrs/week × $525/hr</div>
-                                    </div>
-                                    <span class="result-value" id="overtimePay">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Call Pay</span>
-                                        <div class="result-subtext">24 hrs/week × $25/hr</div>
-                                    </div>
-                                    <span class="result-value" id="callPay">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
                                         <span class="result-label">Weekly Gross Pay</span>
-                                        <div class="result-subtext">Taxable income per week</div>
+                                        <div class="result-subtext">Gross income per week</div>
                                     </div>
                                     <span class="result-value" id="weeklyGrossPay">$0.00</span>
                                 </div>
                                 <div class="result-item highlight">
                                     <div>
-                                        <span class="result-label">Gross Taxable Income</span>
-                                        <div class="result-subtext">Subject to federal/state taxes</div>
+                                        <span class="result-label">Total Contract Value</span>
+                                        <div class="result-subtext">Total gross earnings</div>
                                     </div>
-                                    <span class="result-value" id="grossTaxableIncome">$0</span>
+                                    <span class="result-value" id="totalContractValue">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Housing Stipend</span>
-                                        <div class="result-subtext">Tax-free benefit</div>
+                                        <div class="result-subtext">Weekly housing allowance</div>
                                     </div>
                                     <span class="result-value" id="totalHousingStipend">$0</span>
                                 </div>
@@ -968,7 +954,7 @@
         // Clear results when validation fails
         function clearResults() {
             const resultElements = [
-                'regularPay', 'overtimePay', 'callPay', 'weeklyGrossPay', 
+                'regularPay', 'weeklyGrossPay', 
                 'grossTaxableIncome', 'totalHousingStipend', 'otherStipends', 
                 'netTakeHome', 'totalContractValue', 
                 'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
@@ -1103,7 +1089,7 @@
             const elements = {
                 'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-                'grossTaxableIncome': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'netTakeHome': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
@@ -1460,8 +1446,6 @@
                                 <div class="result-row total"><span>True Hourly Rate:</span><span>${document.getElementById('trueHourlyRate').textContent}</span></div>
                                 <div class="result-row"><span>Weekly Gross Pay:</span><span>${document.getElementById('weeklyGrossPay').textContent}</span></div>
                                 <div class="result-row"><span>Regular Pay:</span><span>${document.getElementById('regularPay').textContent}</span></div>
-                                <div class="result-row"><span>Overtime Pay:</span><span>${document.getElementById('overtimePay').textContent}</span></div>
-                                <div class="result-row"><span>Call Pay:</span><span>${document.getElementById('callPay').textContent}</span></div>
                             </div>
                         </body>
                         </html>
@@ -1512,7 +1496,6 @@
                             .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
                             .result-label { font-weight: bold; color: #2563eb; }
                             .result-value { float: right; font-weight: bold; }
-                            .tax-breakdown { margin-top: 15px; }
                             .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
                             @media print { 
                                 body { margin: 0; }
@@ -1569,25 +1552,6 @@
                                 <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
                             </div>
                             
-                            <div class="tax-breakdown">
-                                <h3>Tax Breakdown</h3>
-                                <div class="result-item">
-                                    <span class="result-label">Federal Tax:</span>
-                                    <span class="result-value">${document.getElementById('federalTax').textContent}</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">State Tax:</span>
-                                    <span class="result-value">${document.getElementById('stateTax').textContent}</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">FICA Tax:</span>
-                                    <span class="result-value">${document.getElementById('ficaTax').textContent}</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">Total Tax:</span>
-                                    <span class="result-value">${document.getElementById('totalTax').textContent}</span>
-                                </div>
-                            </div>
                         </div>
                         
                         <div class="footer">
@@ -1809,19 +1773,9 @@ From: LocumTrueRate Contract Calculator`;
                                     <td>${analysis.regularPay}</td>
                                 </tr>
                                 <tr>
-                                    <td>Overtime Pay</td>
-                                    <td>$${(parseFloat(analysis.hourlyRate) * 1.5).toFixed(2)}/hr</td>
-                                    <td>${analysis.overtimePay}</td>
-                                </tr>
-                                <tr>
-                                    <td>Call Pay</td>
-                                    <td>$${analysis.callRate}/hr (${analysis.callHours} hrs/week)</td>
-                                    <td>${analysis.callPay}</td>
-                                </tr>
-                                <tr>
                                     <td>Housing Stipend</td>
                                     <td>$${analysis.housingStipend}/week</td>
-                                    <td>Tax-free benefit</td>
+                                    <td>Weekly housing allowance</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1996,8 +1950,6 @@ From: LocumTrueRate Contract Calculator`;
                 'grossTaxableIncome': 'Gross Taxable Income',
                 'netTakeHome': 'Net Take Home',
                 'regularPay': 'Regular Pay',
-                'overtimePay': 'Overtime Pay',
-                'callPay': 'Call Pay'
             };
             
             const missingResults = [];
