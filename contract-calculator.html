@@ -1577,27 +1577,19 @@
                     [],
                     ['Contract Terms'],
                     ['Hourly Rate', document.getElementById('hourlyRate').value],
-                    ['Overtime Rate', document.getElementById('overtimeRate').value],
                     ['Hours per Week', document.getElementById('hoursPerWeek').value],
                     ['Contract Weeks', document.getElementById('contractWeeks').value],
-                    ['Call Hours', document.getElementById('callHours').value],
-                    ['Call Rate', document.getElementById('callRate').value],
                     [],
                     ['Benefits'],
                     ['Housing Stipend (Weekly)', document.getElementById('housingStipend').value],
-                    ['Meal Stipend (Weekly)', document.getElementById('mealStipend').value],
                     ['Travel Reimbursement', document.getElementById('travelReimbursement').value],
+                    ['Other Stipends', document.getElementById('otherStipends').value],
                     [],
-                    ['Calculated Results'],
-                    ['Regular Pay', document.getElementById('regularPay').textContent],
-                    ['Overtime Pay', document.getElementById('overtimePay').textContent],
-                    ['Call Pay', document.getElementById('callPay').textContent],
-                    ['Gross Taxable Income', document.getElementById('grossTaxableIncome').textContent],
-                    ['Total Housing Stipend', document.getElementById('totalHousingStipend').textContent],
-                    ['Other Stipends', document.getElementById('otherStipends').textContent],
+                    ['Gross Calculation Results'],
                     ['Total Contract Value', document.getElementById('totalContractValue').textContent],
                     ['True Hourly Rate', document.getElementById('trueHourlyRate').textContent],
                     ['Weekly Gross Pay', document.getElementById('weeklyGrossPay').textContent],
+                    ['Total Housing Stipend', document.getElementById('totalHousingStipend').textContent],
                     ['Annual Equivalent', document.getElementById('annualEquivalent').textContent]
                 ];
                 
@@ -1649,19 +1641,13 @@
                 // Generate comprehensive contract analysis for PDF export
                 const analysis = {
                     jobTitle: document.getElementById('jobTitle').value,
-                        hourlyRate: document.getElementById('hourlyRate').value,
+                    hourlyRate: document.getElementById('hourlyRate').value,
                     hoursPerWeek: document.getElementById('hoursPerWeek').value,
                     contractWeeks: document.getElementById('contractWeeks').value,
-                    callHours: document.getElementById('callHours').value,
-                    callRate: document.getElementById('callRate').value,
                     housingStipend: document.getElementById('housingStipend').value,
                     totalValue: document.getElementById('totalContractValue').textContent,
                     trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
                     weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
-                    netTakeHome: document.getElementById('netTakeHome').textContent,
-                    regularPay: document.getElementById('regularPay').textContent,
-                    overtimePay: document.getElementById('overtimePay').textContent,
-                    callPay: document.getElementById('callPay').textContent,
                     timestamp: new Date().toLocaleDateString()
                 };
                 
@@ -1857,10 +1843,6 @@
                 if (data.housingStipend) document.getElementById('housingStipend').value = data.housingStipend;
                 if (data.jobTitle) document.getElementById('jobTitle').value = data.jobTitle;
                 if (data.facility) document.getElementById('facility').value = data.facility;
-                
-                // Auto-calculate overtime rate
-                const overtimeRate = data.hourlyRate * 1.5;
-                document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
                 
                 // Show alert
                 document.getElementById('prefilledAlert').classList.add('show');
