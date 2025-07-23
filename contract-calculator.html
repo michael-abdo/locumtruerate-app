@@ -78,6 +78,8 @@
 
         .nav-link:hover, .nav-link.active {
             color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
         }
 
         .nav-dropdown {
@@ -854,10 +856,10 @@
                                 <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
                                 <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
-                                <button class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
-                                <button class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
-                                <button class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
-                                <button class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
+                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
+                                <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
+                                <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
+                                <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -995,10 +997,10 @@
             if (findJobsBtn) findJobsBtn.disabled = !isValid;
             
             // Export, Print, Email buttons enabled if we have calculated results
-            const exportBtn = document.querySelector('.btn-secondary[onclick="exportAnalysis()"]');
-            const exportCSVBtn = document.querySelector('.btn-secondary[onclick="exportCSV()"]');
-            const printBtn = document.querySelector('.btn-secondary[onclick="printResults()"]');
-            const emailBtn = document.querySelector('.btn-secondary[onclick="emailResults()"]');
+            const exportBtn = document.getElementById('exportPdfButton');
+            const exportCSVBtn = document.getElementById('exportCsvButton');
+            const printBtn = document.getElementById('printButton');
+            const emailBtn = document.getElementById('emailButton');
             
             if (exportBtn) exportBtn.disabled = !hasCalculatedResults;
             if (exportCSVBtn) exportCSVBtn.disabled = !hasCalculatedResults;
@@ -1133,6 +1135,9 @@
             
             // Log calculation results
             console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
+            
+            // Update button states after calculation
+            updateButtonStates();
         }
 
         function saveContract() {
