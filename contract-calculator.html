@@ -1457,8 +1457,8 @@
             }
         }
         
-        // Print Results function
-        function printResults() {
+        // Print Results function (DUPLICATE - COMMENTED OUT)
+        // function printResults() {
             try {
                 // Create a print-friendly version of the results
                 const printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -1576,7 +1576,7 @@
                 console.error('Print error:', error);
                 showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
             }
-        }
+        // } // END OF DUPLICATE FUNCTION
         
         // Email Results function with better fallback handling
         function emailResults() {
