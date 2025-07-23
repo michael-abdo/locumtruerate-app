@@ -677,10 +677,6 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Facility</label>
-                                <input type="text" class="form-input" id="facility" value="Metropolitan General Hospital" readonly>
-                            </div>
 
                             <!-- Hourly Rates -->
                             <div class="input-group">
@@ -743,19 +739,8 @@
                                 </div>
                             </div>
 
-                            <!-- Additional Benefits -->
-                            <div class="input-group">
-                                <div class="form-group">
-                                    <label class="form-label">CME Allowance ($)</label>
-                                    <input type="number" class="form-input" id="cmeAllowance" value="2500" min="0" step="0.01" oninput="validateAndCalculate(this)">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">License Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="licenseReimbursement" value="1500" min="0" step="0.01" oninput="validateAndCalculate(this)">
-                                </div>
-                            </div>
 
-                            <!-- Contract Type and Tax Rate -->
+                            <!-- Contract Type and State -->
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Contract Type</label>
@@ -766,8 +751,8 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Work State</label>
-                                    <select class="form-input form-select" id="workState" onchange="updateTaxRate()">
+                                    <label class="form-label">Contract State</label>
+                                    <select class="form-input form-select" id="workState" onchange="calculateContract()">
                                         <option value="">Select State</option>
                                         <option value="AL">Alabama</option>
                                         <option value="AK">Alaska</option>
@@ -820,15 +805,7 @@
                                         <option value="WI">Wisconsin</option>
                                         <option value="WY">Wyoming</option>
                                     </select>
-                                    <div class="form-help">State affects tax rate calculation</div>
                                 </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Estimated Tax Rate (%)</label>
-                                <input type="number" class="form-input" id="taxRate" value="25" min="0" max="50" step="0.5" oninput="validateAndCalculate(this)">
-                                <div class="form-help">Combined federal, state, and FICA taxes</div>
-                                <div class="form-error" id="taxRate-error"></div>
                             </div>
                         </div>
 
@@ -888,23 +865,9 @@
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Other Stipends</span>
-                                        <div class="result-subtext">Meals, travel, CME, licenses</div>
+                                        <div class="result-subtext">Meals, travel</div>
                                     </div>
                                     <span class="result-value" id="otherStipends">$30,600</span>
-                                </div>
-                                <div class="result-item warning">
-                                    <div>
-                                        <span class="result-label" id="taxesLabel">Estimated Taxes (25%)</span>
-                                        <div class="result-subtext">Federal + State + FICA</div>
-                                    </div>
-                                    <span class="result-value" id="estimatedTaxes">-$61,100</span>
-                                </div>
-                                <div class="result-item highlight">
-                                    <div>
-                                        <span class="result-label">Net Take-Home</span>
-                                        <div class="result-subtext">After taxes and benefits</div>
-                                    </div>
-                                    <span class="result-value" id="netTakeHome">$237,300</span>
                                 </div>
                             </div>
 
@@ -1066,15 +1029,6 @@
                         }
                         break;
                         
-                    case 'taxRate':
-                        if (value < 0) {
-                            isValid = false;
-                            errorMessage = 'Tax rate cannot be negative';
-                        } else if (value > 50) {
-                            isValid = false;
-                            errorMessage = 'Tax rate seems unusually high (>50%)';
-                        }
-                        break;
                         
                     // Validate other numeric fields - strict no negative values
                     case 'housingStipend':
@@ -1216,8 +1170,6 @@
             const travelReimbursement = parseFloat(document.getElementById('travelReimbursement').value) || 0;
             const callHours = parseFloat(document.getElementById('callHours').value) || 0;
             const callRate = parseFloat(document.getElementById('callRate').value) || 0;
-            const cmeAllowance = parseFloat(document.getElementById('cmeAllowance').value) || 0;
-            const licenseReimbursement = parseFloat(document.getElementById('licenseReimbursement').value) || 0;
 
             // Calculate regular and overtime hours
             const regularHours = Math.min(hoursPerWeek, 40);
@@ -1231,19 +1183,13 @@
             // Tax-free benefits
             const totalHousingStipend = housingStipend * contractWeeks;
             const totalMealStipend = mealStipend * contractWeeks;
-            const otherStipends = totalMealStipend + travelReimbursement + cmeAllowance + licenseReimbursement;
+            const otherStipends = totalMealStipend + travelReimbursement;
             
-            // Taxable income
+            // Total gross income (no tax calculations)
             const grossTaxableIncome = regularPay + overtimePay + callPay;
             
-            // Estimated taxes (configurable rate)
-            const taxRatePercent = parseFloat(document.getElementById('taxRate').value) || 25;
-            const estimatedTaxRate = taxRatePercent / 100;
-            const estimatedTaxes = grossTaxableIncome * estimatedTaxRate;
-            
-            // Total contract value and net take-home
+            // Total contract value (gross only)
             const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends;
-            const netTakeHome = grossTaxableIncome - estimatedTaxes + totalHousingStipend + otherStipends;
             
             // True hourly rate calculation (include call hours in total hours worked)
             const totalWeeklyHours = hoursPerWeek + callHours;
@@ -1275,8 +1221,6 @@
             document.getElementById('grossTaxableIncome').textContent = '$' + grossTaxableIncome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('totalHousingStipend').textContent = '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('otherStipends').textContent = '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('estimatedTaxes').textContent = '-$' + estimatedTaxes.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('netTakeHome').textContent = '$' + netTakeHome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('totalContractValue').textContent = '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toFixed(2);
             document.getElementById('yourContractRate').textContent = '$' + trueHourlyRate.toFixed(2);
@@ -1307,14 +1251,10 @@
             const roundedWeeklyGrossPay = Math.round(weeklyGrossPay * 100) / 100;
             document.getElementById('weeklyGrossPay').textContent = '$' + Math.max(0, roundedWeeklyGrossPay).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             
-            // Update tax label with current rate
-            document.getElementById('taxesLabel').textContent = `Estimated Taxes (${taxRatePercent}%)`;
-            
             // Log calculation details
             console.log(`📊 Weekly Gross Pay: $${weeklyGrossPay.toFixed(2)}`);
             console.log(`📊 Total Weekly Hours: ${totalWeeklyHours} (includes ${callHours} call hours)`);
             console.log(`📊 True Hourly Rate: $${trueHourlyRate.toFixed(2)} (total value ÷ total hours)`);
-            console.log(`📊 Tax Rate: ${taxRatePercent}%`);
         }
 
         function saveContract() {
@@ -1334,7 +1274,6 @@
             const contractData = {
                 timestamp: new Date().toISOString(),
                 jobTitle: document.getElementById('jobTitle').value,
-                facility: document.getElementById('facility').value,
                 hourlyRate: document.getElementById('hourlyRate').value,
                 hoursPerWeek: document.getElementById('hoursPerWeek').value,
                 contractWeeks: document.getElementById('contractWeeks').value,
@@ -1343,7 +1282,6 @@
                 totalValue: document.getElementById('totalContractValue').textContent,
                 trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
                 weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
-                netTakeHome: document.getElementById('netTakeHome').textContent
             };
 
             let savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
@@ -1377,7 +1315,6 @@
             // Create comparison modal/overlay
             const currentContract = {
                 jobTitle: document.getElementById('jobTitle').value,
-                facility: document.getElementById('facility').value,
                 trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
                 totalValue: document.getElementById('totalContractValue').textContent,
                 weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
@@ -1448,13 +1385,6 @@
                                     <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.weeklyGrossPay}</td>
                                     ${savedContracts.slice(0, 3).map(contract => 
                                         `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.weeklyGrossPay || 'N/A'}</td>`
-                                    ).join('')}
-                                </tr>
-                                <tr>
-                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">Net Take-Home</td>
-                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.netTakeHome}</td>
-                                    ${savedContracts.slice(0, 3).map(contract => 
-                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.netTakeHome}</td>`
                                     ).join('')}
                                 </tr>
                                 <tr>
@@ -1640,7 +1570,6 @@
                             <h1>Contract Analysis Report</h1>
                             <div class="summary">
                                 <p><strong>Position:</strong> ${document.getElementById('jobTitle').value}</p>
-                                <p><strong>Facility:</strong> ${document.getElementById('facility').value}</p>
                                 <p><strong>Contract:</strong> ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week</p>
                                 <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
                             </div>
@@ -1651,7 +1580,6 @@
                                 <div class="result-row"><span>Regular Pay:</span><span>${document.getElementById('regularPay').textContent}</span></div>
                                 <div class="result-row"><span>Overtime Pay:</span><span>${document.getElementById('overtimePay').textContent}</span></div>
                                 <div class="result-row"><span>Call Pay:</span><span>${document.getElementById('callPay').textContent}</span></div>
-                                <div class="result-row"><span>Net Take-Home:</span><span>${document.getElementById('netTakeHome').textContent}</span></div>
                             </div>
                         </body>
                         </html>
@@ -1723,10 +1651,6 @@
                                 <span class="result-value">${document.getElementById('jobTitle').value}</span>
                             </div>
                             <div class="result-item">
-                                <span class="result-label">Facility:</span>
-                                <span class="result-value">${document.getElementById('facility').value}</span>
-                            </div>
-                            <div class="result-item">
                                 <span class="result-label">Hourly Rate:</span>
                                 <span class="result-value">$${document.getElementById('hourlyRate').value}</span>
                             </div>
@@ -1761,10 +1685,6 @@
                             <div class="result-item">
                                 <span class="result-label">True Hourly Rate:</span>
                                 <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Net Take-Home:</span>
-                                <span class="result-value">${document.getElementById('netTakeHome').textContent}</span>
                             </div>
                             
                             <div class="tax-breakdown">
@@ -1820,9 +1740,6 @@
 
 ` +
                     `Position: ${document.getElementById('jobTitle').value}
-` +
-                    `Facility: ${document.getElementById('facility').value}
-` +
                     `Contract: ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week
 
 ` +
@@ -1831,9 +1748,6 @@
                     `True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
 ` +
                     `Weekly Gross Pay: ${document.getElementById('weeklyGrossPay').textContent}
-` +
-                    `Net Take-Home: ${document.getElementById('netTakeHome').textContent}
-
 ` +
                     `Generated: ${new Date().toLocaleDateString()}
 ` +
@@ -1889,8 +1803,6 @@
                     ['Housing Stipend (Weekly)', document.getElementById('housingStipend').value],
                     ['Meal Stipend (Weekly)', document.getElementById('mealStipend').value],
                     ['Travel Reimbursement', document.getElementById('travelReimbursement').value],
-                    ['CME Allowance', document.getElementById('cmeAllowance').value],
-                    ['License Reimbursement', document.getElementById('licenseReimbursement').value],
                     [],
                     ['Calculated Results'],
                     ['Regular Pay', document.getElementById('regularPay').textContent],
@@ -1899,8 +1811,6 @@
                     ['Gross Taxable Income', document.getElementById('grossTaxableIncome').textContent],
                     ['Total Housing Stipend', document.getElementById('totalHousingStipend').textContent],
                     ['Other Stipends', document.getElementById('otherStipends').textContent],
-                    ['Estimated Taxes', document.getElementById('estimatedTaxes').textContent],
-                    ['Net Take-Home', document.getElementById('netTakeHome').textContent],
                     ['Total Contract Value', document.getElementById('totalContractValue').textContent],
                     ['True Hourly Rate', document.getElementById('trueHourlyRate').textContent],
                     ['Weekly Gross Pay', document.getElementById('weeklyGrossPay').textContent],
@@ -1955,8 +1865,7 @@
                 // Generate comprehensive contract analysis for PDF export
                 const analysis = {
                     jobTitle: document.getElementById('jobTitle').value,
-                    facility: document.getElementById('facility').value,
-                    hourlyRate: document.getElementById('hourlyRate').value,
+                        hourlyRate: document.getElementById('hourlyRate').value,
                     hoursPerWeek: document.getElementById('hoursPerWeek').value,
                     contractWeeks: document.getElementById('contractWeeks').value,
                     callHours: document.getElementById('callHours').value,
@@ -2001,7 +1910,6 @@
                         <div class="header-info">
                             <h2>Contract Details</h2>
                             <p><strong>Position:</strong> ${analysis.jobTitle}</p>
-                            <p><strong>Facility:</strong> ${analysis.facility}</p>
                             <p><strong>Contract Length:</strong> ${analysis.contractWeeks} weeks</p>
                             <p><strong>Hours per Week:</strong> ${analysis.hoursPerWeek}</p>
                             <p><strong>Generated:</strong> ${analysis.timestamp}</p>
@@ -2019,10 +1927,6 @@
                             <div class="summary-card">
                                 <h3>Weekly Gross Pay</h3>
                                 <div class="amount">${analysis.weeklyGrossPay}</div>
-                            </div>
-                            <div class="summary-card">
-                                <h3>Net Take-Home</h3>
-                                <div class="amount">${analysis.netTakeHome}</div>
                             </div>
                         </div>
                         
@@ -2096,28 +2000,6 @@
             }
         }
 
-        // State tax rates (approximate combined rates)
-        const stateTaxRates = {
-            'AL': 22, 'AK': 19, 'AZ': 25, 'AR': 25, 'CA': 35, 'CO': 27, 'CT': 30,
-            'DE': 26, 'FL': 19, 'GA': 26, 'HI': 32, 'ID': 25, 'IL': 27, 'IN': 24,
-            'IA': 27, 'KS': 26, 'KY': 26, 'LA': 24, 'ME': 29, 'MD': 30, 'MA': 30,
-            'MI': 26, 'MN': 30, 'MS': 24, 'MO': 25, 'MT': 25, 'NE': 26, 'NV': 19,
-            'NH': 19, 'NJ': 32, 'NM': 25, 'NY': 35, 'NC': 26, 'ND': 24, 'OH': 26,
-            'OK': 25, 'OR': 32, 'PA': 26, 'RI': 29, 'SC': 26, 'SD': 19, 'TN': 19,
-            'TX': 19, 'UT': 25, 'VT': 29, 'VA': 27, 'WA': 19, 'WV': 25, 'WI': 27, 'WY': 19
-        };
-        
-        // Update tax rate based on selected state
-        function updateTaxRate() {
-            const selectedState = document.getElementById('workState').value;
-            if (selectedState && stateTaxRates[selectedState]) {
-                document.getElementById('taxRate').value = stateTaxRates[selectedState];
-                console.log(`📍 Updated tax rate for ${selectedState}: ${stateTaxRates[selectedState]}%`);
-                if (areAllFieldsValid()) {
-                    calculateContract();
-                }
-            }
-        }
         
         // Show notification function
         function showNotification(message, type = 'info') {
