@@ -984,6 +984,20 @@
         }
 
         function calculateContract() {
+            console.log('🔄 calculateContract() called');
+            console.log('🔍 Checking if DOM is ready...');
+            
+            // Check if elements exist
+            const elements = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            for (const id of elements) {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    console.error(`❌ Element not found: ${id}`);
+                    return;
+                }
+            }
+            
+            console.log('✅ All input elements found');
             console.log('🔄 Calculating contract (simplified gross only)...');
             
             // Get input values - simplified fields only
@@ -1031,10 +1045,14 @@
             };
 
             // Safely update each element
+            console.log('📊 Updating result display elements...');
             Object.keys(elements).forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = elements[id];
+                    console.log(`✅ Updated ${id}: ${elements[id]}`);
+                } else {
+                    console.error(`❌ Result element not found: ${id}`);
                 }
             });
             
@@ -1831,6 +1849,7 @@
 
         // Check for pre-filled data from job board
         function checkPrefilledData() {
+            console.log('🔍 checkPrefilledData() called');
             const calculatorData = localStorage.getItem('calculatorData');
             if (calculatorData) {
                 const data = JSON.parse(calculatorData);
@@ -1849,15 +1868,32 @@
                 localStorage.removeItem('calculatorData');
                 
                 // Calculate with new data
+                console.log('🔄 Calling calculateContract() from checkPrefilledData');
                 calculateContract();
+            } else {
+                console.log('📝 No prefilled data found in localStorage');
             }
         }
 
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            checkPrefilledData();
-            updateButtonStates();
-            calculateContract();
+            console.log('📄 DOMContentLoaded event fired');
+            try {
+                console.log('🔍 Calling checkPrefilledData()...');
+                checkPrefilledData();
+                console.log('✅ checkPrefilledData() completed');
+                
+                console.log('🔍 Calling updateButtonStates()...');
+                updateButtonStates();
+                console.log('✅ updateButtonStates() completed');
+                
+                console.log('🔍 Calling calculateContract()...');
+                calculateContract();
+                console.log('✅ calculateContract() completed');
+            } catch (error) {
+                console.error('❌ Error during initialization:', error);
+                console.error('Stack trace:', error.stack);
+            }
             
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
@@ -2311,18 +2347,20 @@
                 document.addEventListener('DOMContentLoaded', () => {
                     initLogger();
                     makeLoggerDraggable();
-                    // Start minimized
-                    document.getElementById('floating-logger').classList.add('hidden');
-                    document.getElementById('logger-toggle-fab').classList.add('visible');
+                    // Start visible for debugging
+                    // document.getElementById('floating-logger').classList.add('hidden');
+                    // document.getElementById('logger-toggle-fab').classList.add('visible');
+                    console.log('🚀 Debug logger started in visible mode');
                 });
             } else {
                 initLogger();
                 makeLoggerDraggable();
-                // Start minimized
-                setTimeout(() => {
-                    document.getElementById('floating-logger').classList.add('hidden');
-                    document.getElementById('logger-toggle-fab').classList.add('visible');
-                }, 100);
+                // Start visible for debugging
+                // setTimeout(() => {
+                //     document.getElementById('floating-logger').classList.add('hidden');
+                //     document.getElementById('logger-toggle-fab').classList.add('visible');
+                // }, 100);
+                console.log('🚀 Debug logger started in visible mode');
             }
         })();
     </script>
