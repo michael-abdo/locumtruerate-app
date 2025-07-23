@@ -251,6 +251,76 @@
                 display: none;
             }
         }
+
+        /* Tooltip System */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            white-space: nowrap;
+            max-width: 300px;
+            white-space: normal;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+            transform: translateX(-50%) translateY(-5px);
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .input-group:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tooltip positioning */
+        @media (max-width: 768px) {
+            .tooltip {
+                position: fixed;
+                bottom: auto;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 280px;
+                margin-bottom: 0;
+            }
+            
+            .tooltip::after {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -286,49 +356,73 @@
                     
                     <div class="form-group">
                         <label for="regularHours">Regular Hours</label>
-                        <input type="number" id="regularHours" value="40" min="0" max="168" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="regularHours" value="40" min="0" max="168" step="0.01">
+                            <div class="tooltip">Enter the number of regular hours worked at the standard hourly rate. This typically ranges from 32-48 hours per week for most healthcare positions.</div>
+                        </div>
                         <div class="error-message" id="regularHours-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="regularRate">Regular Rate ($/hr)</label>
-                        <input type="number" id="regularRate" value="85.00" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="regularRate" value="85.00" min="0" step="0.01">
+                            <div class="tooltip">Enter your standard hourly rate for regular hours. This is your base compensation rate before overtime premiums, stipends, or other additional payments.</div>
+                        </div>
                         <div class="error-message" id="regularRate-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="overtimeHours">Overtime Hours</label>
-                        <input type="number" id="overtimeHours" value="8" min="0" max="168" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="overtimeHours" value="8" min="0" max="168" step="0.01">
+                            <div class="tooltip">Enter hours worked beyond your regular schedule that qualify for overtime pay. Typically paid at 1.5x the regular rate for hours over 40 per week.</div>
+                        </div>
                         <div class="error-message" id="overtimeHours-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="overtimeRate">Overtime Rate ($/hr)</label>
-                        <input type="number" id="overtimeRate" value="127.50" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="overtimeRate" value="127.50" min="0" step="0.01">
+                            <div class="tooltip">Enter your overtime hourly rate. This is usually 1.5 times your regular rate (time and a half) but may vary based on your contract terms.</div>
+                        </div>
                         <div class="error-message" id="overtimeRate-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="callHours">Call Hours</label>
-                        <input type="number" id="callHours" value="0" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callHours" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter hours spent on-call (available but not actively working). This is typically paid at a lower rate than regular hours and may include nights, weekends, or holidays.</div>
+                        </div>
                         <div class="error-message" id="callHours-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="callRate">Call Rate ($/hr)</label>
-                        <input type="number" id="callRate" value="25.00" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callRate" value="25.00" min="0" step="0.01">
+                            <div class="tooltip">Enter the hourly rate paid for on-call time. This is usually significantly lower than your regular rate, typically ranging from $15-50 per hour depending on specialty.</div>
+                        </div>
                         <div class="error-message" id="callRate-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="callbackHours">Callback Hours</label>
-                        <input type="number" id="callbackHours" value="0" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callbackHours" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter hours worked when called in from on-call status. These are actual working hours that occur during your on-call period, usually paid at regular or overtime rates.</div>
+                        </div>
                         <div class="error-message" id="callbackHours-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="callbackRate">Callback Rate ($/hr)</label>
-                        <input type="number" id="callbackRate" value="127.50" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callbackRate" value="127.50" min="0" step="0.01">
+                            <div class="tooltip">Enter the hourly rate for callback hours when you're called in to work. This is often the same as overtime rate or regular rate depending on your contract terms.</div>
+                        </div>
                         <div class="error-message" id="callbackRate-error"></div>
                     </div>
 
@@ -336,19 +430,28 @@
 
                     <div class="form-group">
                         <label for="housingStipend">Housing Stipend</label>
-                        <input type="number" id="housingStipend" value="1200" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="housingStipend" value="1200" min="0" step="0.01">
+                            <div class="tooltip">Enter the weekly housing allowance amount. This tax-free benefit covers accommodation costs and typically ranges from $800-2000+ depending on location and housing type.</div>
+                        </div>
                         <div class="error-message" id="housingStipend-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="mealStipend">Meal Stipend</label>
-                        <input type="number" id="mealStipend" value="300" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="mealStipend" value="300" min="0" step="0.01">
+                            <div class="tooltip">Enter the weekly meal allowance amount. This tax-free benefit covers food expenses and typically ranges from $200-500 per week depending on your contract terms.</div>
+                        </div>
                         <div class="error-message" id="mealStipend-error"></div>
                     </div>
 
                     <div class="form-group">
                         <label for="mileageReimbursement">Mileage Reimbursement</label>
-                        <input type="number" id="mileageReimbursement" value="150" min="0" step="0.01">
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="mileageReimbursement" value="150" min="0" step="0.01">
+                            <div class="tooltip">Enter weekly mileage reimbursement amount. This tax-free benefit covers transportation costs related to work and is typically calculated based on miles driven or a flat weekly rate.</div>
+                        </div>
                         <div class="error-message" id="mileageReimbursement-error"></div>
                     </div>
 
@@ -356,25 +459,31 @@
 
                     <div class="form-group">
                         <label for="taxState">Tax State</label>
-                        <select id="taxState">
-                            <option value="no-tax">No State Tax</option>
-                            <option value="ca">California (9.3%)</option>
-                            <option value="ny">New York (6.85%)</option>
-                            <option value="tx">Texas (0%)</option>
-                            <option value="fl">Florida (0%)</option>
-                            <option value="wa">Washington (0%)</option>
-                            <option value="custom">Custom Rate</option>
-                        </select>
+                        <div class="tooltip-wrapper">
+                            <select id="taxState">
+                                <option value="no-tax">No State Tax</option>
+                                <option value="ca">California (9.3%)</option>
+                                <option value="ny">New York (6.85%)</option>
+                                <option value="tx">Texas (0%)</option>
+                                <option value="fl">Florida (0%)</option>
+                                <option value="wa">Washington (0%)</option>
+                                <option value="custom">Custom Rate</option>
+                            </select>
+                            <div class="tooltip">Select the state where you'll be working for tax purposes. State tax rates vary significantly, with some states having no income tax while others may exceed 10%. Choose 'Custom Rate' for specific calculations.</div>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="filingStatus">Filing Status</label>
-                        <select id="filingStatus">
-                            <option value="single">Single</option>
-                            <option value="married">Married Filing Jointly</option>
-                            <option value="married-separate">Married Filing Separately</option>
-                            <option value="head">Head of Household</option>
-                        </select>
+                        <div class="tooltip-wrapper">
+                            <select id="filingStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married Filing Jointly</option>
+                                <option value="married-separate">Married Filing Separately</option>
+                                <option value="head">Head of Household</option>
+                            </select>
+                            <div class="tooltip">Select your tax filing status. This affects your federal tax brackets and withholdings. Single and Married Filing Separately typically have higher rates than Married Filing Jointly or Head of Household.</div>
+                        </div>
                     </div>
                 </div>
 
