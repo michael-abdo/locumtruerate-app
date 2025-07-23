@@ -1,0 +1,517 @@
+- Vanilla Demo Files Alert Replacement - UI-Specific Breakdown
+  - Test Files
+    - test-paycheck-validation.html
+      - Replace Calculator Loading Error (MODAL DIALOG)
+        - Analyze current blocking error alert
+          - Alert text: "Please load the calculator first by clicking 'Load Paycheck Calculator'"
+          - Triggered when: User clicks "Run All Tests" without loading calculator
+          - Type: Critical error blocking functionality
+        - Design error modal dialog
+          - Create modal with prominent error icon
+          - Include clear action button "Load Calculator First"
+          - Add explanation of why calculator loading is required
+          - Design with blocking overlay to prevent other actions
+        - Implement modal dialog component
+          - Create modal HTML structure with error styling
+          - Write JavaScript to show modal on error condition
+          - Add event handlers for modal close and action buttons
+          - Implement modal accessibility features (focus trap, ARIA)
+        - Replace alert with modal dialog
+          - Remove alert() call from test runner logic
+          - Replace with modal.show() when calculator not loaded
+          - Update error handling to use modal instead of alert
+          - Ensure modal blocks further actions until resolved
+        - Test modal dialog functionality
+          - Verify modal appears when calculator not loaded
+          - Test modal blocking behavior prevents other actions
+          - Check accessibility with screen readers and keyboard navigation
+          - Validate modal closes properly after loading calculator
+    - test-paycheck-round2.html
+      - Replace Calculator Loading Error (MODAL DIALOG)
+        - Analyze current blocking error alert
+          - Alert text: "Please load the calculator first"
+          - Triggered when: User clicks "Run All Tests" without calculator
+          - Type: Critical error blocking primary functionality
+        - Design error modal dialog
+          - Create consistent modal design with test-paycheck-validation
+          - Include clear instructions and action button
+          - Add visual indicator showing required step
+          - Design with proper error color scheme and icons
+        - Implement modal dialog component
+          - Reuse modal component from test-paycheck-validation
+          - Customize message and action button text
+          - Add specific error handling for this test scenario
+          - Ensure modal integrates with existing test interface
+        - Replace alert with modal dialog
+          - Remove alert() call from test execution logic
+          - Replace with reusable modal component call
+          - Update test flow to handle modal-based error states
+          - Ensure consistent error experience across test files
+        - Test modal integration
+          - Verify modal behavior matches other test file
+          - Test error recovery flow after loading calculator
+          - Check modal styling consistency across test files
+          - Validate accessibility compliance is maintained
+  - Dashboard Implementations
+    - recruiter-dashboard.html
+      - Replace Job Details View (NEW PAGE)
+        - Analyze current job details alert
+          - Alert shows: Complex job details with applicant list, metrics, edit options
+          - Triggered when: User clicks "View" button on job listings
+          - Type: Comprehensive information display requiring dedicated space
+        - Design job details page
+          - Create full-page layout for comprehensive job information
+          - Design sections for job description, requirements, benefits
+          - Plan applicant management interface with filtering and sorting
+          - Add edit mode toggle for job posting modifications
+        - Implement job details page
+          - Create new HTML page or single-page app route
+          - Build responsive layout for job information display
+          - Implement applicant list with management controls
+          - Add job editing interface with form validation
+        - Replace alert with page navigation
+          - Remove alert() call from view button handler
+          - Replace with navigation to job details page
+          - Pass job ID and data through URL parameters or state
+          - Add loading state during navigation transition
+        - Test job details page functionality
+          - Verify all job information displays correctly
+          - Test applicant management features work properly
+          - Check responsive design on mobile and tablet
+          - Validate page performance with large applicant lists
+      - Replace Job Deletion Confirmation (MODAL DIALOG)
+        - Analyze current deletion alert
+          - Alert shows: Deletion confirmation with consequence details
+          - Triggered when: User clicks "Delete" button on job postings
+          - Type: Destructive action requiring explicit confirmation
+        - Design deletion confirmation modal
+          - Create modal with warning styling and icons
+          - Include detailed consequence information
+          - Add explicit "Cancel" and "Delete" action buttons
+          - Design with proper visual hierarchy for destruction warning
+        - Implement deletion confirmation modal
+          - Create modal HTML structure with warning design
+          - Write JavaScript for deletion confirmation flow
+          - Add API integration for actual job deletion
+          - Implement success feedback after deletion
+        - Replace alert with modal confirmation
+          - Remove alert() call from delete button handler
+          - Replace with modal confirmation dialog
+          - Add proper deletion API call after confirmation
+          - Show success toast notification after successful deletion
+        - Test deletion confirmation flow
+          - Verify modal prevents accidental deletions
+          - Test deletion actually removes job from system
+          - Check success feedback appears after deletion
+          - Validate cancel button works without deleting
+      - Replace Applicant Contact Options (MODAL DIALOG)
+        - Analyze current contact alert
+          - Alert shows: Multiple communication method options
+          - Triggered when: User clicks "Contact" button for applicants
+          - Type: Action selection requiring user choice
+        - Design contact options modal
+          - Create modal with communication method buttons
+          - Include email, phone, message, and video call options
+          - Add applicant information summary in modal
+          - Design with clear action buttons for each contact method
+        - Implement contact options modal
+          - Create modal HTML structure with contact options
+          - Write JavaScript for contact method selection
+          - Add integration with communication tools/APIs
+          - Implement contact history tracking
+        - Replace alert with modal interface
+          - Remove alert() call from contact button handler
+          - Replace with interactive contact options modal
+          - Add proper integration with communication systems
+          - Show confirmation when contact action is initiated
+        - Test contact options functionality
+          - Verify all contact methods work properly
+          - Test modal displays applicant information correctly
+          - Check integration with external communication tools
+          - Validate contact history is properly recorded
+      - Replace Date Validation Errors (TOAST NOTIFICATIONS)
+        - Analyze current date validation alerts
+          - Alert 1: "Please select both start and end dates"
+          - Alert 2: "Start date must be before end date"
+          - Triggered when: Invalid date range selections in analytics
+          - Type: Simple form validation errors
+        - Design validation toast notifications
+          - Create toast notification component with error styling
+          - Design brief, non-intrusive error messages
+          - Add auto-dismiss functionality with appropriate timing
+          - Include subtle animation for toast appearance/dismissal
+        - Implement toast notification system
+          - Create reusable toast notification JavaScript class
+          - Add CSS animations for smooth toast transitions
+          - Implement toast stacking for multiple simultaneous errors
+          - Add accessibility features for toast notifications
+        - Replace alerts with toast notifications
+          - Remove alert() calls from date validation logic
+          - Replace with toast.show() for validation errors
+          - Add real-time validation feedback as user types
+          - Ensure toast notifications don't block form interaction
+        - Test toast notification validation
+          - Verify toast appears for all validation scenarios
+          - Test toast stacking with multiple errors
+          - Check toast accessibility with screen readers
+          - Validate toast timing and auto-dismiss functionality
+    - locum-dashboard.html
+      - Replace Profile Update Navigation (NEW PAGE)
+        - Analyze current profile update alert
+          - Alert shows: Complex profile editing options and sections
+          - Triggered when: User clicks "Update Profile" button
+          - Type: Complex workflow requiring dedicated interface
+        - Design profile editing page
+          - Create comprehensive profile editing interface
+          - Design sections for personal info, certifications, preferences
+          - Plan document upload interface for credentials
+          - Add profile preview and validation features
+        - Implement profile editing page
+          - Create new profile editing page or route
+          - Build form sections with proper validation
+          - Implement file upload for certifications and documents
+          - Add save/cancel functionality with change tracking
+        - Replace alert with page navigation
+          - Remove alert() call from update profile button
+          - Replace with navigation to profile editing page
+          - Add loading state during navigation
+          - Implement proper data persistence and validation
+        - Test profile editing functionality
+          - Verify all profile sections can be edited
+          - Test file upload and document management
+          - Check form validation and error handling
+          - Validate changes are saved properly to backend
+      - Replace Profile Export (TOAST NOTIFICATION)
+        - Analyze current export alert
+          - Alert shows: Profile export process and download information
+          - Triggered when: User clicks "Export Profile" button
+          - Type: Simple action confirmation with file download
+        - Design export toast notification
+          - Create toast with download progress indicator
+          - Include success message with download link
+          - Add error handling for failed exports
+          - Design with appropriate download icon and styling
+        - Implement export toast system
+          - Create export-specific toast notification
+          - Add progress indicator during export generation
+          - Implement file download trigger after export completion
+          - Add error handling for export failures
+        - Replace alert with toast notification
+          - Remove alert() call from export button handler
+          - Replace with toast notification during export process
+          - Add actual file export functionality
+          - Show success toast with download completion
+        - Test export functionality
+          - Verify export process works end-to-end
+          - Test toast notification appears during export
+          - Check file download completes successfully
+          - Validate error handling for failed exports
+      - Replace Contract Filtering (TOAST NOTIFICATION)
+        - Analyze current filter alert
+          - Alert shows: Filter confirmation and result count
+          - Triggered when: User applies contract filters
+          - Type: Simple filter feedback
+        - Design filter toast notification
+          - Create brief toast confirming filter application
+          - Include filter name and result count
+          - Add subtle animation for filter changes
+          - Design with informational styling (not error/warning)
+        - Implement filter toast system
+          - Create filter-specific toast notification
+          - Add real-time result count updates
+          - Implement filter clear functionality
+          - Add filter history and saved filters
+        - Replace alert with toast notification
+          - Remove alert() call from filter application logic
+          - Replace with toast showing filter results
+          - Add visual filter indicators in interface
+          - Ensure toast doesn't interrupt filtering workflow
+        - Test filter toast functionality
+          - Verify toast appears for all filter changes
+          - Test result count accuracy in toast
+          - Check filter clearing functionality
+          - Validate toast timing doesn't interfere with rapid filtering
+      - Replace Contract Analysis (NEW PAGE)
+        - Analyze current analysis alert
+          - Alert shows: Complex contract analytics with charts and recommendations
+          - Triggered when: User clicks "Analyze Contracts" button
+          - Type: Comprehensive analytics requiring dedicated space
+        - Design contract analytics page
+          - Create full analytics dashboard layout
+          - Design charts and graphs for contract data visualization
+          - Plan recommendation engine interface
+          - Add export and sharing functionality for analytics
+        - Implement analytics page
+          - Create new analytics page or dashboard route
+          - Build interactive charts using charting library
+          - Implement data analysis algorithms for recommendations
+          - Add filtering and date range selection for analytics
+        - Replace alert with page navigation
+          - Remove alert() call from analyze button handler
+          - Replace with navigation to analytics dashboard
+          - Add loading state during analytics computation
+          - Implement proper data fetching and processing
+        - Test analytics functionality
+          - Verify charts display contract data accurately
+          - Test recommendation engine provides useful insights
+          - Check responsive design for analytics dashboard
+          - Validate performance with large contract datasets
+      - Replace Contract Details View (NEW PAGE)
+        - Analyze current contract details alert
+          - Alert shows: Comprehensive contract information including terms, payments, ratings
+          - Triggered when: User clicks "View" on contract entries
+          - Type: Detailed information display requiring dedicated interface
+        - Design contract details page
+          - Create detailed contract information layout
+          - Design sections for terms, payment schedule, performance metrics
+          - Plan document viewer for contract attachments
+          - Add contact information and communication tools
+        - Implement contract details page
+          - Create new contract details page or route
+          - Build responsive layout for contract information
+          - Implement document viewer for contract files
+          - Add communication tools for contract parties
+        - Replace alert with page navigation
+          - Remove alert() call from contract view handler
+          - Replace with navigation to contract details page
+          - Pass contract ID through URL parameters
+          - Add loading state during contract data fetching
+        - Test contract details functionality
+          - Verify all contract information displays correctly
+          - Test document viewer with various file types
+          - Check communication tools work properly
+          - Validate page performance with large contracts
+      - Replace Contract Management Actions (MODAL DIALOGS)
+        - Replace Contract Extension Modal
+          - Analyze extension alert: Shows extension options and terms
+          - Design extension confirmation modal with terms
+          - Implement modal with extension duration options
+          - Replace alert with modal dialog interface
+          - Test extension functionality end-to-end
+        - Replace Contract Preparation Modal
+          - Analyze preparation alert: Shows preparation checklist
+          - Design preparation modal with checklist interface
+          - Implement modal with preparation tracking
+          - Replace alert with interactive modal
+          - Test preparation workflow completion
+        - Replace Contract Download Modal
+          - Analyze download alert: Shows download options
+          - Design download modal with format options
+          - Implement modal with download progress
+          - Replace alert with modal interface
+          - Test download functionality with various formats
+        - Replace Contract Renewal Modal
+          - Analyze renewal alert: Shows renewal terms and options
+          - Design renewal modal with terms negotiation
+          - Implement modal with renewal workflow
+          - Replace alert with comprehensive modal
+          - Test renewal process end-to-end
+      - Replace Calculator Management (MIXED: TOAST + MODAL)
+        - Replace Save Calculation (TOAST NOTIFICATION)
+          - Analyze save alert: Simple save confirmation
+          - Design save success toast notification
+          - Implement toast with save confirmation
+          - Replace alert with toast notification
+          - Test save functionality with toast feedback
+        - Replace Export Calculations (TOAST NOTIFICATION)
+          - Analyze export alert: Export process confirmation
+          - Design export toast with download progress
+          - Implement toast with file download
+          - Replace alert with toast notification
+          - Test export process with toast feedback
+        - Replace Calculation Comparison (MODAL DIALOG)
+          - Analyze comparison alert: Complex comparison data
+          - Design comparison modal with side-by-side layout
+          - Implement modal with interactive comparison tools
+          - Replace alert with comparison modal
+          - Test comparison functionality in modal interface
+    - admin-dashboard.html
+      - Replace System Report Generation (MODAL DIALOG)
+        - Analyze current report alert
+          - Alert shows: Report generation process with parameters
+          - Triggered when: Admin clicks "Generate Report" button
+          - Type: Process initiation requiring parameters and progress tracking
+        - Design report generation modal
+          - Create modal with report parameter selection
+          - Include date range, report type, and format options
+          - Add progress indicator for report generation
+          - Design with admin-appropriate styling and icons
+        - Implement report generation modal
+          - Create modal HTML structure with parameter forms
+          - Write JavaScript for report generation process
+          - Add progress tracking and status updates
+          - Implement report download after completion
+        - Replace alert with modal interface
+          - Remove alert() call from report generation handler
+          - Replace with interactive report generation modal
+          - Add proper API integration for report generation
+          - Show success notification when report is ready
+        - Test report generation functionality
+          - Verify all report parameters work correctly
+          - Test progress indicator updates during generation
+          - Check report download completes successfully
+          - Validate error handling for failed report generation
+      - Replace System Settings Navigation (NEW PAGE)
+        - Analyze current settings alert
+          - Alert shows: Complex system configuration options
+          - Triggered when: Admin accesses system settings
+          - Type: Comprehensive configuration requiring dedicated interface
+        - Design system settings page
+          - Create admin settings page with organized sections
+          - Design configuration forms for different system components
+          - Plan permission controls and access restrictions
+          - Add configuration backup and restore functionality
+        - Implement system settings page
+          - Create new admin settings page or route
+          - Build configuration forms with validation
+          - Implement permission checks for settings access
+          - Add configuration change logging and audit trail
+        - Replace alert with page navigation
+          - Remove alert() call from settings access handler
+          - Replace with navigation to system settings page
+          - Add loading state during settings data fetching
+          - Implement proper authorization checks
+        - Test system settings functionality
+          - Verify all configuration options work properly
+          - Test permission restrictions for different admin levels
+          - Check configuration change logging
+          - Validate settings backup and restore functionality
+      - Replace Analytics Timeframe Updates (TOAST NOTIFICATION)
+        - Analyze current timeframe alert
+          - Alert shows: Analytics period change confirmation
+          - Triggered when: Admin changes analytics timeframe
+          - Type: Simple filter/period change confirmation
+        - Design timeframe toast notification
+          - Create brief toast confirming period change
+          - Include new timeframe details in toast
+          - Add loading indicator during data refresh
+          - Design with informational styling
+        - Implement timeframe toast system
+          - Create timeframe-specific toast notification
+          - Add automatic data refresh after period change
+          - Implement toast with loading state
+          - Add error handling for data fetch failures
+        - Replace alert with toast notification
+          - Remove alert() call from timeframe change handler
+          - Replace with toast notification during update
+          - Add visual feedback during data refresh
+          - Ensure toast doesn't interrupt analytics workflow
+        - Test timeframe toast functionality
+          - Verify toast appears for all period changes
+          - Test data refresh completes after timeframe change
+          - Check loading indicators work properly
+          - Validate error handling for failed data updates
+      - Replace Activity Log Navigation (NEW PAGE)
+        - Analyze current activity log alert
+          - Alert shows: Complete activity log with filtering options
+          - Triggered when: Admin views all system activity
+          - Type: Comprehensive log display requiring dedicated space
+        - Design activity log page
+          - Create full-page activity log interface
+          - Design filtering and search functionality
+          - Plan pagination for large log datasets
+          - Add export functionality for log data
+        - Implement activity log page
+          - Create new activity log page or route
+          - Build log display with filtering and pagination
+          - Implement real-time log updates
+          - Add log export and analysis tools
+        - Replace alert with page navigation
+          - Remove alert() call from activity log handler
+          - Replace with navigation to activity log page
+          - Add loading state during log data fetching
+          - Implement proper authorization for log access
+        - Test activity log functionality
+          - Verify all log entries display correctly
+          - Test filtering and search functionality
+          - Check pagination performance with large datasets
+          - Validate real-time log updates work properly
+      - Replace User Filtering (TOAST NOTIFICATION)
+        - Analyze current user filter alert
+          - Alert shows: User filter confirmation
+          - Triggered when: Admin applies user filters
+          - Type: Simple filter confirmation
+        - Design user filter toast notification
+          - Create brief toast confirming filter application
+          - Include filter criteria and result count
+          - Add clear filter option in toast
+          - Design with admin-appropriate styling
+        - Implement user filter toast system
+          - Create user-filter-specific toast notification
+          - Add real-time user count updates
+          - Implement filter persistence across sessions
+          - Add advanced filter combinations
+        - Replace alert with toast notification
+          - Remove alert() call from user filter handler
+          - Replace with toast showing filter results
+          - Add visual filter indicators in user list
+          - Ensure toast doesn't interrupt user management workflow
+        - Test user filter functionality
+          - Verify toast appears for all filter applications
+          - Test user count accuracy in toast
+          - Check filter persistence and clearing
+          - Validate filter performance with large user datasets
+      - Replace User Management Actions (MODAL DIALOGS)
+        - Replace User View Details Modal
+          - Analyze user view alert: Comprehensive user information display
+          - Design user details modal with tabbed interface
+          - Implement modal with user activity history and settings
+          - Replace alert with interactive user details modal
+          - Test user details modal with all user types
+        - Replace User Suspension Modal
+          - Analyze suspension alert: Suspension confirmation with reasons
+          - Design suspension modal with reason selection and duration
+          - Implement modal with suspension workflow and notifications
+          - Replace alert with comprehensive suspension modal
+          - Test suspension process including user notifications
+        - Replace User Reactivation Modal
+          - Analyze reactivation alert: Reactivation confirmation process
+          - Design reactivation modal with account restoration options
+          - Implement modal with reactivation checklist and verification
+          - Replace alert with reactivation workflow modal
+          - Test reactivation process including data restoration
+        - Replace Bulk User Operations Modal
+          - Analyze bulk operations alert: Multiple user action confirmation
+          - Design bulk operations modal with action preview
+          - Implement modal with progress tracking for bulk actions
+          - Replace alert with bulk operations management modal
+          - Test bulk operations with error handling and rollback
+      - Replace System Health Monitoring (MIXED: TOAST + MODAL)
+        - Replace System Refresh (TOAST NOTIFICATION)
+          - Analyze refresh alert: System data refresh confirmation
+          - Design refresh toast with progress indicator
+          - Implement toast with refresh status updates
+          - Replace alert with refresh progress toast
+          - Test refresh functionality with real-time updates
+        - Replace System Diagnostics (MODAL DIALOG)
+          - Analyze diagnostics alert: System diagnostic results and actions
+          - Design diagnostics modal with test results and recommendations
+          - Implement modal with diagnostic tool execution
+          - Replace alert with comprehensive diagnostics modal
+          - Test diagnostics modal with various system states
+    - contract-calculator.html
+      - Replace Job Search Redirection (TOAST NOTIFICATION)
+        - Analyze current redirection alert
+          - Alert shows: Job search navigation confirmation
+          - Triggered when: User finds similar positions
+          - Type: Navigation confirmation with brief feedback
+        - Design redirection toast notification
+          - Create toast confirming search initiation
+          - Include brief loading indicator during redirect
+          - Add option to cancel redirection if needed
+          - Design with navigation-appropriate styling
+        - Implement redirection toast system
+          - Create redirection-specific toast notification
+          - Add smooth transition to job search results
+          - Implement toast with cancel option
+          - Add search criteria persistence across redirect
+        - Replace alert with toast notification
+          - Remove alert() call from job search handler
+          - Replace with toast notification during redirect
+          - Add proper navigation to job search with filters
+          - Ensure smooth user experience during transition
+        - Test redirection functionality
+          - Verify toast appears during job search redirect
+          - Test smooth navigation to job search results
+          - Check search criteria are properly applied
+          - Validate cancel functionality if user changes mind
