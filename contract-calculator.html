@@ -1011,8 +1011,8 @@
             console.log('🔍 Checking if DOM is ready...');
             
             // Check if elements exist
-            const elements = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
-            for (const id of elements) {
+            const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            for (const id of inputElementIds) {
                 const elem = document.getElementById(id);
                 if (!elem) {
                     console.error(`❌ Element not found: ${id}`);
