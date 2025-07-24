@@ -1,27 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
-require('dotenv').config();
+const { dbConfig } = require('./connection');
+const { logError, exitOnError } = require('../utils/errorHandler');
 
 const migrate = async () => {
-  // Database configuration
-  const config = {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    database: process.env.DB_NAME || 'vanilla_api_dev',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres'
-  };
-
-  const client = new Client(config);
+  const client = new Client(dbConfig);
 
   try {
     // Connect to database
     await client.connect();
-    console.log(`Connected to database: ${config.database}`);
+    console.log(`Connected to database: ${dbConfig.database}`);
 
     // Read the SQL file
-    const sqlPath = path.join(__dirname, 'day2-init.sql');
+    const sqlPath = path.join(__dirname, 'schema.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
 
     // Execute the SQL
@@ -43,8 +35,8 @@ const migrate = async () => {
     });
 
   } catch (error) {
-    console.error('❌ Migration failed:', error.message);
-    process.exit(1);
+    await client.end();
+    exitOnError('❌ Migration failed', error);
   } finally {
     await client.end();
   }

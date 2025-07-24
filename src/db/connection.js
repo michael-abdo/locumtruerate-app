@@ -1,16 +1,15 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+const { logError } = require('../utils/errorHandler');
+const config = require('../config/config');
 
-// Database configuration
+// Database configuration from centralized config
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'vanilla_api_dev',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  max: 20, // maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
-  connectionTimeoutMillis: 2000, // how long to wait when connecting a new client
+  host: config.database.host,
+  port: config.database.port,
+  database: config.database.name,
+  user: config.database.user,
+  password: config.database.password,
+  ...config.database.pool
 };
 
 // Create pool instance
@@ -18,7 +17,7 @@ const pool = new Pool(dbConfig);
 
 // Handle pool errors
 pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle database client', err);
+  logError('Unexpected error on idle database client', err);
 });
 
 // Test database connection
@@ -30,7 +29,7 @@ const testConnection = async () => {
     client.release();
     return true;
   } catch (error) {
-    console.error('Database connection error:', error.message);
+    logError('Database connection error', error);
     return false;
   }
 };
@@ -41,12 +40,12 @@ const query = async (text, params) => {
   try {
     const result = await pool.query(text, params);
     const duration = Date.now() - start;
-    if (process.env.LOG_LEVEL === 'debug') {
+    if (config.logging.debug) {
       console.log('Executed query', { text, duration, rows: result.rowCount });
     }
     return result;
   } catch (error) {
-    console.error('Database query error:', error);
+    logError('Database query error', error);
     throw error;
   }
 };
@@ -80,6 +79,7 @@ const closePool = async () => {
 
 module.exports = {
   pool,
+  dbConfig,
   testConnection,
   query,
   transaction,

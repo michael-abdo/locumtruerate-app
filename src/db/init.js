@@ -1,19 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
-require('dotenv').config();
+const { dbConfig } = require('./connection');
+const { logError, exitOnError } = require('../utils/errorHandler');
 
 const initDatabase = async () => {
   // Connection config for postgres database (to create our database)
   const adminConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
+    ...dbConfig,
     database: 'postgres' // Connect to default postgres database first
   };
 
-  const dbName = process.env.DB_NAME || 'locumtruerate_dev';
+  const dbName = dbConfig.database;
   
   const adminClient = new Client(adminConfig);
   
@@ -37,17 +35,17 @@ const initDatabase = async () => {
     await adminClient.end();
 
     // Now connect to our newly created database
-    const dbConfig = {
+    const dbConnectionConfig = {
       ...adminConfig,
       database: dbName
     };
 
-    const client = new Client(dbConfig);
+    const client = new Client(dbConnectionConfig);
     await client.connect();
     console.log(`Connected to database ${dbName}`);
 
     // Read and execute the SQL file
-    const sqlPath = path.join(__dirname, 'init.sql');
+    const sqlPath = path.join(__dirname, 'schema.sql');
     const sql = fs.readFileSync(sqlPath, 'utf8');
 
     // Execute the SQL
@@ -58,8 +56,7 @@ const initDatabase = async () => {
     console.log('Database initialization completed');
 
   } catch (error) {
-    console.error('Database initialization error:', error);
-    process.exit(1);
+    exitOnError('Database initialization error', error);
   }
 };
 

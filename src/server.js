@@ -1,23 +1,24 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-require('dotenv').config();
-
+const { logError, exitOnError } = require('./utils/errorHandler');
+const { registerServer, registerSignalHandlers } = require('./utils/gracefulShutdown');
+const config = require('./config/config');
 const { testConnection } = require('./db/connection');
 
 // Create Express app
 const app = express();
 
-// Get port from environment or default
-const PORT = process.env.PORT || 4000;
-const API_VERSION = process.env.API_VERSION || 'v1';
+// Get configuration from centralized config
+const PORT = config.server.port;
+const API_VERSION = config.server.apiVersion;
 
 // Security middleware
 app.use(helmet());
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: config.server.corsOrigin,
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -28,7 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware (development only)
-if (process.env.NODE_ENV === 'development') {
+if (config.logging.debug) {
   app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
@@ -42,7 +43,7 @@ app.get('/health', (req, res) => {
     service: 'locumtruerate-api',
     version: API_VERSION,
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: config.server.env
   });
 });
 
@@ -62,7 +63,7 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
 });
 
 // Database connection test endpoint (development only)
-if (process.env.NODE_ENV === 'development') {
+if (config.features.dbTest) {
   app.get('/api/db-test', async (req, res) => {
     try {
       const connected = await testConnection();
@@ -90,14 +91,14 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  logError('Express error handler', err);
   
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
   
   res.status(status).json({
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(config.logging.debug && { stack: err.stack }),
     timestamp: new Date().toISOString()
   });
 });
@@ -114,31 +115,29 @@ const startServer = async () => {
     }
 
     // Start listening
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 LocumTrueRate API Server`);
       console.log(`   Version: ${API_VERSION}`);
       console.log(`   Port: ${PORT}`);
-      console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`   Environment: ${config.server.env}`);
       console.log(`   Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
       console.log(`   URL: http://localhost:${PORT}`);
       console.log(`   API Base: http://localhost:${PORT}/api/${API_VERSION}`);
+      if (config.logging.debug) {
+        console.log(`   Debug Mode: Enabled`);
+      }
     });
+    
+    // Register server for graceful shutdown
+    registerServer(server, 'API Server');
+    
   } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
+    exitOnError('Failed to start server', error);
   }
 };
 
-// Handle graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  process.exit(0);
-});
-
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  process.exit(0);
-});
+// Register signal handlers for graceful shutdown
+registerSignalHandlers();
 
 // Start the server
 startServer();
