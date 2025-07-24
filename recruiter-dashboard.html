@@ -4276,7 +4276,12 @@
         }
 
         function viewJob(jobId) {
-            alert(`Viewing job details for Job ID: ${jobId}\n\nThis would open a detailed view showing:\n• Complete job description\n• Applicant list and status\n• Performance metrics\n• Edit options`);
+            showNotification(`Viewing job details for Job ID: ${jobId}`, 'info');
+            // This would open a detailed view showing:
+            // • Complete job description
+            // • Applicant list and status  
+            // • Performance metrics
+            // • Edit options
         }
 
         function editJob(jobId) {
@@ -4490,7 +4495,10 @@
         }
 
         function deleteJob(jobId) {
-            alert(`Job posting ${jobId} has been deleted.\n\n• Applicants have been notified\n• Posting removed from all boards\n• Data archived for reporting`);
+            showNotification(`Job posting ${jobId} has been deleted`, 'success');
+            // • Applicants have been notified
+            // • Posting removed from all boards
+            // • Data archived for reporting
         }
 
         function viewApplicant(applicantId) {
@@ -4498,7 +4506,12 @@
         }
 
         function contactApplicant(applicantId) {
-            alert(`Contacting applicant ${applicantId}...\n\nCommunication options:\n• Send message through platform\n• Schedule phone interview\n• Request additional documents\n• Share job details and next steps`);
+            showNotification(`Opening communication options for applicant ${applicantId}`, 'info');
+            // Communication options:
+            // • Send message through platform
+            // • Schedule phone interview
+            // • Request additional documents
+            // • Share job details and next steps
         }
 
         function viewAllApplicants() {
@@ -6598,12 +6611,12 @@ Dr. James Wilson`,
             const endDate = document.getElementById('analytics-end-date').value;
             
             if (!startDate || !endDate) {
-                alert('Please select both start and end dates');
+                showNotification('Please select both start and end dates', 'error');
                 return;
             }
             
             if (new Date(startDate) > new Date(endDate)) {
-                alert('Start date must be before end date');
+                showNotification('Start date must be before end date', 'error');
                 return;
             }
             

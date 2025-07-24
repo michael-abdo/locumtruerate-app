@@ -5158,11 +5158,11 @@ American Board of Internal Medicine</textarea>
 
         // Dashboard functionality
         function updateProfile() {
-            alert('Opening profile editor...\n\n📝 Update:\n• Personal information\n• Specialties and certifications\n• License information\n• Availability preferences\n• Rate expectations\n• Work history');
+            showToast('Opening profile editor... Update: Personal information, Specialties and certifications, License information, Availability preferences, Rate expectations, Work history', 'info');
         }
 
         function exportProfile() {
-            alert('Exporting professional profile...\n\n📄 Includes:\n• Comprehensive resume\n• Certifications and licenses\n• Work history and ratings\n• Skills and specialties\n• References\n\nFile will be downloaded as PDF.');
+            showToast('Exporting professional profile... Includes: Comprehensive resume, Certifications and licenses, Work history and ratings, Skills and specialties, References. File will be downloaded as PDF.', 'success');
         }
 
         function filterContracts(filter) {
@@ -5170,15 +5170,15 @@ American Board of Internal Medicine</textarea>
             buttons.forEach(btn => btn.classList.remove('primary'));
             event.target.classList.add('primary');
             
-            alert(`Filtering contracts: ${filter}\n\nShowing ${filter} contracts only.`);
+            showToast(`Filtering contracts: ${filter}. Showing ${filter} contracts only.`, 'info');
         }
 
         function analyzeContracts() {
-            alert('Analyzing all contracts...\n\n📊 Analysis includes:\n• Total earnings comparison\n• Rate trends over time\n• Best performing contracts\n• Market rate analysis\n• Recommendations for improvement');
+            showToast('Analyzing all contracts... Analysis includes: Total earnings comparison, Rate trends over time, Best performing contracts, Market rate analysis, Recommendations for improvement', 'info');
         }
 
         function viewContract(contractId) {
-            alert(`Viewing contract details ${contractId}...\n\n📋 Details include:\n• Complete contract terms\n• Payment schedule\n• Housing and benefits\n• Performance ratings\n• Extension options\n• Contact information`);
+            showToast(`Viewing contract details ${contractId}... Details include: Complete contract terms, Payment schedule, Housing and benefits, Performance ratings, Extension options, Contact information`, 'info');
         }
 
         function calculateEarnings(contractId) {
@@ -5196,19 +5196,19 @@ American Board of Internal Medicine</textarea>
         }
 
         function extendContract(contractId) {
-            alert(`Requesting contract extension for Contract ${contractId}...\n\n📞 Next steps:\n• Contact recruiter\n• Negotiate terms\n• Confirm availability\n• Submit extension request`);
+            showToast(`Requesting contract extension for Contract ${contractId}... Next steps: Contact recruiter, Negotiate terms, Confirm availability, Submit extension request`, 'info');
         }
 
         function prepareContract(contractId) {
-            alert(`Preparing for upcoming contract ${contractId}...\n\n✅ Preparation checklist:\n• Verify credentials\n• Arrange housing\n• Plan travel\n• Review orientation materials\n• Complete pre-arrival requirements`);
+            showToast(`Preparing for upcoming contract ${contractId}... Preparation checklist: Verify credentials, Arrange housing, Plan travel, Review orientation materials, Complete pre-arrival requirements`, 'info');
         }
 
         function downloadContract(contractId) {
-            alert(`Downloading contract ${contractId} documents...\n\n📁 Documents include:\n• Signed contract\n• Pay statements\n• Performance reviews\n• Reference letters\n• Tax documents`);
+            showToast(`Downloading contract ${contractId} documents... Documents include: Signed contract, Pay statements, Performance reviews, Reference letters, Tax documents`, 'success');
         }
 
         function renewContract(contractId) {
-            alert(`Initiating contract renewal for Contract ${contractId}...\n\n🔄 Renewal process:\n• Express interest to recruiter\n• Review updated terms\n• Negotiate improvements\n• Confirm dates and rates`);
+            showToast(`Initiating contract renewal for Contract ${contractId}... Renewal process: Express interest to recruiter, Review updated terms, Negotiate improvements, Confirm dates and rates`, 'info');
         }
 
         function downloadAssignmentDocuments(assignmentId) {
@@ -5255,11 +5255,11 @@ American Board of Internal Medicine</textarea>
             };
             
             const calc = calculations[calcId];
-            alert(`Viewing saved calculation ${calcId}:\n\nType: ${calc.type} Analysis\nDetails: ${calc.rate || calc.weekly}\nTotal: ${calc.total || calc.monthly}`);
+            showToast(`Viewing saved calculation ${calcId}: Type: ${calc.type} Analysis, Details: ${calc.rate || calc.weekly}, Total: ${calc.total || calc.monthly}`, 'info');
         }
 
         function useCalculation(calcId) {
-            alert(`Loading calculation ${calcId} into calculator...\n\nRedirecting to calculator with pre-filled data.`);
+            showToast(`Loading calculation ${calcId} into calculator... Redirecting to calculator with pre-filled data.`, 'info');
             
             // Simulate loading calculation data
             setTimeout(() => {
@@ -5272,11 +5272,11 @@ American Board of Internal Medicine</textarea>
         }
 
         function exportCalculations() {
-            alert('Exporting all saved calculations...\n\n📊 Export includes:\n• Contract analyses\n• Paycheck calculations\n• Comparison data\n• Performance metrics\n\nFile will be downloaded as Excel spreadsheet.');
+            showToast('Exporting all saved calculations... Export includes: Contract analyses, Paycheck calculations, Comparison data, Performance metrics. File will be downloaded as Excel spreadsheet.', 'success');
         }
 
         function compareCalculations() {
-            alert('Opening calculation comparison tool...\n\n⚖️ Compare:\n• Multiple contract offers\n• Rate analysis\n• Total compensation\n• True hourly rates\n• Benefits comparison');
+            showToast('Opening calculation comparison tool... Compare: Multiple contract offers, Rate analysis, Total compensation, True hourly rates, Benefits comparison', 'info');
         }
 
         // Initialize dashboard
