@@ -5,7 +5,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "echo 'Tests coming soon'"
+    "test": "node tests/comprehensive-test-runner.js",
+    "test:quick": "node tests/comprehensive-test-runner.js --no-performance",
+    "test:security": "node tests/comprehensive-test-runner.js --no-performance --security-only",
+    "test:db": "node tests/comprehensive-test-runner.js --no-performance --no-security"
   },
   "engines": {
     "node": "18.x"
