@@ -1,16 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
-const { dbConfig } = require('./connection');
+require('dotenv').config();
 
 const initDatabase = async () => {
   // Connection config for postgres database (to create our database)
   const adminConfig = {
-    ...dbConfig,
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
     database: 'postgres' // Connect to default postgres database first
   };
 
-  const dbName = dbConfig.database;
+  const dbName = process.env.DB_NAME || 'locumtruerate_dev';
   
   const adminClient = new Client(adminConfig);
   
@@ -33,10 +36,13 @@ const initDatabase = async () => {
 
     await adminClient.end();
 
-    // Now connect to our newly created database using centralized config
-    const targetDbConfig = dbConfig;
+    // Now connect to our newly created database
+    const dbConfig = {
+      ...adminConfig,
+      database: dbName
+    };
 
-    const client = new Client(targetDbConfig);
+    const client = new Client(dbConfig);
     await client.connect();
     console.log(`Connected to database ${dbName}`);
 

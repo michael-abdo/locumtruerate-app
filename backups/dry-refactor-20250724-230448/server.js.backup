@@ -1,22 +1,23 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const config = require('./config/config');
+require('dotenv').config();
+
 const { testConnection } = require('./db/connection');
 
 // Create Express app
 const app = express();
 
-// Get configuration from centralized config
-const PORT = config.server.port;
-const API_VERSION = config.server.apiVersion;
+// Get port from environment or default
+const PORT = process.env.PORT || 4000;
+const API_VERSION = process.env.API_VERSION || 'v1';
 
 // Security middleware
 app.use(helmet());
 
 // CORS configuration
 const corsOptions = {
-  origin: config.server.corsOrigin,
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware (development only)
-if (config.server.env === 'development') {
+if (process.env.NODE_ENV === 'development') {
   app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
@@ -41,7 +42,7 @@ app.get('/health', (req, res) => {
     service: 'locumtruerate-api',
     version: API_VERSION,
     timestamp: new Date().toISOString(),
-    environment: config.server.env
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -117,7 +118,7 @@ const startServer = async () => {
       console.log(`🚀 LocumTrueRate API Server`);
       console.log(`   Version: ${API_VERSION}`);
       console.log(`   Port: ${PORT}`);
-      console.log(`   Environment: ${config.server.env}`);
+      console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`   Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
       console.log(`   URL: http://localhost:${PORT}`);
       console.log(`   API Base: http://localhost:${PORT}/api/${API_VERSION}`);
