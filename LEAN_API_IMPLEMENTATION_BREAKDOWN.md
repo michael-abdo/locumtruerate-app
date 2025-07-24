@@ -7,11 +7,28 @@ This document breaks down the 8-week lean API implementation into atomic, action
 
 ## Week 1-2: API Foundation
 
-### Day 1: Project Setup
+### Current Status Summary
+**Completed Tasks:**
+1. ✅ Day 1: Project setup with proper folder structure
+2. ✅ Day 1: All core dependencies installed
+3. ✅ Day 1: Express server running with health endpoint
+4. ✅ Day 2: PostgreSQL databases created and configured
+5. ✅ Day 2: Database connection module with pool setup
+6. ✅ Day 2: Database schema created with all tables
+7. ✅ Day 2: Migration system implemented
+8. ✅ Day 3: Authentication dependencies installed (partial)
+
+**Notes:**
+- Using port 4000 instead of 3000
+- Database name is `vanilla_api_dev` as specified
+- Server file is `src/server.js` (was renamed from `api-server.js`)
+- Added database helper functions (query, transaction) to connection.js
+
+### Day 1: Project Setup ✅ COMPLETED
 **Task 1.1: Initialize Node.js Project**
-- [ ] Create new directory: `mkdir vanilla-api && cd vanilla-api`
-- [ ] Initialize npm: `npm init -y`
-- [ ] Create folder structure:
+- [x] Create new directory: `mkdir vanilla-api && cd vanilla-api` (adapted to use existing `src` directory)
+- [x] Initialize npm: `npm init -y`
+- [x] Create folder structure:
   ```
   vanilla-api/
   ├── src/
@@ -23,16 +40,16 @@ This document breaks down the 8-week lean API implementation into atomic, action
   ├── .env.example
   └── README.md
   ```
-- [ ] Create `.gitignore` with node_modules, .env, logs/
-- [ ] Initialize git repository: `git init`
+- [x] Create `.gitignore` with node_modules, .env, logs/
+- [x] Initialize git repository: `git init`
 
-**Task 1.2: Install Core Dependencies**
-- [ ] Install express: `npm install express`
-- [ ] Install database: `npm install pg` (PostgreSQL)
-- [ ] Install env management: `npm install dotenv`
-- [ ] Install security: `npm install helmet cors`
-- [ ] Install dev dependencies: `npm install --save-dev nodemon`
-- [ ] Create package.json scripts:
+**Task 1.2: Install Core Dependencies** ✅ COMPLETED
+- [x] Install express: `npm install express`
+- [x] Install database: `npm install pg` (PostgreSQL)
+- [x] Install env management: `npm install dotenv`
+- [x] Install security: `npm install helmet cors`
+- [x] Install dev dependencies: `npm install --save-dev nodemon`
+- [x] Create package.json scripts:
   ```json
   {
     "start": "node src/server.js",
@@ -41,30 +58,30 @@ This document breaks down the 8-week lean API implementation into atomic, action
   }
   ```
 
-**Task 1.3: Basic Express Server**
-- [ ] Create `src/server.js` with basic Express setup
-- [ ] Add middleware: helmet, cors, express.json()
-- [ ] Create health check endpoint: `GET /health`
-- [ ] Add basic error handling middleware
-- [ ] Test server starts: `npm run dev`
-- [ ] Verify health endpoint returns 200 with `curl localhost:3000/health`
+**Task 1.3: Basic Express Server** ✅ COMPLETED
+- [x] Create `src/server.js` with basic Express setup (was `src/api-server.js`, renamed)
+- [x] Add middleware: helmet, cors, express.json()
+- [x] Create health check endpoint: `GET /health`
+- [x] Add basic error handling middleware
+- [x] Test server starts: `npm run dev`
+- [x] Verify health endpoint returns 200 with `curl localhost:4000/health` (port 4000)
 
-### Day 2: Database Setup
+### Day 2: Database Setup ✅ COMPLETED
 **Task 2.1: PostgreSQL Installation & Setup**
-- [ ] Install PostgreSQL locally OR setup Railway/Heroku PostgreSQL
-- [ ] Create database: `createdb vanilla_api_dev`
-- [ ] Create database: `createdb vanilla_api_test`
-- [ ] Test connection with `psql vanilla_api_dev`
+- [x] Install PostgreSQL locally OR setup Railway/Heroku PostgreSQL
+- [x] Create database: `createdb vanilla_api_dev`
+- [x] Create database: `createdb vanilla_api_test`
+- [x] Test connection with `psql vanilla_api_dev`
 
-**Task 2.2: Database Connection Module**
-- [ ] Create `src/db/connection.js` with pg Pool setup
-- [ ] Add connection configuration from environment variables
-- [ ] Create `src/db/init.sql` with initial schema
-- [ ] Test database connection in server startup
-- [ ] Add connection error handling
+**Task 2.2: Database Connection Module** ✅ COMPLETED
+- [x] Create `src/db/connection.js` with pg Pool setup
+- [x] Add connection configuration from environment variables
+- [x] Create `src/db/init.sql` with initial schema
+- [x] Test database connection in server startup
+- [x] Add connection error handling
 
-**Task 2.3: Database Schema Creation**
-- [ ] Write SQL for `users` table:
+**Task 2.3: Database Schema Creation** ✅ COMPLETED
+- [x] Write SQL for `users` table:
   ```sql
   CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -77,7 +94,7 @@ This document breaks down the 8-week lean API implementation into atomic, action
     created_at TIMESTAMP DEFAULT NOW()
   );
   ```
-- [ ] Write SQL for `jobs` table:
+- [x] Write SQL for `jobs` table:
   ```sql
   CREATE TABLE jobs (
     id SERIAL PRIMARY KEY,
@@ -92,7 +109,7 @@ This document breaks down the 8-week lean API implementation into atomic, action
     created_at TIMESTAMP DEFAULT NOW()
   );
   ```
-- [ ] Write SQL for `applications` table:
+- [x] Write SQL for `applications` table:
   ```sql
   CREATE TABLE applications (
     id SERIAL PRIMARY KEY,
@@ -104,7 +121,7 @@ This document breaks down the 8-week lean API implementation into atomic, action
     UNIQUE(user_id, job_id)
   );
   ```
-- [ ] Write SQL for `sessions` table:
+- [x] Write SQL for `sessions` table:
   ```sql
   CREATE TABLE sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -114,15 +131,15 @@ This document breaks down the 8-week lean API implementation into atomic, action
     created_at TIMESTAMP DEFAULT NOW()
   );
   ```
-- [ ] Create migration script: `src/db/migrate.js`
-- [ ] Run migrations: `node src/db/migrate.js`
-- [ ] Verify tables created: `\dt` in psql
+- [x] Create migration script: `src/db/migrate.js`
+- [x] Run migrations: `node src/db/migrate.js`
+- [x] Verify tables created: `\dt` in psql
 
-### Day 3: Authentication Setup
+### Day 3: Authentication Setup ✅ PARTIALLY COMPLETED
 **Task 3.1: Install Auth Dependencies**
-- [ ] Install bcrypt: `npm install bcrypt`
-- [ ] Install JWT: `npm install jsonwebtoken`
-- [ ] Install validation: `npm install joi`
+- [x] Install bcrypt: `npm install bcrypt`
+- [x] Install JWT: `npm install jsonwebtoken`
+- [ ] Install validation: `npm install joi` (pending)
 
 **Task 3.2: User Model**
 - [ ] Create `src/models/User.js` with methods:
