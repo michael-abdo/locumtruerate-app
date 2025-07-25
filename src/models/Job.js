@@ -262,11 +262,7 @@ class Job {
       throw new Error('Unauthorized to update this job');
     }
 
-    const client = await pool.connect();
-
-    try {
-      await client.query('BEGIN');
-
+    return executeTransaction(async (client) => {
       // Build update query dynamically
       const updateFields = [];
       const values = [];
@@ -289,8 +285,8 @@ class Job {
         }
       }
 
+      // If no fields to update, return current job
       if (updateFields.length === 0) {
-        await client.query('ROLLBACK');
         return await this.findById(id);
       }
 
@@ -331,17 +327,9 @@ class Job {
           job.requirements = [];
         }
       }
-
-      await client.query('COMMIT');
       
       return this.formatJob(job);
-      
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   /**

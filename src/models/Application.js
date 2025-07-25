@@ -1,5 +1,14 @@
 const { pool } = require('../db/connection');
 const config = require('../config/config');
+const { 
+  buildWhereClause, 
+  buildPaginationClause, 
+  executePaginatedQuery, 
+  buildSearchCondition,
+  buildArrayFilterCondition,
+  buildRangeFilterCondition,
+  executeTransaction 
+} = require('../utils/database');
 
 class Application {
   /**
@@ -23,64 +32,55 @@ class Application {
       notes
     } = applicationData;
 
-    const client = await pool.connect();
-
     try {
-      await client.query('BEGIN');
+      return await executeTransaction(async (client) => {
+        // First, check if the job exists and is active
+        const jobQuery = 'SELECT * FROM jobs WHERE id = $1 AND status = $2';
+        const jobResult = await client.query(jobQuery, [jobId, 'active']);
+        
+        if (jobResult.rows.length === 0) {
+          throw new Error('Job not found or no longer active');
+        }
 
-      // First, check if the job exists and is active
-      const jobQuery = 'SELECT * FROM jobs WHERE id = $1 AND status = $2';
-      const jobResult = await client.query(jobQuery, [jobId, 'active']);
-      
-      if (jobResult.rows.length === 0) {
-        throw new Error('Job not found or no longer active');
-      }
+        const job = jobResult.rows[0];
 
-      const job = jobResult.rows[0];
+        // Check if user is trying to apply to their own job
+        if (job.posted_by === userId) {
+          throw new Error('Cannot apply to your own job posting');
+        }
 
-      // Check if user is trying to apply to their own job
-      if (job.posted_by === userId) {
-        throw new Error('Cannot apply to your own job posting');
-      }
+        // Check if user has already applied (unique constraint will catch this too, but better UX)
+        const existingQuery = 'SELECT id FROM applications WHERE user_id = $1 AND job_id = $2';
+        const existingResult = await client.query(existingQuery, [userId, jobId]);
+        
+        if (existingResult.rows.length > 0) {
+          throw new Error('You have already applied to this job');
+        }
 
-      // Check if user has already applied (unique constraint will catch this too, but better UX)
-      const existingQuery = 'SELECT id FROM applications WHERE user_id = $1 AND job_id = $2';
-      const existingResult = await client.query(existingQuery, [userId, jobId]);
-      
-      if (existingResult.rows.length > 0) {
-        throw new Error('You have already applied to this job');
-      }
+        // Create the application
+        const insertQuery = `
+          INSERT INTO applications (
+            user_id, job_id, cover_letter, expected_rate, 
+            available_date, notes, status
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+          RETURNING *
+        `;
 
-      // Create the application
-      const insertQuery = `
-        INSERT INTO applications (
-          user_id, job_id, cover_letter, expected_rate, 
-          available_date, notes, status
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, 'pending')
-        RETURNING *
-      `;
+        const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes];
+        const result = await client.query(insertQuery, values);
+        const application = result.rows[0];
 
-      const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes];
-      const result = await client.query(insertQuery, values);
-      const application = result.rows[0];
-
-      await client.query('COMMIT');
-
-      // Return application with job details
-      return await this.findByIdWithDetails(application.id);
-
+        // Return application with job details
+        return await this.findByIdWithDetails(application.id);
+      });
     } catch (error) {
-      await client.query('ROLLBACK');
-      
       // Handle unique constraint violation
       if (error.code === '23505') {
         throw new Error('You have already applied to this job');
       }
       
       throw error;
-    } finally {
-      client.release();
     }
   }
 
@@ -104,34 +104,22 @@ class Application {
       sortOrder = 'DESC'
     } = options;
 
-    // Build WHERE clause
+    // Build WHERE conditions using utilities
     const conditions = ['a.user_id = $1'];
     const values = [userId];
-    let valueIndex = 2;
+    let paramIndex = 2;
 
     if (status) {
-      conditions.push(`a.status = $${valueIndex}`);
+      conditions.push(`a.status = $${paramIndex}`);
       values.push(status);
-      valueIndex++;
+      paramIndex++;
     }
 
-    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+    // Build WHERE clause using utility
+    const whereClause = buildWhereClause(conditions);
 
-    // Count total items
-    const countQuery = `
-      SELECT COUNT(*) 
-      FROM applications a 
-      ${whereClause}
-    `;
-    const countResult = await pool.query(countQuery, values);
-    const totalItems = parseInt(countResult.rows[0].count);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(totalItems / limit);
-    const offset = (page - 1) * limit;
-
-    // Get applications with job details
-    const applicationsQuery = `
+    // Define base query and count query
+    const baseQuery = `
       SELECT 
         a.*,
         j.title as job_title,
@@ -150,23 +138,22 @@ class Application {
       LEFT JOIN users poster ON j.posted_by = poster.id
       LEFT JOIN profiles poster_profile ON poster.id = poster_profile.user_id
       ${whereClause}
-      ORDER BY a.${sortBy} ${sortOrder}
-      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
     `;
 
-    values.push(limit, offset);
-    const applicationsResult = await pool.query(applicationsQuery, values);
+    const countQuery = `SELECT COUNT(*) FROM applications a ${whereClause}`;
+
+    // Use paginated query utility
+    const validSortFields = ['created_at', 'updated_at', 'status', 'expected_rate'];
+    const result = await executePaginatedQuery(
+      baseQuery,
+      countQuery,
+      values,
+      { page, limit, sortBy, sortOrder, validSortFields }
+    );
 
     return {
-      applications: applicationsResult.rows.map(row => this.formatApplication(row)),
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+      applications: result.items.map(row => this.formatApplication(row)),
+      pagination: result.pagination
     };
   }
 
