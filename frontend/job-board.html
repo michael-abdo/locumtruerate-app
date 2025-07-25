@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Board - LocumTrueRate</title>
-    <!-- Centralized CSS Variables -->
+    <!-- Centralized CSS Variables and Utilities -->
     <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -182,18 +186,6 @@
             align-items: center;
         }
 
-        .filter-input {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            min-width: 150px;
-        }
-
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
 
         .view-toggle {
             display: flex;
@@ -342,43 +334,6 @@
             margin-top: 1rem;
         }
 
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--text-secondary);
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
 
         .btn-save {
             background-color: transparent;
@@ -646,8 +601,8 @@
                 <div class="container">
                     <div class="filters-container">
                         <div class="filters-group">
-                            <input type="text" class="filter-input" placeholder="Search jobs..." id="searchInput">
-                            <select class="filter-input" id="specialtyFilter">
+                            <input type="text" class="form-control" placeholder="Search jobs..." id="searchInput">
+                            <select class="form-control form-select" id="specialtyFilter">
                                 <option value="">All Specialties</option>
                                 <option value="emergency">Emergency Medicine</option>
                                 <option value="internal">Internal Medicine</option>
@@ -655,7 +610,7 @@
                                 <option value="radiology">Radiology</option>
                                 <option value="anesthesiology">Anesthesiology</option>
                             </select>
-                            <select class="filter-input" id="locationFilter">
+                            <select class="form-control form-select" id="locationFilter">
                                 <option value="">All Locations</option>
                                 <option value="california">California</option>
                                 <option value="texas">Texas</option>
@@ -663,14 +618,14 @@
                                 <option value="new-york">New York</option>
                                 <option value="illinois">Illinois</option>
                             </select>
-                            <select class="filter-input" id="salaryFilter">
+                            <select class="form-control form-select" id="salaryFilter">
                                 <option value="">Any Salary</option>
                                 <option value="0-200">Under $200/hr</option>
                                 <option value="200-300">$200-300/hr</option>
                                 <option value="300-400">$300-400/hr</option>
                                 <option value="400+">$400+/hr</option>
                             </select>
-                            <select class="filter-input" id="contractTypeFilter">
+                            <select class="form-control form-select" id="contractTypeFilter">
                                 <option value="">All Contract Types</option>
                                 <option value="8-week">8 weeks</option>
                                 <option value="13-week">13 weeks</option>
@@ -681,7 +636,7 @@
                             </select>
                         </div>
                         <div class="filters-group">
-                            <select class="filter-input" id="sortFilter">
+                            <select class="form-control form-select" id="sortFilter">
                                 <option value="">Sort by...</option>
                                 <option value="salary-high">Salary: High to Low</option>
                                 <option value="salary-low">Salary: Low to High</option>
@@ -859,7 +814,7 @@
         
         // Save job functionality
         function getSavedJobs() {
-            return JSON.parse(localStorage.getItem('savedJobs') || '[]');
+            return LocumUtils.localStorage('savedJobs') || [];
         }
         
         function toggleSaveJob(jobId) {
@@ -868,13 +823,13 @@
             
             if (index > -1) {
                 savedJobs.splice(index, 1);
-                console.log(`Job ${jobId} removed from saved jobs`);
+                LocumUtils.showToast('Job removed from saved jobs', 'info');
             } else {
                 savedJobs.push(jobId);
-                console.log(`Job ${jobId} added to saved jobs`);
+                LocumUtils.showToast('Job saved successfully', 'success');
             }
             
-            localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+            LocumUtils.localStorage('savedJobs', savedJobs);
             renderJobs(); // Re-render to update save button states
         }
         
@@ -889,7 +844,7 @@
             const totalStipends = housingStipend * contractWeeks;
             const totalContract = (weeklyPay * contractWeeks) + totalStipends;
             
-            return `$${totalContract.toLocaleString()}`;
+            return LocumUtils.formatCurrency(totalContract);
         }
 
         function renderJobs() {
@@ -938,8 +893,8 @@
                         ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
                     </div>
                     <div class="job-actions">
-                        <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
-                        <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
                         <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
                             ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
                         </button>
@@ -1138,8 +1093,8 @@
                 </ul>
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn-primary" onclick="calculateContract(${job.id})">Calculate Contract Value</button>
-                    <button class="btn-secondary" onclick="applyToJob(${job.id})">Apply Now</button>
+                    <button class="btn btn-primary" onclick="calculateContract(${job.id})">Calculate Contract Value</button>
+                    <button class="btn btn-secondary" onclick="applyToJob(${job.id})">Apply Now</button>
                 </div>
             `;
             
@@ -1155,14 +1110,14 @@
             const job = jobsData.find(j => j.id === jobId);
             if (job) {
                 // Store job data for calculator
-                localStorage.setItem('calculatorData', JSON.stringify({
+                LocumUtils.localStorage('calculatorData', {
                     hourlyRate: parseInt(job.salary.replace(/\$|\/hr/g, '')),
                     hoursPerWeek: parseInt(job.hours.replace(/hrs\/week/g, '')),
                     contractWeeks: parseInt(job.duration.replace(/weeks/g, '')) || 13,
                     housingStipend: parseInt(job.housing.replace(/\$|\/week/g, '')) || 0,
                     jobTitle: job.title,
                     facility: job.facility
-                }));
+                });
                 
                 // Navigate to calculator
                 window.location.href = 'contract-calculator.html';
@@ -1217,8 +1172,8 @@
                     </ul>
                     
                     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                        <button class="btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
-                        <button class="btn-secondary" onclick="closeModal()">Close</button>
+                        <button class="btn btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
+                        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
                     </div>
                 `;
             }

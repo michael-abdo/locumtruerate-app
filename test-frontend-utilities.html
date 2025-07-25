@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Utilities Test Suite</title>
+    <link rel="stylesheet" href="frontend/css/variables.css">
+    <link rel="stylesheet" href="frontend/css/dashboard.css">
+    <link rel="stylesheet" href="frontend/css/components.css">
+    <link rel="stylesheet" href="frontend/js/common-utils.css">
+    <script src="frontend/js/common-utils.js"></script>
+    <style>
+        .test-section {
+            margin: 2rem;
+            padding: 2rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-result {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        .test-result.pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .test-result.fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .test-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frontend Utilities Test Suite</h1>
+        
+        <!-- CSS Components Test -->
+        <div class="test-section">
+            <h2>CSS Components Test</h2>
+            
+            <h3>Buttons</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-secondary">Secondary Button</button>
+                <button class="btn btn-success">Success Button</button>
+                <button class="btn btn-warning">Warning Button</button>
+                <button class="btn btn-danger">Danger Button</button>
+                <button class="btn btn-ghost">Ghost Button</button>
+                <button class="btn btn-primary" disabled>Disabled Button</button>
+            </div>
+            
+            <h3>Button Sizes</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary btn-sm">Small</button>
+                <button class="btn btn-primary">Default</button>
+                <button class="btn btn-primary btn-lg">Large</button>
+            </div>
+            
+            <h3>Badges</h3>
+            <div class="test-controls">
+                <span class="badge badge-primary">Primary</span>
+                <span class="badge badge-success">Success</span>
+                <span class="badge badge-warning">Warning</span>
+                <span class="badge badge-danger">Danger</span>
+                <span class="badge badge-info">Info</span>
+            </div>
+            
+            <h3>Form Components</h3>
+            <div class="form-group">
+                <label class="form-label required">Test Input</label>
+                <input type="text" class="form-control" placeholder="Enter text">
+                <span class="form-help">This is help text</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Select Box</label>
+                <select class="form-control form-select">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                </select>
+            </div>
+            
+            <h3>Alerts</h3>
+            <div class="alert alert-primary">
+                <div class="alert-content">
+                    <div class="alert-title">Primary Alert</div>
+                    <div class="alert-message">This is a primary alert message</div>
+                </div>
+            </div>
+            
+            <div class="alert alert-success">
+                <div class="alert-content">
+                    <div class="alert-title">Success Alert</div>
+                    <div class="alert-message">Operation completed successfully!</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- JavaScript Utilities Test -->
+        <div class="test-section">
+            <h2>JavaScript Utilities Test</h2>
+            
+            <h3>Toast Notifications</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="testToast('success')">Success Toast</button>
+                <button class="btn btn-warning" onclick="testToast('warning')">Warning Toast</button>
+                <button class="btn btn-danger" onclick="testToast('error')">Error Toast</button>
+                <button class="btn btn-info" onclick="testToast('info')">Info Toast</button>
+            </div>
+            
+            <h3>Currency Formatting</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="testCurrency()">Test Currency Format</button>
+                <div id="currency-result"></div>
+            </div>
+            
+            <h3>Date Formatting</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="testDateFormat()">Test Date Format</button>
+                <div id="date-result"></div>
+            </div>
+            
+            <h3>Input Validation</h3>
+            <div class="form-group">
+                <label class="form-label">Test Validation</label>
+                <input type="text" id="test-input" class="form-control" placeholder="Leave empty and validate">
+                <div class="error-message" id="test-input-error"></div>
+                <button class="btn btn-primary" onclick="testValidation()">Validate Input</button>
+            </div>
+            
+            <h3>API Utilities</h3>
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="testAPIUtils()">Test API Utils</button>
+                <div id="api-result"></div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Components Test -->
+        <div class="test-section">
+            <h2>Dashboard Components Test</h2>
+            
+            <h3>Stat Cards</h3>
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Jobs</span>
+                        <span class="stat-icon">📊</span>
+                    </div>
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-change positive">+12% from last month</div>
+                </div>
+                
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <span class="stat-title">Active Applications</span>
+                        <span class="stat-icon">📝</span>
+                    </div>
+                    <div class="stat-value">56</div>
+                    <div class="stat-change negative">-5% from last week</div>
+                </div>
+                
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <span class="stat-title">Pending Reviews</span>
+                        <span class="stat-icon">⏳</span>
+                    </div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-change neutral">No change</div>
+                </div>
+            </div>
+            
+            <h3>Data Table</h3>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sample Job 1</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>2025-07-25</td>
+                            <td><button class="btn btn-sm btn-primary">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Sample Job 2</td>
+                            <td><span class="badge badge-warning">Pending</span></td>
+                            <td>2025-07-24</td>
+                            <td><button class="btn btn-sm btn-primary">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Test Results Summary -->
+        <div class="test-section">
+            <h2>Test Results Summary</h2>
+            <div id="test-summary"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Test functions
+        function testToast(type) {
+            LocumUtils.showToast(`This is a ${type} toast notification!`, type);
+            logResult(`Toast ${type}`, true);
+        }
+        
+        function testCurrency() {
+            const tests = [
+                { value: 1234.56, expected: '$1,234.56' },
+                { value: 0, expected: '$0.00' },
+                { value: -0, expected: '$0.00' },
+                { value: 999999.99, expected: '$999,999.99' }
+            ];
+            
+            let allPassed = true;
+            let results = '<h4>Currency Format Tests:</h4>';
+            
+            tests.forEach(test => {
+                const result = LocumUtils.formatCurrency(test.value);
+                const passed = result === test.expected;
+                allPassed = allPassed && passed;
+                results += `<div class="test-result ${passed ? 'pass' : 'fail'}">
+                    ${test.value} → ${result} ${passed ? '✓' : '✗ (expected: ' + test.expected + ')'}
+                </div>`;
+            });
+            
+            document.getElementById('currency-result').innerHTML = results;
+            logResult('Currency Formatting', allPassed);
+        }
+        
+        function testDateFormat() {
+            const now = new Date();
+            const tests = [
+                { format: 'short', label: 'Short format' },
+                { format: 'long', label: 'Long format' },
+                { format: 'relative', label: 'Relative time' }
+            ];
+            
+            let results = '<h4>Date Format Tests:</h4>';
+            tests.forEach(test => {
+                const result = LocumUtils.formatDate(now, test.format);
+                results += `<div class="test-result pass">
+                    ${test.label}: ${result} ✓
+                </div>`;
+            });
+            
+            document.getElementById('date-result').innerHTML = results;
+            logResult('Date Formatting', true);
+        }
+        
+        function testValidation() {
+            const input = document.getElementById('test-input');
+            const isValid = LocumUtils.validateInput(input, 'required');
+            logResult('Input Validation', !isValid && document.querySelector('#test-input-error.show'));
+        }
+        
+        async function testAPIUtils() {
+            let results = '<h4>API Utility Tests:</h4>';
+            
+            // Test auth headers
+            const headers = LocumUtils.getAuthHeaders();
+            const hasContentType = headers['Content-Type'] === 'application/json';
+            results += `<div class="test-result ${hasContentType ? 'pass' : 'fail'}">
+                Auth Headers: ${hasContentType ? '✓' : '✗'}
+            </div>`;
+            
+            // Test localStorage utility
+            LocumUtils.localStorage('testKey', 'testValue');
+            const retrieved = LocumUtils.localStorage('testKey');
+            const storageWorks = retrieved === 'testValue';
+            results += `<div class="test-result ${storageWorks ? 'pass' : 'fail'}">
+                LocalStorage Utility: ${storageWorks ? '✓' : '✗'}
+            </div>`;
+            
+            document.getElementById('api-result').innerHTML = results;
+            logResult('API Utilities', hasContentType && storageWorks);
+        }
+        
+        // Test tracking
+        const testResults = [];
+        
+        function logResult(testName, passed) {
+            testResults.push({ name: testName, passed });
+            updateSummary();
+        }
+        
+        function updateSummary() {
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = total - passed;
+            
+            document.getElementById('test-summary').innerHTML = `
+                <div class="test-result ${failed === 0 ? 'pass' : 'fail'}">
+                    <h3>Overall Results</h3>
+                    <p>Total Tests Run: ${total}</p>
+                    <p>Passed: ${passed}</p>
+                    <p>Failed: ${failed}</p>
+                    <p>Success Rate: ${total > 0 ? ((passed/total)*100).toFixed(1) : 0}%</p>
+                </div>
+                <h4>Individual Results:</h4>
+                ${testResults.map(r => `
+                    <div class="test-result ${r.passed ? 'pass' : 'fail'}">
+                        ${r.name}: ${r.passed ? 'PASSED ✓' : 'FAILED ✗'}
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        // Auto-run visual tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Log that CSS components loaded
+            const hasDashboardCSS = !!document.querySelector('.stat-card');
+            const hasComponentCSS = !!document.querySelector('.btn');
+            
+            logResult('Dashboard CSS Loaded', hasDashboardCSS);
+            logResult('Components CSS Loaded', hasComponentCSS);
+            
+            // Check if utilities loaded
+            logResult('LocumUtils Loaded', typeof LocumUtils !== 'undefined');
+            
+            updateSummary();
+        });
+    </script>
+</body>
+</html>
