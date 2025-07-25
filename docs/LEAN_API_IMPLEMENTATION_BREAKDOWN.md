@@ -20,15 +20,18 @@ This document breaks down the 8-week lean API implementation into atomic, action
 9. ✅ **Day 4**: Complete authentication endpoints implemented
 10. ✅ **Day 5**: Error handling and environment configuration
 11. ✅ **Day 6**: Jobs Model & all job endpoints (CRUD operations)
-12. ✅ **NEW**: User Model with full CRUD operations + profiles support
-13. ✅ **NEW**: JWT Authentication middleware implemented
-14. ✅ **NEW**: Comprehensive DRY refactoring completed
-15. ✅ **NEW**: Enterprise-grade test framework implemented
-16. ✅ **NEW**: Professional directory structure reorganized
-17. ✅ **NEW**: Security testing with 100% pass rate
-18. ✅ **NEW**: Performance testing infrastructure
-19. ✅ **NEW**: Complete authentication system with registration, login, logout
-20. ✅ **NEW**: Jobs API with advanced filtering, pagination, and authorization
+12. ✅ **Day 7**: Applications Model & all application endpoints (complete lifecycle)
+13. ✅ **NEW**: User Model with full CRUD operations + profiles support
+14. ✅ **NEW**: JWT Authentication middleware implemented
+15. ✅ **NEW**: Comprehensive DRY refactoring completed
+16. ✅ **NEW**: Enterprise-grade test framework implemented
+17. ✅ **NEW**: Professional directory structure reorganized
+18. ✅ **NEW**: Security testing with 100% pass rate
+19. ✅ **NEW**: Performance testing infrastructure
+20. ✅ **NEW**: Complete authentication system with registration, login, logout
+21. ✅ **NEW**: Jobs API with advanced filtering, pagination, and authorization
+22. ✅ **NEW**: Applications API with role-based access and comprehensive business logic
+23. ✅ **NEW**: API standardization with consistent /api/v1/ versioning across all endpoints
 
 **Latest Updates (Post-Original Plan):**
 - **Directory Reorganization**: Clean, GitHub-ready structure with `/frontend/`, `/docs/`, `/tests/demos/`
@@ -42,6 +45,9 @@ This document breaks down the 8-week lean API implementation into atomic, action
 - **Contextual Logging**: Beautiful enterprise-grade logging with timestamps and context labels
 - **Jobs API Complete**: Full CRUD operations with advanced filtering, pagination, sorting, and authorization
 - **Enhanced Job Schema**: Includes date ranges, min/max rates, requirements array, view tracking
+- **Applications API Complete**: Full application lifecycle with role-based access control
+- **API Standardization**: Consistent `/api/v1/` versioning across all 15 endpoints
+- **Authentication Testing**: Comprehensive testing confirms 93% endpoint security coverage
 
 **Notes:**
 - Using port 4000 instead of 3000
@@ -401,38 +407,74 @@ This document breaks down the 8-week lean API implementation into atomic, action
 - Enhanced schema includes: state, hourlyRateMin/Max (instead of single rate), date ranges, requirements array
 - All endpoints have comprehensive error handling and logging
 
-### Day 7: Applications Model & Endpoints
-**Task 7.1: Applications Model**
-- [ ] Create `src/models/Application.js` with methods:
-  - [ ] `create(applicationData)` - create application
-  - [ ] `findByUser(userId)` - get user's applications
-  - [ ] `findByJob(jobId)` - get job's applications
-  - [ ] `updateStatus(id, status)` - update application status
-  - [ ] `findById(id)` - get single application
-- [ ] Test methods with sample data
+### Day 7: Applications Model & Endpoints ✅ COMPLETED
+**Task 7.1: Applications Model** ✅ COMPLETED
+- [x] Create `src/models/Application.js` with methods:
+  - [x] `create(applicationData)` - create application with business logic validation
+  - [x] `findByUser(userId, options)` - get user's applications with pagination
+  - [x] `findByJob(jobId, recruiterId, options)` - get job's applications with authorization
+  - [x] `updateStatus(id, recruiterId, status, notes)` - update application status (recruiters only)
+  - [x] `withdraw(id, userId)` - withdraw application (applicants only)
+  - [x] `findByIdWithDetails(id)` - get single application with full details
+- [x] Test methods with comprehensive validation and edge cases
+- [x] **BONUS**: Added role-based data formatting (applicant vs recruiter views)
+- [x] **BONUS**: Added comprehensive business logic (can't apply to own jobs, duplicate prevention)
+- [x] **BONUS**: Added transaction support for data integrity
 
-**Task 7.2: Apply to Job Endpoint**
-- [ ] Implement `POST /api/applications`:
-  - [ ] Require authentication
-  - [ ] Validate input: jobId, coverLetter
-  - [ ] Check if user already applied (unique constraint)
-  - [ ] Create application with status='pending'
-  - [ ] Return created application
-- [ ] Test application creation:
+**Task 7.2: Apply to Job Endpoint** ✅ COMPLETED
+- [x] Implement `POST /api/v1/applications`:
+  - [x] Require authentication
+  - [x] Validate input with comprehensive Joi schema: jobId, coverLetter, expectedRate, availableDate, notes
+  - [x] Check if user already applied (unique constraint + business logic)
+  - [x] Prevent users from applying to their own job postings
+  - [x] Create application with status='pending'
+  - [x] Return created application with job and applicant details
+- [x] Test application creation:
   ```bash
-  curl -X POST http://localhost:3000/api/applications \
+  curl -X POST http://localhost:4000/api/v1/applications \
     -H "Authorization: Bearer YOUR_TOKEN" \
     -H "Content-Type: application/json" \
-    -d '{"jobId":1,"coverLetter":"I am interested in this position..."}'
+    -d '{"jobId":1,"coverLetter":"I am interested in this position...","expectedRate":325}'
   ```
+- [x] **BONUS**: Added comprehensive error handling for all edge cases
+- [x] **BONUS**: Added support for optional fields (expectedRate, availableDate, notes)
 
-**Task 7.3: Get My Applications Endpoint**
-- [ ] Implement `GET /api/my-applications`:
-  - [ ] Require authentication
-  - [ ] Return user's applications with job details joined
-  - [ ] Include pagination
-  - [ ] Order by created_at DESC
-- [ ] Test endpoint returns user's applications only
+**Task 7.3: Get My Applications Endpoint** ✅ COMPLETED
+- [x] Implement `GET /api/v1/applications/my`:
+  - [x] Require authentication
+  - [x] Return user's applications with job details joined
+  - [x] Include comprehensive pagination with metadata
+  - [x] Order by created_at DESC with configurable sorting
+  - [x] Include job poster information and job status
+- [x] Test endpoint returns user's applications only with proper authorization
+- [x] **BONUS**: Added filtering by application status
+- [x] **BONUS**: Added flexible sorting options (created_at, updated_at, status)
+
+**Task 7.4: Additional Application Endpoints** ✅ COMPLETED
+- [x] Implement `GET /api/v1/applications/for-job/:jobId`:
+  - [x] Require authentication and job ownership validation
+  - [x] Return applications for specific job (recruiters only)
+  - [x] Include applicant details (email, name, phone, experience)
+  - [x] Support pagination and filtering by status
+- [x] Implement `PUT /api/v1/applications/:id/status`:
+  - [x] Require authentication and job ownership validation
+  - [x] Update application status (pending, reviewed, accepted, rejected)
+  - [x] Add reviewer tracking and timestamps
+  - [x] Support optional notes for status changes
+- [x] Implement `DELETE /api/v1/applications/:id`:
+  - [x] Require authentication and applicant ownership validation
+  - [x] Withdraw application (set status to 'withdrawn')
+  - [x] Prevent withdrawal of already accepted applications
+  - [x] Business logic validation for withdrawal eligibility
+
+**Notes:**
+- Using port 4000 and API version v1, so endpoints are `/api/v1/applications/*`
+- **Consistent API Structure**: All endpoints now use `/api/v1/` prefix for standardized versioning
+- **Authentication Coverage**: 14/15 endpoints require authentication (job browsing intentionally public)
+- **Authorization Working**: Role-based access control prevents cross-user data access
+- **Complete CRUD**: Full application lifecycle with proper business logic and validation
+- **Edge Case Handling**: Comprehensive error handling for duplicates, unauthorized access, invalid data
+- **Performance Optimized**: Single queries with JOINs instead of N+1 query patterns
 
 ### Day 8: Calculator Endpoints
 **Task 8.1: Contract Calculator**
