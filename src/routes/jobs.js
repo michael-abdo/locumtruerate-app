@@ -1,71 +1,11 @@
 const express = require('express');
-const Joi = require('joi');
 const Job = require('../models/Job');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
 const config = require('../config/config');
+const { jobSchemas, validateWithSchema } = require('../validation/schemas');
 
 const router = express.Router();
 
-// Input validation schemas
-const createJobSchema = Joi.object({
-  title: Joi.string().min(3).max(255).required(),
-  location: Joi.string().min(3).max(255).required(),
-  state: Joi.string().length(2).uppercase().required(),
-  specialty: Joi.string().min(2).max(100).required(),
-  description: Joi.string().min(10).max(5000).optional(),
-  hourlyRateMin: Joi.number().min(0).max(1000).required(),
-  hourlyRateMax: Joi.number().min(0).max(1000).required(),
-  startDate: Joi.date().iso().optional(),
-  endDate: Joi.date().iso().min(Joi.ref('startDate')).optional(),
-  duration: Joi.string().max(50).optional(),
-  shiftType: Joi.string().max(50).optional(),
-  companyName: Joi.string().max(255).optional(),
-  status: Joi.string().valid('draft', 'active', 'filled', 'closed').default('active'),
-  requirements: Joi.array().items(Joi.string().max(500)).max(20).optional()
-}).custom((value, helpers) => {
-  if (value.hourlyRateMin > value.hourlyRateMax) {
-    return helpers.error('hourlyRateMin must be less than or equal to hourlyRateMax');
-  }
-  return value;
-});
-
-const updateJobSchema = Joi.object({
-  title: Joi.string().min(3).max(255).optional(),
-  location: Joi.string().min(3).max(255).optional(),
-  state: Joi.string().length(2).uppercase().optional(),
-  specialty: Joi.string().min(2).max(100).optional(),
-  description: Joi.string().min(10).max(5000).optional(),
-  hourlyRateMin: Joi.number().min(0).max(1000).optional(),
-  hourlyRateMax: Joi.number().min(0).max(1000).optional(),
-  startDate: Joi.date().iso().optional(),
-  endDate: Joi.date().iso().optional(),
-  duration: Joi.string().max(50).optional(),
-  shiftType: Joi.string().max(50).optional(),
-  companyName: Joi.string().max(255).optional(),
-  status: Joi.string().valid('draft', 'active', 'filled', 'closed').optional(),
-  requirements: Joi.array().items(Joi.string().max(500)).max(20).optional()
-}).custom((value, helpers) => {
-  if (value.hourlyRateMin && value.hourlyRateMax && value.hourlyRateMin > value.hourlyRateMax) {
-    return helpers.error('hourlyRateMin must be less than or equal to hourlyRateMax');
-  }
-  if (value.startDate && value.endDate && new Date(value.startDate) > new Date(value.endDate)) {
-    return helpers.error('startDate must be before endDate');
-  }
-  return value;
-});
-
-const querySchema = Joi.object({
-  specialty: Joi.string().max(100).optional(),
-  state: Joi.string().length(2).uppercase().optional(),
-  status: Joi.string().valid('draft', 'active', 'filled', 'closed').optional(),
-  minRate: Joi.number().min(0).optional(),
-  maxRate: Joi.number().min(0).optional(),
-  search: Joi.string().max(200).optional(),
-  page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).max(100).default(20),
-  sortBy: Joi.string().valid('created_at', 'hourly_rate_min', 'start_date', 'title').default('created_at'),
-  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
-});
 
 /**
  * GET /api/jobs
@@ -76,11 +16,12 @@ router.get('/', async (req, res) => {
     config.logger.info('Jobs list request', 'JOBS_LIST');
     
     // Validate query parameters
-    const { error, value } = querySchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`Jobs query validation failed: ${error.details[0].message}`, 'JOBS_LIST');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, jobSchemas.query);
+    if (!validation.isValid) {
+      config.logger.warn(`Jobs query validation failed: ${validation.error}`, 'JOBS_LIST');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Get jobs with filters
     const result = await Job.findAll(value);
@@ -139,11 +80,12 @@ router.post('/', requireAuth, async (req, res) => {
     config.logger.info(`Job creation attempt by user: ${req.user.id}`, 'JOB_CREATE');
     
     // Validate input
-    const { error, value } = createJobSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Job creation validation failed: ${error.details[0].message}`, 'JOB_CREATE');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.body, jobSchemas.create);
+    if (!validation.isValid) {
+      config.logger.warn(`Job creation validation failed: ${validation.error}`, 'JOB_CREATE');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Add posted_by from authenticated user
     const jobData = {
@@ -182,11 +124,12 @@ router.put('/:id', requireAuth, async (req, res) => {
     config.logger.info(`Job update attempt for ID: ${jobId} by user: ${req.user.id}`, 'JOB_UPDATE');
     
     // Validate input
-    const { error, value } = updateJobSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Job update validation failed: ${error.details[0].message}`, 'JOB_UPDATE');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.body, jobSchemas.update);
+    if (!validation.isValid) {
+      config.logger.warn(`Job update validation failed: ${validation.error}`, 'JOB_UPDATE');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Check if there's anything to update
     if (Object.keys(value).length === 0) {

@@ -1,64 +1,12 @@
 const express = require('express');
-const Joi = require('joi');
 const Application = require('../models/Application');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
 const { metricsInstance } = require('../middleware/metrics');
 const config = require('../config/config');
+const { applicationSchemas, validateWithSchema } = require('../validation/schemas');
 
 const router = express.Router();
 
-// Input validation schemas
-const createApplicationSchema = Joi.object({
-  jobId: Joi.number().integer().positive().required(),
-  coverLetter: Joi.string().min(10).max(5000).required(),
-  expectedRate: Joi.number().min(0).max(2000).optional(),
-  availableDate: Joi.date().iso().min('now').optional(),
-  notes: Joi.string().max(1000).optional()
-});
-
-const updateStatusSchema = Joi.object({
-  status: Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected').required(),
-  notes: Joi.string().max(1000).optional()
-});
-
-// Advanced search and filter validation schemas
-const searchSchema = Joi.object({
-  search: Joi.string().max(200).optional(),
-  statuses: Joi.array().items(Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn')).optional(),
-  specialties: Joi.array().items(Joi.string().max(50)).optional(),
-  state: Joi.string().length(2).optional(),
-  dateFrom: Joi.date().iso().optional(),
-  dateTo: Joi.date().iso().optional(),
-  minRate: Joi.number().min(0).max(2000).optional(),
-  maxRate: Joi.number().min(0).max(2000).optional(),
-  page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).max(100).default(20),
-  sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at'),
-  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
-});
-
-const recruiterSearchSchema = Joi.object({
-  search: Joi.string().max(200).optional(),
-  statuses: Joi.array().items(Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn')).optional(),
-  dateFrom: Joi.date().iso().optional(),
-  dateTo: Joi.date().iso().optional(),
-  minRate: Joi.number().min(0).max(2000).optional(),
-  maxRate: Joi.number().min(0).max(2000).optional(),
-  minExperience: Joi.number().integer().min(0).max(50).optional(),
-  applicantSpecialty: Joi.string().max(50).optional(),
-  page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).max(100).default(20),
-  sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at'),
-  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
-});
-
-const querySchema = Joi.object({
-  page: Joi.number().integer().min(1).default(1),
-  limit: Joi.number().integer().min(1).max(100).default(20),
-  status: Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn').optional(),
-  sortBy: Joi.string().valid('created_at', 'updated_at', 'status').default('created_at'),
-  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
-});
 
 /**
  * POST /api/applications
@@ -69,11 +17,12 @@ router.post('/', requireAuth, async (req, res) => {
     config.logger.info(`Application creation attempt by user: ${req.user.id}`, 'APPLICATION_CREATE');
     
     // Validate input
-    const { error, value } = createApplicationSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Application validation failed: ${error.details[0].message}`, 'APPLICATION_CREATE');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.body, applicationSchemas.create);
+    if (!validation.isValid) {
+      config.logger.warn(`Application validation failed: ${validation.error}`, 'APPLICATION_CREATE');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Add user ID to application data
     const applicationData = {
@@ -135,11 +84,12 @@ router.get('/my', requireAuth, async (req, res) => {
     config.logger.info(`My applications request by user: ${req.user.id}`, 'APPLICATIONS_MY');
     
     // Validate query parameters
-    const { error, value } = querySchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`My applications query validation failed: ${error.details[0].message}`, 'APPLICATIONS_MY');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, applicationSchemas.query);
+    if (!validation.isValid) {
+      config.logger.warn(`My applications query validation failed: ${validation.error}`, 'APPLICATIONS_MY');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     const result = await Application.findByUser(req.user.id, value);
     
@@ -171,11 +121,12 @@ router.get('/for-job/:jobId', requireAuth, async (req, res) => {
     config.logger.info(`Job applications request for job: ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS');
     
     // Validate query parameters
-    const { error, value } = querySchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`Job applications query validation failed: ${error.details[0].message}`, 'JOB_APPLICATIONS');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, applicationSchemas.query);
+    if (!validation.isValid) {
+      config.logger.warn(`Job applications query validation failed: ${validation.error}`, 'JOB_APPLICATIONS');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     try {
       const result = await Application.findByJob(jobId, req.user.id, value);
@@ -222,11 +173,12 @@ router.put('/:id/status', requireAuth, async (req, res) => {
     config.logger.info(`Application status update attempt for ID: ${applicationId} by user: ${req.user.id}`, 'APPLICATION_STATUS_UPDATE');
     
     // Validate input
-    const { error, value } = updateStatusSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Application status update validation failed: ${error.details[0].message}`, 'APPLICATION_STATUS_UPDATE');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.body, applicationSchemas.updateStatus);
+    if (!validation.isValid) {
+      config.logger.warn(`Application status update validation failed: ${validation.error}`, 'APPLICATION_STATUS_UPDATE');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     try {
       const startTime = Date.now();
@@ -283,11 +235,12 @@ router.get('/search', requireAuth, async (req, res) => {
     config.logger.info(`Application search request by user: ${req.user.id}`, 'APPLICATIONS_SEARCH');
     
     // Validate search parameters
-    const { error, value } = searchSchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`Application search validation failed: ${error.details[0].message}`, 'APPLICATIONS_SEARCH');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, applicationSchemas.search);
+    if (!validation.isValid) {
+      config.logger.warn(`Application search validation failed: ${validation.error}`, 'APPLICATIONS_SEARCH');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Separate filters from pagination
     const { page, limit, sortBy, sortOrder, ...filters } = value;
@@ -326,11 +279,12 @@ router.get('/for-job/:jobId/search', requireAuth, async (req, res) => {
     config.logger.info(`Job application search request for job: ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS_SEARCH');
     
     // Validate search parameters
-    const { error, value } = recruiterSearchSchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`Job application search validation failed: ${error.details[0].message}`, 'JOB_APPLICATIONS_SEARCH');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, applicationSchemas.recruiterSearch);
+    if (!validation.isValid) {
+      config.logger.warn(`Job application search validation failed: ${validation.error}`, 'JOB_APPLICATIONS_SEARCH');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     // Separate filters from pagination
     const { page, limit, sortBy, sortOrder, ...filters } = value;

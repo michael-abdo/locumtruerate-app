@@ -1,18 +1,11 @@
 const express = require('express');
-const Joi = require('joi');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
 const Application = require('../models/Application');
 const config = require('../config/config');
+const { dataExportSchemas, validateWithSchema } = require('../validation/schemas');
 
 const router = express.Router();
 
-// Input validation schemas
-const exportRequestSchema = Joi.object({
-  format: Joi.string().valid('json', 'csv').default('json'),
-  includeHistory: Joi.boolean().default(true),
-  dateFrom: Joi.date().iso().optional(),
-  dateTo: Joi.date().iso().optional()
-});
 
 /**
  * GET /api/v1/data-export/my-data
@@ -23,11 +16,12 @@ router.get('/my-data', requireAuth, async (req, res) => {
     config.logger.info(`Data export request by user: ${req.user.id}`, 'DATA_EXPORT');
     
     // Validate query parameters
-    const { error, value } = exportRequestSchema.validate(req.query);
-    if (error) {
-      config.logger.warn(`Data export validation failed: ${error.details[0].message}`, 'DATA_EXPORT');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    const validation = validateWithSchema(req.query, dataExportSchemas.exportRequest);
+    if (!validation.isValid) {
+      config.logger.warn(`Data export validation failed: ${validation.error}`, 'DATA_EXPORT');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     try {
       // Get user's applications with full details
