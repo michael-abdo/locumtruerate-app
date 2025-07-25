@@ -6,7 +6,7 @@
 This test file validates the frontend utilities integration across all HTML files to ensure consistent behavior, styling, and functionality after DRY refactoring.
 
 ## Test Environment
-- **Target URL**: https://locumtruerate-staging.herokuapp.com/test-frontend-utilities.html
+- **Target URL**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/test-frontend-utilities.html
 - **Browser Requirements**: Chrome 90+, Firefox 88+, Safari 14+
 - **Screen Resolutions**: 1920x1080 (desktop), 768x1024 (tablet), 375x667 (mobile)
 
@@ -271,7 +271,7 @@ This test file validates the frontend utilities integration across all HTML file
 
 ### Test 7.1: Index.html Integration
 **Steps**:
-1. Navigate to https://locumtruerate-staging.herokuapp.com/
+1. Navigate to https://locumtruerate-staging-66ba3177c382.herokuapp.com/
 2. Test hero section buttons (styling and functionality)
 3. Verify calculator functionality uses new currency formatting
 4. Check form inputs use consistent styling
