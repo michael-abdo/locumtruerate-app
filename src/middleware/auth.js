@@ -6,6 +6,25 @@ const config = require('../config/config');
 const tokenBlacklist = new Set();
 
 /**
+ * Centralized error response utility
+ * Creates consistent error responses across the API
+ * @param {Object} res - Express response object
+ * @param {number} status - HTTP status code
+ * @param {string} message - Error message
+ * @param {string} type - Error type (optional)
+ * @param {Object} meta - Additional metadata (optional)
+ * @returns {Object} JSON error response
+ */
+const createErrorResponse = (res, status, message, type = 'error', meta = {}) => {
+  return res.status(status).json({
+    error: type,
+    message,
+    timestamp: new Date().toISOString(),
+    ...meta
+  });
+};
+
+/**
  * Generate JWT token for a user
  * @param {number} userId - User ID to encode in token
  * @returns {string} JWT token
@@ -58,19 +77,13 @@ const requireAuth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     
     if (!authHeader) {
-      return res.status(401).json({
-        error: 'Authentication required',
-        message: 'No authorization header provided'
-      });
+      return createErrorResponse(res, 401, 'No authorization header provided', 'authentication_required');
     }
     
     // Extract token (format: "Bearer <token>")
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      return res.status(401).json({
-        error: 'Authentication required',
-        message: 'Invalid authorization header format. Use: Bearer <token>'
-      });
+      return createErrorResponse(res, 401, 'Invalid authorization header format. Use: Bearer <token>', 'invalid_auth_format');
     }
     
     const token = parts[1];
@@ -87,18 +100,12 @@ const requireAuth = async (req, res, next) => {
       
       next();
     } catch (error) {
-      return res.status(401).json({
-        error: 'Authentication failed',
-        message: error.message
-      });
+      return createErrorResponse(res, 401, error.message, 'authentication_failed');
     }
     
   } catch (error) {
     console.error('Auth middleware error:', error);
-    return res.status(500).json({
-      error: 'Internal server error',
-      message: 'Error processing authentication'
-    });
+    return createErrorResponse(res, 500, 'Error processing authentication', 'internal_server_error');
   }
 };
 
@@ -130,5 +137,6 @@ module.exports = {
   verifyToken,
   requireAuth,
   blacklistToken,
-  isTokenBlacklisted
+  isTokenBlacklisted,
+  createErrorResponse
 };

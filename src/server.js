@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const config = require('./config/config');
 const { testConnection } = require('./db/connection');
+const { createErrorResponse } = require('./middleware/auth');
 
 // Create Express app
 const app = express();
@@ -70,21 +71,14 @@ if (process.env.NODE_ENV === 'development') {
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      res.status(500).json({
-        error: 'Database connection test failed',
-        message: error.message
-      });
+      return createErrorResponse(res, 500, error.message, 'database_connection_test_failed');
     }
   });
 }
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `The requested resource ${req.path} was not found`,
-    timestamp: new Date().toISOString()
-  });
+  return createErrorResponse(res, 404, `The requested resource ${req.path} was not found`, 'not_found');
 });
 
 // Global error handler
@@ -93,12 +87,9 @@ app.use((err, req, res, next) => {
   
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
+  const meta = process.env.NODE_ENV === 'development' ? { stack: err.stack } : {};
   
-  res.status(status).json({
-    error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    timestamp: new Date().toISOString()
-  });
+  return createErrorResponse(res, status, message, 'server_error', meta);
 });
 
 // Start server
