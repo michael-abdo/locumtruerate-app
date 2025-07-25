@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 
-// In-memory token blacklist (for logout functionality)
+// In-memory token blacklist with TTL (for logout functionality)
 // In production, use Redis or database
-const tokenBlacklist = new Set();
+// Map format: token -> timestamp when blacklisted
+const tokenBlacklist = new Map();
 
 /**
  * Centralized error response utility
@@ -51,7 +52,7 @@ const generateToken = (userId) => {
  */
 const verifyToken = (token) => {
   // Check if token is blacklisted
-  if (tokenBlacklist.has(token)) {
+  if (isTokenBlacklisted(token)) {
     throw new Error('Token has been revoked');
   }
   
@@ -114,13 +115,8 @@ const requireAuth = async (req, res, next) => {
  * @param {string} token - Token to blacklist
  */
 const blacklistToken = (token) => {
-  tokenBlacklist.add(token);
-  
-  // Clean up expired tokens from blacklist periodically
-  // In production, this would be handled by Redis TTL
-  setTimeout(() => {
-    tokenBlacklist.delete(token);
-  }, 24 * 60 * 60 * 1000); // Remove after 24 hours
+  // Store token with current timestamp
+  tokenBlacklist.set(token, Date.now());
 };
 
 /**
@@ -129,8 +125,45 @@ const blacklistToken = (token) => {
  * @returns {boolean} True if token is blacklisted
  */
 const isTokenBlacklisted = (token) => {
-  return tokenBlacklist.has(token);
+  if (!tokenBlacklist.has(token)) {
+    return false;
+  }
+  
+  // Check if token has expired (24 hours = 86400000 ms)
+  const blacklistedAt = tokenBlacklist.get(token);
+  const now = Date.now();
+  const tokenAge = now - blacklistedAt;
+  
+  if (tokenAge > 24 * 60 * 60 * 1000) {
+    // Token expired, remove from blacklist
+    tokenBlacklist.delete(token);
+    return false;
+  }
+  
+  return true;
 };
+
+// Periodic cleanup of expired tokens to prevent memory buildup
+// Run every hour to clean up expired blacklisted tokens
+setInterval(() => {
+  const now = Date.now();
+  const expiredTokens = [];
+  
+  // Find expired tokens
+  for (const [token, blacklistedAt] of tokenBlacklist.entries()) {
+    const tokenAge = now - blacklistedAt;
+    if (tokenAge > 24 * 60 * 60 * 1000) { // 24 hours
+      expiredTokens.push(token);
+    }
+  }
+  
+  // Remove expired tokens
+  expiredTokens.forEach(token => tokenBlacklist.delete(token));
+  
+  if (expiredTokens.length > 0) {
+    config.logger.debug(`Cleaned up ${expiredTokens.length} expired blacklisted tokens`, 'AUTH_CLEANUP');
+  }
+}, 60 * 60 * 1000); // Run every hour
 
 module.exports = {
   generateToken,

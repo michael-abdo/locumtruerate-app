@@ -134,6 +134,22 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
+// Global error handlers to prevent crashes
+process.on('unhandledRejection', (reason, promise) => {
+  config.logger.error('Unhandled Promise Rejection', reason, 'GLOBAL_ERROR');
+  config.logger.error('Promise that rejected:', promise, 'GLOBAL_ERROR');
+  // Don't exit process, just log the error to prevent crashes
+});
+
+process.on('uncaughtException', (error) => {
+  config.logger.error('Uncaught Exception', error, 'GLOBAL_ERROR');
+  // Log error but don't exit immediately to allow graceful cleanup
+  setTimeout(() => {
+    config.logger.error('Exiting due to uncaught exception', null, 'GLOBAL_ERROR');
+    process.exit(1);
+  }, 1000);
+});
+
 // Start the server
 startServer();
 

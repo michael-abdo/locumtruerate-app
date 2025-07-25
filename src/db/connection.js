@@ -63,11 +63,8 @@ const transaction = async (callback) => {
   }
 };
 
-// Get a client from the pool
-const getClient = async () => {
-  const client = await pool.connect();
-  return client;
-};
+// NOTE: getClient() function removed to prevent connection leaks
+// Use transaction() or query() helpers instead for proper connection management
 
 // Close all connections
 const closePool = async () => {
@@ -80,6 +77,5 @@ module.exports = {
   testConnection,
   query,
   transaction,
-  getClient,
   closePool
 };

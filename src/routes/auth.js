@@ -97,6 +97,13 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (error) {
+    // Handle specific constraint errors (like duplicate email from database level)
+    if (error.message === 'Email already exists') {
+      config.logger.warn(`Registration failed: ${error.message} - ${email}`, 'AUTH_REGISTER');
+      return createErrorResponse(res, 400, error.message, 'email_exists');
+    }
+    
+    // Handle unexpected errors
     config.logger.error('Registration error', error, 'AUTH_REGISTER');
     return createErrorResponse(res, 500, 'Internal server error during registration', 'registration_failed');
   }
