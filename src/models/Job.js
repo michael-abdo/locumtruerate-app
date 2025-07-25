@@ -1,5 +1,14 @@
 const { pool } = require('../db/connection');
 const config = require('../config/config');
+const { 
+  buildWhereClause, 
+  buildPaginationClause, 
+  executePaginatedQuery, 
+  buildSearchCondition,
+  buildArrayFilterCondition,
+  buildRangeFilterCondition,
+  executeTransaction 
+} = require('../utils/database');
 
 class Job {
   /**
@@ -41,11 +50,7 @@ class Job {
       requirements = []
     } = jobData;
 
-    const client = await pool.connect();
-
-    try {
-      await client.query('BEGIN');
-
+    return executeTransaction(async (client) => {
       // Create job
       const jobQuery = `
         INSERT INTO jobs (
@@ -84,17 +89,9 @@ class Job {
       } else {
         job.requirements = [];
       }
-
-      await client.query('COMMIT');
       
       return this.formatJob(job);
-      
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   /**
@@ -126,60 +123,58 @@ class Job {
       sortOrder = 'DESC'
     } = filters;
 
-    // Build WHERE clause
+    // Build WHERE conditions using utilities
     const conditions = [];
     const values = [];
-    let valueIndex = 1;
+    let paramIndex = 1;
 
+    // Simple equality filters
     if (status) {
-      conditions.push(`status = $${valueIndex}`);
+      conditions.push(`status = $${paramIndex}`);
       values.push(status);
-      valueIndex++;
+      paramIndex++;
     }
 
     if (specialty) {
-      conditions.push(`specialty = $${valueIndex}`);
+      conditions.push(`specialty = $${paramIndex}`);
       values.push(specialty);
-      valueIndex++;
+      paramIndex++;
     }
 
     if (state) {
-      conditions.push(`state = $${valueIndex}`);
+      conditions.push(`state = $${paramIndex}`);
       values.push(state);
-      valueIndex++;
+      paramIndex++;
     }
 
+    // Rate range filters (special case: spans both min and max columns)
     if (minRate) {
-      conditions.push(`hourly_rate_max >= $${valueIndex}`);
+      conditions.push(`hourly_rate_max >= $${paramIndex}`);
       values.push(minRate);
-      valueIndex++;
+      paramIndex++;
     }
 
     if (maxRate) {
-      conditions.push(`hourly_rate_min <= $${valueIndex}`);
+      conditions.push(`hourly_rate_min <= $${paramIndex}`);
       values.push(maxRate);
-      valueIndex++;
+      paramIndex++;
     }
 
+    // Use search condition utility
     if (search) {
-      conditions.push(`(title ILIKE $${valueIndex} OR description ILIKE $${valueIndex})`);
-      values.push(`%${search}%`);
-      valueIndex++;
+      const searchCondition = buildSearchCondition(search, ['title', 'description'], paramIndex);
+      if (searchCondition.condition) {
+        conditions.push(searchCondition.condition);
+        values.push(...searchCondition.values);
+        paramIndex = searchCondition.paramIndex;
+      }
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    // Build WHERE clause using utility
+    const whereClause = buildWhereClause(conditions);
 
-    // Count total items
-    const countQuery = `SELECT COUNT(*) FROM jobs ${whereClause}`;
-    const countResult = await pool.query(countQuery, values);
-    const totalItems = parseInt(countResult.rows[0].count);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(totalItems / limit);
-    const offset = (page - 1) * limit;
-
-    // Get jobs with pagination
-    const jobsQuery = `
+    // Define base query and count query
+    const baseQuery = `
       SELECT j.*, u.email as posted_by_email,
              COUNT(r.id) as requirement_count
       FROM jobs j
@@ -187,23 +182,22 @@ class Job {
       LEFT JOIN job_requirements r ON j.id = r.job_id
       ${whereClause}
       GROUP BY j.id, u.email
-      ORDER BY j.${sortBy} ${sortOrder}
-      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
     `;
-    
-    values.push(limit, offset);
-    const jobsResult = await pool.query(jobsQuery, values);
+
+    const countQuery = `SELECT COUNT(*) FROM jobs ${whereClause}`;
+
+    // Use paginated query utility
+    const validSortFields = ['created_at', 'hourly_rate_min', 'start_date', 'title'];
+    const result = await executePaginatedQuery(
+      baseQuery,
+      countQuery,
+      values,
+      { page, limit, sortBy, sortOrder, validSortFields }
+    );
 
     return {
-      jobs: jobsResult.rows.map(job => this.formatJob(job)),
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+      jobs: result.items.map(job => this.formatJob(job)),
+      pagination: result.pagination
     };
   }
 
