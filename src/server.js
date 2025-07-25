@@ -76,6 +76,10 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// Authentication routes
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 // 404 handler
 app.use((req, res) => {
   return createErrorResponse(res, 404, `The requested resource ${req.path} was not found`, 'not_found');

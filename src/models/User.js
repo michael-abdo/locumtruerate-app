@@ -4,7 +4,7 @@ const { pool } = require('../db/connection');
 
 class User {
   /**
-   * Create a new user
+   * Create a new user with profile
    * @param {Object} userData - User data object
    * @param {string} userData.email - User email
    * @param {string} userData.password - Plain text password (will be hashed)
@@ -20,35 +20,69 @@ class User {
     // Hash the password
     const passwordHash = await this.hashPassword(password);
     
-    const query = `
-      INSERT INTO users (email, password_hash, first_name, last_name, phone, role)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, email, first_name, last_name, phone, role, created_at
-    `;
-    
-    const values = [email, passwordHash, firstName, lastName, phone, role];
+    // Use transaction to create user and profile
+    const client = await pool.connect();
     
     try {
-      const result = await pool.query(query, values);
-      return result.rows[0];
+      await client.query('BEGIN');
+      
+      // Create user
+      const userQuery = `
+        INSERT INTO users (email, password_hash, role)
+        VALUES ($1, $2, $3)
+        RETURNING id, email, role, created_at
+      `;
+      const userValues = [email, passwordHash, role];
+      const userResult = await client.query(userQuery, userValues);
+      const user = userResult.rows[0];
+      
+      // Create profile
+      const profileQuery = `
+        INSERT INTO profiles (user_id, first_name, last_name, phone)
+        VALUES ($1, $2, $3, $4)
+        RETURNING first_name, last_name, phone
+      `;
+      const profileValues = [user.id, firstName, lastName, phone];
+      const profileResult = await client.query(profileQuery, profileValues);
+      const profile = profileResult.rows[0];
+      
+      await client.query('COMMIT');
+      
+      // Return combined user and profile data
+      return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        phone: profile.phone,
+        created_at: user.created_at
+      };
+      
     } catch (error) {
+      await client.query('ROLLBACK');
       if (error.code === '23505') { // Unique violation
         throw new Error('Email already exists');
       }
       throw error;
+    } finally {
+      client.release();
     }
   }
   
   /**
-   * Find user by email
+   * Find user by email with profile
    * @param {string} email - User email
    * @returns {Promise<Object|null>} User object or null
    */
   static async findByEmail(email) {
     const query = `
-      SELECT id, email, password_hash, first_name, last_name, phone, role, created_at
-      FROM users
-      WHERE email = $1
+      SELECT 
+        u.id, u.email, u.password_hash, u.role, u.created_at,
+        p.first_name, p.last_name, p.phone, p.specialty, p.years_experience
+      FROM users u
+      LEFT JOIN profiles p ON u.id = p.user_id
+      WHERE u.email = $1
     `;
     
     const result = await pool.query(query, [email]);
@@ -56,19 +90,49 @@ class User {
   }
   
   /**
-   * Find user by ID
+   * Find user by ID with profile
    * @param {number} id - User ID
    * @returns {Promise<Object|null>} User object or null
    */
   static async findById(id) {
     const query = `
-      SELECT id, email, first_name, last_name, phone, role, created_at
-      FROM users
-      WHERE id = $1
+      SELECT 
+        u.id, u.email, u.role, u.created_at,
+        p.first_name, p.last_name, p.phone, p.specialty, p.years_experience
+      FROM users u
+      LEFT JOIN profiles p ON u.id = p.user_id
+      WHERE u.id = $1
     `;
     
     const result = await pool.query(query, [id]);
     return result.rows[0] || null;
+  }
+  
+  /**
+   * Update user profile
+   * @param {number} userId - User ID
+   * @param {Object} profileData - Profile data to update
+   * @returns {Promise<Object>} Updated profile
+   */
+  static async updateProfile(userId, profileData) {
+    const { firstName, lastName, phone, specialty, yearsExperience, bio } = profileData;
+    
+    const query = `
+      UPDATE profiles 
+      SET first_name = COALESCE($2, first_name),
+          last_name = COALESCE($3, last_name),
+          phone = COALESCE($4, phone),
+          specialty = COALESCE($5, specialty),
+          years_experience = COALESCE($6, years_experience),
+          bio = COALESCE($7, bio),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = $1
+      RETURNING first_name, last_name, phone, specialty, years_experience, bio
+    `;
+    
+    const values = [userId, firstName, lastName, phone, specialty, yearsExperience, bio];
+    const result = await pool.query(query, values);
+    return result.rows[0];
   }
   
   /**
