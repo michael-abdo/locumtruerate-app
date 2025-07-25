@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging middleware (development only)
 if (config.server.env === 'development') {
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    console.log(config.utils.formatLogMessage(req.method, req.path));
     next();
   });
 }
@@ -41,7 +41,7 @@ app.get('/health', (req, res) => {
     status: 'ok',
     service: 'locumtruerate-api',
     version: API_VERSION,
-    timestamp: new Date().toISOString(),
+    timestamp: config.utils.timestamp(),
     environment: config.server.env
   });
 });
@@ -68,7 +68,7 @@ if (process.env.NODE_ENV === 'development') {
       const connected = await testConnection();
       res.json({
         database: connected ? 'connected' : 'disconnected',
-        timestamp: new Date().toISOString()
+        timestamp: config.utils.timestamp()
       });
     } catch (error) {
       return createErrorResponse(res, 500, error.message, 'database_connection_test_failed');

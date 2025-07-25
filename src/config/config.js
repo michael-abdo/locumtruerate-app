@@ -44,6 +44,21 @@ const config = {
   // Feature flags
   features: {
     dbTest: process.env.NODE_ENV === 'development'
+  },
+  
+  // Utility functions
+  utils: {
+    // Generate ISO timestamp string
+    timestamp: () => new Date().toISOString(),
+    
+    // Format log message with timestamp
+    formatLogMessage: (method, path) => `${config.utils.timestamp()} - ${method} ${path}`,
+    
+    // Create timestamped response object
+    createTimestampedResponse: (data) => ({
+      ...data,
+      timestamp: config.utils.timestamp()
+    })
   }
 };
 
