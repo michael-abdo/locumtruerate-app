@@ -5,77 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LocumTrueRate - Homepage UX Fixes</title>
     <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/floating-logger.css">
+    <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
     <style>
-        /* Using centralized CSS variables from css/variables.css */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 1rem;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--background-color);
-        }
-
-        /* Navigation */
-        .navbar {
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand h2 {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 500;
-            transition: color 0.2s;
-            position: relative;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-link.active {
-            color: var(--primary-color);
-        }
-
-        .nav-dropdown {
-            position: relative;
-        }
+        /* Using consolidated CSS files for layout, components, and footer */
+        /* Page-specific styles only below */
 
         .dropdown-menu {
             position: absolute;
@@ -139,48 +77,7 @@
             flex-direction: column;
         }
 
-        .main-content {
-            flex: 1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .section {
-            margin-bottom: 4rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-            color: white;
-            padding: 6rem 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* Custom button styles for hero section */
+        /* Hero button customization (overrides layout.css) */
         .hero .btn-secondary {
             background-color: transparent;
             color: white;
@@ -367,105 +264,12 @@
             color: var(--text-primary);
         }
 
-        /* Footer */
-        .footer {
-            background-color: var(--text-primary);
-            color: var(--text-muted);
-            padding: 3rem 0 1rem;
-            margin-top: auto;
-        }
+        /* Footer styles now in footer.css */
 
-        .footer-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section h5 {
-            color: white;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-            display: block;
-            padding: 0.25rem 0;
-            cursor: pointer;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid var(--secondary-color);
-            padding-top: 1rem;
-            text-align: center;
-        }
-
-        /* Social Icons */
-        .social-icons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background-color: var(--secondary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: white;
-            transition: all 0.3s;
-            font-size: 20px;
-        }
-
-        .social-icon:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .contact-info {
-            margin-top: 1rem;
-        }
-
-        .contact-info a {
-            color: white;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .contact-info a:hover {
-            color: var(--primary-color);
-        }
-
-        /* Responsive */
+        /* Page-specific responsive adjustments */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
             .features-grid { grid-template-columns: 1fr; }
             .calc-content { grid-template-columns: 1fr; }
-            .nav-menu { flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-color); display: none; }
         }
     </style>
 </head>

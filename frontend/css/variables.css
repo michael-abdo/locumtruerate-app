@@ -31,8 +31,12 @@
     
     /* Status Colors */
     --success-color: #10b981;
+    --success-hover: #059669;
     --warning-color: #f59e0b;
+    --warning-hover: #d97706;
     --error-color: #ef4444;
+    --error-hover: #dc2626;
+    --info-color: #3b82f6;
 }
 
 /* Accessibility Improvements for Better Contrast */
