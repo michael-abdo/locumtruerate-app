@@ -2,7 +2,7 @@
 
 # Test all API endpoints after DRY refactoring
 
-BASE_URL="http://localhost:4001"
+BASE_URL="http://localhost:4000"
 TIMESTAMP=$(date +%s)
 TEST_EMAIL="testuser${TIMESTAMP}@example.com"
 TEST_PASS="TestPass123"
