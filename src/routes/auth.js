@@ -1,5 +1,4 @@
 const express = require('express');
-const Joi = require('joi');
 const User = require('../models/User');
 const { 
   generateToken, 
@@ -8,42 +7,9 @@ const {
   createErrorResponse 
 } = require('../middleware/auth');
 const config = require('../config/config');
+const { authSchemas, validateWithSchema } = require('../validation/schemas');
 
 const router = express.Router();
-
-// Input validation schemas
-const registerSchema = Joi.object({
-  email: Joi.string().email().required().messages({
-    'string.email': 'Please provide a valid email address',
-    'any.required': 'Email is required'
-  }),
-  password: Joi.string().min(6).required().messages({
-    'string.min': 'Password must be at least 6 characters long',
-    'any.required': 'Password is required'
-  }),
-  firstName: Joi.string().min(1).max(100).required().messages({
-    'string.min': 'First name is required',
-    'string.max': 'First name must be less than 100 characters',
-    'any.required': 'First name is required'
-  }),
-  lastName: Joi.string().min(1).max(100).required().messages({
-    'string.min': 'Last name is required',
-    'string.max': 'Last name must be less than 100 characters',
-    'any.required': 'Last name is required'
-  }),
-  phone: Joi.string().optional(),
-  role: Joi.string().valid('locum', 'recruiter', 'admin').default('locum')
-});
-
-const loginSchema = Joi.object({
-  email: Joi.string().email().required().messages({
-    'string.email': 'Please provide a valid email address',
-    'any.required': 'Email is required'
-  }),
-  password: Joi.string().required().messages({
-    'any.required': 'Password is required'
-  })
-});
 
 /**
  * POST /api/auth/register
@@ -53,12 +19,13 @@ router.post('/register', async (req, res) => {
   try {
     config.logger.info('Registration attempt started', 'AUTH_REGISTER');
     
-    // Validate input
-    const { error, value } = registerSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Registration validation failed: ${error.details[0].message}`, 'AUTH_REGISTER');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    // Validate input using centralized schema
+    const validation = validateWithSchema(req.body, authSchemas.register);
+    if (!validation.isValid) {
+      config.logger.warn(`Registration validation failed: ${validation.error}`, 'AUTH_REGISTER');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     const { email, password, firstName, lastName, phone, role } = value;
     
@@ -117,12 +84,13 @@ router.post('/login', async (req, res) => {
   try {
     config.logger.info('Login attempt started', 'AUTH_LOGIN');
     
-    // Validate input
-    const { error, value } = loginSchema.validate(req.body);
-    if (error) {
-      config.logger.warn(`Login validation failed: ${error.details[0].message}`, 'AUTH_LOGIN');
-      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    // Validate input using centralized schema
+    const validation = validateWithSchema(req.body, authSchemas.login);
+    if (!validation.isValid) {
+      config.logger.warn(`Login validation failed: ${validation.error}`, 'AUTH_LOGIN');
+      return createErrorResponse(res, 400, validation.error, 'validation_error');
     }
+    const value = validation.value;
 
     const { email, password } = value;
     

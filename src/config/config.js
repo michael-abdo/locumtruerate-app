@@ -46,6 +46,24 @@ const config = {
     dbTest: process.env.NODE_ENV === 'development'
   },
   
+  // Development tokens (centralized management)
+  // In production, tokens should be generated dynamically
+  devTokens: process.env.NODE_ENV === 'development' ? {
+    standard: process.env.DEV_TOKEN_STANDARD || null,
+    applicant: process.env.DEV_TOKEN_APPLICANT || null,
+    recruiter: process.env.DEV_TOKEN_RECRUITER || null,
+    admin: process.env.DEV_TOKEN_ADMIN || null,
+    // Utility function to get token by role
+    getByRole: (role) => {
+      const roleTokenMap = {
+        'locum': process.env.DEV_TOKEN_APPLICANT || process.env.DEV_TOKEN_STANDARD,
+        'recruiter': process.env.DEV_TOKEN_RECRUITER,
+        'admin': process.env.DEV_TOKEN_ADMIN
+      };
+      return roleTokenMap[role] || null;
+    }
+  } : null,
+  
   // Utility functions
   utils: {
     // Generate ISO timestamp string
