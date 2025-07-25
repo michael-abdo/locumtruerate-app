@@ -23,161 +23,13 @@
             transition: opacity 0.3s ease;
         }
 
-        /* Global focus styles for accessibility */
-        *:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Specific focus styles for buttons and form elements */
-        button:focus,
-        input:focus,
-        select:focus,
-        textarea:focus,
-        a:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Modal-specific focus styles */
-        .compose-modal button:focus,
-        .compose-modal input:focus,
-        .compose-modal select:focus,
-        .compose-modal textarea:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Remove default browser outline */
-        *:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        /* Focus visible for keyboard navigation only */
-        *:focus-visible {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Navigation */
-        .navbar {
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-brand h2 {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: var(--text-primary);
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
-        
+        /* Custom active state for recruiter nav */
         .nav-link.active {
             color: var(--primary-color);
             font-weight: 600;
             background-color: rgba(37, 99, 235, 0.1);
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-        }
-
-        .nav-dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-5px);
-            transition: all 0.2s ease-in-out;
-            z-index: 1000;
-            margin-top: 0;
-            pointer-events: none;
-        }
-
-        .nav-dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .nav-dropdown::before {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            height: 10px;
-            background: transparent;
-            z-index: 999;
-        }
-
-        .dropdown-menu li {
-            list-style: none;
-        }
-
-        .dropdown-menu a {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: background-color 0.2s;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-        }
-
-        .dropdown-menu a.active {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        .dropdown-menu a.active:hover {
-            background-color: var(--primary-hover);
-            color: white;
         }
 
         /* Profile Dropdown Styles */
@@ -294,22 +146,9 @@
             transform: translateY(0);
         }
 
-        /* Layout */
-        .page-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* Custom main content padding */
         .main-content {
-            flex: 1;
             padding: 2rem 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
         }
 
         /* Dashboard Header */
@@ -802,49 +641,7 @@
             border-radius: 0.75rem;
         }
 
-        /* Footer */
-        .footer {
-            background-color: var(--text-primary);
-            color: var(--text-muted);
-            padding: 3rem 0 1rem;
-            margin-top: auto;
-        }
-
-        .footer-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4, .footer-section h5 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-section a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .footer-section a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid var(--secondary-color);
-            padding-top: 1rem;
-            text-align: center;
-        }
+        /* Footer styles now in footer.css */
 
         /* Enhanced Mobile Responsiveness */
         @media (max-width: 1024px) {
@@ -863,20 +660,6 @@
         }
 
         @media (max-width: 768px) {
-            /* Navigation improvements */
-            .nav-container {
-                padding: 0 0.5rem;
-            }
-            
-            .nav-menu {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-
-            /* Dashboard layout adjustments */
-            .container {
-                padding: 0 0.5rem;
-            }
 
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -995,19 +778,6 @@
         }
 
         @media (max-width: 480px) {
-            /* Extra small screens */
-            .nav-menu {
-                flex-direction: column;
-                gap: 0.5rem;
-                width: 100%;
-                margin-top: 1rem;
-            }
-
-            .nav-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
             /* Smaller buttons on mobile */
             .btn-small {
                 font-size: 0.8rem;
@@ -1152,89 +922,15 @@
         }
 
         /* Accessibility & Focus States */
-        /* Focus outlines for keyboard navigation */
-        *:focus {
+        /* Modal-specific focus styles */
+        .compose-modal button:focus,
+        .compose-modal input:focus,
+        .compose-modal select:focus,
+        .compose-modal textarea:focus {
             outline: 2px solid var(--primary-color);
             outline-offset: 2px;
-        }
-
-        /* Enhanced focus states for interactive elements */
-        button:focus,
-        input:focus,
-        select:focus,
-        textarea:focus,
-        a:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Special focus state for dropdown menus */
-        .dropdown-menu a:focus {
-            background-color: var(--primary-color);
-            color: white;
-            outline: 2px solid var(--primary-hover);
-            outline-offset: -2px;
-        }
-
-        /* Focus state for navigation links */
-        .nav-link:focus {
-            color: var(--primary-color);
-            background-color: rgba(37, 99, 235, 0.1);
-            border-radius: 0.25rem;
-        }
-
-        /* Focus state for buttons */
-        .btn-primary:focus,
-        .btn-secondary:focus,
-        .action-btn:focus,
-        .pagination-button:focus {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Focus state for form inputs */
-        input:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Focus state for table elements */
-        .jobs-table th:focus,
-        .jobs-table td:focus {
-            background-color: rgba(37, 99, 235, 0.05);
-            outline: 2px solid var(--primary-color);
-            outline-offset: -2px;
-        }
-
-        /* Skip link for keyboard users */
-        .skip-link {
-            position: absolute;
-            top: -40px;
-            left: 6px;
-            background: var(--primary-color);
-            color: white;
-            padding: 8px;
-            text-decoration: none;
-            border-radius: 4px;
-            z-index: 1000;
-            transition: top 0.3s;
-        }
-
-        .skip-link:focus {
-            top: 6px;
-        }
-
-        /* Improved color contrast for better accessibility */
-        :root {
-            --text-primary: #0f172a; /* Darker for better contrast */
-            --text-secondary: #475569; /* Adjusted for better contrast */
-            --text-muted: #64748b; /* Improved contrast */
-            --success-color: #059669; /* Darker green for better contrast */
-            --warning-color: #d97706; /* Darker orange for better contrast */
-            --error-color: #dc2626; /* Darker red for better contrast */
+            position: relative;
+            z-index: 1;
         }
 
         /* High contrast mode support */
@@ -1267,83 +963,8 @@
             }
         }
 
-        /* Screen reader only content */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
 
-        /* Ensure adequate spacing for touch targets */
-        button, 
-        .btn-primary, 
-        .btn-secondary, 
-        .action-btn, 
-        .nav-link,
-        .pagination-button {
-            min-height: 44px;
-            min-width: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1rem;
-        }
-
-        /* Mobile accessibility improvements */
-        @media (max-width: 768px) {
-            /* Larger touch targets on mobile */
-            button, 
-            .btn-primary, 
-            .btn-secondary, 
-            .action-btn,
-            .mobile-menu-toggle {
-                min-height: 48px;
-                min-width: 48px;
-            }
-
-            /* Improved mobile focus visibility */
-            *:focus {
-                outline-width: 3px;
-            }
-        }
-
-        /* Keyboard navigation improvements */
-        .dropdown-menu a:focus + .dropdown-menu,
-        .nav-dropdown:focus-within .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        /* Enhanced visual feedback for interactive elements */
-        .clickable,
-        button,
-        .btn-primary,
-        .btn-secondary,
-        .action-btn,
-        a,
-        .nav-link {
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .clickable:hover,
-        button:hover:not(:disabled),
-        .btn-primary:hover:not(:disabled),
-        .btn-secondary:hover:not(:disabled),
-        .action-btn:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Mobile Menu Toggle Button */
+        /* Mobile Menu Toggle Button (recruiter-specific) */
         .mobile-menu-toggle {
             display: none;
             flex-direction: column;
