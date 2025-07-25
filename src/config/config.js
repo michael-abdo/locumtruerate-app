@@ -59,6 +59,45 @@ const config = {
       ...data,
       timestamp: config.utils.timestamp()
     })
+  },
+  
+  // Centralized logging utilities
+  logger: {
+    // Log info messages with timestamp
+    info: (message, context = '') => {
+      if (config.logging.level === 'info' || config.logging.debug) {
+        const contextStr = context ? ` [${context}]` : '';
+        console.log(`${config.utils.timestamp()} - INFO${contextStr}: ${message}`);
+      }
+    },
+    
+    // Log error messages with timestamp
+    error: (message, error = null, context = '') => {
+      const contextStr = context ? ` [${context}]` : '';
+      console.error(`${config.utils.timestamp()} - ERROR${contextStr}: ${message}`);
+      if (error && config.logging.debug) {
+        console.error('Error details:', error);
+      }
+    },
+    
+    // Log debug messages (development only)
+    debug: (message, context = '') => {
+      if (config.logging.debug) {
+        const contextStr = context ? ` [${context}]` : '';
+        console.log(`${config.utils.timestamp()} - DEBUG${contextStr}: ${message}`);
+      }
+    },
+    
+    // Log warning messages
+    warn: (message, context = '') => {
+      const contextStr = context ? ` [${context}]` : '';
+      console.warn(`${config.utils.timestamp()} - WARN${contextStr}: ${message}`);
+    },
+    
+    // Log server startup messages
+    startup: (message) => {
+      console.log(`🚀 ${message}`);
+    }
   }
 };
 

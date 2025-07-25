@@ -83,7 +83,7 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+  config.logger.error('Global error handler triggered', err, 'SERVER');
   
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
@@ -96,37 +96,37 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
   try {
     // Test database connection
-    console.log('Testing database connection...');
+    config.logger.info('Testing database connection...', 'SERVER_STARTUP');
     const dbConnected = await testConnection();
     
     if (!dbConnected) {
-      console.error('WARNING: Database connection failed. API will start but database operations will fail.');
+      config.logger.warn('Database connection failed. API will start but database operations will fail.', 'SERVER_STARTUP');
     }
 
     // Start listening
     app.listen(PORT, () => {
-      console.log(`🚀 LocumTrueRate API Server`);
-      console.log(`   Version: ${API_VERSION}`);
-      console.log(`   Port: ${PORT}`);
-      console.log(`   Environment: ${config.server.env}`);
-      console.log(`   Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
-      console.log(`   URL: http://localhost:${PORT}`);
-      console.log(`   API Base: http://localhost:${PORT}/api/${API_VERSION}`);
+      config.logger.startup(`LocumTrueRate API Server`);
+      config.logger.info(`Version: ${API_VERSION}`, 'SERVER_STARTUP');
+      config.logger.info(`Port: ${PORT}`, 'SERVER_STARTUP');
+      config.logger.info(`Environment: ${config.server.env}`, 'SERVER_STARTUP');
+      config.logger.info(`Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`, 'SERVER_STARTUP');
+      config.logger.info(`URL: http://localhost:${PORT}`, 'SERVER_STARTUP');
+      config.logger.info(`API Base: http://localhost:${PORT}/api/${API_VERSION}`, 'SERVER_STARTUP');
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    config.logger.error('Failed to start server', error, 'SERVER_STARTUP');
     process.exit(1);
   }
 };
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
+  config.logger.info('SIGTERM received, shutting down gracefully...', 'SERVER_SHUTDOWN');
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
+  config.logger.info('SIGINT received, shutting down gracefully...', 'SERVER_SHUTDOWN');
   process.exit(0);
 });
 

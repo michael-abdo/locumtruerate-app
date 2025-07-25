@@ -16,7 +16,7 @@ const pool = new Pool(dbConfig);
 
 // Handle pool errors
 pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle database client', err);
+  config.logger.error('Unexpected error on idle database client', err, 'DB_POOL');
 });
 
 // Test database connection
@@ -24,11 +24,11 @@ const testConnection = async () => {
   try {
     const client = await pool.connect();
     const result = await client.query('SELECT NOW()');
-    console.log('Database connected successfully at:', result.rows[0].now);
+    config.logger.info(`Database connected successfully at: ${result.rows[0].now}`, 'DB_CONNECTION');
     client.release();
     return true;
   } catch (error) {
-    console.error('Database connection error:', error.message);
+    config.logger.error('Database connection error', error, 'DB_CONNECTION');
     return false;
   }
 };
@@ -39,12 +39,10 @@ const query = async (text, params) => {
   try {
     const result = await pool.query(text, params);
     const duration = Date.now() - start;
-    if (process.env.LOG_LEVEL === 'debug') {
-      console.log('Executed query', { text, duration, rows: result.rowCount });
-    }
+    config.logger.debug(`Executed query: ${text} (${duration}ms, ${result.rowCount} rows)`, 'DB_QUERY');
     return result;
   } catch (error) {
-    console.error('Database query error:', error);
+    config.logger.error('Database query error', error, 'DB_QUERY');
     throw error;
   }
 };

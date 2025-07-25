@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { Client } = require('pg');
 const { dbConfig } = require('./connection');
+const config = require('../config/config');
 
 const initDatabase = async () => {
   // Connection config for postgres database (to create our database)
@@ -17,7 +18,7 @@ const initDatabase = async () => {
   try {
     // Connect to postgres database
     await adminClient.connect();
-    console.log('Connected to PostgreSQL server');
+    config.logger.info('Connected to PostgreSQL server', 'DB_INIT');
 
     // Check if database exists
     const checkDbQuery = `SELECT 1 FROM pg_database WHERE datname = $1`;
@@ -26,9 +27,9 @@ const initDatabase = async () => {
     if (dbExists.rows.length === 0) {
       // Create database if it doesn't exist
       await adminClient.query(`CREATE DATABASE ${dbName}`);
-      console.log(`Database ${dbName} created successfully`);
+      config.logger.info(`Database ${dbName} created successfully`, 'DB_INIT');
     } else {
-      console.log(`Database ${dbName} already exists`);
+      config.logger.info(`Database ${dbName} already exists`, 'DB_INIT');
     }
 
     await adminClient.end();
@@ -38,7 +39,7 @@ const initDatabase = async () => {
 
     const client = new Client(targetDbConfig);
     await client.connect();
-    console.log(`Connected to database ${dbName}`);
+    config.logger.info(`Connected to database ${dbName}`, 'DB_INIT');
 
     // Read and execute the SQL file
     const sqlPath = path.join(__dirname, 'init.sql');
@@ -46,13 +47,13 @@ const initDatabase = async () => {
 
     // Execute the SQL
     await client.query(sql);
-    console.log('Database schema created successfully');
+    config.logger.info('Database schema created successfully', 'DB_INIT');
 
     await client.end();
-    console.log('Database initialization completed');
+    config.logger.info('Database initialization completed', 'DB_INIT');
 
   } catch (error) {
-    console.error('Database initialization error:', error);
+    config.logger.error('Database initialization error', error, 'DB_INIT');
     process.exit(1);
   }
 };
