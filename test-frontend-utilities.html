@@ -322,8 +322,25 @@
             `;
         }
         
+        // Debug function to check LocumUtils
+        function debugLocumUtils() {
+            console.log('=== LocumUtils Debug ===');
+            console.log('LocumUtils exists:', typeof LocumUtils !== 'undefined');
+            if (typeof LocumUtils !== 'undefined') {
+                console.log('LocumUtils methods:', Object.keys(LocumUtils));
+                console.log('showToast function:', typeof LocumUtils.showToast);
+                console.log('formatCurrency function:', typeof LocumUtils.formatCurrency);
+            } else {
+                console.error('LocumUtils is not defined!');
+            }
+            console.log('=== End Debug ===');
+        }
+        
         // Auto-run visual tests on load
         document.addEventListener('DOMContentLoaded', () => {
+            // Debug LocumUtils first
+            debugLocumUtils();
+            
             // Log that CSS components loaded
             const hasDashboardCSS = !!document.querySelector('.stat-card');
             const hasComponentCSS = !!document.querySelector('.btn');
@@ -332,7 +349,16 @@
             logResult('Components CSS Loaded', hasComponentCSS);
             
             // Check if utilities loaded
-            logResult('LocumUtils Loaded', typeof LocumUtils !== 'undefined');
+            const locumUtilsLoaded = typeof LocumUtils !== 'undefined';
+            logResult('LocumUtils Loaded', locumUtilsLoaded);
+            
+            // If LocumUtils didn't load, show error
+            if (!locumUtilsLoaded) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'background: #fee; border: 1px solid #f00; padding: 1rem; margin: 1rem; color: #a00; font-weight: bold;';
+                errorDiv.innerHTML = '⚠️ ERROR: LocumUtils failed to load. Check browser console for details.';
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+            }
             
             updateSummary();
         });

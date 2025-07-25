@@ -13,8 +13,24 @@ const app = express();
 const PORT = config.server.port;
 const API_VERSION = config.server.apiVersion;
 
-// Security middleware
-app.use(helmet());
+// Security middleware with relaxed CSP for development
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts for demo pages
+      scriptSrcAttr: ["'unsafe-inline'"], // Allow inline event handlers
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      imgSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+}));
 
 // CORS configuration
 const corsOptions = {
