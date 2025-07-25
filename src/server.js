@@ -39,6 +39,18 @@ if (config.server.env === 'development') {
 // Performance metrics middleware
 app.use(metricsMiddleware);
 
+// Static file serving for frontend assets
+app.use(express.static('frontend'));
+app.use(express.static('.', { 
+  index: false, // Don't auto-serve index files from root
+  setHeaders: (res, path) => {
+    // Cache CSS and JS files for better performance
+    if (path.endsWith('.css') || path.endsWith('.js')) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  }
+}));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
