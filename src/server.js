@@ -55,9 +55,9 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
       health: '/health',
       auth: `/api/${API_VERSION}/auth`,
       jobs: `/api/${API_VERSION}/jobs`,
-      applications: '/api/applications',
-      myApplications: '/api/applications/my',
-      jobApplications: '/api/applications/for-job/:jobId'
+      applications: `/api/${API_VERSION}/applications`,
+      myApplications: `/api/${API_VERSION}/applications/my`,
+      jobApplications: `/api/${API_VERSION}/applications/for-job/:jobId`
     }
   });
 });
@@ -79,7 +79,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Authentication routes
 const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+app.use(`/api/${API_VERSION}/auth`, authRoutes);
 
 // Jobs routes
 const jobsRoutes = require('./routes/jobs');
@@ -87,7 +87,7 @@ app.use('/api/v1/jobs', jobsRoutes);
 
 // Applications routes
 const applicationsRoutes = require('./routes/applications');
-app.use('/api/applications', applicationsRoutes);
+app.use(`/api/${API_VERSION}/applications`, applicationsRoutes);
 
 // 404 handler
 app.use((req, res) => {
