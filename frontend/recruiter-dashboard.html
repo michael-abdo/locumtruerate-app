@@ -6446,7 +6446,7 @@ Dr. James Wilson`,
         }
 
         // Date Formatting Utilities
-        function LocumUtils.formatDate(date, format = 'short') {
+        function formatDate(date, format = 'short') {
             const dateObj = date instanceof Date ? date : new Date(date);
             
             switch (format) {
