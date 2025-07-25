@@ -62,13 +62,17 @@ const executePaginatedQuery = async (baseQuery, countQuery, queryParams, paginat
   
   // Calculate pagination
   const totalPages = Math.ceil(totalItems / limit);
-  const { offset, clause: paginationClause } = buildPaginationClause(page, limit);
+  const offset = (page - 1) * limit;
   
   // Build order clause if sort fields provided
   let orderClause = '';
   if (validSortFields) {
     orderClause = buildOrderClause(sortBy, sortOrder, validSortFields);
   }
+  
+  // Build parameterized pagination clause
+  const nextParamIndex = queryParams.length + 1;
+  const paginationClause = `LIMIT $${nextParamIndex} OFFSET $${nextParamIndex + 1}`;
   
   // Execute main query with pagination
   const finalQuery = `${baseQuery} ${orderClause} ${paginationClause}`;
