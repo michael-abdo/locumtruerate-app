@@ -4,6 +4,7 @@ const cors = require('cors');
 const config = require('./config/config');
 const { testConnection, closePool } = require('./db/connection');
 const { createErrorResponse, cleanup: cleanupAuth } = require('./middleware/auth');
+const { metricsMiddleware, metricsInstance } = require('./middleware/metrics');
 
 // Create Express app
 const app = express();
@@ -35,6 +36,9 @@ if (config.server.env === 'development') {
   });
 }
 
+// Performance metrics middleware
+app.use(metricsMiddleware);
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -57,7 +61,13 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
       jobs: `/api/${API_VERSION}/jobs`,
       applications: `/api/${API_VERSION}/applications`,
       myApplications: `/api/${API_VERSION}/applications/my`,
-      jobApplications: `/api/${API_VERSION}/applications/for-job/:jobId`
+      jobApplications: `/api/${API_VERSION}/applications/for-job/:jobId`,
+      searchApplications: `/api/${API_VERSION}/applications/search`,
+      searchJobApplications: `/api/${API_VERSION}/applications/for-job/:jobId/search`,
+      filterOptions: `/api/${API_VERSION}/applications/filter-options`,
+      dataExport: `/api/${API_VERSION}/data-export/my-data`,
+      privacySummary: `/api/${API_VERSION}/data-export/privacy-summary`,
+      deletionRequest: `/api/${API_VERSION}/data-export/request-deletion`
     }
   });
 });
@@ -77,6 +87,26 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// Performance metrics endpoint
+app.get('/api/metrics', (req, res) => {
+  try {
+    const report = metricsInstance.getPerformanceReport();
+    res.json(report);
+  } catch (error) {
+    return createErrorResponse(res, 500, 'Error retrieving metrics', 'metrics_error');
+  }
+});
+
+// Metrics summary endpoint (lightweight)
+app.get('/api/metrics/summary', (req, res) => {
+  try {
+    const summary = metricsInstance.getMetricsSummary();
+    res.json(summary);
+  } catch (error) {
+    return createErrorResponse(res, 500, 'Error retrieving metrics summary', 'metrics_summary_error');
+  }
+});
+
 // Authentication routes
 const authRoutes = require('./routes/auth');
 app.use(`/api/${API_VERSION}/auth`, authRoutes);
@@ -88,6 +118,10 @@ app.use('/api/v1/jobs', jobsRoutes);
 // Applications routes
 const applicationsRoutes = require('./routes/applications');
 app.use(`/api/${API_VERSION}/applications`, applicationsRoutes);
+
+// Data export routes (GDPR compliance)
+const dataExportRoutes = require('./routes/data-export');
+app.use(`/api/${API_VERSION}/data-export`, dataExportRoutes);
 
 // 404 handler
 app.use((req, res) => {

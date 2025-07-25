@@ -2,6 +2,7 @@ const express = require('express');
 const Joi = require('joi');
 const Application = require('../models/Application');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
+const { metricsInstance } = require('../middleware/metrics');
 const config = require('../config/config');
 
 const router = express.Router();
@@ -18,6 +19,37 @@ const createApplicationSchema = Joi.object({
 const updateStatusSchema = Joi.object({
   status: Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected').required(),
   notes: Joi.string().max(1000).optional()
+});
+
+// Advanced search and filter validation schemas
+const searchSchema = Joi.object({
+  search: Joi.string().max(200).optional(),
+  statuses: Joi.array().items(Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn')).optional(),
+  specialties: Joi.array().items(Joi.string().max(50)).optional(),
+  state: Joi.string().length(2).optional(),
+  dateFrom: Joi.date().iso().optional(),
+  dateTo: Joi.date().iso().optional(),
+  minRate: Joi.number().min(0).max(2000).optional(),
+  maxRate: Joi.number().min(0).max(2000).optional(),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(20),
+  sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at'),
+  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
+});
+
+const recruiterSearchSchema = Joi.object({
+  search: Joi.string().max(200).optional(),
+  statuses: Joi.array().items(Joi.string().valid('pending', 'reviewed', 'accepted', 'rejected', 'withdrawn')).optional(),
+  dateFrom: Joi.date().iso().optional(),
+  dateTo: Joi.date().iso().optional(),
+  minRate: Joi.number().min(0).max(2000).optional(),
+  maxRate: Joi.number().min(0).max(2000).optional(),
+  minExperience: Joi.number().integer().min(0).max(50).optional(),
+  applicantSpecialty: Joi.string().max(50).optional(),
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(20),
+  sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at'),
+  sortOrder: Joi.string().valid('ASC', 'DESC').default('DESC')
 });
 
 const querySchema = Joi.object({
@@ -50,7 +82,12 @@ router.post('/', requireAuth, async (req, res) => {
     };
 
     try {
+      const startTime = Date.now();
       const newApplication = await Application.create(applicationData);
+      const responseTime = Date.now() - startTime;
+      
+      // Track successful application creation
+      metricsInstance.recordApplicationCreated(req.user.id, value.jobId, responseTime);
       
       config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
 
@@ -73,6 +110,9 @@ router.post('/', requireAuth, async (req, res) => {
       }
       
       if (createError.message === 'You have already applied to this job') {
+        // Track duplicate application attempt
+        metricsInstance.recordDuplicateAttempt(req.user.id, value.jobId);
+        
         config.logger.warn(`Application failed: Duplicate application - User: ${req.user.id}, Job: ${value.jobId}`, 'APPLICATION_CREATE');
         return createErrorResponse(res, 400, 'You have already applied to this job', 'duplicate_application');
       }
@@ -189,12 +229,17 @@ router.put('/:id/status', requireAuth, async (req, res) => {
     }
 
     try {
+      const startTime = Date.now();
       const updatedApplication = await Application.updateStatus(
         applicationId, 
         req.user.id, 
         value.status, 
         value.notes
       );
+      const responseTime = Date.now() - startTime;
+      
+      // Track status update
+      metricsInstance.recordStatusUpdate(req.user.id, applicationId, value.status, responseTime);
       
       config.logger.info(`Application status updated successfully: ${applicationId} to ${value.status} by user: ${req.user.id}`, 'APPLICATION_STATUS_UPDATE');
 
@@ -230,6 +275,128 @@ router.put('/:id/status', requireAuth, async (req, res) => {
 });
 
 /**
+ * GET /api/applications/search
+ * Advanced search and filter user's applications
+ */
+router.get('/search', requireAuth, async (req, res) => {
+  try {
+    config.logger.info(`Application search request by user: ${req.user.id}`, 'APPLICATIONS_SEARCH');
+    
+    // Validate search parameters
+    const { error, value } = searchSchema.validate(req.query);
+    if (error) {
+      config.logger.warn(`Application search validation failed: ${error.details[0].message}`, 'APPLICATIONS_SEARCH');
+      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    }
+
+    // Separate filters from pagination
+    const { page, limit, sortBy, sortOrder, ...filters } = value;
+    
+    const result = await Application.searchUserApplications(
+      req.user.id, 
+      filters, 
+      { page, limit, sortBy, sortOrder }
+    );
+    
+    config.logger.info(`Search completed for user: ${req.user.id} - ${result.applications.length} results (page ${result.pagination.currentPage}/${result.pagination.totalPages})`, 'APPLICATIONS_SEARCH');
+
+    res.json({
+      ...result,
+      timestamp: config.utils.timestamp()
+    });
+
+  } catch (error) {
+    config.logger.error('Application search error', error, 'APPLICATIONS_SEARCH');
+    return createErrorResponse(res, 500, 'Internal server error during search', 'applications_search_failed');
+  }
+});
+
+/**
+ * GET /api/applications/for-job/:jobId/search
+ * Advanced search and filter applications for a specific job (for recruiters)
+ */
+router.get('/for-job/:jobId/search', requireAuth, async (req, res) => {
+  try {
+    const jobId = parseInt(req.params.jobId);
+    
+    if (isNaN(jobId)) {
+      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
+    }
+    
+    config.logger.info(`Job application search request for job: ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS_SEARCH');
+    
+    // Validate search parameters
+    const { error, value } = recruiterSearchSchema.validate(req.query);
+    if (error) {
+      config.logger.warn(`Job application search validation failed: ${error.details[0].message}`, 'JOB_APPLICATIONS_SEARCH');
+      return createErrorResponse(res, 400, error.details[0].message, 'validation_error');
+    }
+
+    // Separate filters from pagination
+    const { page, limit, sortBy, sortOrder, ...filters } = value;
+    
+    try {
+      const result = await Application.searchJobApplications(
+        jobId, 
+        req.user.id, 
+        filters, 
+        { page, limit, sortBy, sortOrder }
+      );
+      
+      config.logger.info(`Job application search completed for job: ${jobId} - ${result.applications.length} results (page ${result.pagination.currentPage}/${result.pagination.totalPages})`, 'JOB_APPLICATIONS_SEARCH');
+
+      res.json({
+        ...result,
+        timestamp: config.utils.timestamp()
+      });
+
+    } catch (searchError) {
+      if (searchError.message === 'Job not found') {
+        config.logger.warn(`Job not found: ${jobId}`, 'JOB_APPLICATIONS_SEARCH');
+        return createErrorResponse(res, 404, 'Job not found', 'job_not_found');
+      }
+      
+      if (searchError.message === 'Unauthorized to view applications for this job') {
+        config.logger.warn(`Unauthorized job applications search attempt: Job ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS_SEARCH');
+        return createErrorResponse(res, 403, 'You are not authorized to search applications for this job', 'unauthorized');
+      }
+      
+      throw searchError;
+    }
+
+  } catch (error) {
+    config.logger.error('Job applications search error', error, 'JOB_APPLICATIONS_SEARCH');
+    return createErrorResponse(res, 500, 'Internal server error during job applications search', 'job_applications_search_failed');
+  }
+});
+
+/**
+ * GET /api/applications/filter-options
+ * Get available filter options for applications
+ */
+router.get('/filter-options', requireAuth, async (req, res) => {
+  try {
+    config.logger.info(`Filter options request by user: ${req.user.id}`, 'FILTER_OPTIONS');
+    
+    const includeUserSpecific = req.query.userSpecific === 'true';
+    const userId = includeUserSpecific ? req.user.id : null;
+    
+    const filterOptions = await Application.getFilterOptions(userId);
+    
+    config.logger.info(`Filter options provided for user: ${req.user.id} (user-specific: ${includeUserSpecific})`, 'FILTER_OPTIONS');
+
+    res.json({
+      filterOptions,
+      timestamp: config.utils.timestamp()
+    });
+
+  } catch (error) {
+    config.logger.error('Filter options error', error, 'FILTER_OPTIONS');
+    return createErrorResponse(res, 500, 'Internal server error while fetching filter options', 'filter_options_failed');
+  }
+});
+
+/**
  * DELETE /api/applications/:id
  * Withdraw application (for applicants)
  */
@@ -244,7 +411,12 @@ router.delete('/:id', requireAuth, async (req, res) => {
     config.logger.info(`Application withdrawal attempt for ID: ${applicationId} by user: ${req.user.id}`, 'APPLICATION_WITHDRAW');
     
     try {
+      const startTime = Date.now();
       await Application.withdraw(applicationId, req.user.id);
+      const responseTime = Date.now() - startTime;
+      
+      // Track application withdrawal
+      metricsInstance.recordApplicationWithdrawn(req.user.id, applicationId, responseTime);
       
       config.logger.info(`Application withdrawn successfully: ${applicationId} by user: ${req.user.id}`, 'APPLICATION_WITHDRAW');
 

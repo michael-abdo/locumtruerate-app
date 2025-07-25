@@ -471,6 +471,634 @@ class Application {
     delete formatted.job;
     return formatted;
   }
+
+  /**
+   * Export all user data for GDPR compliance
+   * @param {number} userId - User ID
+   * @param {Object} options - Export options
+   * @param {boolean} options.includeHistory - Include status change history
+   * @param {Date} options.dateFrom - Start date filter
+   * @param {Date} options.dateTo - End date filter
+   * @returns {Promise<Object>} Complete user data export
+   */
+  static async exportUserData(userId, options = {}) {
+    const {
+      includeHistory = true,
+      dateFrom,
+      dateTo
+    } = options;
+
+    // Build date filter
+    let dateFilter = '';
+    const queryParams = [userId];
+    let paramIndex = 2;
+
+    if (dateFrom) {
+      dateFilter += ` AND a.created_at >= $${paramIndex}`;
+      queryParams.push(dateFrom);
+      paramIndex++;
+    }
+
+    if (dateTo) {
+      dateFilter += ` AND a.created_at <= $${paramIndex}`;
+      queryParams.push(dateTo);
+      paramIndex++;
+    }
+
+    // Get all user applications with complete details
+    const applicationsQuery = `
+      SELECT 
+        a.*,
+        j.title as job_title,
+        j.location as job_location,
+        j.state as job_state,
+        j.specialty as job_specialty,
+        j.hourly_rate_min as job_hourly_rate_min,
+        j.hourly_rate_max as job_hourly_rate_max,
+        j.company_name as job_company_name,
+        j.status as job_status,
+        j.description as job_description,
+        poster.email as job_poster_email,
+        poster_profile.first_name as job_poster_first_name,
+        poster_profile.last_name as job_poster_last_name
+      FROM applications a
+      INNER JOIN jobs j ON a.job_id = j.id
+      LEFT JOIN users poster ON j.posted_by = poster.id
+      LEFT JOIN profiles poster_profile ON poster.id = poster_profile.user_id
+      WHERE a.user_id = $1 ${dateFilter}
+      ORDER BY a.created_at DESC
+    `;
+
+    const applicationsResult = await pool.query(applicationsQuery, queryParams);
+    const applications = applicationsResult.rows.map(row => ({
+      id: row.id,
+      job_id: row.job_id,
+      status: row.status,
+      cover_letter: row.cover_letter,
+      expected_rate: row.expected_rate,
+      available_date: row.available_date,
+      notes: row.notes,
+      reviewed_at: row.reviewed_at,
+      reviewed_by: row.reviewed_by,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      job_details: {
+        title: row.job_title,
+        location: row.job_location,
+        state: row.job_state,
+        specialty: row.job_specialty,
+        hourly_rate_min: row.job_hourly_rate_min,
+        hourly_rate_max: row.job_hourly_rate_max,
+        company_name: row.job_company_name,
+        status: row.job_status,
+        description: row.job_description,
+        poster: {
+          email: row.job_poster_email,
+          name: row.job_poster_first_name && row.job_poster_last_name 
+            ? `${row.job_poster_first_name} ${row.job_poster_last_name}` 
+            : null
+        }
+      }
+    }));
+
+    const exportData = {
+      user_id: userId,
+      export_date: new Date().toISOString(),
+      applications: applications,
+      summary: {
+        total_applications: applications.length,
+        applications_by_status: this.groupByStatus(applications),
+        date_range: {
+          earliest_application: applications.length > 0 ? applications[applications.length - 1].created_at : null,
+          latest_application: applications.length > 0 ? applications[0].created_at : null
+        }
+      }
+    };
+
+    // Add status change history if requested
+    if (includeHistory && applications.length > 0) {
+      const applicationIds = applications.map(app => app.id);
+      const historyQuery = `
+        SELECT 
+          application_id,
+          old_status,
+          new_status,
+          changed_by,
+          changed_at,
+          notes
+        FROM application_status_history 
+        WHERE application_id = ANY($1)
+        ORDER BY changed_at DESC
+      `;
+      
+      try {
+        const historyResult = await pool.query(historyQuery, [applicationIds]);
+        exportData.status_history = historyResult.rows;
+        exportData.summary.total_status_changes = historyResult.rows.length;
+      } catch (historyError) {
+        // History table might not exist, just skip this part
+        config.logger.warn('Status history table not found, skipping history export', 'DATA_EXPORT');
+        exportData.status_history = [];
+        exportData.summary.total_status_changes = 0;
+      }
+    }
+
+    return exportData;
+  }
+
+  /**
+   * Get summary of user's data for GDPR compliance
+   * @param {number} userId - User ID
+   * @returns {Promise<Object>} User data summary statistics
+   */
+  static async getUserDataSummary(userId) {
+    // Get application statistics
+    const statsQuery = `
+      SELECT 
+        COUNT(*) as total_applications,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_applications,
+        COUNT(CASE WHEN status = 'reviewed' THEN 1 END) as reviewed_applications,
+        COUNT(CASE WHEN status = 'accepted' THEN 1 END) as accepted_applications,
+        COUNT(CASE WHEN status = 'rejected' THEN 1 END) as rejected_applications,
+        COUNT(CASE WHEN status = 'withdrawn' THEN 1 END) as withdrawn_applications,
+        MIN(created_at) as first_application_date,
+        MAX(created_at) as last_application_date,
+        COUNT(CASE WHEN reviewed_at IS NOT NULL THEN 1 END) as applications_reviewed
+      FROM applications 
+      WHERE user_id = $1
+    `;
+
+    const statsResult = await pool.query(statsQuery, [userId]);
+    const stats = statsResult.rows[0];
+
+    // Get unique companies applied to
+    const companiesQuery = `
+      SELECT COUNT(DISTINCT j.company_name) as unique_companies
+      FROM applications a
+      INNER JOIN jobs j ON a.job_id = j.id
+      WHERE a.user_id = $1 AND j.company_name IS NOT NULL
+    `;
+
+    const companiesResult = await pool.query(companiesQuery, [userId]);
+    const uniqueCompanies = parseInt(companiesResult.rows[0].unique_companies);
+
+    // Try to get status change history count
+    let totalStatusChanges = 0;
+    try {
+      const historyQuery = `
+        SELECT COUNT(*) as total_changes
+        FROM application_status_history ash
+        INNER JOIN applications a ON ash.application_id = a.id
+        WHERE a.user_id = $1
+      `;
+      const historyResult = await pool.query(historyQuery, [userId]);
+      totalStatusChanges = parseInt(historyResult.rows[0].total_changes);
+    } catch (historyError) {
+      // History table might not exist, just skip this part
+      totalStatusChanges = 0;
+    }
+
+    return {
+      userId: userId,
+      totalApplications: parseInt(stats.total_applications),
+      applicationsByStatus: {
+        pending: parseInt(stats.pending_applications),
+        reviewed: parseInt(stats.reviewed_applications),
+        accepted: parseInt(stats.accepted_applications),
+        rejected: parseInt(stats.rejected_applications),
+        withdrawn: parseInt(stats.withdrawn_applications)
+      },
+      uniqueCompaniesAppliedTo: uniqueCompanies,
+      firstApplicationDate: stats.first_application_date,
+      lastApplicationDate: stats.last_application_date,
+      applicationsReviewed: parseInt(stats.applications_reviewed),
+      totalStatusChanges: totalStatusChanges,
+      dataRetentionInfo: {
+        oldestData: stats.first_application_date,
+        newestData: stats.last_application_date,
+        retentionPeriod: '3 years from last activity',
+        eligibleForDeletion: this.calculateDeletionEligibility(stats.last_application_date)
+      }
+    };
+  }
+
+  /**
+   * Group applications by status for summary
+   * @param {Array} applications - Array of applications
+   * @returns {Object} Applications grouped by status
+   */
+  static groupByStatus(applications) {
+    return applications.reduce((acc, app) => {
+      acc[app.status] = (acc[app.status] || 0) + 1;
+      return acc;
+    }, {});
+  }
+
+  /**
+   * Calculate if user data is eligible for deletion
+   * @param {Date} lastActivityDate - Date of last activity
+   * @returns {boolean} True if eligible for deletion
+   */
+  static calculateDeletionEligibility(lastActivityDate) {
+    if (!lastActivityDate) return true;
+    
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+    
+    return new Date(lastActivityDate) < threeYearsAgo;
+  }
+
+  /**
+   * Advanced search and filter applications for users
+   * @param {number} userId - User ID
+   * @param {Object} filters - Search and filter options
+   * @param {string} filters.search - Search text for job titles, companies, or locations
+   * @param {Array} filters.statuses - Array of statuses to filter by
+   * @param {Array} filters.specialties - Array of specialties to filter by
+   * @param {string} filters.state - State filter
+   * @param {Date} filters.dateFrom - Applications created after this date
+   * @param {Date} filters.dateTo - Applications created before this date
+   * @param {number} filters.minRate - Minimum expected rate filter
+   * @param {number} filters.maxRate - Maximum expected rate filter
+   * @param {Object} pagination - Pagination options
+   * @returns {Promise<Object>} Filtered applications with pagination
+   */
+  static async searchUserApplications(userId, filters = {}, pagination = {}) {
+    const {
+      search,
+      statuses = [],
+      specialties = [],
+      state,
+      dateFrom,
+      dateTo,
+      minRate,
+      maxRate
+    } = filters;
+
+    const {
+      page = 1,
+      limit = 20,
+      sortBy = 'created_at',
+      sortOrder = 'DESC'
+    } = pagination;
+
+    // Build WHERE conditions
+    const conditions = ['a.user_id = $1'];
+    const values = [userId];
+    let valueIndex = 2;
+
+    // Search across job titles, company names, and locations
+    if (search && search.trim()) {
+      conditions.push(`(
+        j.title ILIKE $${valueIndex} OR 
+        j.company_name ILIKE $${valueIndex} OR 
+        j.location ILIKE $${valueIndex} OR
+        a.cover_letter ILIKE $${valueIndex}
+      )`);
+      values.push(`%${search.trim()}%`);
+      valueIndex++;
+    }
+
+    // Status filters
+    if (statuses.length > 0) {
+      const statusPlaceholders = statuses.map(() => `$${valueIndex++}`).join(',');
+      conditions.push(`a.status IN (${statusPlaceholders})`);
+      values.push(...statuses);
+    }
+
+    // Specialty filters
+    if (specialties.length > 0) {
+      const specialtyPlaceholders = specialties.map(() => `$${valueIndex++}`).join(',');
+      conditions.push(`j.specialty IN (${specialtyPlaceholders})`);
+      values.push(...specialties);
+    }
+
+    // State filter
+    if (state) {
+      conditions.push(`j.state = $${valueIndex}`);
+      values.push(state);
+      valueIndex++;
+    }
+
+    // Date range filters
+    if (dateFrom) {
+      conditions.push(`a.created_at >= $${valueIndex}`);
+      values.push(dateFrom);
+      valueIndex++;
+    }
+
+    if (dateTo) {
+      conditions.push(`a.created_at <= $${valueIndex}`);
+      values.push(dateTo);
+      valueIndex++;
+    }
+
+    // Rate range filters
+    if (minRate !== undefined) {
+      conditions.push(`a.expected_rate >= $${valueIndex}`);
+      values.push(minRate);
+      valueIndex++;
+    }
+
+    if (maxRate !== undefined) {
+      conditions.push(`a.expected_rate <= $${valueIndex}`);
+      values.push(maxRate);
+      valueIndex++;
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
+    // Count total items
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM applications a 
+      INNER JOIN jobs j ON a.job_id = j.id
+      ${whereClause}
+    `;
+    const countResult = await pool.query(countQuery, values);
+    const totalItems = parseInt(countResult.rows[0].count);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(totalItems / limit);
+    const offset = (page - 1) * limit;
+
+    // Get applications with job details
+    const applicationsQuery = `
+      SELECT 
+        a.*,
+        j.title as job_title,
+        j.location as job_location,
+        j.state as job_state,
+        j.specialty as job_specialty,
+        j.hourly_rate_min as job_hourly_rate_min,
+        j.hourly_rate_max as job_hourly_rate_max,
+        j.company_name as job_company_name,
+        j.status as job_status,
+        poster.email as job_poster_email,
+        poster_profile.first_name as job_poster_first_name,
+        poster_profile.last_name as job_poster_last_name
+      FROM applications a
+      INNER JOIN jobs j ON a.job_id = j.id
+      LEFT JOIN users poster ON j.posted_by = poster.id
+      LEFT JOIN profiles poster_profile ON poster.id = poster_profile.user_id
+      ${whereClause}
+      ORDER BY a.${sortBy} ${sortOrder}
+      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+    `;
+
+    values.push(limit, offset);
+    const applicationsResult = await pool.query(applicationsQuery, values);
+
+    return {
+      applications: applicationsResult.rows.map(row => this.formatApplication(row)),
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      },
+      appliedFilters: {
+        search: search || null,
+        statuses: statuses.length > 0 ? statuses : null,
+        specialties: specialties.length > 0 ? specialties : null,
+        state: state || null,
+        dateRange: {
+          from: dateFrom || null,
+          to: dateTo || null
+        },
+        rateRange: {
+          min: minRate !== undefined ? minRate : null,
+          max: maxRate !== undefined ? maxRate : null
+        }
+      }
+    };
+  }
+
+  /**
+   * Advanced search and filter applications for recruiters
+   * @param {number} jobId - Job ID
+   * @param {number} recruiterId - Recruiter ID (must own the job)
+   * @param {Object} filters - Search and filter options
+   * @param {string} filters.search - Search text for applicant names, emails, or cover letters
+   * @param {Array} filters.statuses - Array of statuses to filter by
+   * @param {Date} filters.dateFrom - Applications created after this date
+   * @param {Date} filters.dateTo - Applications created before this date
+   * @param {number} filters.minRate - Minimum expected rate filter
+   * @param {number} filters.maxRate - Maximum expected rate filter
+   * @param {number} filters.minExperience - Minimum years of experience
+   * @param {string} filters.applicantSpecialty - Filter by applicant specialty
+   * @param {Object} pagination - Pagination options
+   * @returns {Promise<Object>} Filtered applications with pagination
+   */
+  static async searchJobApplications(jobId, recruiterId, filters = {}, pagination = {}) {
+    // First verify that the user owns this job
+    const jobOwnerQuery = 'SELECT posted_by FROM jobs WHERE id = $1';
+    const jobOwnerResult = await pool.query(jobOwnerQuery, [jobId]);
+    
+    if (jobOwnerResult.rows.length === 0) {
+      throw new Error('Job not found');
+    }
+    
+    if (jobOwnerResult.rows[0].posted_by !== recruiterId) {
+      throw new Error('Unauthorized to view applications for this job');
+    }
+
+    const {
+      search,
+      statuses = [],
+      dateFrom,
+      dateTo,
+      minRate,
+      maxRate,
+      minExperience,
+      applicantSpecialty
+    } = filters;
+
+    const {
+      page = 1,
+      limit = 20,
+      sortBy = 'created_at',
+      sortOrder = 'DESC'
+    } = pagination;
+
+    // Build WHERE conditions
+    const conditions = ['a.job_id = $1'];
+    const values = [jobId];
+    let valueIndex = 2;
+
+    // Search across applicant details and cover letters
+    if (search && search.trim()) {
+      conditions.push(`(
+        u.email ILIKE $${valueIndex} OR 
+        p.first_name ILIKE $${valueIndex} OR 
+        p.last_name ILIKE $${valueIndex} OR
+        a.cover_letter ILIKE $${valueIndex} OR
+        CONCAT(p.first_name, ' ', p.last_name) ILIKE $${valueIndex}
+      )`);
+      values.push(`%${search.trim()}%`);
+      valueIndex++;
+    }
+
+    // Status filters
+    if (statuses.length > 0) {
+      const statusPlaceholders = statuses.map(() => `$${valueIndex++}`).join(',');
+      conditions.push(`a.status IN (${statusPlaceholders})`);
+      values.push(...statuses);
+    }
+
+    // Date range filters
+    if (dateFrom) {
+      conditions.push(`a.created_at >= $${valueIndex}`);
+      values.push(dateFrom);
+      valueIndex++;
+    }
+
+    if (dateTo) {
+      conditions.push(`a.created_at <= $${valueIndex}`);
+      values.push(dateTo);
+      valueIndex++;
+    }
+
+    // Rate range filters
+    if (minRate !== undefined) {
+      conditions.push(`a.expected_rate >= $${valueIndex}`);
+      values.push(minRate);
+      valueIndex++;
+    }
+
+    if (maxRate !== undefined) {
+      conditions.push(`a.expected_rate <= $${valueIndex}`);
+      values.push(maxRate);
+      valueIndex++;
+    }
+
+    // Experience filter
+    if (minExperience !== undefined) {
+      conditions.push(`p.years_experience >= $${valueIndex}`);
+      values.push(minExperience);
+      valueIndex++;
+    }
+
+    // Applicant specialty filter
+    if (applicantSpecialty) {
+      conditions.push(`p.specialty = $${valueIndex}`);
+      values.push(applicantSpecialty);
+      valueIndex++;
+    }
+
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
+    // Count total items
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM applications a 
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN profiles p ON u.id = p.user_id
+      ${whereClause}
+    `;
+    const countResult = await pool.query(countQuery, values);
+    const totalItems = parseInt(countResult.rows[0].count);
+
+    // Calculate pagination
+    const totalPages = Math.ceil(totalItems / limit);
+    const offset = (page - 1) * limit;
+
+    // Get applications with user details
+    const applicationsQuery = `
+      SELECT 
+        a.*,
+        u.email as applicant_email,
+        p.first_name as applicant_first_name,
+        p.last_name as applicant_last_name,
+        p.phone as applicant_phone,
+        p.specialty as applicant_specialty,
+        p.years_experience as applicant_years_experience
+      FROM applications a
+      INNER JOIN users u ON a.user_id = u.id
+      LEFT JOIN profiles p ON u.id = p.user_id
+      ${whereClause}
+      ORDER BY a.${sortBy} ${sortOrder}
+      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+    `;
+
+    values.push(limit, offset);
+    const applicationsResult = await pool.query(applicationsQuery, values);
+
+    return {
+      applications: applicationsResult.rows.map(row => this.formatApplicationForRecruiter(row)),
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      },
+      appliedFilters: {
+        search: search || null,
+        statuses: statuses.length > 0 ? statuses : null,
+        dateRange: {
+          from: dateFrom || null,
+          to: dateTo || null
+        },
+        rateRange: {
+          min: minRate !== undefined ? minRate : null,
+          max: maxRate !== undefined ? maxRate : null
+        },
+        minExperience: minExperience !== undefined ? minExperience : null,
+        applicantSpecialty: applicantSpecialty || null
+      }
+    };
+  }
+
+  /**
+   * Get filter options for applications (for UI dropdowns)
+   * @param {number} userId - User ID (optional, for user-specific filters)
+   * @returns {Promise<Object>} Available filter options
+   */
+  static async getFilterOptions(userId = null) {
+    let baseQuery = `
+      SELECT DISTINCT
+        j.specialty,
+        j.state,
+        a.status
+      FROM applications a
+      INNER JOIN jobs j ON a.job_id = j.id
+    `;
+
+    let values = [];
+    if (userId) {
+      baseQuery += ' WHERE a.user_id = $1';
+      values = [userId];
+    }
+
+    const result = await pool.query(baseQuery, values);
+
+    const specialties = [...new Set(result.rows.map(row => row.specialty).filter(Boolean))];
+    const states = [...new Set(result.rows.map(row => row.state).filter(Boolean))];
+    const statuses = [...new Set(result.rows.map(row => row.status).filter(Boolean))];
+
+    // Get rate range
+    const rateQuery = userId 
+      ? 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE user_id = $1 AND expected_rate IS NOT NULL'
+      : 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE expected_rate IS NOT NULL';
+    
+    const rateValues = userId ? [userId] : [];
+    const rateResult = await pool.query(rateQuery, rateValues);
+    const rateRange = rateResult.rows[0];
+
+    return {
+      specialties: specialties.sort(),
+      states: states.sort(),
+      statuses: statuses.sort(),
+      rateRange: {
+        min: rateRange.min_rate ? parseFloat(rateRange.min_rate) : 0,
+        max: rateRange.max_rate ? parseFloat(rateRange.max_rate) : 1000
+      }
+    };
+  }
 }
 
 module.exports = Application;
