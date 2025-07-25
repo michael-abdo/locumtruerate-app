@@ -1,0 +1,23 @@
+47:      await client.query('BEGIN');
+51:        INSERT INTO jobs (
+76:          INSERT INTO job_requirements (job_id, requirement)
+88:      await client.query('COMMIT');
+93:      await client.query('ROLLBACK');
+173:    const countQuery = `SELECT COUNT(*) FROM jobs ${whereClause}`;
+183:      SELECT j.*, u.email as posted_by_email,
+190:      ORDER BY j.${sortBy} ${sortOrder}
+191:      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+217:      SELECT j.*, u.email as posted_by_email,
+236:      SELECT requirement 
+239:      ORDER BY id
+246:    await pool.query('UPDATE jobs SET views = views + 1 WHERE id = $1', [id]);
+260:    const checkQuery = 'SELECT posted_by FROM jobs WHERE id = $1';
+274:      await client.query('BEGIN');
+299:        await client.query('ROLLBACK');
+307:        UPDATE jobs 
+319:        await client.query('DELETE FROM job_requirements WHERE job_id = $1', [id]);
+328:            INSERT INTO job_requirements (job_id, requirement)
+341:      await client.query('COMMIT');
+346:      await client.query('ROLLBACK');
+361:    const checkQuery = 'SELECT posted_by FROM jobs WHERE id = $1';
+372:    const deleteQuery = 'DELETE FROM jobs WHERE id = $1';

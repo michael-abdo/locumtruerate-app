@@ -1,0 +1,45 @@
+29:      await client.query('BEGIN');
+32:      const jobQuery = 'SELECT * FROM jobs WHERE id = $1 AND status = $2';
+47:      const existingQuery = 'SELECT id FROM applications WHERE user_id = $1 AND job_id = $2';
+56:        INSERT INTO applications (
+68:      await client.query('COMMIT');
+74:      await client.query('ROLLBACK');
+122:      SELECT COUNT(*) 
+135:      SELECT 
+153:      ORDER BY a.${sortBy} ${sortOrder}
+154:      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+190:    const jobOwnerQuery = 'SELECT posted_by FROM jobs WHERE id = $1';
+216:      SELECT COUNT(*) 
+229:      SELECT 
+241:      ORDER BY a.${sortBy} ${sortOrder}
+242:      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+268:      SELECT 
+310:      await client.query('BEGIN');
+314:        SELECT a.*, j.posted_by 
+334:        UPDATE applications 
+348:      await client.query('COMMIT');
+353:      await client.query('ROLLBACK');
+370:      await client.query('BEGIN');
+373:      const checkQuery = 'SELECT user_id, status FROM applications WHERE id = $1';
+396:        UPDATE applications 
+402:      await client.query('COMMIT');
+407:      await client.query('ROLLBACK');
+510:      SELECT 
+529:      ORDER BY a.created_at DESC
+582:        SELECT 
+591:        ORDER BY changed_at DESC
+617:      SELECT 
+636:      SELECT COUNT(DISTINCT j.company_name) as unique_companies
+649:        SELECT COUNT(*) as total_changes
+813:      SELECT COUNT(*) 
+827:      SELECT 
+845:      ORDER BY a.${sortBy} ${sortOrder}
+846:      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+897:    const jobOwnerQuery = 'SELECT posted_by FROM jobs WHERE id = $1';
+995:      SELECT COUNT(*) 
+1010:      SELECT 
+1022:      ORDER BY a.${sortBy} ${sortOrder}
+1023:      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
+1063:      SELECT DISTINCT
+1085:      ? 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE user_id = $1 AND expected_rate IS NOT NULL'
+1086:      : 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE expected_rate IS NOT NULL';
