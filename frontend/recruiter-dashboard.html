@@ -6,6 +6,9 @@
     <title>Recruiter Dashboard - LocumTrueRate</title>
     <!-- Centralized CSS Variables -->
     <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -3517,7 +3520,7 @@
                     stat.textContent = Math.max(0, newValue);
                 });
                 
-                showToast('KPIs refreshed successfully!', 'success');
+                LocumUtils.showToast('KPIs refreshed successfully!', 'success');
             }, 2000);
         }
 
@@ -3787,7 +3790,7 @@
                 addJobToTable(jobData);
                 
                 setButtonLoading(submitButton, false);
-                showToast('Job posted successfully!', 'success');
+                LocumUtils.showToast('Job posted successfully!', 'success');
                 closeJobModal();
             }, 1500);
         }
@@ -3806,7 +3809,7 @@
                 <td>${jobData.city}, ${jobData.state}</td>
                 <td data-sort-value="${jobData.rate}">$${jobData.rate}/hr</td>
                 <td data-sort-value="0">0</td>
-                <td data-sort-value="${jobData.startDate}">${formatDate(jobData.startDate)}</td>
+                <td data-sort-value="${jobData.startDate}">${LocumUtils.formatDate(jobData.startDate)}</td>
                 <td>
                     <select class="status-dropdown" onchange="changeJobStatus(${newJobId}, this.value)">
                         <option value="active" selected>Active</option>
@@ -4078,7 +4081,7 @@
             
             setTimeout(() => {
                 // Create CSV content
-                const csvContent = `Analytics Report - Generated ${formatDate(new Date())}\n\nKey Metrics:\nJobs Posted,24\nTotal Applicants,156\nPositions Filled,8\nAvg Days to Fill,6.5\nRevenue Generated,$487k\nClient Satisfaction,92%\n\nTop Performing Positions:\nPosition,Applications,Fill Rate,Avg Rate,Revenue\nEmergency Medicine Physician,47,85%,$350/hr,$142k\nAnesthesiologist,32,78%,$425/hr,$118k\nInternal Medicine Hospitalist,41,72%,$285/hr,$98k\nGeneral Surgeon,28,68%,$380/hr,$89k`;
+                const csvContent = `Analytics Report - Generated ${LocumUtils.formatDate(new Date())}\n\nKey Metrics:\nJobs Posted,24\nTotal Applicants,156\nPositions Filled,8\nAvg Days to Fill,6.5\nRevenue Generated,$487k\nClient Satisfaction,92%\n\nTop Performing Positions:\nPosition,Applications,Fill Rate,Avg Rate,Revenue\nEmergency Medicine Physician,47,85%,$350/hr,$142k\nAnesthesiologist,32,78%,$425/hr,$118k\nInternal Medicine Hospitalist,41,72%,$285/hr,$98k\nGeneral Surgeon,28,68%,$380/hr,$89k`;
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
@@ -4086,7 +4089,7 @@
                 if (link.download !== undefined) {
                     const url = URL.createObjectURL(blob);
                     link.setAttribute('href', url);
-                    link.setAttribute('download', `analytics_report_${formatDate(new Date(), 'iso')}.csv`);
+                    link.setAttribute('download', `analytics_report_${LocumUtils.formatDate(new Date(), 'iso')}.csv`);
                     link.style.visibility = 'hidden';
                     document.body.appendChild(link);
                     link.click();
@@ -4987,7 +4990,7 @@ Senior Healthcare Recruiter`
             if (link.download !== undefined) {
                 const url = URL.createObjectURL(blob);
                 link.setAttribute('href', url);
-                link.setAttribute('download', `applicants_export_${formatDate(new Date(), 'iso')}.csv`);
+                link.setAttribute('download', `applicants_export_${LocumUtils.formatDate(new Date(), 'iso')}.csv`);
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();
@@ -5500,7 +5503,7 @@ Dr. James Wilson`,
                         <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">${message.subject}</h3>
                         <div style="display: flex; align-items: center; gap: 1rem; color: var(--text-secondary); font-size: 0.9rem; flex-wrap: wrap;">
                             <span><strong>From:</strong> ${message.from} &lt;${message.email}&gt;</span>
-                            <span><strong>Date:</strong> ${formatDate(message.date, 'datetime')}</span>
+                            <span><strong>Date:</strong> ${LocumUtils.formatDate(message.date, 'datetime')}</span>
                         </div>
                     </div>
                     <div style="line-height: 1.6; color: var(--text-primary); margin-bottom: 1.5rem; white-space: pre-line;">
@@ -5586,7 +5589,7 @@ Dr. James Wilson`,
             // Simulate API call with loading state
             setTimeout(() => {
                 setButtonLoading(submitButton, false);
-                showToast(`Message sent to ${to}`, 'success');
+                LocumUtils.showToast(`Message sent to ${to}`, 'success');
                 closeComposeModal();
             }, 1200);
         }
@@ -6828,7 +6831,7 @@ Dr. James Wilson`,
         }
 
         // Date Formatting Utilities
-        function formatDate(date, format = 'short') {
+        function LocumUtils.formatDate(date, format = 'short') {
             const dateObj = date instanceof Date ? date : new Date(date);
             
             switch (format) {
@@ -6915,7 +6918,7 @@ Dr. James Wilson`,
             
             setTimeout(() => {
                 // Create comprehensive CSV data
-                const csvContent = `LocumTrueRate Comprehensive Data Export - ${formatDate(new Date())}\n\n` +
+                const csvContent = `LocumTrueRate Comprehensive Data Export - ${LocumUtils.formatDate(new Date())}\n\n` +
                     `JOBS DATA:\n` +
                     `Position,Facility,Location,Rate,Applicants,Posted,Status\n` +
                     `Emergency Medicine Physician,Metropolitan General,Los Angeles CA,$350/hr,12,Jan 10 2025,Active\n` +
@@ -6941,7 +6944,7 @@ Dr. James Wilson`,
                 if (link.download !== undefined) {
                     const url = URL.createObjectURL(blob);
                     link.setAttribute('href', url);
-                    link.setAttribute('download', `locumtruerate_export_${formatDate(new Date(), 'iso')}.csv`);
+                    link.setAttribute('download', `locumtruerate_export_${LocumUtils.formatDate(new Date(), 'iso')}.csv`);
                     link.style.visibility = 'hidden';
                     document.body.appendChild(link);
                     link.click();
@@ -7308,7 +7311,7 @@ Dr. James Wilson`,
                 statusIndicator.classList.remove('status-updating');
                 
                 // Show success notification
-                showToast(`${applicantName} status updated to ${getStatusDisplayText(newStatus)}`, 'success');
+                LocumUtils.showToast(`${applicantName} status updated to ${getStatusDisplayText(newStatus)}`, 'success');
                 
                 // Update filters if active
                 if (isFiltersActive()) {
@@ -7357,7 +7360,7 @@ Dr. James Wilson`,
             const checkedApplicants = document.querySelectorAll('.applicant-card input[type="checkbox"]:checked');
             
             if (checkedApplicants.length === 0) {
-                showToast('Please select applicants to update', 'error');
+                LocumUtils.showToast('Please select applicants to update', 'error');
                 return;
             }
 
@@ -7435,7 +7438,7 @@ Dr. James Wilson`,
             const newStatus = document.getElementById('bulk-status-select').value;
             
             if (!newStatus) {
-                showToast('Please select a status', 'error');
+                LocumUtils.showToast('Please select a status', 'error');
                 return;
             }
 
@@ -7458,7 +7461,7 @@ Dr. James Wilson`,
             
             setTimeout(() => {
                 setButtonLoading(button, false);
-                showToast(`Bulk status update completed for ${checkedApplicants.length} applicants`, 'success');
+                LocumUtils.showToast(`Bulk status update completed for ${checkedApplicants.length} applicants`, 'success');
                 closeBulkStatusModal();
             }, checkedApplicants.length * 200 + 1000);
         }
@@ -7652,7 +7655,7 @@ Dr. James Wilson`,
             updateApplicantsPagination();
             
             // Show success toast
-            showToast('Filters cleared', 'info');
+            LocumUtils.showToast('Filters cleared', 'info');
         }
 
         function updateApplicantsPagination() {
@@ -7756,7 +7759,7 @@ Dr. James Wilson`,
 
         function applyAdvancedSearch() {
             // This would apply advanced search filters
-            showToast('Advanced search filters applied', 'success');
+            LocumUtils.showToast('Advanced search filters applied', 'success');
             closeAdvancedSearch();
         }
 

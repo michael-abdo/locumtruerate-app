@@ -6,6 +6,9 @@
     <title>Contract Calculator - LocumTrueRate</title>
     <!-- Centralized CSS Variables -->
     <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -1228,7 +1231,7 @@
             // Always allow saving, but warn if validation issues exist
             const hasValidationErrors = !areAllFieldsValid();
             if (hasValidationErrors) {
-                showToast('Saving contract with validation errors', 'warning');
+                LocumUtils.showToast('Saving contract with validation errors', 'warning');
             }
             
             const contractData = {
@@ -1266,7 +1269,7 @@
             
             const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
             if (savedContracts.length === 0) {
-                showToast('No saved contracts found. Save this contract first to enable comparisons.', 'info');
+                LocumUtils.showToast('No saved contracts found. Save this contract first to enable comparisons.', 'info');
                 saveContract();
                 return;
             }

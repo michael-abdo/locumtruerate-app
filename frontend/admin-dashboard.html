@@ -6,6 +6,9 @@
     <title>Admin Dashboard - LocumTrueRate</title>
     <!-- Centralized CSS Variables -->
     <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -1937,7 +1940,7 @@
                 statusCell.innerHTML = '<span class="status-pill success">Active</span>';
                 const actionCell = row.cells[6];
                 actionCell.innerHTML = '<button class="btn-small" onclick="viewJobDetails(' + jobId + ')">View</button>';
-                showToast(`Job posting #${jobId} approved successfully`, 'success');
+                LocumUtils.showToast(`Job posting #${jobId} approved successfully`, 'success');
             }
         }
 
@@ -1949,12 +1952,12 @@
                 statusCell.innerHTML = '<span class="status-pill error">Rejected</span>';
                 const actionCell = row.cells[6];
                 actionCell.innerHTML = '<button class="btn-small" onclick="viewJobDetails(' + jobId + ')">View</button>';
-                showToast(`Job posting #${jobId} rejected`, 'error');
+                LocumUtils.showToast(`Job posting #${jobId} rejected`, 'error');
             }
         }
 
         function viewJobDetails(jobId) {
-            showToast(`Opening job details for posting #${jobId}`, 'info');
+            LocumUtils.showToast(`Opening job details for posting #${jobId}`, 'info');
             // In real app, would open modal or navigate to details page
         }
 
@@ -1973,7 +1976,7 @@
 
         // Financial Overview Functions
         function filterFinancial(period) {
-            showToast(`Filtering financial data: ${period}`, 'info');
+            LocumUtils.showToast(`Filtering financial data: ${period}`, 'info');
             
             // Update summary cards with filtered data
             const revenue = period === 'today' ? 12500 : period === 'week' ? 87500 : 847325;
@@ -1988,7 +1991,7 @@
         }
 
         function exportFinancialReport() {
-            showToast('Generating financial report...', 'info');
+            LocumUtils.showToast('Generating financial report...', 'info');
             setTimeout(() => {
                 const report = 'Financial Report\n' +
                     '================\n' +
@@ -2008,16 +2011,16 @@
                 a.href = URL.createObjectURL(blob);
                 a.download = `financial_report_${new Date().toISOString().split('T')[0]}.txt`;
                 a.click();
-                showToast('Financial report downloaded', 'success');
+                LocumUtils.showToast('Financial report downloaded', 'success');
             }, 1500);
         }
 
         function viewTransaction(transactionId) {
-            showToast(`Opening transaction details for #${transactionId}`, 'info');
+            LocumUtils.showToast(`Opening transaction details for #${transactionId}`, 'info');
         }
 
         function downloadInvoice(transactionId) {
-            showToast(`Downloading invoice for transaction #${transactionId}`, 'info');
+            LocumUtils.showToast(`Downloading invoice for transaction #${transactionId}`, 'info');
             setTimeout(() => {
                 const invoice = `Invoice #${transactionId}\n` +
                     '========================\n' +
@@ -2035,7 +2038,7 @@
         }
 
         function expeditePayment(transactionId) {
-            showToast(`Payment ${transactionId} expedited`, 'success');
+            LocumUtils.showToast(`Payment ${transactionId} expedited`, 'success');
             const row = event.target.closest('tr');
             if (row) {
                 const statusCell = row.cells[4];
@@ -2045,34 +2048,34 @@
 
         // System Administration Functions
         function showSettings() {
-            showToast('Opening system settings', 'info');
+            LocumUtils.showToast('Opening system settings', 'info');
         }
 
         function maintenanceMode() {
-            showToast('Maintenance mode enabled', 'warning');
+            LocumUtils.showToast('Maintenance mode enabled', 'warning');
             document.querySelector('.section-header button.warning').textContent = 'Exit Maintenance';
         }
 
         function emergencyShutdown() {
             const code = prompt('Enter emergency shutdown authorization code:');
             if (code === 'EMERGENCY-2025') {
-                showToast('Emergency shutdown initiated...', 'error');
+                LocumUtils.showToast('Emergency shutdown initiated...', 'error');
                 setTimeout(() => {
                     document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#dc3545;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
                 }, 3000);
             } else if (code) {
-                showToast('Invalid authorization code', 'error');
+                LocumUtils.showToast('Invalid authorization code', 'error');
             }
         }
 
         function manageNotifications() {
-            showToast('Opening notification management panel', 'info');
+            LocumUtils.showToast('Opening notification management panel', 'info');
         }
 
         function manualBackup() {
-            showToast('Initiating manual backup...', 'info');
+            LocumUtils.showToast('Initiating manual backup...', 'info');
             setTimeout(() => {
-                showToast('Backup completed successfully', 'success');
+                LocumUtils.showToast('Backup completed successfully', 'success');
                 const backupTime = document.querySelector('.admin-card:nth-child(2) p');
                 if (backupTime) {
                     const now = new Date().toLocaleString();
@@ -2084,7 +2087,7 @@
         function scheduleMaintenance() {
             const input = prompt('Schedule maintenance window (e.g., "2025-02-01 02:00 AM"):');
             if (input) {
-                showToast(`Maintenance scheduled for ${input}`, 'success');
+                LocumUtils.showToast(`Maintenance scheduled for ${input}`, 'success');
                 const maintenanceInfo = document.querySelector('.admin-card:nth-child(3) p');
                 if (maintenanceInfo) {
                     maintenanceInfo.innerHTML = `Next window: <strong>${input}</strong>`;
@@ -2094,11 +2097,11 @@
 
         // Content Management Functions
         function createContent() {
-            showToast('Opening content creation form', 'info');
+            LocumUtils.showToast('Opening content creation form', 'info');
         }
 
         function editContent(contentId, type) {
-            showToast(`Editing ${type} #${contentId}`, 'info');
+            LocumUtils.showToast(`Editing ${type} #${contentId}`, 'info');
         }
 
         function publishContent(contentId, type) {
@@ -2111,7 +2114,7 @@
                     <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
                     <button class="btn-small warning" onclick="unpublishContent(${contentId}, '${type}')">Unpublish</button>
                 `;
-                showToast(`${type} published successfully`, 'success');
+                LocumUtils.showToast(`${type} published successfully`, 'success');
             }
         }
 
@@ -2125,26 +2128,26 @@
                     <button class="btn-small secondary" onclick="editContent(${contentId}, '${type}')">Edit</button>
                     <button class="btn-small success" onclick="publishContent(${contentId}, '${type}')">Publish</button>
                 `;
-                showToast(`${type} unpublished`, 'info');
+                LocumUtils.showToast(`${type} unpublished`, 'info');
             }
         }
 
         function filterContent() {
             const filterValue = document.querySelector('.content-section select')?.value || 'all';
-            showToast(`Filtering content: ${filterValue}`, 'info');
+            LocumUtils.showToast(`Filtering content: ${filterValue}`, 'info');
         }
 
         // Security & Audit Functions
         function viewLogs() {
-            showToast('Opening detailed audit logs', 'info');
+            LocumUtils.showToast('Opening detailed audit logs', 'info');
         }
 
         function investigateEvent(eventId) {
-            showToast(`Investigating security event #${eventId}`, 'info');
+            LocumUtils.showToast(`Investigating security event #${eventId}`, 'info');
         }
 
         function blockIP(ip) {
-            showToast(`IP ${ip} has been blocked`, 'success');
+            LocumUtils.showToast(`IP ${ip} has been blocked`, 'success');
             event.target.textContent = 'Unblock';
             event.target.onclick = () => unblockIP(ip);
             event.target.classList.remove('error');
@@ -2152,7 +2155,7 @@
         }
 
         function unblockIP(ip) {
-            showToast(`IP ${ip} has been unblocked`, 'success');
+            LocumUtils.showToast(`IP ${ip} has been unblocked`, 'success');
             event.target.textContent = 'Block';
             event.target.onclick = () => blockIP(ip);
             event.target.classList.remove('success');
@@ -2160,14 +2163,14 @@
         }
 
         function manageAdmins() {
-            showToast('Opening admin role management', 'info');
+            LocumUtils.showToast('Opening admin role management', 'info');
         }
 
         // Support Management Functions
         function filterTickets() {
             const status = document.querySelector('.support-section select:nth-child(1)')?.value || 'all';
             const priority = document.querySelector('.support-section select:nth-child(2)')?.value || 'all';
-            showToast(`Filtering tickets: ${status}, ${priority}`, 'info');
+            LocumUtils.showToast(`Filtering tickets: ${status}, ${priority}`, 'info');
             
             const tickets = document.querySelectorAll('.support-table tbody tr');
             tickets.forEach(ticket => {
@@ -2182,7 +2185,7 @@
         }
 
         function viewTicket(ticketId) {
-            showToast(`Opening ticket #${ticketId}`, 'info');
+            LocumUtils.showToast(`Opening ticket #${ticketId}`, 'info');
         }
 
         function escalateTicket(ticketId) {
@@ -2190,7 +2193,7 @@
             if (row) {
                 const priorityCell = row.cells[2];
                 priorityCell.innerHTML = '<span class="priority-high">High</span>';
-                showToast(`Ticket #${ticketId} escalated to high priority`, 'success');
+                LocumUtils.showToast(`Ticket #${ticketId} escalated to high priority`, 'success');
                 event.target.disabled = true;
                 event.target.textContent = 'Escalated';
             }
@@ -2199,7 +2202,7 @@
         function messageUser(userId) {
             const message = prompt('Enter message for user:');
             if (message) {
-                showToast(`Message sent to user #${userId}`, 'success');
+                LocumUtils.showToast(`Message sent to user #${userId}`, 'success');
             }
         }
 
@@ -2214,7 +2217,7 @@
 
         function dataExport() {
             const format = document.querySelector('.data-section select')?.value || 'csv';
-            showToast(`Exporting data in ${format.toUpperCase()} format...`, 'info');
+            LocumUtils.showToast(`Exporting data in ${format.toUpperCase()} format...`, 'info');
             setTimeout(() => {
                 const data = format === 'json' ? 
                     JSON.stringify({
@@ -2231,14 +2234,14 @@
                 a.href = URL.createObjectURL(blob);
                 a.download = `platform_export_${new Date().toISOString().split('T')[0]}.${format}`;
                 a.click();
-                showToast('Data export completed', 'success');
+                LocumUtils.showToast('Data export completed', 'success');
             }, 2000);
         }
 
         function handleImport(event) {
             const file = event.target.files[0];
             if (file) {
-                showToast(`Importing ${file.name}...`, 'info');
+                LocumUtils.showToast(`Importing ${file.name}...`, 'info');
                 
                 // Show progress
                 const progressContainer = document.createElement('div');
@@ -2260,7 +2263,7 @@
                         clearInterval(interval);
                         setTimeout(() => {
                             progressContainer.remove();
-                            showToast(`Successfully imported ${file.name}`, 'success');
+                            LocumUtils.showToast(`Successfully imported ${file.name}`, 'success');
                         }, 500);
                     }
                 }, 400);
@@ -2269,11 +2272,11 @@
 
         // Integration & Compliance Functions
         function configureIntegration(integration) {
-            showToast(`Opening ${integration} configuration`, 'info');
+            LocumUtils.showToast(`Opening ${integration} configuration`, 'info');
         }
 
         function runComplianceCheck() {
-            showToast('Running compliance check...', 'info');
+            LocumUtils.showToast('Running compliance check...', 'info');
             const progressBar = document.querySelector('.compliance-check .progress-fill');
             const statusText = document.querySelector('.compliance-status');
             let progress = 0;
@@ -2304,7 +2307,7 @@
                         statusText.textContent = '✓ All systems compliant';
                         statusText.style.color = '#4CAF50';
                     }
-                    showToast('Compliance check completed - All systems compliant', 'success');
+                    LocumUtils.showToast('Compliance check completed - All systems compliant', 'success');
                 }
             }, 800);
         }
@@ -2318,19 +2321,19 @@
                 button.textContent = 'Enable Maintenance Mode';
                 button.classList.remove('error');
                 button.classList.add('warning');
-                showToast('Maintenance mode disabled', 'success');
+                LocumUtils.showToast('Maintenance mode disabled', 'success');
             } else {
                 button.textContent = 'Disable Maintenance Mode';
                 button.classList.remove('warning');
                 button.classList.add('error');
-                showToast('Maintenance mode enabled', 'warning');
+                LocumUtils.showToast('Maintenance mode enabled', 'warning');
             }
         }
 
         function massUserSuspension() {
             const reason = prompt('Enter reason for mass suspension:');
             if (reason) {
-                showToast('Mass user suspension initiated...', 'warning');
+                LocumUtils.showToast('Mass user suspension initiated...', 'warning');
                 
                 // Show progress
                 const progressContainer = document.createElement('div');
@@ -2355,7 +2358,7 @@
                         clearInterval(interval);
                         setTimeout(() => {
                             progressContainer.remove();
-                            showToast('All users suspended. Notification emails sent.', 'success');
+                            LocumUtils.showToast('All users suspended. Notification emails sent.', 'success');
                         }, 500);
                     }
                 }, 200);
@@ -2365,12 +2368,12 @@
         function confirmEmergencyShutdown() {
             const code = prompt('Enter emergency shutdown authorization code:');
             if (code === 'SHUTDOWN-2025') {
-                showToast('Emergency shutdown initiated...', 'error');
+                LocumUtils.showToast('Emergency shutdown initiated...', 'error');
                 setTimeout(() => {
                     document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#000;color:#fff;font-size:24px;">Platform is in emergency shutdown mode</div>';
                 }, 3000);
             } else if (code) {
-                showToast('Invalid authorization code', 'error');
+                LocumUtils.showToast('Invalid authorization code', 'error');
             }
         }
     </script>

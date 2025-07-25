@@ -6,6 +6,9 @@
     <title>Paycheck Calculator - LocumTrueRate</title>
     <!-- Centralized CSS Variables -->
     <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
         * {
@@ -594,75 +597,20 @@
             'custom': 0.05
         };
 
-        // Toast notification function
-        function showToast(message, type = 'success') {
-            // Remove any existing toasts
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
+        // Using centralized showToast from LocumUtils
 
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
+        // Using centralized formatCurrency from LocumUtils
 
-            setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s ease-out reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(amount);
-        }
-
-        // Validate input
+        // Custom validation for paycheck calculator (extends LocumUtils.validateInput)
         function validateInput(input) {
-            const errorElement = document.getElementById(input.id + '-error');
-            
-            if (errorElement) {
-                errorElement.classList.remove('show');
-                errorElement.textContent = '';
-            }
+            // Use base validation first
+            const isValid = LocumUtils.validateInput(input, 'number');
+            if (!isValid) return 0;
 
-            // Check for empty input
-            if (input.value === '' || input.value === null || input.value === undefined) {
-                if (errorElement) {
-                    errorElement.textContent = 'This field is required';
-                    errorElement.classList.add('show');
-                }
-                return 0;
-            }
-
-            // Check for non-numeric input
             const value = parseFloat(input.value);
-            if (isNaN(value)) {
-                if (errorElement) {
-                    errorElement.textContent = 'Please enter a valid number';
-                    errorElement.classList.add('show');
-                }
-                input.value = '0';
-                return 0;
-            }
+            const errorElement = document.getElementById(input.id + '-error');
 
-            // Check for negative values
-            if (value < 0) {
-                if (errorElement) {
-                    errorElement.textContent = 'Value cannot be negative';
-                    errorElement.classList.add('show');
-                }
-                input.value = 0;
-                return 0;
-            }
-
-            // Check for extreme values
+            // Additional paycheck-specific validation
             if (input.id.includes('Hours') && value > 168) {
                 if (errorElement) {
                     errorElement.textContent = 'Hours cannot exceed 168 per week';
@@ -724,22 +672,22 @@
             const totalDeductions = federalTax + stateTax + ficaTax;
             const netPay = totalGrossPay - totalDeductions + totalStipends;
 
-            // Update display
-            document.getElementById('regularPay').textContent = formatCurrency(regularPay);
-            document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
-            document.getElementById('callPay').textContent = formatCurrency(callPay);
-            document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
-            document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
+            // Update display using LocumUtils.formatCurrency
+            document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(regularPay);
+            document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(overtimePay);
+            document.getElementById('callPay').textContent = LocumUtils.formatCurrency(callPay);
+            document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(callbackPay);
+            document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(totalGrossPay);
             
-            document.getElementById('housingStipendDisplay').textContent = formatCurrency(housingStipend);
-            document.getElementById('mealStipendDisplay').textContent = formatCurrency(mealStipend);
-            document.getElementById('mileageDisplay').textContent = formatCurrency(mileageReimbursement);
-            document.getElementById('totalStipends').textContent = formatCurrency(totalStipends);
+            document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(housingStipend);
+            document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(mealStipend);
+            document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(mileageReimbursement);
+            document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(totalStipends);
             
-            document.getElementById('federalTax').textContent = formatCurrency(federalTax);
-            document.getElementById('stateTax').textContent = formatCurrency(stateTax);
-            document.getElementById('ficaTax').textContent = formatCurrency(ficaTax);
-            document.getElementById('netPay').textContent = formatCurrency(netPay);
+            document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(federalTax);
+            document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(stateTax);
+            document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(ficaTax);
+            document.getElementById('netPay').textContent = LocumUtils.formatCurrency(netPay);
         }
 
         // Simple federal tax calculation
@@ -796,13 +744,13 @@
             };
             
             localStorage.setItem('paycheckCalculation', JSON.stringify(data));
-            showToast('Calculation saved successfully!', 'success');
+            LocumUtils.showToast('Calculation saved successfully!', 'success');
         }
 
         // Print results
         function printResults() {
             window.print();
-            showToast('[PRINT] Print dialog opened', 'success');
+            LocumUtils.showToast('[PRINT] Print dialog opened', 'success');
         }
 
         // Export to PDF
@@ -828,7 +776,7 @@ Generated: ${new Date().toLocaleDateString()}`;
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showToast('Paycheck summary downloaded!', 'success');
+            LocumUtils.showToast('Paycheck summary downloaded!', 'success');
         }
 
         // Email results
@@ -853,7 +801,7 @@ NET PAY: ${document.getElementById('netPay').textContent}
 Generated: ${new Date().toLocaleDateString()}`;
             
             window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            showToast('[EMAIL] Opening email client...', 'success');
+            LocumUtils.showToast('[EMAIL] Opening email client...', 'success');
         }
 
         // Initialize when DOM is ready

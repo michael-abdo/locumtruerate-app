@@ -6,6 +6,9 @@
     <title>Locum Dashboard - LocumTrueRate</title>
     <!-- Centralized CSS Variables -->
     <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/common-utils.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -4020,12 +4023,12 @@ American Board of Internal Medicine</textarea>
             
             const job = jobDetails[jobId];
             console.log(`Viewing job details for: ${job.title} at ${job.facility}`);
-            showToast(`Viewing details for ${job.title}`, 'info');
+            LocumUtils.showToast(`Viewing details for ${job.title}`, 'info');
         }
 
         function applyToJob(jobId) {
             console.log(`Applying to job ${jobId}`);
-            showToast('Application submitted successfully!', 'success');
+            LocumUtils.showToast('Application submitted successfully!', 'success');
             
             // Update application tracking
             updateApplicationStatus(jobId, 'applied');
@@ -4040,12 +4043,12 @@ American Board of Internal Medicine</textarea>
                 }, 300);
             }
             console.log(`Removed job ${jobId} from saved list`);
-            showToast('Job removed from saved list', 'info');
+            LocumUtils.showToast('Job removed from saved list', 'info');
         }
 
         function findNewJobs() {
             console.log('Redirecting to job board to find new positions');
-            showToast('Redirecting to job board...', 'info');
+            LocumUtils.showToast('Redirecting to job board...', 'info');
             setTimeout(() => {
                 window.location.href = 'job-board.html';
             }, 1000);
@@ -4107,12 +4110,12 @@ American Board of Internal Medicine</textarea>
             
             const app = applications[applicationId];
             console.log(`Viewing application details for: ${app.title} at ${app.facility}`);
-            showToast(`Viewing details for ${app.title}`, 'info');
+            LocumUtils.showToast(`Viewing details for ${app.title}`, 'info');
         }
 
         function withdrawApplication(applicationId) {
             console.log(`Withdrawing application ${applicationId}`);
-            showToast('Application withdrawn successfully', 'warning');
+            LocumUtils.showToast('Application withdrawn successfully', 'warning');
             
             // Update status to withdrawn
             const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
@@ -4126,12 +4129,12 @@ American Board of Internal Medicine</textarea>
 
         function prepareForInterview(applicationId) {
             console.log(`Preparing for interview for application ${applicationId}`);
-            showToast('Opening interview preparation guide...', 'info');
+            LocumUtils.showToast('Opening interview preparation guide...', 'info');
         }
 
         function acceptOffer(applicationId) {
             console.log(`Accepting offer for application ${applicationId}`);
-            showToast('Offer accepted! Contract details will be sent shortly.', 'success');
+            LocumUtils.showToast('Offer accepted! Contract details will be sent shortly.', 'success');
             
             // Update status to accepted
             const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
@@ -4145,7 +4148,7 @@ American Board of Internal Medicine</textarea>
 
         function declineOffer(applicationId) {
             console.log(`Declining offer for application ${applicationId}`);
-            showToast('Offer declined. Thank you message sent to employer.', 'info');
+            LocumUtils.showToast('Offer declined. Thank you message sent to employer.', 'info');
             
             // Update status to declined
             const applicationItem = document.querySelector(`.application-item[onclick*="${applicationId}"]`)?.closest('.application-item');
@@ -4166,12 +4169,12 @@ American Board of Internal Medicine</textarea>
                     applicationItem.remove();
                 }, 300);
             }
-            showToast('Application archived', 'info');
+            LocumUtils.showToast('Application archived', 'info');
         }
 
         function refreshApplications() {
             console.log('Refreshing application status...');
-            showToast('Application statuses updated', 'success');
+            LocumUtils.showToast('Application statuses updated', 'success');
         }
 
         // Financial tracking functionality
@@ -4191,22 +4194,22 @@ American Board of Internal Medicine</textarea>
 
         function exportFinancialData() {
             console.log('Exporting financial data...');
-            showToast('Financial data exported successfully', 'success');
+            LocumUtils.showToast('Financial data exported successfully', 'success');
         }
 
         function addExpense() {
             console.log('Opening add expense form...');
-            showToast('Add expense form opened', 'info');
+            LocumUtils.showToast('Add expense form opened', 'info');
         }
 
         function uploadReceipts() {
             console.log('Opening receipt upload interface...');
-            showToast('Receipt upload interface opened', 'info');
+            LocumUtils.showToast('Receipt upload interface opened', 'info');
         }
 
         function generateTaxReport() {
             console.log('Generating tax report...');
-            showToast('Tax report generated successfully', 'success');
+            LocumUtils.showToast('Tax report generated successfully', 'success');
         }
 
         // Credential management functionality
@@ -4221,7 +4224,7 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Viewing ${credentials[type]}`);
-            showToast(`Opening ${credentials[type]} details`, 'info');
+            LocumUtils.showToast(`Opening ${credentials[type]} details`, 'info');
         }
 
         function updateCredential(type) {
@@ -4235,7 +4238,7 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Updating ${credentials[type]}`);
-            showToast(`Update form opened for ${credentials[type]}`, 'info');
+            LocumUtils.showToast(`Update form opened for ${credentials[type]}`, 'info');
         }
 
         function renewCredential(type) {
@@ -4244,7 +4247,7 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Renewing ${credentials[type]}`);
-            showToast(`Renewal process started for ${credentials[type]}`, 'success');
+            LocumUtils.showToast(`Renewal process started for ${credentials[type]}`, 'success');
         }
 
         function triggerFileUpload() {
@@ -4258,23 +4261,23 @@ American Board of Internal Medicine</textarea>
                 for (let i = 0; i < files.length; i++) {
                     console.log(`File ${i + 1}: ${files[i].name} (${files[i].size} bytes)`);
                 }
-                showToast(`Selected ${files.length} file(s) for upload`, 'info');
+                LocumUtils.showToast(`Selected ${files.length} file(s) for upload`, 'info');
             }
         }
 
         function uploadCredential() {
             console.log('Starting credential upload process...');
-            showToast('Credential upload initiated', 'success');
+            LocumUtils.showToast('Credential upload initiated', 'success');
         }
 
         function scanDocument() {
             console.log('Opening document scanner...');
-            showToast('Document scanner opened', 'info');
+            LocumUtils.showToast('Document scanner opened', 'info');
         }
 
         function requestCredential() {
             console.log('Requesting credential from provider...');
-            showToast('Credential request sent to provider', 'success');
+            LocumUtils.showToast('Credential request sent to provider', 'success');
         }
 
         // Calendar and scheduling functionality
@@ -4305,22 +4308,22 @@ American Board of Internal Medicine</textarea>
                 monthElement.textContent = 'December 2024';
             }
             
-            showToast(`Calendar navigated to ${monthElement.textContent}`, 'info');
+            LocumUtils.showToast(`Calendar navigated to ${monthElement.textContent}`, 'info');
         }
 
         function addScheduleItem() {
             console.log('Opening add schedule item form...');
-            showToast('Add schedule item form opened', 'info');
+            LocumUtils.showToast('Add schedule item form opened', 'info');
         }
 
         function editTimeOff(timeOffId) {
             console.log(`Editing time off request ${timeOffId}`);
-            showToast('Time off edit form opened', 'info');
+            LocumUtils.showToast('Time off edit form opened', 'info');
         }
 
         function requestTimeOff() {
             console.log('Opening time off request form...');
-            showToast('Time off request form opened', 'info');
+            LocumUtils.showToast('Time off request form opened', 'info');
         }
 
         // Messaging and communication functionality
@@ -4340,7 +4343,7 @@ American Board of Internal Medicine</textarea>
 
         function composeMessage() {
             console.log('Opening compose message form...');
-            showToast('Compose message form opened', 'info');
+            LocumUtils.showToast('Compose message form opened', 'info');
         }
 
         function openMessage(messageId) {
@@ -4351,7 +4354,7 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Opening message ${messageId}: ${messages[messageId]}`);
-            showToast(`Opening message: ${messages[messageId]}`, 'info');
+            LocumUtils.showToast(`Opening message: ${messages[messageId]}`, 'info');
             
             // Mark as read
             const messageItem = event.target.closest('.message-item');
@@ -4362,7 +4365,7 @@ American Board of Internal Medicine</textarea>
 
         function quickReply(messageId) {
             console.log(`Opening quick reply for message ${messageId}`);
-            showToast('Quick reply form opened', 'info');
+            LocumUtils.showToast('Quick reply form opened', 'info');
         }
 
         function archiveMessage(messageId) {
@@ -4374,12 +4377,12 @@ American Board of Internal Medicine</textarea>
                     messageItem.remove();
                 }, 300);
             }
-            showToast('Message archived', 'info');
+            LocumUtils.showToast('Message archived', 'info');
         }
 
         function renewFromMessage(messageId) {
             console.log(`Starting renewal process from message ${messageId}`);
-            showToast('Credential renewal process started', 'success');
+            LocumUtils.showToast('Credential renewal process started', 'success');
         }
 
         function messageContact(contactId) {
@@ -4390,7 +4393,7 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Messaging ${contacts[contactId]}`);
-            showToast(`Opening message to ${contacts[contactId]}`, 'info');
+            LocumUtils.showToast(`Opening message to ${contacts[contactId]}`, 'info');
         }
 
         function callContact(contactId) {
@@ -4401,22 +4404,22 @@ American Board of Internal Medicine</textarea>
             };
             
             console.log(`Calling ${contacts[contactId]}`);
-            showToast(`Initiating call to ${contacts[contactId]}`, 'info');
+            LocumUtils.showToast(`Initiating call to ${contacts[contactId]}`, 'info');
         }
 
         function callEmergency() {
             console.log('Calling emergency support line');
-            showToast('Connecting to 24/7 emergency support...', 'warning');
+            LocumUtils.showToast('Connecting to 24/7 emergency support...', 'warning');
         }
 
         function saveNotificationSettings() {
             console.log('Saving notification preferences...');
-            showToast('Notification preferences saved successfully', 'success');
+            LocumUtils.showToast('Notification preferences saved successfully', 'success');
         }
 
         function testNotifications() {
             console.log('Testing notification system...');
-            showToast('Test notification sent! Check your email and phone.', 'info');
+            LocumUtils.showToast('Test notification sent! Check your email and phone.', 'info');
         }
 
         // Account settings functionality
@@ -4444,7 +4447,7 @@ American Board of Internal Medicine</textarea>
 
         function saveAllSettings() {
             if (!settingsChanged) {
-                showToast('No changes to save', 'info');
+                LocumUtils.showToast('No changes to save', 'info');
                 return;
             }
             
@@ -4456,51 +4459,51 @@ American Board of Internal Medicine</textarea>
             });
             
             settingsChanged = false;
-            showToast('All settings saved successfully', 'success');
+            LocumUtils.showToast('All settings saved successfully', 'success');
         }
 
         function changePassword() {
             console.log('Opening change password form...');
-            showToast('Change password form opened', 'info');
+            LocumUtils.showToast('Change password form opened', 'info');
         }
 
         function setupTwoFactor() {
             console.log('Setting up two-factor authentication...');
-            showToast('Two-factor authentication setup started', 'info');
+            LocumUtils.showToast('Two-factor authentication setup started', 'info');
         }
 
         function downloadData() {
             console.log('Preparing data download...');
-            showToast('Your data download will be emailed to you within 24 hours', 'info');
+            LocumUtils.showToast('Your data download will be emailed to you within 24 hours', 'info');
         }
 
         function deleteAccount() {
             console.log('Account deletion process initiated');
-            showToast('Account deletion process initiated. You will receive a confirmation email.', 'warning');
+            LocumUtils.showToast('Account deletion process initiated. You will receive a confirmation email.', 'warning');
         }
 
         // Payment method management functions
         function addPaymentMethod() {
             console.log('Opening add payment method form...');
-            showToast('Add payment method form would open here', 'info');
+            LocumUtils.showToast('Add payment method form would open here', 'info');
             // In a real application, this would open a modal or navigate to a secure form
         }
 
         function editPaymentMethod(methodId) {
             console.log(`Editing payment method: ${methodId}`);
-            showToast(`Editing payment method ${methodId}`, 'info');
+            LocumUtils.showToast(`Editing payment method ${methodId}`, 'info');
             // In a real application, this would open an edit form with encrypted data
         }
 
         function removePaymentMethod(methodId) {
             console.log(`Removing payment method: ${methodId}`);
-            showToast('Payment method removed successfully', 'success');
+            LocumUtils.showToast('Payment method removed successfully', 'success');
             // In a real application, this would remove the method from the backend
         }
 
         function setPrimaryPayment(methodId) {
             console.log(`Setting payment method ${methodId} as primary`);
-            showToast('Primary payment method updated', 'success');
+            LocumUtils.showToast('Primary payment method updated', 'success');
             // In a real application, this would update the primary payment method
             // Update UI to reflect the change
             document.querySelectorAll('.payment-status').forEach(status => {
@@ -4508,7 +4511,7 @@ American Board of Internal Medicine</textarea>
                 status.classList.remove('primary');
             });
             // Find and update the selected method (simplified for demo)
-            showToast('Payment method set as primary', 'success');
+            LocumUtils.showToast('Payment method set as primary', 'success');
         }
 
         // Global search functionality
@@ -4623,12 +4626,12 @@ American Board of Internal Medicine</textarea>
                 const targetElement = document.querySelector(targetSelector);
                 if (targetElement) {
                     targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    showToast(`Navigated to ${result.title}`, 'info');
+                    LocumUtils.showToast(`Navigated to ${result.title}`, 'info');
                 } else {
-                    showToast(`${result.title} section found`, 'info');
+                    LocumUtils.showToast(`${result.title} section found`, 'info');
                 }
             } else {
-                showToast(`Found: ${result.title}`, 'info');
+                LocumUtils.showToast(`Found: ${result.title}`, 'info');
             }
         }
 
@@ -4679,7 +4682,7 @@ American Board of Internal Medicine</textarea>
             items.forEach(item => item.remove());
             items.forEach(item => container.appendChild(item));
             
-            showToast(`Applications sorted by ${sortBy}`, 'info');
+            LocumUtils.showToast(`Applications sorted by ${sortBy}`, 'info');
         }
 
         function sortPayments(sortBy) {
@@ -4711,7 +4714,7 @@ American Board of Internal Medicine</textarea>
             items.forEach(item => item.remove());
             items.forEach(item => container.appendChild(item));
             
-            showToast(`Payments sorted by ${sortBy}`, 'info');
+            LocumUtils.showToast(`Payments sorted by ${sortBy}`, 'info');
         }
 
         // Helper functions for extracting sort values
@@ -5107,7 +5110,7 @@ American Board of Internal Medicine</textarea>
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
                         console.log(`Dropped ${files.length} file(s)`);
-                        showToast(`Dropped ${files.length} file(s) - ready to upload`, 'info');
+                        LocumUtils.showToast(`Dropped ${files.length} file(s) - ready to upload`, 'info');
                         announceToScreenReader(`${files.length} files selected for upload`);
                     }
                 });
@@ -5117,38 +5120,15 @@ American Board of Internal Medicine</textarea>
             document.addEventListener('keydown', handleDropdownKeyboard);
         });
 
-        // Toast notification system
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerHTML = `
-                <span class="toast-message">${message}</span>
-                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                toast.classList.add('hide');
-                setTimeout(() => {
-                    if (toast.parentElement) {
-                        toast.remove();
-                    }
-                }, 300);
-            }, 3000);
-        }
+        // Using centralized showToast from LocumUtils
 
         // Dashboard functionality
         function updateProfile() {
-            showToast('Opening profile editor... Update: Personal information, Specialties and certifications, License information, Availability preferences, Rate expectations, Work history', 'info');
+            LocumUtils.LocumUtils.showToast('Opening profile editor... Update: Personal information, Specialties and certifications, License information, Availability preferences, Rate expectations, Work history', 'info');
         }
 
         function exportProfile() {
-            showToast('Exporting professional profile... Includes: Comprehensive resume, Certifications and licenses, Work history and ratings, Skills and specialties, References. File will be downloaded as PDF.', 'success');
+            LocumUtils.showToast('Exporting professional profile... Includes: Comprehensive resume, Certifications and licenses, Work history and ratings, Skills and specialties, References. File will be downloaded as PDF.', 'success');
         }
 
         function filterContracts(filter) {
@@ -5156,15 +5136,15 @@ American Board of Internal Medicine</textarea>
             buttons.forEach(btn => btn.classList.remove('primary'));
             event.target.classList.add('primary');
             
-            showToast(`Filtering contracts: ${filter}. Showing ${filter} contracts only.`, 'info');
+            LocumUtils.showToast(`Filtering contracts: ${filter}. Showing ${filter} contracts only.`, 'info');
         }
 
         function analyzeContracts() {
-            showToast('Analyzing all contracts... Analysis includes: Total earnings comparison, Rate trends over time, Best performing contracts, Market rate analysis, Recommendations for improvement', 'info');
+            LocumUtils.showToast('Analyzing all contracts... Analysis includes: Total earnings comparison, Rate trends over time, Best performing contracts, Market rate analysis, Recommendations for improvement', 'info');
         }
 
         function viewContract(contractId) {
-            showToast(`Viewing contract details ${contractId}... Details include: Complete contract terms, Payment schedule, Housing and benefits, Performance ratings, Extension options, Contact information`, 'info');
+            LocumUtils.showToast(`Viewing contract details ${contractId}... Details include: Complete contract terms, Payment schedule, Housing and benefits, Performance ratings, Extension options, Contact information`, 'info');
         }
 
         function calculateEarnings(contractId) {
@@ -5182,19 +5162,19 @@ American Board of Internal Medicine</textarea>
         }
 
         function extendContract(contractId) {
-            showToast(`Requesting contract extension for Contract ${contractId}... Next steps: Contact recruiter, Negotiate terms, Confirm availability, Submit extension request`, 'info');
+            LocumUtils.showToast(`Requesting contract extension for Contract ${contractId}... Next steps: Contact recruiter, Negotiate terms, Confirm availability, Submit extension request`, 'info');
         }
 
         function prepareContract(contractId) {
-            showToast(`Preparing for upcoming contract ${contractId}... Preparation checklist: Verify credentials, Arrange housing, Plan travel, Review orientation materials, Complete pre-arrival requirements`, 'info');
+            LocumUtils.showToast(`Preparing for upcoming contract ${contractId}... Preparation checklist: Verify credentials, Arrange housing, Plan travel, Review orientation materials, Complete pre-arrival requirements`, 'info');
         }
 
         function downloadContract(contractId) {
-            showToast(`Downloading contract ${contractId} documents... Documents include: Signed contract, Pay statements, Performance reviews, Reference letters, Tax documents`, 'success');
+            LocumUtils.showToast(`Downloading contract ${contractId} documents... Documents include: Signed contract, Pay statements, Performance reviews, Reference letters, Tax documents`, 'success');
         }
 
         function renewContract(contractId) {
-            showToast(`Initiating contract renewal for Contract ${contractId}... Renewal process: Express interest to recruiter, Review updated terms, Negotiate improvements, Confirm dates and rates`, 'info');
+            LocumUtils.showToast(`Initiating contract renewal for Contract ${contractId}... Renewal process: Express interest to recruiter, Review updated terms, Negotiate improvements, Confirm dates and rates`, 'info');
         }
 
         function downloadAssignmentDocuments(assignmentId) {
@@ -5213,7 +5193,7 @@ American Board of Internal Medicine</textarea>
                 'Policy Handbook'
             ];
             
-            showToast(`Downloading assignment documents package for Assignment ${assignmentId}`, 'info');
+            LocumUtils.showToast(`Downloading assignment documents package for Assignment ${assignmentId}`, 'info');
             
             // Create a mock download
             setTimeout(() => {
@@ -5228,7 +5208,7 @@ American Board of Internal Medicine</textarea>
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                showToast('Assignment documents downloaded successfully', 'success');
+                LocumUtils.showToast('Assignment documents downloaded successfully', 'success');
                 announceToScreenReader(`Assignment ${assignmentId} documents downloaded`);
             }, 1000);
         }
@@ -5241,11 +5221,11 @@ American Board of Internal Medicine</textarea>
             };
             
             const calc = calculations[calcId];
-            showToast(`Viewing saved calculation ${calcId}: Type: ${calc.type} Analysis, Details: ${calc.rate || calc.weekly}, Total: ${calc.total || calc.monthly}`, 'info');
+            LocumUtils.showToast(`Viewing saved calculation ${calcId}: Type: ${calc.type} Analysis, Details: ${calc.rate || calc.weekly}, Total: ${calc.total || calc.monthly}`, 'info');
         }
 
         function useCalculation(calcId) {
-            showToast(`Loading calculation ${calcId} into calculator... Redirecting to calculator with pre-filled data.`, 'info');
+            LocumUtils.showToast(`Loading calculation ${calcId} into calculator... Redirecting to calculator with pre-filled data.`, 'info');
             
             // Simulate loading calculation data
             setTimeout(() => {
@@ -5258,11 +5238,11 @@ American Board of Internal Medicine</textarea>
         }
 
         function exportCalculations() {
-            showToast('Exporting all saved calculations... Export includes: Contract analyses, Paycheck calculations, Comparison data, Performance metrics. File will be downloaded as Excel spreadsheet.', 'success');
+            LocumUtils.showToast('Exporting all saved calculations... Export includes: Contract analyses, Paycheck calculations, Comparison data, Performance metrics. File will be downloaded as Excel spreadsheet.', 'success');
         }
 
         function compareCalculations() {
-            showToast('Opening calculation comparison tool... Compare: Multiple contract offers, Rate analysis, Total compensation, True hourly rates, Benefits comparison', 'info');
+            LocumUtils.showToast('Opening calculation comparison tool... Compare: Multiple contract offers, Rate analysis, Total compensation, True hourly rates, Benefits comparison', 'info');
         }
 
         // Initialize dashboard
@@ -5273,7 +5253,7 @@ American Board of Internal Medicine</textarea>
             const errorMessage = error.message || 'An unexpected error occurred';
             const userMessage = getUserFriendlyErrorMessage(errorMessage, context);
             
-            showToast(userMessage, 'error');
+            LocumUtils.showToast(userMessage, 'error');
             announceToScreenReader(`Error: ${userMessage}`);
             
             // Log error for monitoring
@@ -5360,7 +5340,7 @@ American Board of Internal Medicine</textarea>
         }
 
         function showFieldError(message) {
-            showToast(message, 'error');
+            LocumUtils.showToast(message, 'error');
             announceToScreenReader(`Validation error: ${message}`);
         }
 
