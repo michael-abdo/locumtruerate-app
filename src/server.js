@@ -53,7 +53,8 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
     version: API_VERSION,
     endpoints: {
       health: '/health',
-      auth: `/api/${API_VERSION}/auth`
+      auth: `/api/${API_VERSION}/auth`,
+      jobs: `/api/${API_VERSION}/jobs`
     }
   });
 });
@@ -76,6 +77,10 @@ if (process.env.NODE_ENV === 'development') {
 // Authentication routes
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+
+// Jobs routes
+const jobsRoutes = require('./routes/jobs');
+app.use('/api/v1/jobs', jobsRoutes);
 
 // 404 handler
 app.use((req, res) => {
