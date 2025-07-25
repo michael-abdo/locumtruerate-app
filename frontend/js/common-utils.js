@@ -307,6 +307,273 @@ window.LocumUtils = window.LocumUtils || {};
         }
     }
 
+    /**
+     * Dashboard API Utilities
+     * Centralized API functions for all dashboard operations
+     */
+    
+    /**
+     * Get authentication headers
+     * @returns {Object} Headers with authorization token
+     */
+    function getAuthHeaders() {
+        const token = localStorage('authToken');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+        };
+    }
+
+    /**
+     * Handle API errors consistently
+     * @param {Response} response - Fetch response object
+     * @returns {Promise} Rejected promise with error details
+     */
+    async function handleApiError(response) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        let errorType = 'api_error';
+        
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+            errorType = errorData.error || errorType;
+        } catch (e) {
+            // Response wasn't JSON
+        }
+        
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        error.type = errorType;
+        throw error;
+    }
+
+    /**
+     * Load dashboard data with error handling
+     * @param {string} endpoint - API endpoint
+     * @param {Object} options - Additional options
+     * @returns {Promise} API response data
+     */
+    async function loadDashboardData(endpoint, options = {}) {
+        try {
+            const response = await fetch(endpoint, {
+                headers: getAuthHeaders(),
+                ...options
+            });
+            
+            if (!response.ok) {
+                await handleApiError(response);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error(`Failed to load data from ${endpoint}:`, error);
+            showToast(error.message || 'Failed to load data', 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Submit form data to API
+     * @param {string} endpoint - API endpoint
+     * @param {Object} data - Form data to submit
+     * @param {string} method - HTTP method (POST, PUT, PATCH)
+     * @returns {Promise} API response data
+     */
+    async function submitFormData(endpoint, data, method = 'POST') {
+        try {
+            const response = await fetch(endpoint, {
+                method: method,
+                headers: getAuthHeaders(),
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                await handleApiError(response);
+            }
+            
+            const result = await response.json();
+            showToast(result.message || 'Operation successful', 'success');
+            return result;
+        } catch (error) {
+            console.error(`Failed to submit data to ${endpoint}:`, error);
+            showToast(error.message || 'Failed to submit data', 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Delete resource from API
+     * @param {string} endpoint - API endpoint
+     * @param {string} confirmMessage - Optional confirmation message
+     * @returns {Promise} API response data
+     */
+    async function deleteResource(endpoint, confirmMessage = null) {
+        try {
+            // Note: Per CLAUDE.md, we never use confirm()
+            // If confirmation is needed, it should be handled by the UI
+            
+            const response = await fetch(endpoint, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+            
+            if (!response.ok) {
+                await handleApiError(response);
+            }
+            
+            const result = await response.json();
+            showToast(result.message || 'Deleted successfully', 'success');
+            return result;
+        } catch (error) {
+            console.error(`Failed to delete resource at ${endpoint}:`, error);
+            showToast(error.message || 'Failed to delete', 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Load paginated data
+     * @param {string} endpoint - API endpoint
+     * @param {Object} params - Query parameters
+     * @returns {Promise} Paginated response
+     */
+    async function loadPaginatedData(endpoint, params = {}) {
+        const queryParams = new URLSearchParams(params);
+        const url = `${endpoint}?${queryParams}`;
+        
+        return loadDashboardData(url);
+    }
+
+    /**
+     * Search/filter data
+     * @param {string} endpoint - API endpoint
+     * @param {Object} filters - Filter parameters
+     * @returns {Promise} Filtered results
+     */
+    async function searchData(endpoint, filters = {}) {
+        // Remove empty filters
+        const activeFilters = Object.entries(filters)
+            .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+        
+        return loadPaginatedData(endpoint, activeFilters);
+    }
+
+    /**
+     * Export data in various formats
+     * @param {string} endpoint - API endpoint
+     * @param {string} format - Export format (csv, json, pdf)
+     * @param {Object} params - Additional parameters
+     */
+    async function exportData(endpoint, format = 'csv', params = {}) {
+        try {
+            const queryParams = new URLSearchParams({ ...params, format });
+            const url = `${endpoint}?${queryParams}`;
+            
+            const response = await fetch(url, {
+                headers: getAuthHeaders()
+            });
+            
+            if (!response.ok) {
+                await handleApiError(response);
+            }
+            
+            // Handle different response types
+            if (format === 'json') {
+                return await response.json();
+            } else {
+                // For CSV/PDF, trigger download
+                const blob = await response.blob();
+                const downloadUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `export-${Date.now()}.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(downloadUrl);
+                
+                showToast('Export downloaded successfully', 'success');
+            }
+        } catch (error) {
+            console.error(`Failed to export data:`, error);
+            showToast(error.message || 'Failed to export data', 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Initialize dashboard with common functionality
+     * @param {Object} config - Dashboard configuration
+     */
+    function initializeDashboard(config = {}) {
+        const {
+            loadInitialData = true,
+            setupEventListeners = true,
+            dataEndpoint = null,
+            refreshInterval = null
+        } = config;
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load initial data if endpoint provided
+            if (loadInitialData && dataEndpoint) {
+                try {
+                    const data = await loadDashboardData(dataEndpoint);
+                    if (config.onDataLoaded) {
+                        config.onDataLoaded(data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load initial dashboard data:', error);
+                }
+            }
+            
+            // Setup common event listeners
+            if (setupEventListeners) {
+                // Logout handler
+                const logoutBtn = document.querySelector('[data-action="logout"]');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try {
+                            await apiRequest('/api/v1/auth/logout', { method: 'POST' });
+                            localStorage('authToken', null);
+                            window.location.href = '/login.html';
+                        } catch (error) {
+                            console.error('Logout failed:', error);
+                        }
+                    });
+                }
+                
+                // Search form handler
+                const searchForm = document.querySelector('[data-role="search-form"]');
+                if (searchForm) {
+                    searchForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(searchForm);
+                        const filters = Object.fromEntries(formData);
+                        if (config.onSearch) {
+                            config.onSearch(filters);
+                        }
+                    });
+                }
+            }
+            
+            // Setup auto-refresh if configured
+            if (refreshInterval && dataEndpoint) {
+                setInterval(async () => {
+                    try {
+                        const data = await loadDashboardData(dataEndpoint);
+                        if (config.onDataLoaded) {
+                            config.onDataLoaded(data);
+                        }
+                    } catch (error) {
+                        console.error('Auto-refresh failed:', error);
+                    }
+                }, refreshInterval);
+            }
+        });
+    }
+
     // Export functions to global namespace
     window.LocumUtils = {
         showToast,
@@ -318,7 +585,17 @@ window.LocumUtils = window.LocumUtils || {};
         debounce,
         apiRequest,
         localStorage,
-        toggleVisibility
+        toggleVisibility,
+        // API utilities
+        getAuthHeaders,
+        handleApiError,
+        loadDashboardData,
+        submitFormData,
+        deleteResource,
+        loadPaginatedData,
+        searchData,
+        exportData,
+        initializeDashboard
     };
 
 })();

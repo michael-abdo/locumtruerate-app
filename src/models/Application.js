@@ -196,23 +196,10 @@ class Application {
       valueIndex++;
     }
 
-    const whereClause = `WHERE ${conditions.join(' AND ')}`;
+    const whereClause = buildWhereClause(conditions);
 
-    // Count total items
-    const countQuery = `
-      SELECT COUNT(*) 
-      FROM applications a 
-      ${whereClause}
-    `;
-    const countResult = await pool.query(countQuery, values);
-    const totalItems = parseInt(countResult.rows[0].count);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(totalItems / limit);
-    const offset = (page - 1) * limit;
-
-    // Get applications with user details
-    const applicationsQuery = `
+    // Base query for applications with user details
+    const baseQuery = `
       SELECT 
         a.*,
         u.email as applicant_email,
@@ -225,23 +212,29 @@ class Application {
       INNER JOIN users u ON a.user_id = u.id
       LEFT JOIN profiles p ON u.id = p.user_id
       ${whereClause}
-      ORDER BY a.${sortBy} ${sortOrder}
-      LIMIT $${valueIndex} OFFSET $${valueIndex + 1}
     `;
 
-    values.push(limit, offset);
-    const applicationsResult = await pool.query(applicationsQuery, values);
+    // Count query
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM applications a 
+      ${whereClause}
+    `;
+
+    // Valid sort fields
+    const validSortFields = ['created_at', 'status', 'expected_rate', 'reviewed_at'];
+
+    // Execute paginated query
+    const result = await executePaginatedQuery(
+      baseQuery,
+      countQuery,
+      values,
+      { page, limit, sortBy, sortOrder, validSortFields }
+    );
 
     return {
-      applications: applicationsResult.rows.map(row => this.formatApplicationForRecruiter(row)),
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+      applications: result.items.map(row => this.formatApplicationForRecruiter(row)),
+      pagination: result.pagination
     };
   }
 
@@ -291,11 +284,7 @@ class Application {
       throw new Error('Invalid status value');
     }
 
-    const client = await pool.connect();
-
-    try {
-      await client.query('BEGIN');
-
+    return executeTransaction(async (client) => {
       // Get application and verify permissions
       const appQuery = `
         SELECT a.*, j.posted_by 
@@ -332,16 +321,8 @@ class Application {
       const updateResult = await client.query(updateQuery, [newStatus, recruiterId, notes, id]);
       const updatedApplication = updateResult.rows[0];
 
-      await client.query('COMMIT');
-
       return this.formatApplication(updatedApplication);
-
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
 
   /**

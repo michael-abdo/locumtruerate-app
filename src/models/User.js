@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const config = require('../config/config');
 const { pool } = require('../db/connection');
+const { executeTransaction } = require('../utils/database');
 
 class User {
   /**
@@ -21,11 +22,7 @@ class User {
     const passwordHash = await this.hashPassword(password);
     
     // Use transaction to create user and profile
-    const client = await pool.connect();
-    
-    try {
-      await client.query('BEGIN');
-      
+    return executeTransaction(async (client) => {
       // Create user
       const userQuery = `
         INSERT INTO users (email, password_hash, role)
@@ -46,8 +43,6 @@ class User {
       const profileResult = await client.query(profileQuery, profileValues);
       const profile = profileResult.rows[0];
       
-      await client.query('COMMIT');
-      
       // Return combined user and profile data
       return {
         id: user.id,
@@ -58,16 +53,12 @@ class User {
         phone: profile.phone,
         created_at: user.created_at
       };
-      
-    } catch (error) {
-      await client.query('ROLLBACK');
+    }).catch(error => {
       if (error.code === '23505') { // Unique violation
         throw new Error('Email already exists');
       }
       throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
   
   /**
