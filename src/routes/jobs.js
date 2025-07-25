@@ -1,6 +1,7 @@
 const express = require('express');
 const Job = require('../models/Job');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
+const { validateJobId } = require('../middleware/params');
 const config = require('../config/config');
 const { jobSchemas, validateWithSchema } = require('../validation/schemas');
 
@@ -43,13 +44,9 @@ router.get('/', async (req, res) => {
  * GET /api/jobs/:id
  * Get single job by ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateJobId(), async (req, res) => {
   try {
-    const jobId = parseInt(req.params.id);
-    
-    if (isNaN(jobId)) {
-      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
-    }
+    const jobId = req.params.id; // Already validated and converted by middleware
     
     config.logger.info(`Job detail request for ID: ${jobId}`, 'JOB_DETAIL');
     
@@ -113,13 +110,9 @@ router.post('/', requireAuth, async (req, res) => {
  * PUT /api/jobs/:id
  * Update job posting (requires authentication and ownership)
  */
-router.put('/:id', requireAuth, async (req, res) => {
+router.put('/:id', validateJobId(), requireAuth, async (req, res) => {
   try {
-    const jobId = parseInt(req.params.id);
-    
-    if (isNaN(jobId)) {
-      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
-    }
+    const jobId = req.params.id; // Already validated and converted by middleware
     
     config.logger.info(`Job update attempt for ID: ${jobId} by user: ${req.user.id}`, 'JOB_UPDATE');
     
@@ -170,13 +163,9 @@ router.put('/:id', requireAuth, async (req, res) => {
  * DELETE /api/jobs/:id
  * Delete job posting (requires authentication and ownership)
  */
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', validateJobId(), requireAuth, async (req, res) => {
   try {
-    const jobId = parseInt(req.params.id);
-    
-    if (isNaN(jobId)) {
-      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
-    }
+    const jobId = req.params.id; // Already validated and converted by middleware
     
     config.logger.info(`Job deletion attempt for ID: ${jobId} by user: ${req.user.id}`, 'JOB_DELETE');
     

@@ -1,6 +1,7 @@
 const express = require('express');
 const Application = require('../models/Application');
 const { requireAuth, createErrorResponse } = require('../middleware/auth');
+const { validateApplicationId, validateJobIdParam } = require('../middleware/params');
 const { metricsInstance } = require('../middleware/metrics');
 const config = require('../config/config');
 const { applicationSchemas, validateWithSchema } = require('../validation/schemas');
@@ -110,13 +111,9 @@ router.get('/my', requireAuth, async (req, res) => {
  * GET /api/jobs/:jobId/applications
  * Get applications for a specific job (for job poster/recruiter)
  */
-router.get('/for-job/:jobId', requireAuth, async (req, res) => {
+router.get('/for-job/:jobId', validateJobIdParam(), requireAuth, async (req, res) => {
   try {
-    const jobId = parseInt(req.params.jobId);
-    
-    if (isNaN(jobId)) {
-      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
-    }
+    const jobId = req.params.jobId; // Already validated and converted by middleware
     
     config.logger.info(`Job applications request for job: ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS');
     
@@ -162,13 +159,9 @@ router.get('/for-job/:jobId', requireAuth, async (req, res) => {
  * PUT /api/applications/:id/status
  * Update application status (for recruiters)
  */
-router.put('/:id/status', requireAuth, async (req, res) => {
+router.put('/:id/status', validateApplicationId(), requireAuth, async (req, res) => {
   try {
-    const applicationId = parseInt(req.params.id);
-    
-    if (isNaN(applicationId)) {
-      return createErrorResponse(res, 400, 'Invalid application ID', 'invalid_application_id');
-    }
+    const applicationId = req.params.id; // Already validated and converted by middleware
     
     config.logger.info(`Application status update attempt for ID: ${applicationId} by user: ${req.user.id}`, 'APPLICATION_STATUS_UPDATE');
     
@@ -268,13 +261,9 @@ router.get('/search', requireAuth, async (req, res) => {
  * GET /api/applications/for-job/:jobId/search
  * Advanced search and filter applications for a specific job (for recruiters)
  */
-router.get('/for-job/:jobId/search', requireAuth, async (req, res) => {
+router.get('/for-job/:jobId/search', validateJobIdParam(), requireAuth, async (req, res) => {
   try {
-    const jobId = parseInt(req.params.jobId);
-    
-    if (isNaN(jobId)) {
-      return createErrorResponse(res, 400, 'Invalid job ID', 'invalid_job_id');
-    }
+    const jobId = req.params.jobId; // Already validated and converted by middleware
     
     config.logger.info(`Job application search request for job: ${jobId} by user: ${req.user.id}`, 'JOB_APPLICATIONS_SEARCH');
     
@@ -354,13 +343,9 @@ router.get('/filter-options', requireAuth, async (req, res) => {
  * DELETE /api/applications/:id
  * Withdraw application (for applicants)
  */
-router.delete('/:id', requireAuth, async (req, res) => {
+router.delete('/:id', validateApplicationId(), requireAuth, async (req, res) => {
   try {
-    const applicationId = parseInt(req.params.id);
-    
-    if (isNaN(applicationId)) {
-      return createErrorResponse(res, 400, 'Invalid application ID', 'invalid_application_id');
-    }
+    const applicationId = req.params.id; // Already validated and converted by middleware
     
     config.logger.info(`Application withdrawal attempt for ID: ${applicationId} by user: ${req.user.id}`, 'APPLICATION_WITHDRAW');
     
