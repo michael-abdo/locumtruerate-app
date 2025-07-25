@@ -18,14 +18,17 @@ This document breaks down the 8-week lean API implementation into atomic, action
 7. ✅ Day 2: Migration system implemented
 8. ✅ Day 3: Authentication dependencies installed (complete)
 9. ✅ **Day 4**: Complete authentication endpoints implemented
-10. ✅ **NEW**: User Model with full CRUD operations + profiles support
-11. ✅ **NEW**: JWT Authentication middleware implemented
-12. ✅ **NEW**: Comprehensive DRY refactoring completed
-13. ✅ **NEW**: Enterprise-grade test framework implemented
-14. ✅ **NEW**: Professional directory structure reorganized
-15. ✅ **NEW**: Security testing with 100% pass rate
-16. ✅ **NEW**: Performance testing infrastructure
-17. ✅ **NEW**: Complete authentication system with registration, login, logout
+10. ✅ **Day 5**: Error handling and environment configuration
+11. ✅ **Day 6**: Jobs Model & all job endpoints (CRUD operations)
+12. ✅ **NEW**: User Model with full CRUD operations + profiles support
+13. ✅ **NEW**: JWT Authentication middleware implemented
+14. ✅ **NEW**: Comprehensive DRY refactoring completed
+15. ✅ **NEW**: Enterprise-grade test framework implemented
+16. ✅ **NEW**: Professional directory structure reorganized
+17. ✅ **NEW**: Security testing with 100% pass rate
+18. ✅ **NEW**: Performance testing infrastructure
+19. ✅ **NEW**: Complete authentication system with registration, login, logout
+20. ✅ **NEW**: Jobs API with advanced filtering, pagination, and authorization
 
 **Latest Updates (Post-Original Plan):**
 - **Directory Reorganization**: Clean, GitHub-ready structure with `/frontend/`, `/docs/`, `/tests/demos/`
@@ -37,6 +40,8 @@ This document breaks down the 8-week lean API implementation into atomic, action
 - **Security Headers**: Helmet configured with proper CORS and CSP policies
 - **Professional Documentation**: All documentation organized in `/docs/` directory
 - **Contextual Logging**: Beautiful enterprise-grade logging with timestamps and context labels
+- **Jobs API Complete**: Full CRUD operations with advanced filtering, pagination, sorting, and authorization
+- **Enhanced Job Schema**: Includes date ranges, min/max rates, requirements array, view tracking
 
 **Notes:**
 - Using port 4000 instead of 3000
@@ -331,54 +336,70 @@ This document breaks down the 8-week lean API implementation into atomic, action
 
 ## Week 3-4: Core Features
 
-### Day 6: Jobs Model & Endpoints
-**Task 6.1: Jobs Model**
-- [ ] Create `src/models/Job.js` with methods:
-  - [ ] `create(jobData)` - insert new job
-  - [ ] `findAll(filters, pagination)` - get jobs with filters
-  - [ ] `findById(id)` - get single job
-  - [ ] `update(id, jobData)` - update job
-  - [ ] `delete(id)` - soft delete job (set status='deleted')
-- [ ] Test each method manually
+### Day 6: Jobs Model & Endpoints ✅ COMPLETED
+**Task 6.1: Jobs Model** ✅ COMPLETED
+- [x] Create `src/models/Job.js` with methods:
+  - [x] `create(jobData)` - insert new job with transaction support
+  - [x] `findAll(filters, pagination)` - get jobs with advanced filtering
+  - [x] `findById(id)` - get single job with view tracking
+  - [x] `update(id, jobData)` - update job with authorization
+  - [x] `delete(id)` - delete job with authorization (hard delete instead of soft delete)
+- [x] Test each method manually
+- [x] **BONUS**: Added requirements support with separate table
+- [x] **BONUS**: Added view count tracking
+- [x] **BONUS**: Enhanced schema with more fields (state, date ranges, rates min/max)
 
-**Task 6.2: Get Jobs Endpoint**
-- [ ] Create `src/routes/jobs.js`
-- [ ] Implement `GET /api/jobs`:
-  - [ ] Accept query params: page, limit, location, specialty, minRate, maxRate
-  - [ ] Default pagination: page=1, limit=10
-  - [ ] Return jobs array with total count and pagination info
-  - [ ] Include job poster info (joined from users table)
-- [ ] Test with various filters:
+**Task 6.2: Get Jobs Endpoint** ✅ COMPLETED
+- [x] Create `src/routes/jobs.js`
+- [x] Implement `GET /api/jobs`:
+  - [x] Accept query params: page, limit, state, specialty, minRate, maxRate, search, sortBy, sortOrder
+  - [x] Default pagination: page=1, limit=20 (updated from 10)
+  - [x] Return jobs array with total count and comprehensive pagination info
+  - [x] Include job poster info (joined from users table with profile)
+- [x] Test with various filters:
   ```bash
-  curl "http://localhost:3000/api/jobs?page=1&limit=5&location=New York&specialty=cardiology"
+  curl "http://localhost:4000/api/v1/jobs?page=1&limit=5&state=NY&specialty=cardiology"
   ```
+- [x] **BONUS**: Added search functionality (title and description)
+- [x] **BONUS**: Added sorting options (created_at, hourly_rate_min, start_date, title)
 
-**Task 6.3: Create Job Endpoint**
-- [ ] Implement `POST /api/jobs`:
-  - [ ] Require authentication (use requireAuth middleware)
-  - [ ] Validate input: title, location, hourlyRate, specialty, description, requirements
-  - [ ] Set posted_by to authenticated user ID
-  - [ ] Return created job with ID
-- [ ] Test job creation:
+**Task 6.3: Create Job Endpoint** ✅ COMPLETED
+- [x] Implement `POST /api/jobs`:
+  - [x] Require authentication (use requireAuth middleware)
+  - [x] Validate input with comprehensive Joi schema
+  - [x] Set posted_by to authenticated user ID
+  - [x] Return created job with ID
+- [x] Test job creation:
   ```bash
-  curl -X POST http://localhost:3000/api/jobs \
+  curl -X POST http://localhost:4000/api/v1/jobs \
     -H "Authorization: Bearer YOUR_TOKEN" \
     -H "Content-Type: application/json" \
-    -d '{"title":"Cardiology Locum","location":"NYC","hourlyRate":150,"specialty":"cardiology","description":"Urgent need","requirements":"Board certified"}'
+    -d '{"title":"Cardiology Locum","location":"NYC","state":"NY","hourlyRateMin":150,"hourlyRateMax":200,"specialty":"cardiology","description":"Urgent need","requirements":["Board certified","5+ years experience"]}'
   ```
+- [x] **BONUS**: Enhanced with date validation and rate range validation
+- [x] **BONUS**: Added support for multiple requirements as array
 
-**Task 6.4: Get Single Job & Update Job**
-- [ ] Implement `GET /api/jobs/:id`:
-  - [ ] Return single job with full details
-  - [ ] Include job poster information
-  - [ ] Return 404 if job not found
-- [ ] Implement `PUT /api/jobs/:id`:
-  - [ ] Require authentication
-  - [ ] Check that user owns the job (posted_by matches user ID)
-  - [ ] Validate input
-  - [ ] Update job
-  - [ ] Return updated job
-- [ ] Test both endpoints
+**Task 6.4: Get Single Job & Update Job** ✅ COMPLETED
+- [x] Implement `GET /api/jobs/:id`:
+  - [x] Return single job with full details including requirements
+  - [x] Include job poster information with name from profile
+  - [x] Return 404 if job not found
+  - [x] Increment view count on each request
+- [x] Implement `PUT /api/jobs/:id`:
+  - [x] Require authentication
+  - [x] Check that user owns the job (posted_by matches user ID)
+  - [x] Validate input with comprehensive schema
+  - [x] Update job with transaction support
+  - [x] Return updated job
+- [x] Test both endpoints
+- [x] **BONUS**: Added DELETE endpoint with authorization
+- [x] **BONUS**: Dynamic field updates (only update provided fields)
+
+**Notes:**
+- Using port 4000 (not 3000 as in examples)
+- API version is v1, so endpoints are `/api/v1/jobs`
+- Enhanced schema includes: state, hourlyRateMin/Max (instead of single rate), date ranges, requirements array
+- All endpoints have comprehensive error handling and logging
 
 ### Day 7: Applications Model & Endpoints
 **Task 7.1: Applications Model**
