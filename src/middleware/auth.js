@@ -5,6 +5,7 @@ const config = require('../config/config');
 // In production, use Redis or database
 // Map format: token -> timestamp when blacklisted
 const tokenBlacklist = new Map();
+const MAX_BLACKLIST_SIZE = 10000; // Maximum number of tokens to store
 
 /**
  * Centralized error response utility
@@ -115,6 +116,22 @@ const requireAuth = async (req, res, next) => {
  * @param {string} token - Token to blacklist
  */
 const blacklistToken = (token) => {
+  // Check if we've reached the size limit
+  if (tokenBlacklist.size >= MAX_BLACKLIST_SIZE) {
+    // Remove oldest tokens (first 10% of the map)
+    const tokensToRemove = Math.floor(MAX_BLACKLIST_SIZE * 0.1);
+    let removed = 0;
+    
+    // Maps maintain insertion order, so oldest tokens are first
+    for (const [oldToken] of tokenBlacklist) {
+      tokenBlacklist.delete(oldToken);
+      removed++;
+      if (removed >= tokensToRemove) break;
+    }
+    
+    config.logger.warn(`Token blacklist size limit reached. Removed ${removed} oldest tokens`, 'AUTH_BLACKLIST');
+  }
+  
   // Store token with current timestamp
   tokenBlacklist.set(token, Date.now());
 };
@@ -145,7 +162,7 @@ const isTokenBlacklisted = (token) => {
 
 // Periodic cleanup of expired tokens to prevent memory buildup
 // Run every hour to clean up expired blacklisted tokens
-setInterval(() => {
+const cleanupIntervalId = setInterval(() => {
   const now = Date.now();
   const expiredTokens = [];
   
@@ -165,11 +182,18 @@ setInterval(() => {
   }
 }, 60 * 60 * 1000); // Run every hour
 
+// Cleanup function to stop the interval
+const cleanup = () => {
+  clearInterval(cleanupIntervalId);
+  tokenBlacklist.clear();
+};
+
 module.exports = {
   generateToken,
   verifyToken,
   requireAuth,
   blacklistToken,
   isTokenBlacklisted,
-  createErrorResponse
+  createErrorResponse,
+  cleanup
 };

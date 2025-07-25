@@ -2,8 +2,8 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const config = require('./config/config');
-const { testConnection } = require('./db/connection');
-const { createErrorResponse } = require('./middleware/auth');
+const { testConnection, closePool } = require('./db/connection');
+const { createErrorResponse, cleanup: cleanupAuth } = require('./middleware/auth');
 
 // Create Express app
 const app = express();
@@ -53,10 +53,7 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
     version: API_VERSION,
     endpoints: {
       health: '/health',
-      auth: `/api/${API_VERSION}/auth`,
-      users: `/api/${API_VERSION}/users`,
-      jobs: `/api/${API_VERSION}/jobs`,
-      applications: `/api/${API_VERSION}/applications`
+      auth: `/api/${API_VERSION}/auth`
     }
   });
 });
@@ -123,16 +120,32 @@ const startServer = async () => {
   }
 };
 
-// Handle graceful shutdown
-process.on('SIGTERM', async () => {
-  config.logger.info('SIGTERM received, shutting down gracefully...', 'SERVER_SHUTDOWN');
+// Graceful shutdown function
+const gracefulShutdown = async (signal) => {
+  config.logger.info(`${signal} received, shutting down gracefully...`, 'SERVER_SHUTDOWN');
+  
+  try {
+    // Close database connections
+    await closePool();
+    config.logger.info('Database pool closed', 'SERVER_SHUTDOWN');
+  } catch (error) {
+    config.logger.error('Error closing database pool', error, 'SERVER_SHUTDOWN');
+  }
+  
+  try {
+    // Cleanup auth module (clear intervals, etc.)
+    cleanupAuth();
+    config.logger.info('Auth module cleaned up', 'SERVER_SHUTDOWN');
+  } catch (error) {
+    config.logger.error('Error cleaning up auth module', error, 'SERVER_SHUTDOWN');
+  }
+  
   process.exit(0);
-});
+};
 
-process.on('SIGINT', async () => {
-  config.logger.info('SIGINT received, shutting down gracefully...', 'SERVER_SHUTDOWN');
-  process.exit(0);
-});
+// Handle graceful shutdown
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Global error handlers to prevent crashes
 process.on('unhandledRejection', (reason, promise) => {
@@ -141,10 +154,19 @@ process.on('unhandledRejection', (reason, promise) => {
   // Don't exit process, just log the error to prevent crashes
 });
 
+// Store timeout ID for cleanup if needed
+let uncaughtExceptionTimeout = null;
+
 process.on('uncaughtException', (error) => {
   config.logger.error('Uncaught Exception', error, 'GLOBAL_ERROR');
   // Log error but don't exit immediately to allow graceful cleanup
-  setTimeout(() => {
+  
+  // Clear any existing timeout
+  if (uncaughtExceptionTimeout) {
+    clearTimeout(uncaughtExceptionTimeout);
+  }
+  
+  uncaughtExceptionTimeout = setTimeout(() => {
     config.logger.error('Exiting due to uncaught exception', null, 'GLOBAL_ERROR');
     process.exit(1);
   }, 1000);
