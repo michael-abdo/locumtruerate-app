@@ -160,6 +160,10 @@ app.use(`/api/${API_VERSION}/data-export`, dataExportRoutes);
 const calculateRoutes = require('./routes/calculate');
 app.use(`/api/${API_VERSION}/calculate`, calculateRoutes);
 
+// Migration routes (for database initialization)
+const migrateRoutes = require('./routes/migrate');
+app.use(`/api/${API_VERSION}/migrate`, migrateRoutes);
+
 // 404 handler
 app.use((req, res) => {
   return createErrorResponse(res, 404, `The requested resource ${req.path} was not found`, 'not_found');
