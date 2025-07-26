@@ -8,7 +8,9 @@ const dbConfig = {
   database: config.database.name,
   user: config.database.user,
   password: config.database.password,
-  ...config.database.pool
+  ...config.database.pool,
+  // Include SSL configuration if present (for Heroku)
+  ...(config.database.ssl && { ssl: config.database.ssl })
 };
 
 // Create pool instance
