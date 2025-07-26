@@ -71,7 +71,8 @@ router.post('/register', async (req, res) => {
     }
     
     // Handle unexpected errors
-    config.logger.error('Registration error', error, 'AUTH_REGISTER');
+    config.logger.error(`Registration error: ${error.message}`, error, 'AUTH_REGISTER');
+    config.logger.error(`Registration error stack: ${error.stack}`, error, 'AUTH_REGISTER');
     return createErrorResponse(res, 500, 'Internal server error during registration', 'registration_failed');
   }
 });
@@ -128,7 +129,8 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (error) {
-    config.logger.error('Login error', error, 'AUTH_LOGIN');
+    config.logger.error(`Login error: ${error.message}`, error, 'AUTH_LOGIN');
+    config.logger.error(`Login error stack: ${error.stack}`, error, 'AUTH_LOGIN');
     return createErrorResponse(res, 500, 'Internal server error during login', 'login_failed');
   }
 });

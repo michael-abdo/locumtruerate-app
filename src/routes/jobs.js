@@ -63,7 +63,8 @@ router.get('/:id', validateJobId(), async (req, res) => {
     });
 
   } catch (error) {
-    config.logger.error('Job detail error', error, 'JOB_DETAIL');
+    config.logger.error(`Job detail error for ID ${req.params.id}: ${error.message}`, error, 'JOB_DETAIL');
+    config.logger.error(`Job detail error stack: ${error.stack}`, error, 'JOB_DETAIL');
     return createErrorResponse(res, 500, 'Internal server error while fetching job', 'job_detail_failed');
   }
 });

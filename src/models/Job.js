@@ -207,39 +207,56 @@ class Job {
    * @returns {Promise<Object|null>} Job object or null
    */
   static async findById(id) {
-    const jobQuery = `
-      SELECT j.*, u.email as posted_by_email,
-             p.first_name as posted_by_first_name,
-             p.last_name as posted_by_last_name
-      FROM jobs j
-      LEFT JOIN users u ON j.posted_by = u.id
-      LEFT JOIN profiles p ON u.id = p.user_id
-      WHERE j.id = $1
-    `;
-    
-    const jobResult = await pool.query(jobQuery, [id]);
-    
-    if (jobResult.rows.length === 0) {
-      return null;
+    try {
+      const jobQuery = `
+        SELECT j.*, u.email as posted_by_email,
+               p.first_name as posted_by_first_name,
+               p.last_name as posted_by_last_name
+        FROM jobs j
+        LEFT JOIN users u ON j.posted_by = u.id
+        LEFT JOIN profiles p ON u.id = p.user_id
+        WHERE j.id = $1
+      `;
+      
+      config.logger.info(`Executing job detail query for ID: ${id}`, 'JOB_DETAIL');
+      const jobResult = await pool.query(jobQuery, [id]);
+      
+      if (jobResult.rows.length === 0) {
+        return null;
+      }
+      
+      const job = jobResult.rows[0];
+      
+      // Get requirements
+      const requirementsQuery = `
+        SELECT requirement 
+        FROM job_requirements 
+        WHERE job_id = $1 
+        ORDER BY id
+      `;
+      
+      try {
+        const requirementsResult = await pool.query(requirementsQuery, [id]);
+        job.requirements = requirementsResult.rows.map(r => r.requirement);
+      } catch (reqError) {
+        config.logger.error(`Requirements query failed: ${reqError.message}`, reqError, 'JOB_REQUIREMENTS');
+        job.requirements = []; // Default to empty array if requirements fail
+      }
+      
+      // Increment view count - wrapped in try/catch to prevent failure if column missing
+      try {
+        await pool.query('UPDATE jobs SET views = views + 1 WHERE id = $1', [id]);
+      } catch (viewError) {
+        config.logger.warn(`Failed to increment view count: ${viewError.message}`, 'JOB_VIEWS');
+        // Continue without failing - views are not critical
+      }
+      
+      return this.formatJob(job);
+    } catch (error) {
+      config.logger.error(`Job.findById failed for ID ${id}: ${error.message}`, error, 'JOB_DETAIL');
+      config.logger.error(`Full error stack: ${error.stack}`, error, 'JOB_DETAIL');
+      throw error;
     }
-    
-    const job = jobResult.rows[0];
-    
-    // Get requirements
-    const requirementsQuery = `
-      SELECT requirement 
-      FROM job_requirements 
-      WHERE job_id = $1 
-      ORDER BY id
-    `;
-    
-    const requirementsResult = await pool.query(requirementsQuery, [id]);
-    job.requirements = requirementsResult.rows.map(r => r.requirement);
-    
-    // Increment view count
-    await pool.query('UPDATE jobs SET views = views + 1 WHERE id = $1', [id]);
-    
-    return this.formatJob(job);
   }
 
   /**

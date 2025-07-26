@@ -214,4 +214,62 @@ router.get('/debug', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/v1/migrate/schema
+ * Get detailed schema information for all tables
+ */
+router.get('/schema', async (req, res) => {
+  try {
+    config.logger.info('Fetching database schema information', 'MIGRATION');
+    
+    // Query to get all columns for our tables
+    const schemaQuery = `
+      SELECT 
+        table_name,
+        column_name,
+        data_type,
+        is_nullable,
+        column_default,
+        character_maximum_length
+      FROM information_schema.columns
+      WHERE table_schema = 'public' 
+        AND table_name IN ('users', 'profiles', 'jobs', 'applications', 'job_requirements')
+      ORDER BY table_name, ordinal_position
+    `;
+    
+    const result = await pool.query(schemaQuery);
+    
+    // Group columns by table
+    const schema = {};
+    result.rows.forEach(row => {
+      if (!schema[row.table_name]) {
+        schema[row.table_name] = [];
+      }
+      schema[row.table_name].push({
+        column: row.column_name,
+        type: row.data_type,
+        nullable: row.is_nullable === 'YES',
+        default: row.column_default,
+        maxLength: row.character_maximum_length
+      });
+    });
+    
+    res.json({
+      success: true,
+      schema,
+      tableCount: Object.keys(schema).length,
+      timestamp: config.utils.timestamp()
+    });
+    
+  } catch (error) {
+    config.logger.error('Schema fetch error', error, 'MIGRATION');
+    res.status(500).json({
+      error: 'schema_fetch_failed',
+      message: 'Failed to fetch schema information',
+      details: error.message,
+      timestamp: config.utils.timestamp()
+    });
+  }
+});
+
 module.exports = router;

@@ -67,17 +67,26 @@ class User {
    * @returns {Promise<Object|null>} User object or null
    */
   static async findByEmail(email) {
-    const query = `
-      SELECT 
-        u.id, u.email, u.password_hash, u.role, u.created_at,
-        p.first_name, p.last_name, p.phone, p.specialty, p.years_experience
-      FROM users u
-      LEFT JOIN profiles p ON u.id = p.user_id
-      WHERE u.email = $1
-    `;
-    
-    const result = await pool.query(query, [email]);
-    return result.rows[0] || null;
+    try {
+      const query = `
+        SELECT 
+          u.id, u.email, u.password_hash, u.role, u.created_at,
+          p.first_name, p.last_name, p.phone, p.specialty, p.years_experience
+        FROM users u
+        LEFT JOIN profiles p ON u.id = p.user_id
+        WHERE u.email = $1
+      `;
+      
+      config.logger.info(`Finding user by email: ${email}`, 'USER_FIND');
+      const result = await pool.query(query, [email]);
+      config.logger.info(`User query returned ${result.rows.length} rows`, 'USER_FIND');
+      
+      return result.rows[0] || null;
+    } catch (error) {
+      config.logger.error(`User.findByEmail failed for ${email}: ${error.message}`, error, 'USER_FIND');
+      config.logger.error(`Full error stack: ${error.stack}`, error, 'USER_FIND');
+      throw error;
+    }
   }
   
   /**
