@@ -13,6 +13,10 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <!-- API Integration -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
     <style>
         /* Using consolidated CSS files */
         /* Page-specific styles below */
@@ -446,6 +450,63 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-top: 1rem;
+        }
+        
+        /* Calculation History Styles */
+        .calculation-history {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--background-secondary);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .history-info {
+            flex: 1;
+        }
+        
+        .history-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .history-details {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .history-actions button {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
         }
 
         .comparison-card {
@@ -924,13 +985,21 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
-                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
+                                <button id="saveContractBtn" class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis</button>
+                                <button id="compareContractsBtn" class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare</button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
                                 <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
                                 <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
                                 <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
                                 <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
+                            </div>
+                            
+                            <!-- Calculation History -->
+                            <div id="calculation-history" class="calculation-history" style="display: none;">
+                                <h3 class="section-title">Calculation History</h3>
+                                <div id="history-list" class="history-list">
+                                    <!-- Saved calculations will appear here -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1079,7 +1148,98 @@
             if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
-        function calculateContract() {
+        // Initialize API client
+        const apiClient = new ApiClient();
+        let calculationDebounceTimer = null;
+        let currentCalculation = null;
+        let calculationHistory = [];
+        
+        // Load calculation history on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCalculationHistory();
+            checkAuthStatus();
+            
+            // Set up real-time calculation with debounce
+            const inputs = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 
+                           'travelReimbursement', 'otherStipends', 'workState', 'contractType'];
+            
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', debouncedCalculate);
+                    element.addEventListener('change', debouncedCalculate);
+                }
+            });
+        });
+        
+        function debouncedCalculate() {
+            // Clear existing timer
+            if (calculationDebounceTimer) {
+                clearTimeout(calculationDebounceTimer);
+            }
+            
+            // Set new timer for 500ms delay
+            calculationDebounceTimer = setTimeout(() => {
+                calculateContract();
+            }, 500);
+        }
+        
+        function checkAuthStatus() {
+            const isLoggedIn = Auth.isLoggedIn();
+            const saveBtn = document.getElementById('saveContractBtn');
+            const compareBtn = document.getElementById('compareContractsBtn');
+            
+            if (isLoggedIn) {
+                const token = Auth.getToken();
+                apiClient.setAuthToken(token);
+                saveBtn.innerHTML = '📁 Save Analysis';
+                compareBtn.innerHTML = '📊 Compare';
+                saveBtn.disabled = false;
+                compareBtn.disabled = calculationHistory.length === 0;
+            } else {
+                saveBtn.innerHTML = '📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span>';
+                compareBtn.innerHTML = '📊 Compare <span style="font-size: 0.8em;">(Login Required)</span>';
+                saveBtn.disabled = false; // Allow click to show login prompt
+                compareBtn.disabled = false;
+            }
+        }
+        
+        function loadCalculationHistory() {
+            const saved = localStorage.getItem('contractCalculationHistory');
+            if (saved) {
+                calculationHistory = JSON.parse(saved);
+                updateHistoryDisplay();
+            }
+        }
+        
+        function updateHistoryDisplay() {
+            const historySection = document.getElementById('calculation-history');
+            const historyList = document.getElementById('history-list');
+            
+            if (calculationHistory.length === 0) {
+                historySection.style.display = 'none';
+                return;
+            }
+            
+            historySection.style.display = 'block';
+            historyList.innerHTML = calculationHistory.map((calc, index) => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-title">${calc.title || 'Contract Calculation'}</div>
+                        <div class="history-details">
+                            $${calc.hourlyRate}/hr • ${calc.hoursPerWeek} hrs/wk • ${calc.state || 'N/A'} • 
+                            Saved: ${new Date(calc.savedAt).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn-secondary btn-sm" onclick="loadCalculation(${index})">Load</button>
+                        <button class="btn-secondary btn-sm" onclick="deleteCalculation(${index})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function calculateContract() {
             console.log('🔄 calculateContract() called');
             console.log('🔍 Checking if DOM is ready...');
             
@@ -1094,11 +1254,8 @@
             }
             
             console.log('✅ All input elements found');
-            console.log('🔄 Calculating contract (simplified gross only)...');
             
-            // Get input values - simplified fields only
-            console.log('📊 Getting input values...');
-            
+            // Get input values
             const getInputValue = (id, defaultValue = 0) => {
                 const elem = document.getElementById(id);
                 if (!elem) {
@@ -1106,7 +1263,6 @@
                     return defaultValue;
                 }
                 const value = parseFloat(elem.value) || defaultValue;
-                console.log(`🔹 ${id}: ${value}`);
                 return value;
             };
             
@@ -1116,9 +1272,16 @@
             const housingStipend = getInputValue('housingStipend');
             const travelReimbursement = getInputValue('travelReimbursement');
             const otherStipends = getInputValue('otherStipends');
+            const workState = document.getElementById('workState')?.value || 'CA';
             
-            // Log input values for debugging
-            console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
+            // Prepare data for API call
+            const contractData = {
+                hourlyRate: hourlyRate,
+                hoursPerWeek: hoursPerWeek,
+                weeksPerYear: contractWeeks, // API expects weeksPerYear
+                state: workState,
+                expenseRate: 0.15 // Default 15% business expenses
+            };
             
             // Validation with visible error messages
             let hasErrors = false;
@@ -1155,7 +1318,84 @@
                 if (typeof showNotification === 'function' && validationErrors.length > 0) {
                     showNotification(`❌ ${validationErrors[0]}`, 'error');
                 }
+                return; // Stop if validation errors
             }
+            
+            // Check if we have valid inputs for API call
+            if (hourlyRate > 0 && hoursPerWeek > 0 && contractWeeks > 0) {
+                console.log('🌐 Making API call with data:', contractData);
+                
+                try {
+                    // Make API call
+                    const apiResult = await apiClient.calculateContract(contractData);
+                    console.log('✅ API response received:', apiResult);
+                    
+                    // Store the full calculation result
+                    currentCalculation = {
+                        ...contractData,
+                        apiResult: apiResult,
+                        housingStipend: housingStipend,
+                        travelReimbursement: travelReimbursement,
+                        otherStipends: otherStipends,
+                        calculatedAt: new Date().toISOString()
+                    };
+                    
+                    // Use API results for display
+                    displayApiResults(apiResult, contractData, housingStipend, travelReimbursement, otherStipends, contractWeeks);
+                    
+                } catch (error) {
+                    console.error('❌ API call failed:', error);
+                    // Fall back to local calculation
+                    performLocalCalculation(hourlyRate, hoursPerWeek, contractWeeks, housingStipend, travelReimbursement, otherStipends);
+                }
+            } else {
+                // Use local calculation for invalid inputs
+                performLocalCalculation(hourlyRate, hoursPerWeek, contractWeeks, housingStipend, travelReimbursement, otherStipends);
+            }
+        }
+        
+        function displayApiResults(apiResult, contractData, housingStipend, travelReimbursement, otherStipends, contractWeeks) {
+            // Calculate base values
+            const weeklyPay = contractData.hourlyRate * contractData.hoursPerWeek;
+            const totalWeeks = contractWeeks;
+            
+            // Gross calculations
+            const grossFromHours = weeklyPay * totalWeeks;
+            const totalHousingStipend = housingStipend * totalWeeks;
+            const totalGross = grossFromHours + totalHousingStipend + travelReimbursement + otherStipends;
+            
+            // Update display with API results
+            updateElement('weeklyGrossPay', formatCurrency(weeklyPay + housingStipend));
+            updateElement('totalContractValue', formatCurrency(totalGross));
+            updateElement('netContractValue', formatCurrency(apiResult.netAnnual || apiResult.net || totalGross * 0.75));
+            updateElement('netTakeHome', formatCurrency(apiResult.netAnnual || apiResult.net || totalGross * 0.75));
+            updateElement('effectiveTaxRate', formatPercentage(apiResult.effectiveTaxRate || 0.25));
+            updateElement('trueHourlyRate', formatCurrency(apiResult.effectiveHourlyRate || contractData.hourlyRate * 0.75));
+            updateElement('regularPay', formatCurrency(grossFromHours));
+            updateElement('totalHousingStipend', formatCurrency(totalHousingStipend));
+            updateElement('otherStipends', formatCurrency(travelReimbursement + otherStipends));
+            
+            // Update tax breakdown if available
+            if (apiResult.breakdown) {
+                updateElement('federalTax', formatCurrency(apiResult.breakdown.federalTax || 0));
+                updateElement('stateTax', formatCurrency(apiResult.breakdown.stateTax || 0));
+                updateElement('ficaTax', formatCurrency(apiResult.breakdown.fica || 0));
+            }
+            
+            // Update comparison
+            updateElement('yourContractRate', formatCurrency(apiResult.effectiveHourlyRate || contractData.hourlyRate * 0.75));
+            
+            // Annual equivalent
+            const annualEquivalent = (apiResult.effectiveHourlyRate || contractData.hourlyRate * 0.75) * contractData.hoursPerWeek * 52;
+            updateElement('annualEquivalent', formatCurrency(annualEquivalent));
+            
+            console.log('✅ Display updated with API results');
+            hasCalculatedResults = true;
+            updateButtonStates();
+        }
+        
+        function performLocalCalculation(hourlyRate, hoursPerWeek, contractWeeks, housingStipend, travelReimbursement, otherStipends) {
+            console.log('📊 Performing local calculation...');
             
             // Simple gross calculations only
             const weeklyGrossPay = hourlyRate * hoursPerWeek;
@@ -1211,11 +1451,15 @@
             updateButtonStates();
         }
 
-        function saveContract() {
-            // Check for account requirement
-            const isLoggedIn = localStorage.getItem('userToken'); // Simulate login check
-            if (!isLoggedIn) {
-                showGuestLoginModal('save');
+        async function saveContract() {
+            if (!Auth.isLoggedIn()) {
+                LocumUtils.showToast('Please log in to save calculations', 'info');
+                // Could show login modal here if integrated
+                return;
+            }
+            
+            if (!currentCalculation) {
+                LocumUtils.showToast('Please calculate a contract first', 'warning');
                 return;
             }
             
@@ -1225,7 +1469,12 @@
                 LocumUtils.showToast('Saving contract with validation errors', 'warning');
             }
             
+            // Add to history
             const contractData = {
+                ...currentCalculation,
+                contractId: 'CONTRACT-' + Date.now(),
+                title: `${document.getElementById('jobTitle').value} - ${document.getElementById('workState').value}`,
+                savedAt: new Date().toISOString(),
                 timestamp: new Date().toISOString(),
                 jobTitle: document.getElementById('jobTitle').value,
                 hourlyRate: document.getElementById('hourlyRate').value,
@@ -1242,6 +1491,13 @@
             savedContracts = savedContracts.slice(0, 10); // Keep only last 10
             localStorage.setItem('savedContracts', JSON.stringify(savedContracts));
             
+            // Also save to calculation history
+            calculationHistory.unshift(contractData);
+            if (calculationHistory.length > 20) {
+                calculationHistory = calculationHistory.slice(0, 20);
+            }
+            localStorage.setItem('contractCalculationHistory', JSON.stringify(calculationHistory));
+            
             console.log('💾 Contract saved successfully:', contractData);
             
             // Show success notification
@@ -1249,6 +1505,33 @@
             
             // Update comparison cards with new data if available
             updateComparisonCards();
+            updateHistoryDisplay();
+        }
+        
+        function loadCalculation(index) {
+            const calc = calculationHistory[index];
+            if (!calc) return;
+            
+            // Load values into form
+            document.getElementById('hourlyRate').value = calc.hourlyRate || '';
+            document.getElementById('hoursPerWeek').value = calc.hoursPerWeek || '';
+            document.getElementById('contractWeeks').value = calc.weeksPerYear || calc.contractWeeks || '';
+            document.getElementById('housingStipend').value = calc.housingStipend || '';
+            document.getElementById('travelReimbursement').value = calc.travelReimbursement || '';
+            document.getElementById('otherStipends').value = calc.otherStipends || '';
+            document.getElementById('workState').value = calc.state || calc.workState || '';
+            
+            // Recalculate
+            calculateContract();
+            
+            LocumUtils.showToast('Calculation loaded', 'success');
+        }
+        
+        function deleteCalculation(index) {
+            calculationHistory.splice(index, 1);
+            localStorage.setItem('contractCalculationHistory', JSON.stringify(calculationHistory));
+            updateHistoryDisplay();
+            LocumUtils.showToast('Calculation deleted', 'success');
         }
 
         function compareContracts() {
@@ -1900,6 +2183,27 @@ From: LocumTrueRate Contract Calculator`;
                 console.error('PDF export error:', error);
                 showNotification('⚠️ PDF export failed. Please try again or check browser settings.', 'error');
             }
+        }
+        
+        // Helper functions
+        function updateElement(id, value) {
+            const elem = document.getElementById(id);
+            if (elem) {
+                elem.textContent = value;
+            }
+        }
+        
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+        
+        function formatPercentage(value) {
+            return (value * 100).toFixed(1) + '%';
         }
 
         
