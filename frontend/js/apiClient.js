@@ -4,9 +4,29 @@
  */
 
 class ApiClient {
-    constructor(baseUrl = 'http://localhost:4000/api/v1') {
-        this.baseUrl = baseUrl;
+    /**
+     * Get the appropriate API base URL based on environment
+     * @returns {string} API base URL
+     */
+    static getApiBaseUrl() {
+        // Check if we're running on localhost (development)
+        if (window.location.hostname === 'localhost' || 
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname === '0.0.0.0') {
+            return 'http://localhost:4000/api/v1';
+        }
+        
+        // Production/staging - use Heroku API
+        return 'https://locumtruerate-staging-66ba3177c382.herokuapp.com/api/v1';
+    }
+
+    constructor(baseUrl = null) {
+        this.baseUrl = baseUrl || ApiClient.getApiBaseUrl();
         this.authToken = null;
+        this.retryAttempts = 3;
+        this.retryDelay = 1000; // 1 second
+        
+        console.log(`🌐 API Client initialized with baseUrl: ${this.baseUrl}`);
     }
 
     /**
@@ -25,12 +45,23 @@ class ApiClient {
     }
 
     /**
-     * Base request method with error handling
+     * Base request method with error handling and retry logic
      * @param {string} endpoint - API endpoint path
      * @param {Object} options - Fetch options
      * @returns {Promise<Object>} - API response data
      */
     async request(endpoint, options = {}) {
+        return this._requestWithRetry(endpoint, options, this.retryAttempts);
+    }
+
+    /**
+     * Internal request method with retry logic
+     * @param {string} endpoint - API endpoint path
+     * @param {Object} options - Fetch options
+     * @param {number} attemptsLeft - Number of retry attempts remaining
+     * @returns {Promise<Object>} - API response data
+     */
+    async _requestWithRetry(endpoint, options, attemptsLeft) {
         const url = `${this.baseUrl}${endpoint}`;
         
         // Default headers
@@ -47,7 +78,8 @@ class ApiClient {
         // Prepare request options
         const requestOptions = {
             ...options,
-            headers
+            headers,
+            timeout: 10000 // 10 second timeout
         };
 
         // Convert body to JSON if it's an object
@@ -56,11 +88,21 @@ class ApiClient {
         }
 
         try {
+            console.log(`🌐 Making API request to: ${url}`);
             const response = await fetch(url, requestOptions);
+            
+            // Handle network errors or server errors that should be retried
+            if (!response.ok && response.status >= 500 && attemptsLeft > 1) {
+                console.warn(`⚠️ Server error (${response.status}), retrying... (${attemptsLeft - 1} attempts left)`);
+                await this._delay(this.retryDelay);
+                return this._requestWithRetry(endpoint, options, attemptsLeft - 1);
+            }
+
             const data = await response.json();
 
             // Handle successful responses
             if (response.ok) {
+                console.log(`✅ API request successful: ${endpoint}`);
                 return data;
             }
 
@@ -79,9 +121,16 @@ class ApiClient {
             );
 
         } catch (error) {
-            // Handle network errors
+            // Handle network errors with retry logic
             if (error instanceof ApiError) {
                 throw error;
+            }
+            
+            // Network/fetch errors that should be retried
+            if ((error.message === 'Failed to fetch' || error.name === 'TypeError') && attemptsLeft > 1) {
+                console.warn(`🔄 Network error, retrying... (${attemptsLeft - 1} attempts left)`);
+                await this._delay(this.retryDelay);
+                return this._requestWithRetry(endpoint, options, attemptsLeft - 1);
             }
             
             if (error.message === 'Failed to fetch') {
@@ -98,6 +147,15 @@ class ApiClient {
                 null
             );
         }
+    }
+
+    /**
+     * Delay helper for retry logic
+     * @param {number} ms - Milliseconds to delay
+     * @returns {Promise} - Promise that resolves after delay
+     */
+    _delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     /**

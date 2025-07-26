@@ -32,11 +32,40 @@ app.use(helmet({
   },
 }));
 
-// CORS configuration
+// CORS configuration - Allow multiple origins for development and production
 const corsOptions = {
-  origin: config.server.corsOrigin,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:8000', 
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:8000',
+      'https://locumtruerate-staging-66ba3177c382.herokuapp.com',
+      // Add common frontend deployment domains
+      'https://locumtruerate.netlify.app',
+      'https://locumtruerate.vercel.app',
+      'https://michael-abdo.github.io'
+    ];
+    
+    // Add environment-specific origin if configured
+    if (config.server.corsOrigin && !allowedOrigins.includes(config.server.corsOrigin)) {
+      allowedOrigins.push(config.server.corsOrigin);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`🚫 CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 
