@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production API Test - Day 10</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn { 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        .btn:hover { background: #2563eb; }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Day 10 Production API Integration Test</h1>
+        <p>Testing the enhanced API client with production Heroku endpoint</p>
+        
+        <div class="container">
+            <h3>Environment Detection</h3>
+            <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+            <p><strong>API Base URL:</strong> <span id="api-base-url"></span></p>
+        </div>
+
+        <div class="container">
+            <h3>API Health Check</h3>
+            <button class="btn" onclick="testHealth()">Test API Health</button>
+            <div id="health-result"></div>
+        </div>
+
+        <div class="container">
+            <h3>Authentication Test</h3>
+            <input type="email" id="email" placeholder="Email" value="test@locumtrue.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+            <br><br>
+            <button class="btn" onclick="testLogin()">Test Login</button>
+            <button class="btn" onclick="testGetJobs()">Test Get Jobs</button>
+            <button class="btn" onclick="testLogout()">Test Logout</button>
+            <div id="auth-result"></div>
+        </div>
+
+        <div class="container">
+            <h3>Request Log</h3>
+            <button class="btn" onclick="clearLog()">Clear Log</button>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <!-- Include the enhanced API client -->
+    <script src="frontend/js/apiClient.js"></script>
+    <script src="frontend/js/auth.js"></script>
+
+    <script>
+        // Initialize API client and capture console logs
+        const apiClient = new ApiClient();
+        let originalConsoleLog = console.log;
+        let originalConsoleWarn = console.warn;
+        let originalConsoleError = console.error;
+
+        function addToLog(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Override console methods to capture logs
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            addToLog(args.join(' '), 'info');
+        };
+
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            addToLog(args.join(' '), 'warn');
+        };
+
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // Display environment info
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('api-base-url').textContent = apiClient.baseUrl;
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.innerHTML = '<p>Testing API health...</p>';
+            
+            try {
+                const response = await fetch(`${apiClient.baseUrl.replace('/api/v1', '')}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<p class="success">✅ API Health: ${data.status}</p>
+                                          <p>Service: ${data.service}</p>
+                                          <p>Environment: ${data.environment}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="error">❌ Health check failed: ${response.status}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Network error: ${error.message}</p>`;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('auth-result');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.innerHTML = '<p>Testing login...</p>';
+            
+            try {
+                const response = await apiClient.login(email, password);
+                resultDiv.innerHTML = `<p class="success">✅ Login successful!</p>
+                                      <p>User: ${response.user.firstName} ${response.user.lastName}</p>
+                                      <p>Role: ${response.user.role}</p>
+                                      <p>Token length: ${response.token.length}</p>`;
+                
+                // Store token for other tests
+                apiClient.setAuthToken(response.token);
+                Auth.setToken(response.token);
+                Auth.setUser(response.user);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Login failed: ${error.message}</p>`;
+            }
+        }
+
+        async function testGetJobs() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '<p>Testing get jobs...</p>';
+            
+            try {
+                const response = await apiClient.getJobs({limit: 5});
+                resultDiv.innerHTML = `<p class="success">✅ Get jobs successful!</p>
+                                      <p>Found ${response.jobs.length} jobs</p>
+                                      <p>Total items: ${response.pagination.totalItems}</p>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Get jobs failed: ${error.message}</p>`;
+            }
+        }
+
+        async function testLogout() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '<p>Testing logout...</p>';
+            
+            try {
+                await apiClient.logout();
+                resultDiv.innerHTML = `<p class="success">✅ Logout successful!</p>`;
+                Auth.clearSession();
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Logout failed: ${error.message}</p>`;
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        // Initialize page
+        addToLog('Day 10 Production API Test initialized');
+        addToLog(`API Base URL: ${apiClient.baseUrl}`);
+    </script>
+</body>
+</html>

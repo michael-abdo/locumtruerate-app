@@ -13,10 +13,6 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
-    <!-- API Integration -->
-    <script src="js/apiClient.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/ui.js"></script>
     <style>
         /* Using consolidated CSS files */
         /* Page-specific styles below */
@@ -173,68 +169,6 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-        }
-        
-        /* Calculation History Styles */
-        .calculation-history {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-        
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: white;
-            border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
-        }
-        
-        .history-item:hover {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-color: #2563eb;
-        }
-        
-        .history-info {
-            flex: 1;
-        }
-        
-        .history-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-        
-        .history-details {
-            font-size: 0.875rem;
-            color: #64748b;
-        }
-        
-        .history-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .history-actions button {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-        }
-        
-        .btn-sm {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
         }
 
         .btn {
@@ -646,26 +580,12 @@
                         <button class="btn btn-secondary" id="exportBtn">Export PDF</button>
                         <button class="btn btn-secondary" id="emailBtn">[EMAIL] Email Results</button>
                     </div>
-                    
-                    <!-- Calculation History -->
-                    <div id="calculation-history" class="calculation-history" style="display: none; margin-top: 2rem;">
-                        <h3 class="section-title">Calculation History</h3>
-                        <div id="history-list" class="history-list">
-                            <!-- Saved calculations will appear here -->
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize API client
-        const apiClient = new ApiClient();
-        let calculationDebounceTimer = null;
-        let currentCalculation = null;
-        let calculationHistory = [];
-        
         // State variables
         let currentPeriod = 'weekly';
         const periodMultipliers = {
@@ -762,7 +682,7 @@
         }
 
         // Calculate paycheck
-        async function calculatePaycheck() {
+        function calculatePaycheck() {
             console.log('Calculating paycheck...');
             
             // Get and validate inputs
@@ -792,153 +712,49 @@
                 return;
             }
 
-            // Prepare data for API call
-            const payData = {
-                regularHours: regularHours,
-                regularRate: regularRate,
-                overtimeHours: overtimeHours,
-                overtimeRate: overtimeRate || regularRate * 1.5,
-                callHours: callHours,
-                callRate: callRate || regularRate,
-                callbackHours: callbackHours,
-                callbackRate: callbackRate || regularRate * 1.5,
-                housingStipend: housingStipend,
-                mealStipend: mealStipend,
-                mileageReimbursement: mileageReimbursement,
-                payPeriod: currentPeriod,
-                state: document.getElementById('taxState').value,
-                filingStatus: document.getElementById('filingStatus').value
-            };
-            
-            // Check if we have valid inputs for API call
-            if (regularRate > 0 && regularHours > 0) {
-                console.log('🌐 Making API call with data:', payData);
-                
-                try {
-                    // Make API call
-                    const apiResult = await apiClient.calculatePaycheck(payData);
-                    console.log('✅ API response received:', apiResult);
-                    
-                    // Store the full calculation result
-                    currentCalculation = {
-                        ...payData,
-                        apiResult: apiResult,
-                        calculatedAt: new Date().toISOString()
-                    };
-                    
-                    // Use API results for display
-                    displayApiPaycheckResults(apiResult, payData);
-                    
-                } catch (error) {
-                    console.error('❌ API call failed:', error);
-                    // Fall back to local calculation
-                    performLocalPaycheckCalculation(payData);
-                }
-            } else {
-                // Use local calculation for invalid inputs
-                performLocalPaycheckCalculation(payData);
-            }
-        }
-        
-        function displayApiPaycheckResults(apiResult, payData) {
-            const multiplier = periodMultipliers[currentPeriod];
-            
-            // Calculate pay components from API result
-            const regularPay = apiResult.regularPay || (payData.regularHours * payData.regularRate * multiplier);
-            const overtimePay = apiResult.overtimePay || (payData.overtimeHours * payData.overtimeRate * multiplier);
-            const callPay = apiResult.callPay || (payData.callHours * payData.callRate * multiplier);
-            const callbackPay = apiResult.callbackPay || (payData.callbackHours * payData.callbackRate * multiplier);
-            const totalGrossPay = apiResult.grossPay || (regularPay + overtimePay + callPay + callbackPay);
-            
-            // Calculate stipends
-            const totalStipends = (payData.housingStipend + payData.mealStipend + payData.mileageReimbursement) * multiplier;
-            const totalGrossPayAll = totalGrossPay + totalStipends;
-            
-            // Get deductions from API
-            const federalTax = apiResult.federalTax || (totalGrossPay * 0.22);
-            const stateTax = apiResult.stateTax || (totalGrossPay * stateTaxRates[payData.state]);
-            const ficaTax = (apiResult.socialSecurity || 0) + (apiResult.medicare || 0) || (totalGrossPay * 0.0765);
-            const totalDeductions = apiResult.totalDeductions || (federalTax + stateTax + ficaTax);
-            const netPay = apiResult.netPay || (totalGrossPay - totalDeductions) + totalStipends;
-            
-            // Update display
-            updatePaycheckDisplay({
-                regularPay, overtimePay, callPay, callbackPay, totalGrossPay,
-                housingStipend: payData.housingStipend * multiplier,
-                mealStipend: payData.mealStipend * multiplier,
-                mileageReimbursement: payData.mileageReimbursement * multiplier,
-                totalStipends, totalGrossPayAll, federalTax, stateTax, ficaTax, totalDeductions, netPay
-            });
-            
-            console.log('✅ Display updated with API results');
-        }
-        
-        function performLocalPaycheckCalculation(payData) {
-            console.log('📋 Performing local calculation...');
-            
             // Get multiplier for period
             const multiplier = periodMultipliers[currentPeriod];
-            
+
             // Calculate pay components
-            const regularPay = payData.regularHours * payData.regularRate * multiplier;
-            const overtimePay = payData.overtimeHours * payData.overtimeRate * multiplier;
-            const callPay = payData.callHours * payData.callRate * multiplier;
-            const callbackPay = payData.callbackHours * payData.callbackRate * multiplier;
+            const regularPay = regularHours * regularRate * multiplier;
+            const overtimePay = overtimeHours * overtimeRate * multiplier;
+            const callPay = callHours * callRate * multiplier;
+            const callbackPay = callbackHours * callbackRate * multiplier;
             const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+
+            // Calculate stipends (already in period amounts)
+            const totalStipends = housingStipend + mealStipend + mileageReimbursement;
             
-            // Calculate stipends
-            const totalStipends = (payData.housingStipend + payData.mealStipend + payData.mileageReimbursement) * multiplier;
+            // Calculate total gross pay including stipends
             const totalGrossPayAll = totalGrossPay + totalStipends;
-            
+
             // Calculate taxes
             const ficaTax = totalGrossPay * 0.0765;
             const federalTax = calculateFederalTax(totalGrossPay);
             const selectedState = document.getElementById('taxState').value;
             const stateTaxRate = stateTaxRates[selectedState];
             const stateTax = totalGrossPay * stateTaxRate;
+
             const totalDeductions = federalTax + stateTax + ficaTax;
             const netPay = totalGrossPay - totalDeductions + totalStipends;
-            
-            // Store the current calculation
-            currentCalculation = {
-                ...payData,
-                localCalculation: {
-                    regularPay, overtimePay, callPay, callbackPay,
-                    totalGrossPay, totalStipends, totalGrossPayAll,
-                    federalTax, stateTax, ficaTax, netPay
-                },
-                calculatedAt: new Date().toISOString()
-            };
-            
-            // Update display
-            updatePaycheckDisplay({
-                regularPay, overtimePay, callPay, callbackPay, totalGrossPay,
-                housingStipend: payData.housingStipend * multiplier,
-                mealStipend: payData.mealStipend * multiplier,
-                mileageReimbursement: payData.mileageReimbursement * multiplier,
-                totalStipends, totalGrossPayAll, federalTax, stateTax, ficaTax, totalDeductions, netPay
-            });
-        }
-        
-        function updatePaycheckDisplay(values) {
 
             // Update display using LocumUtils.formatCurrency
-            document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(values.regularPay);
-            document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(values.overtimePay);
-            document.getElementById('callPay').textContent = LocumUtils.formatCurrency(values.callPay);
-            document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(values.callbackPay);
-            document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(values.totalGrossPay);
+            document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(regularPay);
+            document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(overtimePay);
+            document.getElementById('callPay').textContent = LocumUtils.formatCurrency(callPay);
+            document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(callbackPay);
+            document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(totalGrossPay);
             
-            document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(values.housingStipend);
-            document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(values.mealStipend);
-            document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(values.mileageReimbursement);
-            document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(values.totalStipends);
-            document.getElementById('totalGrossPayAll').textContent = LocumUtils.formatCurrency(values.totalGrossPayAll);
+            document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(housingStipend);
+            document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(mealStipend);
+            document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(mileageReimbursement);
+            document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(totalStipends);
+            document.getElementById('totalGrossPayAll').textContent = LocumUtils.formatCurrency(totalGrossPayAll);
             
-            document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(values.federalTax);
-            document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(values.stateTax);
-            document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(values.ficaTax);
-            document.getElementById('netPay').textContent = LocumUtils.formatCurrency(values.netPay);
+            document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(federalTax);
+            document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(stateTax);
+            document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(ficaTax);
+            document.getElementById('netPay').textContent = LocumUtils.formatCurrency(netPay);
         }
 
         // Simple federal tax calculation
@@ -985,10 +801,6 @@
 
         // Save calculation
         function saveCalculation() {
-            savePaycheckCalculation();
-        }
-        
-        function OLD_saveCalculation() {
             // Validate all inputs before saving
             const regularHours = validateInput(document.getElementById('regularHours'));
             const regularRate = validateInput(document.getElementById('regularRate'));
