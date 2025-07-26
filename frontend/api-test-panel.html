@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Panel - LocumTrueRate</title>
+    <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .log-entry {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        .log-entry.api-call {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        .log-entry.api-success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .log-entry.api-error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .log-entry.local {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #2196f3;
+            color: white;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #apiLog {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .status-badge.active {
+            background: #4caf50;
+            color: white;
+        }
+        .status-badge.inactive {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Test Panel</h1>
+    
+    <div class="panel">
+        <h3>API Status</h3>
+        <p>
+            API Endpoint: <code id="apiEndpoint">Loading...</code><br>
+            API Status: <span id="apiStatus" class="status-badge inactive">Unknown</span><br>
+            Authentication: <span id="authStatus" class="status-badge inactive">Not Logged In</span>
+        </p>
+    </div>
+
+    <div class="panel">
+        <h3>Test API Calls</h3>
+        <button onclick="testPaycheckCalculation()">Test Paycheck Calculation</button>
+        <button onclick="testContractCalculation()">Test Contract Calculation</button>
+        <button onclick="clearLog()">Clear Log</button>
+        <button onclick="testAuthentication()">Test Authentication</button>
+    </div>
+
+    <div class="panel">
+        <h3>API Call Log</h3>
+        <div id="apiLog">
+            <div class="log-entry">Waiting for API calls...</div>
+        </div>
+    </div>
+
+    <script>
+        const apiLog = document.getElementById('apiLog');
+        let logEntries = [];
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            
+            apiLog.appendChild(entry);
+            apiLog.scrollTop = apiLog.scrollHeight;
+            
+            // Keep only last 50 entries
+            if (apiLog.children.length > 50) {
+                apiLog.removeChild(apiLog.firstChild);
+            }
+        }
+
+        function clearLog() {
+            apiLog.innerHTML = '<div class="log-entry">Log cleared. Waiting for API calls...</div>';
+        }
+
+        async function updateStatus() {
+            // Update API endpoint
+            document.getElementById('apiEndpoint').textContent = apiClient.baseURL || 'Not configured';
+            
+            // Update auth status
+            const token = Auth.getToken();
+            const authStatusEl = document.getElementById('authStatus');
+            if (token) {
+                authStatusEl.textContent = 'Logged In';
+                authStatusEl.className = 'status-badge active';
+            } else {
+                authStatusEl.textContent = 'Not Logged In';
+                authStatusEl.className = 'status-badge inactive';
+            }
+            
+            // Test API connectivity
+            try {
+                addLog('Testing API connectivity...', 'api-call');
+                const testResult = await fetch(apiClient.baseURL + '/health').catch(() => null);
+                
+                const apiStatusEl = document.getElementById('apiStatus');
+                if (testResult && testResult.ok) {
+                    apiStatusEl.textContent = 'Online';
+                    apiStatusEl.className = 'status-badge active';
+                    addLog('API is online and responding', 'api-success');
+                } else {
+                    apiStatusEl.textContent = 'Offline';
+                    apiStatusEl.className = 'status-badge inactive';
+                    addLog('API is offline or unreachable', 'api-error');
+                }
+            } catch (error) {
+                addLog(`API connectivity test failed: ${error.message}`, 'api-error');
+            }
+        }
+
+        async function testPaycheckCalculation() {
+            addLog('Starting paycheck calculation test...', 'api-call');
+            
+            const testData = {
+                regularHours: 40,
+                regularRate: 85,
+                overtimeHours: 8,
+                overtimeRate: 127.50,
+                callHours: 0,
+                callRate: 0,
+                callbackHours: 0,
+                callbackRate: 0,
+                housingStipend: 1200,
+                mealStipend: 300,
+                mileageReimbursement: 150,
+                payPeriod: 'weekly',
+                state: 'ca',
+                filingStatus: 'single'
+            };
+            
+            addLog(`Request data: ${JSON.stringify(testData, null, 2)}`, 'api-call');
+            
+            try {
+                const result = await apiClient.calculatePaycheck(testData);
+                addLog(`API Response: ${JSON.stringify(result, null, 2)}`, 'api-success');
+                
+                if (result.grossPay || result.totalGrossPay) {
+                    addLog(`✅ Paycheck calculation successful! Gross: $${result.grossPay || result.totalGrossPay}`, 'api-success');
+                }
+            } catch (error) {
+                addLog(`❌ API call failed: ${error.message}`, 'api-error');
+                addLog('Falling back to local calculation', 'local');
+                
+                // Show local calculation
+                const localGross = testData.regularHours * testData.regularRate + testData.overtimeHours * testData.overtimeRate;
+                addLog(`Local calculation: Gross Pay = $${localGross}`, 'local');
+            }
+        }
+
+        async function testContractCalculation() {
+            addLog('Starting contract calculation test...', 'api-call');
+            
+            const testData = {
+                hourlyRate: 100,
+                hoursPerWeek: 40,
+                weeksPerYear: 48,
+                state: 'ca',
+                expenseRate: 0.15
+            };
+            
+            addLog(`Request data: ${JSON.stringify(testData, null, 2)}`, 'api-call');
+            
+            try {
+                const result = await apiClient.calculateContract(testData);
+                addLog(`API Response: ${JSON.stringify(result, null, 2)}`, 'api-success');
+                
+                if (result.grossIncome || result.annualGross) {
+                    addLog(`✅ Contract calculation successful! Annual: $${result.grossIncome || result.annualGross}`, 'api-success');
+                }
+            } catch (error) {
+                addLog(`❌ API call failed: ${error.message}`, 'api-error');
+                addLog('Falling back to local calculation', 'local');
+                
+                // Show local calculation
+                const localAnnual = testData.hourlyRate * testData.hoursPerWeek * testData.weeksPerYear;
+                addLog(`Local calculation: Annual Gross = $${localAnnual}`, 'local');
+            }
+        }
+
+        async function testAuthentication() {
+            addLog('Testing authentication...', 'api-call');
+            
+            const email = prompt('Enter email:', 'test@example.com');
+            const password = prompt('Enter password:', 'password123');
+            
+            if (!email || !password) {
+                addLog('Authentication test cancelled', 'api-error');
+                return;
+            }
+            
+            // For demo purposes, simulate login
+            if (email === 'test@example.com' && password === 'password123') {
+                const token = 'demo-token-' + Date.now();
+                Auth.setToken(token, 86400);
+                Auth.setCurrentUser({ email, firstName: 'Test', lastName: 'User' });
+                apiClient.setAuthToken(token);
+                
+                addLog('✅ Authentication successful!', 'api-success');
+                updateStatus();
+            } else {
+                addLog('❌ Authentication failed', 'api-error');
+            }
+        }
+
+        // Override apiClient methods to log calls
+        const originalCalculatePaycheck = apiClient.calculatePaycheck;
+        apiClient.calculatePaycheck = async function(...args) {
+            addLog('API Call: calculatePaycheck', 'api-call');
+            try {
+                const result = await originalCalculatePaycheck.apply(this, args);
+                addLog('API Success: calculatePaycheck', 'api-success');
+                return result;
+            } catch (error) {
+                addLog(`API Error: calculatePaycheck - ${error.message}`, 'api-error');
+                throw error;
+            }
+        };
+
+        const originalCalculateContract = apiClient.calculateContract;
+        apiClient.calculateContract = async function(...args) {
+            addLog('API Call: calculateContract', 'api-call');
+            try {
+                const result = await originalCalculateContract.apply(this, args);
+                addLog('API Success: calculateContract', 'api-success');
+                return result;
+            } catch (error) {
+                addLog(`API Error: calculateContract - ${error.message}`, 'api-error');
+                throw error;
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            addLog('API Test Panel initialized', 'info');
+        });
+    </script>
+</body>
+</html>
