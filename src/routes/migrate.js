@@ -179,4 +179,39 @@ router.post('/create-tables', async (req, res) => {
   }
 });
 
+/**
+ * Debug endpoint to show database configuration (staging only)
+ * GET /api/v1/migrate/debug - Show database config
+ */
+router.get('/debug', async (req, res) => {
+  try {
+    const { database } = require('../config/config');
+    
+    res.json({
+      success: true,
+      database_config: {
+        host: database.host,
+        port: database.port,
+        database: database.name,
+        user: database.user,
+        password: database.password ? '***hidden***' : 'undefined',
+        pool: database.pool
+      },
+      env_vars: {
+        DATABASE_URL: process.env.DATABASE_URL ? 'present' : 'missing',
+        DB_HOST: process.env.DB_HOST || 'undefined',
+        NODE_ENV: process.env.NODE_ENV
+      },
+      timestamp: require('../config/config').utils.timestamp()
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      error: 'debug_failed',
+      message: error.message,
+      timestamp: require('../config/config').utils.timestamp()
+    });
+  }
+});
+
 module.exports = router;
