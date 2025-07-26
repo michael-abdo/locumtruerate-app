@@ -68,10 +68,12 @@
         }
         
         .nav-links a.active {
-            color: #2563eb;
-            font-weight: 600;
-            border-bottom: 2px solid #2563eb;
-            padding-bottom: 0.25rem;
+            color: #2563eb !important;
+            font-weight: 600 !important;
+            border-bottom: 2px solid #2563eb !important;
+            padding-bottom: 0.25rem !important;
+            background-color: rgba(37, 99, 235, 0.1) !important;
+            border-radius: 4px !important;
         }
 
         .calculator-container {
@@ -428,6 +430,9 @@
     <div class="container">
         <div class="calculator-container">
             <h1>Paycheck Calculator</h1>
+            <div id="debugInfo" style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 0.875rem; display: none;">
+                <strong>Debug Info:</strong> <span id="debugText">Page loaded</span>
+            </div>
             
             <!-- Period Selection -->
             <div class="period-tabs">
@@ -997,18 +1002,31 @@
 
         // Save calculation with authentication check
         function saveCalculation() {
-            console.log('Save calculation called');
+            console.log('=== SAVE CALCULATION CALLED ===');
+            
+            // Show debug info
+            document.getElementById('debugInfo').style.display = 'block';
+            document.getElementById('debugText').textContent = 'Save button clicked - checking authentication...';
             
             // Check if user is authenticated
             const token = Auth.getToken();
             const user = Auth.getCurrentUser();
             
-            console.log('Auth check:', { token: !!token, user: !!user });
+            console.log('Auth check results:', { 
+                hasToken: !!token, 
+                tokenValue: token ? token.substring(0, 20) + '...' : null,
+                hasUser: !!user,
+                userValue: user
+            });
             
             if (!token) {
-                console.log('Not authenticated - showing login prompt');
-                LocumUtils.showToast('Please login to save calculations', 'warning');
+                console.log('=== NOT AUTHENTICATED ===');
+                document.getElementById('debugText').textContent = 'Not authenticated - login required';
+                LocumUtils.showToast('⚠️ Please login to save calculations (click Login button)', 'warning');
                 return;
+            } else {
+                console.log('=== AUTHENTICATED ===');
+                document.getElementById('debugText').textContent = 'Authenticated - proceeding to save...';
             }
 
             // Validate all inputs before saving
@@ -1168,6 +1186,12 @@ Generated: ${new Date().toLocaleDateString()}`;
             calculatePaycheck();
             
             console.log('Calculator initialized successfully!');
+            
+            // Show debug panel
+            setTimeout(() => {
+                document.getElementById('debugInfo').style.display = 'block';
+                document.getElementById('debugText').textContent = 'Calculator ready. Try login with test@example.com / password123';
+            }, 1000);
         });
         
         // Authentication UI Management
@@ -1194,32 +1218,50 @@ Generated: ${new Date().toLocaleDateString()}`;
         
         // Simple authentication prompts for testing
         function showLoginPrompt() {
+            LocumUtils.showToast('Login prompt opening...', 'warning');
+            
             const email = prompt('Enter email (use: test@example.com):');
             if (!email) {
-                LocumUtils.showToast('Login cancelled', 'warning');
+                LocumUtils.showToast('Login cancelled - no email entered', 'warning');
                 return;
             }
             
             const password = prompt('Enter password (use: password123):');
             if (!password) {
-                LocumUtils.showToast('Login cancelled', 'warning');
+                LocumUtils.showToast('Login cancelled - no password entered', 'warning');
                 return;
             }
             
-            console.log('Login attempt:', { email, password });
+            console.log('Login attempt with:', email, password);
+            LocumUtils.showToast(`Attempting login with: ${email}`, 'warning');
             
-            if (email.toLowerCase().trim() === 'test@example.com' && password.trim() === 'password123') {
+            // More flexible credential check
+            const emailMatch = email.toLowerCase().trim() === 'test@example.com';
+            const passwordMatch = password.trim() === 'password123';
+            
+            console.log('Credential check:', { emailMatch, passwordMatch });
+            
+            if (emailMatch && passwordMatch) {
                 // Simulate successful login
-                const fakeToken = 'fake-jwt-token-' + Date.now();
+                const fakeToken = 'demo-token-' + Date.now();
+                console.log('Setting token:', fakeToken);
+                
                 Auth.setToken(fakeToken, 86400); // 24 hours
-                Auth.setCurrentUser({ firstName: 'Test', lastName: 'User', email: email });
+                Auth.setCurrentUser({ firstName: 'Demo', lastName: 'User', email: email });
                 apiClient.setAuthToken(fakeToken);
+                
+                console.log('Auth data set, updating UI...');
                 updateAuthUI(true);
-                LocumUtils.showToast('Login successful! You can now save calculations.', 'success');
-                console.log('Login successful, token set:', fakeToken);
+                
+                LocumUtils.showToast('✅ LOGIN SUCCESS! You can now save calculations.', 'success');
+                console.log('Login completed successfully');
+                
+                // Force reload calculation history
+                calculationHistory = loadPaycheckHistory();
+                displayPaycheckHistory();
             } else {
-                console.log('Login failed - Invalid credentials');
-                LocumUtils.showToast('Invalid credentials. Use: test@example.com / password123', 'error');
+                console.log('Login failed - credential mismatch');
+                LocumUtils.showToast(`❌ INVALID CREDENTIALS. Use: test@example.com / password123`, 'error');
             }
         }
         

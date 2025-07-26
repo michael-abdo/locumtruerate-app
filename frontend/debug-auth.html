@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug - LocumTrueRate</title>
+    <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-info { background: #17a2b8; color: white; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Debug Page</h1>
+    
+    <div class="debug-section">
+        <h3>Authentication Status</h3>
+        <button class="btn-info" onclick="checkAuthStatus()">Check Auth Status</button>
+        <button class="btn-primary" onclick="testLogin()">Test Login</button>
+        <button class="btn-danger" onclick="testLogout()">Test Logout</button>
+        <pre id="authStatus">Click "Check Auth Status" to see current state</pre>
+    </div>
+
+    <div class="debug-section">
+        <h3>Manual Login Test</h3>
+        <input type="email" id="emailInput" placeholder="test@example.com" value="test@example.com">
+        <input type="password" id="passwordInput" placeholder="password123" value="password123">
+        <button class="btn-success" onclick="manualLogin()">Manual Login</button>
+    </div>
+
+    <div class="debug-section">
+        <h3>Local Storage Debug</h3>
+        <button class="btn-info" onclick="showLocalStorage()">Show LocalStorage</button>
+        <button class="btn-danger" onclick="clearLocalStorage()">Clear LocalStorage</button>
+        <pre id="localStorageContent">Click "Show LocalStorage" to view</pre>
+    </div>
+
+    <div class="debug-section">
+        <h3>Console Log</h3>
+        <pre id="consoleLog">Debug messages will appear here...</pre>
+    </div>
+
+    <script>
+        function log(message) {
+            const consoleLog = document.getElementById('consoleLog');
+            const timestamp = new Date().toLocaleTimeString();
+            consoleLog.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        function checkAuthStatus() {
+            log('Checking authentication status...');
+            
+            const token = Auth.getToken();
+            const user = Auth.getCurrentUser();
+            const isLoggedIn = Auth.isLoggedIn();
+            
+            const status = {
+                token: token ? `${token.substring(0, 20)}...` : null,
+                user: user,
+                isLoggedIn: isLoggedIn,
+                tokenExpiry: localStorage.getItem('locumtruerate_token_expiry')
+            };
+            
+            document.getElementById('authStatus').textContent = JSON.stringify(status, null, 2);
+            log(`Auth Status: ${JSON.stringify(status)}`);
+        }
+
+        function testLogin() {
+            log('Testing login with prompts...');
+            
+            const email = prompt('Enter email:', 'test@example.com');
+            if (!email) {
+                log('Login cancelled - no email');
+                return;
+            }
+            
+            const password = prompt('Enter password:', 'password123');
+            if (!password) {
+                log('Login cancelled - no password');
+                return;
+            }
+            
+            log(`Login attempt: email="${email}", password="${password}"`);
+            
+            if (email.toLowerCase().trim() === 'test@example.com' && password.trim() === 'password123') {
+                const fakeToken = 'fake-jwt-token-' + Date.now();
+                Auth.setToken(fakeToken, 86400);
+                Auth.setCurrentUser({ firstName: 'Test', lastName: 'User', email: email });
+                
+                log('Login successful!');
+                LocumUtils.showToast('Login successful!', 'success');
+                checkAuthStatus();
+            } else {
+                log('Login failed - invalid credentials');
+                LocumUtils.showToast('Invalid credentials', 'error');
+            }
+        }
+
+        function manualLogin() {
+            log('Manual login test...');
+            
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            log(`Manual login: email="${email}", password="${password}"`);
+            
+            if (email.toLowerCase().trim() === 'test@example.com' && password.trim() === 'password123') {
+                const fakeToken = 'fake-jwt-token-' + Date.now();
+                Auth.setToken(fakeToken, 86400);
+                Auth.setCurrentUser({ firstName: 'Test', lastName: 'User', email: email });
+                
+                log('Manual login successful!');
+                LocumUtils.showToast('Manual login successful!', 'success');
+                checkAuthStatus();
+            } else {
+                log('Manual login failed - invalid credentials');
+                LocumUtils.showToast('Manual login failed', 'error');
+            }
+        }
+
+        function testLogout() {
+            log('Testing logout...');
+            
+            Auth.clearToken();
+            Auth.clearCurrentUser();
+            
+            log('Logout completed');
+            LocumUtils.showToast('Logged out', 'success');
+            checkAuthStatus();
+        }
+
+        function showLocalStorage() {
+            log('Showing LocalStorage contents...');
+            
+            const storage = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                storage[key] = localStorage.getItem(key);
+            }
+            
+            document.getElementById('localStorageContent').textContent = JSON.stringify(storage, null, 2);
+            log(`LocalStorage: ${JSON.stringify(storage)}`);
+        }
+
+        function clearLocalStorage() {
+            log('Clearing LocalStorage...');
+            localStorage.clear();
+            LocumUtils.showToast('LocalStorage cleared', 'success');
+            showLocalStorage();
+            checkAuthStatus();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Debug page loaded');
+            checkAuthStatus();
+            showLocalStorage();
+        });
+    </script>
+</body>
+</html>
