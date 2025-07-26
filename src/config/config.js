@@ -5,6 +5,26 @@
 
 require('dotenv').config();
 
+/**
+ * Parse PostgreSQL DATABASE_URL into individual components
+ * Format: postgres://user:password@host:port/database
+ */
+function parsePostgresUrl(databaseUrl) {
+  try {
+    const url = new URL(databaseUrl);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      name: url.pathname.slice(1), // Remove leading slash
+      user: url.username,
+      password: url.password
+    };
+  } catch (error) {
+    console.error('Failed to parse DATABASE_URL:', error.message);
+    return null;
+  }
+}
+
 const config = {
   // Server configuration
   server: {
@@ -15,18 +35,36 @@ const config = {
   },
   
   // Database configuration
-  database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    name: process.env.DB_NAME || 'vanilla_api_dev',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    pool: {
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000
+  database: (() => {
+    // Try DATABASE_URL first (Heroku standard), fall back to individual env vars
+    if (process.env.DATABASE_URL) {
+      const parsedDb = parsePostgresUrl(process.env.DATABASE_URL);
+      if (parsedDb) {
+        return {
+          ...parsedDb,
+          pool: {
+            max: 20,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 2000
+          }
+        };
+      }
     }
-  },
+    
+    // Fallback to individual environment variables
+    return {
+      host: process.env.DB_HOST || 'localhost',
+      port: process.env.DB_PORT || 5432,
+      name: process.env.DB_NAME || 'vanilla_api_dev',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+      pool: {
+        max: 20,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 2000
+      }
+    };
+  })(),
   
   // Logging configuration
   logging: {
