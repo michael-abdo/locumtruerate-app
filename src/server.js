@@ -47,7 +47,8 @@ const corsOptions = {
       // Add common frontend deployment domains
       'https://locumtruerate.netlify.app',
       'https://locumtruerate.vercel.app',
-      'https://michael-abdo.github.io'
+      'https://michael-abdo.github.io',
+      'https://michael-abdo.github.io/locumtruerate-app'
     ];
     
     // Add environment-specific origin if configured

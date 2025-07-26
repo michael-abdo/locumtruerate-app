@@ -1,0 +1,43 @@
+<\!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocumTrueRate - Production</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; }
+        .status { background: #d4edda; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px; }
+        .nav-item { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; text-decoration: none; color: #495057; }
+        .nav-item:hover { background: #e9ecef; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 LocumTrueRate - Production</h1>
+        <div class="status">
+            <strong>🚀 Day 10 Complete:</strong> Production API Integration Successfully Deployed\!
+        </div>
+        <div class="nav-grid">
+            <a href="job-board.html" class="nav-item">
+                <div><strong>🔍 Job Board</strong></div>
+                <div>Browse and apply to positions</div>
+            </a>
+            <a href="locum-dashboard.html" class="nav-item">
+                <div><strong>👨‍⚕️ Locum Dashboard</strong></div>
+                <div>Manage applications</div>
+            </a>
+            <a href="contract-calculator.html" class="nav-item">
+                <div><strong>💰 Contract Calculator</strong></div>
+                <div>Calculate compensation</div>
+            </a>
+        </div>
+    </div>
+    <script src="js/apiClient.js"></script>
+    <script>
+        const apiClient = new ApiClient();
+        console.log("Production frontend with API:", apiClient.baseUrl);
+    </script>
+</body>
+</html>
