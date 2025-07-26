@@ -1054,6 +1054,145 @@
             LocumUtils.showToast('Calculation saved successfully!', 'success');
         }
         
+        // Save paycheck calculation to history
+        function savePaycheckCalculation(calculation) {
+            if (!calculation) {
+                console.log('No calculation to save');
+                return;
+            }
+            
+            console.log('savePaycheckCalculation called with:', calculation);
+            
+            // Add unique ID and timestamp
+            calculation.id = Date.now().toString();
+            calculation.savedAt = new Date().toISOString();
+            
+            // Load existing history
+            calculationHistory = loadPaycheckHistory();
+            
+            // Add new calculation to beginning
+            calculationHistory.unshift(calculation);
+            
+            // Keep only last 20 calculations
+            if (calculationHistory.length > 20) {
+                calculationHistory = calculationHistory.slice(0, 20);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('paycheckCalculationHistory', JSON.stringify(calculationHistory));
+            console.log('Saved to localStorage. History length:', calculationHistory.length);
+            
+            // Update display
+            displayPaycheckHistory();
+        }
+        
+        // Load paycheck calculation history
+        function loadPaycheckHistory() {
+            const saved = localStorage.getItem('paycheckCalculationHistory');
+            const history = saved ? JSON.parse(saved) : [];
+            console.log('Loaded history from localStorage. Count:', history.length);
+            return history;
+        }
+        
+        // Display paycheck history
+        function displayPaycheckHistory() {
+            console.log('displayPaycheckHistory called. History count:', calculationHistory.length);
+            
+            const historyContainer = document.getElementById('calculation-history');
+            const historyList = document.getElementById('history-list');
+            
+            if (!historyList) {
+                console.log('History list element not found');
+                return;
+            }
+            
+            if (calculationHistory.length === 0) {
+                historyList.innerHTML = '<p style="color: #6c757d; text-align: center;">No saved calculations yet. Login and save calculations to see history.</p>';
+                return;
+            }
+            
+            historyList.innerHTML = calculationHistory.map(calc => {
+                const date = new Date(calc.savedAt || calc.calculatedAt);
+                
+                // Get values from calculation
+                let netPay = 0;
+                let totalGross = 0;
+                
+                if (calc.apiResult) {
+                    netPay = calc.apiResult.netPay || 0;
+                    totalGross = calc.apiResult.totalGrossPay || calc.apiResult.grossPay || 0;
+                } else if (calc.localCalculation) {
+                    netPay = calc.localCalculation.netPay || 0;
+                    totalGross = calc.localCalculation.totalGrossPay || 0;
+                } else {
+                    // Fallback calculation
+                    const multiplier = periodMultipliers[calc.payPeriod || calc.period || 'weekly'];
+                    totalGross = (calc.regularHours * calc.regularRate + calc.overtimeHours * calc.overtimeRate) * multiplier;
+                    netPay = totalGross * 0.7; // Rough estimate
+                }
+                
+                return `
+                    <div class="history-item" style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; cursor: pointer;">
+                        <div class="history-info">
+                            <div class="history-title" style="font-weight: 600;">${calc.payPeriod || calc.period || 'weekly'} - ${date.toLocaleDateString()}</div>
+                            <div class="history-details" style="font-size: 0.875rem; color: #6c757d;">
+                                Gross: ${LocumUtils.formatCurrency(totalGross)} | Net: ${LocumUtils.formatCurrency(netPay)}
+                            </div>
+                        </div>
+                        <div class="history-actions" style="margin-top: 5px;">
+                            <button class="btn btn-secondary btn-sm" onclick="loadPaycheckCalculation('${calc.id}')" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Load</button>
+                            <button class="btn btn-secondary btn-sm" onclick="deletePaycheckCalculation('${calc.id}')" style="padding: 0.25rem 0.5rem; font-size: 0.875rem; margin-left: 5px;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('History display updated');
+        }
+        
+        // Load a saved calculation
+        function loadPaycheckCalculation(id) {
+            console.log('Loading calculation:', id);
+            
+            const calc = calculationHistory.find(c => c.id === id);
+            if (!calc) {
+                console.log('Calculation not found:', id);
+                return;
+            }
+            
+            // Load values into form
+            document.getElementById('regularHours').value = calc.regularHours || 0;
+            document.getElementById('regularRate').value = calc.regularRate || 0;
+            document.getElementById('overtimeHours').value = calc.overtimeHours || 0;
+            document.getElementById('overtimeRate').value = calc.overtimeRate || 0;
+            document.getElementById('callHours').value = calc.callHours || 0;
+            document.getElementById('callRate').value = calc.callRate || 0;
+            document.getElementById('callbackHours').value = calc.callbackHours || 0;
+            document.getElementById('callbackRate').value = calc.callbackRate || 0;
+            document.getElementById('housingStipend').value = calc.housingStipend || 0;
+            document.getElementById('mealStipend').value = calc.mealStipend || 0;
+            document.getElementById('mileageReimbursement').value = calc.mileageReimbursement || 0;
+            document.getElementById('taxState').value = calc.state || 'no-tax';
+            document.getElementById('filingStatus').value = calc.filingStatus || 'single';
+            
+            // Set period
+            setPeriod(calc.payPeriod || calc.period || 'weekly');
+            
+            LocumUtils.showToast('Calculation loaded', 'success');
+            console.log('Calculation loaded successfully');
+        }
+        
+        // Delete a saved calculation
+        function deletePaycheckCalculation(id) {
+            console.log('Deleting calculation:', id);
+            
+            calculationHistory = calculationHistory.filter(c => c.id !== id);
+            localStorage.setItem('paycheckCalculationHistory', JSON.stringify(calculationHistory));
+            displayPaycheckHistory();
+            LocumUtils.showToast('Calculation deleted', 'success');
+            console.log('Calculation deleted successfully');
+        }
+        
         function OLD_saveCalculation() {
             // Validate all inputs before saving
             const regularHours = validateInput(document.getElementById('regularHours'));
@@ -1156,6 +1295,10 @@ Generated: ${new Date().toLocaleDateString()}`;
             document.getElementById('registerBtn').addEventListener('click', showRegisterPrompt);
             document.getElementById('logoutBtn').addEventListener('click', logout);
             
+            // Load and display calculation history
+            calculationHistory = loadPaycheckHistory();
+            displayPaycheckHistory();
+            
             // Add event listeners to all inputs
             const inputs = document.querySelectorAll('input[type="number"], select');
             inputs.forEach(input => {
@@ -1190,7 +1333,8 @@ Generated: ${new Date().toLocaleDateString()}`;
             // Show debug panel
             setTimeout(() => {
                 document.getElementById('debugInfo').style.display = 'block';
-                document.getElementById('debugText').textContent = 'Calculator ready. Try login with test@example.com / password123';
+                const authStatus = Auth.isLoggedIn() ? 'Logged in' : 'Not logged in';
+                document.getElementById('debugText').textContent = `Calculator ready. ${authStatus}. ${!Auth.isLoggedIn() ? 'Try login with test@example.com / password123' : 'You can save calculations.'}`;
             }, 1000);
         });
         
