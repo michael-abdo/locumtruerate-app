@@ -4,8 +4,16 @@
 
 **Proceed without asking for confirmation. Run all steps through to the end without stopping. This includes steps that cause external side-effects.**
 
-## Test URL
-https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
+## Test URLs
+- **Main Calculator**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
+- **API Test Panel**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/api-test-panel.html (for Step 39)
+- **Debug Auth**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/debug-auth.html (for authentication troubleshooting)
+
+## Important Test Notes
+- **Authentication**: Use demo credentials `test@example.com` / `password123`
+- **Navigation Highlighting**: Look for blue text and light blue background on "Paycheck Calculator"
+- **Save Functionality**: Must be logged in to save calculations
+- **API Verification**: Use the API Test Panel URL for Step 39 instead of DevTools
 
 ## Operator Capabilities
 
@@ -218,9 +226,11 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.htm
 ## Day 13 API Integration & Authentication Tests
 
 ### 39. API Integration Check
-**Open browser console and enter test values to verify API calls**
-- Console should show "🌐 Making API call..." messages when inputs change
-- Look for successful API responses or fallback to local calculations
+**Open API Test Panel in new tab: https://locumtruerate-staging-66ba3177c382.herokuapp.com/api-test-panel.html**
+- Navigate to the API Test Panel URL above
+- Click "Test Paycheck Calculation" button
+- Verify API call log shows blue entries for calls, green for success, or red for errors
+- Log should show whether API or local calculations are used
 - ✅ Pass | ❌ Fail + reason
 
 ### 40. Debounced Input Handling
@@ -237,14 +247,21 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.htm
 
 ### 42. Authentication State Check
 **Look for login/register options in navigation or page**
-- Some form of authentication should be available on the site
-- User should be able to log in to access save functionality
+- Login and Register buttons should be visible in top navigation
+- Blue debug panel shows current authentication status
+- Clicking Login should open prompt for credentials
 - ✅ Pass | ❌ Fail + reason
 
 ### 43. Save Calculation - Authenticated
-**If authentication is available, log in and then click "Save Calculation"**
+**Log in with test@example.com / password123, then click "Save Calculation"**
+- Click Login button in navigation
+- Enter email: test@example.com
+- Enter password: password123
+- Should see "✅ LOGIN SUCCESS!" toast
+- Navigation should show "Welcome, Demo!"
+- Click "Save Calculation" button
 - Should display success toast: "Calculation saved successfully!"
-- Calculation history section should appear and show saved calculation
+- Calculation history section should show the saved calculation
 - ✅ Pass | ❌ Fail + reason
 
 ### 44. Calculation History Display
@@ -322,3 +339,24 @@ Step [#]: [Describe exact failure]
 [Only if ❌ failures exist; otherwise omit]
 
 ✅ **QA Status: Complete** if no ❌, else **Incomplete**
+
+## Troubleshooting Guide
+
+### If authentication fails:
+1. Try the Debug Auth page: https://locumtruerate-staging-66ba3177c382.herokuapp.com/debug-auth.html
+2. Use the "Manual Login Test" section with test@example.com / password123
+3. Check LocalStorage section to verify tokens are being saved
+
+### If save doesn't work after authentication:
+1. Check the blue debug panel on the calculator page
+2. It should show "Authenticated - proceeding to save..."
+3. Ensure there are no validation errors (red fields)
+
+### If navigation highlighting doesn't show:
+1. Hard refresh the page (Ctrl+F5 or Cmd+Shift+R)
+2. Look for blue text AND light blue background on "Paycheck Calculator"
+
+### If API calls aren't visible:
+1. Use the API Test Panel instead of trying to access DevTools
+2. The panel shows all API calls with color coding
+3. Blue = API call made, Green = Success, Red = Error, Orange = Local fallback
