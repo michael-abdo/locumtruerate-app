@@ -17,16 +17,24 @@ router.post('/init', async (req, res) => {
     const sqlPath = path.join(__dirname, '../db/init.sql');
     const sqlContent = fs.readFileSync(sqlPath, 'utf8');
     
-    // Split SQL statements and execute them
-    const statements = sqlContent
+    // Clean and split SQL statements
+    const cleanSql = sqlContent
+      .split('\n')
+      .filter(line => !line.trim().startsWith('--') && line.trim().length > 0)
+      .join('\n');
+    
+    const statements = cleanSql
       .split(';')
       .map(stmt => stmt.trim())
-      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+      .filter(stmt => stmt.length > 0);
+    
+    config.logger.info(`Found ${statements.length} SQL statements to execute`, 'MIGRATION');
     
     let executedCount = 0;
     for (const statement of statements) {
       if (statement.trim()) {
         try {
+          config.logger.debug(`Executing: ${statement.substring(0, 50)}...`, 'MIGRATION');
           await pool.query(statement);
           executedCount++;
         } catch (error) {
