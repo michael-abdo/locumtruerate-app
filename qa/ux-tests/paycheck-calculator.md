@@ -215,6 +215,101 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.htm
 - All form validation should function as expected
 - ✅ Pass | ❌ Fail + reason
 
+## Day 13 API Integration & Authentication Tests
+
+### 39. API Integration Check
+**Open browser console and enter test values to verify API calls**
+- Console should show "🌐 Making API call..." messages when inputs change
+- Look for successful API responses or fallback to local calculations
+- ✅ Pass | ❌ Fail + reason
+
+### 40. Debounced Input Handling
+**Rapidly change input values and observe behavior**
+- Calculations should be debounced (delayed ~500ms) to prevent excessive API calls
+- Final calculation should be accurate after inputs stabilize
+- ✅ Pass | ❌ Fail + reason
+
+### 41. Save Button - Unauthenticated
+**Click "Save Calculation" button without being logged in**
+- Should display toast notification: "Please login to save calculations"
+- Calculation should NOT be saved to history
+- ✅ Pass | ❌ Fail + reason
+
+### 42. Authentication State Check
+**Look for login/register options in navigation or page**
+- Some form of authentication should be available on the site
+- User should be able to log in to access save functionality
+- ✅ Pass | ❌ Fail + reason
+
+### 43. Save Calculation - Authenticated
+**If authentication is available, log in and then click "Save Calculation"**
+- Should display success toast: "Calculation saved successfully!"
+- Calculation history section should appear and show saved calculation
+- ✅ Pass | ❌ Fail + reason
+
+### 44. Calculation History Display
+**Verify calculation history section appears after saving**
+- History section should be visible with saved calculations
+- Each history item should show date, period, and key amounts
+- ✅ Pass | ❌ Fail + reason
+
+### 45. Load Saved Calculation
+**Click "Load" button on a saved calculation in history**
+- All form fields should populate with saved values
+- Calculations should update to match saved data
+- Success toast should appear: "Calculation loaded"
+- ✅ Pass | ❌ Fail + reason
+
+### 46. Delete Saved Calculation
+**Click "Delete" button on a saved calculation**
+- Calculation should be removed from history list
+- Success toast should appear: "Calculation deleted"
+- History section should update immediately
+- ✅ Pass | ❌ Fail + reason
+
+### 47. Multiple Save Operations
+**Save 3-5 different calculations with varying values**
+- Each calculation should be saved with unique timestamp
+- History should show most recent calculations first
+- All saved calculations should be loadable
+- ✅ Pass | ❌ Fail + reason
+
+### 48. Toast Notifications System
+**Perform various actions and verify toast notifications appear**
+- Success toasts should be green and show positive feedback
+- Warning toasts should be yellow/orange for auth requirements
+- Error toasts should be red for validation failures
+- Toasts should auto-dismiss after a few seconds
+- ✅ Pass | ❌ Fail + reason
+
+### 49. API Fallback Testing (Optional)
+**If possible, test with network disconnected or API unavailable**
+- Calculator should fall back to local calculations
+- Warning toast should appear: "Using local calculations (API unavailable)"
+- Calculations should still work accurately in offline mode
+- ✅ Pass | ❌ Fail + reason
+
+### 50. Input Validation with Save
+**Enter invalid data and attempt to save**
+- Validation errors should prevent saving
+- Error toast should appear: "Please fix validation errors before saving"
+- Save should only work when all validations pass
+- ✅ Pass | ❌ Fail + reason
+
+### 51. Period Switch with History
+**Change period tabs (Weekly/Biweekly/Monthly) and verify calculations update**
+- Period changes should trigger recalculation
+- Saved calculations should retain their original period
+- Loading a calculation should restore the correct period
+- ✅ Pass | ❌ Fail + reason
+
+### 52. History Persistence
+**Refresh the page and verify calculation history persists**
+- Saved calculations should survive page refresh
+- History should load automatically on page load
+- All saved calculations should remain accessible
+- ✅ Pass | ❌ Fail + reason
+
 ### QA Report
 
 ✅ **All tests passed:**
