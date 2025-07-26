@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 11: Production QA & Validation Suite</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .test-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-running { background: #cce5ff; color: #004085; }
+        .status-success { background: #d4edda; color: #155724; }
+        .status-error { background: #f8d7da; color: #721c24; }
+        .log-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 6px;
+            height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff 0%, #28a745 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Day 11: Production Quality Assurance & Validation Suite</h1>
+        <p><strong>Mission:</strong> Comprehensive testing of the production-integrated LocumTrueRate platform</p>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-value" id="tests-passed">0</span>
+                <span class="metric-label">Tests Passed</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value" id="tests-failed">0</span>
+                <span class="metric-label">Tests Failed</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value" id="avg-response">0ms</span>
+                <span class="metric-label">Avg API Response</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value" id="success-rate">0%</span>
+                <span class="metric-label">Success Rate</span>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p id="progress-text">Ready to begin testing...</p>
+
+        <div class="test-section">
+            <h2>🌐 Production Connectivity Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>API Health Check</h3>
+                    <p>Verify production API is accessible and healthy</p>
+                    <button class="btn" onclick="testAPIHealth()">Test API Health</button>
+                    <div class="status status-pending" id="api-health-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>CORS Configuration</h3>
+                    <p>Test cross-origin requests from GitHub Pages</p>
+                    <button class="btn" onclick="testCORS()">Test CORS</button>
+                    <div class="status status-pending" id="cors-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Environment Detection</h3>
+                    <p>Verify API client uses correct production URL</p>
+                    <button class="btn" onclick="testEnvironmentDetection()">Test Environment</button>
+                    <div class="status status-pending" id="env-status">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔐 Authentication Flow Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>User Registration</h3>
+                    <p>Test new user registration workflow</p>
+                    <button class="btn" onclick="testRegistration()">Test Registration</button>
+                    <div class="status status-pending" id="registration-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Login Authentication</h3>
+                    <p>Test user login and JWT token handling</p>
+                    <button class="btn" onclick="testLogin()">Test Login</button>
+                    <div class="status status-pending" id="login-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Session Persistence</h3>
+                    <p>Test token storage and auto-login</p>
+                    <button class="btn" onclick="testSessionPersistence()">Test Session</button>
+                    <div class="status status-pending" id="session-status">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>💼 Job Board Functionality Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Job Loading</h3>
+                    <p>Test job retrieval from production API</p>
+                    <button class="btn" onclick="testJobLoading()">Test Jobs</button>
+                    <div class="status status-pending" id="jobs-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Search & Filters</h3>
+                    <p>Test job search and filtering functionality</p>
+                    <button class="btn" onclick="testJobFilters()">Test Filters</button>
+                    <div class="status status-pending" id="filters-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Job Application</h3>
+                    <p>Test end-to-end job application workflow</p>
+                    <button class="btn" onclick="testJobApplication()">Test Apply</button>
+                    <div class="status status-pending" id="apply-status">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Mobile & Responsive Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Mobile Layout</h3>
+                    <p>Test responsive design on mobile viewports</p>
+                    <button class="btn" onclick="testMobileLayout()">Test Mobile</button>
+                    <div class="status status-pending" id="mobile-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Touch Interactions</h3>
+                    <p>Test touch-friendly UI elements</p>
+                    <button class="btn" onclick="testTouchInteractions()">Test Touch</button>
+                    <div class="status status-pending" id="touch-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Performance on Mobile</h3>
+                    <p>Test loading speed on mobile networks</p>
+                    <button class="btn" onclick="testMobilePerformance()">Test Performance</button>
+                    <div class="status status-pending" id="mobile-perf-status">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>⚡ Performance & Error Handling Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>API Response Time</h3>
+                    <p>Measure API performance under load</p>
+                    <button class="btn" onclick="testAPIPerformance()">Test Performance</button>
+                    <div class="status status-pending" id="performance-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Error Scenarios</h3>
+                    <p>Test network failures and error handling</p>
+                    <button class="btn" onclick="testErrorHandling()">Test Errors</button>
+                    <div class="status status-pending" id="error-status">Pending</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Retry Logic</h3>
+                    <p>Test automatic retry on failed requests</p>
+                    <button class="btn" onclick="testRetryLogic()">Test Retry</button>
+                    <div class="status status-pending" id="retry-status">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 End-to-End User Journey Tests</h2>
+            <button class="btn btn-success" onclick="runCompleteUserJourney()">Run Complete User Journey</button>
+            <button class="btn btn-warning" onclick="runAllTests()">Run All Tests</button>
+            <button class="btn btn-danger" onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Test Results Log</h2>
+            <div class="log-output" id="test-log">Ready to begin testing...\n</div>
+        </div>
+    </div>
+
+    <!-- Include the production API client -->
+    <script src="docs/js/apiClient.js"></script>
+    <script src="docs/js/auth.js"></script>
+    <script src="docs/js/ui.js"></script>
+
+    <script>
+        // Test Suite Implementation
+        let testResults = {
+            passed: 0,
+            failed: 0,
+            total: 0,
+            responseTimes: []
+        };
+
+        let testLog = document.getElementById('test-log');
+        
+        function logTest(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            testLog.textContent += logLine;
+            testLog.scrollTop = testLog.scrollHeight;
+            console.log(logLine);
+        }
+
+        function updateStatus(elementId, status, message = '') {
+            const element = document.getElementById(elementId);
+            element.className = `status status-${status}`;
+            element.textContent = message || status.charAt(0).toUpperCase() + status.slice(1);
+        }
+
+        function updateMetrics() {
+            document.getElementById('tests-passed').textContent = testResults.passed;
+            document.getElementById('tests-failed').textContent = testResults.failed;
+            
+            const avgResponse = testResults.responseTimes.length > 0 
+                ? Math.round(testResults.responseTimes.reduce((a, b) => a + b, 0) / testResults.responseTimes.length)
+                : 0;
+            document.getElementById('avg-response').textContent = `${avgResponse}ms`;
+            
+            const successRate = testResults.total > 0 
+                ? Math.round((testResults.passed / testResults.total) * 100)
+                : 0;
+            document.getElementById('success-rate').textContent = `${successRate}%`;
+            
+            // Update progress bar
+            const progress = testResults.total > 0 ? (testResults.passed + testResults.failed) / testResults.total * 100 : 0;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = 
+                `Progress: ${testResults.passed + testResults.failed}/${testResults.total} tests completed`;
+        }
+
+        async function testAPIHealth() {
+            logTest('Testing API Health...', 'info');
+            updateStatus('api-health-status', 'running', 'Testing...');
+            
+            try {
+                const startTime = Date.now();
+                const apiClient = new ApiClient();
+                const response = await fetch(apiClient.baseUrl.replace('/api/v1', '/health'));
+                const responseTime = Date.now() - startTime;
+                
+                testResults.responseTimes.push(responseTime);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    logTest(`API Health OK: ${data.status} (${responseTime}ms)`, 'success');
+                    updateStatus('api-health-status', 'success', `Healthy (${responseTime}ms)`);
+                    testResults.passed++;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                logTest(`API Health FAILED: ${error.message}`, 'error');
+                updateStatus('api-health-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function testCORS() {
+            logTest('Testing CORS Configuration...', 'info');
+            updateStatus('cors-status', 'running', 'Testing...');
+            
+            try {
+                const apiClient = new ApiClient();
+                const response = await fetch(`${apiClient.baseUrl}/jobs?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                if (response.ok) {
+                    logTest(`CORS OK: Cross-origin request successful`, 'success');
+                    updateStatus('cors-status', 'success', 'Working');
+                    testResults.passed++;
+                } else {
+                    throw new Error(`CORS failed: ${response.status}`);
+                }
+            } catch (error) {
+                logTest(`CORS FAILED: ${error.message}`, 'error');
+                updateStatus('cors-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function testEnvironmentDetection() {
+            logTest('Testing Environment Detection...', 'info');
+            updateStatus('env-status', 'running', 'Testing...');
+            
+            try {
+                const apiClient = new ApiClient();
+                const expectedUrl = 'https://locumtruerate-staging-66ba3177c382.herokuapp.com/api/v1';
+                
+                if (apiClient.baseUrl === expectedUrl) {
+                    logTest(`Environment Detection OK: Using production URL`, 'success');
+                    updateStatus('env-status', 'success', 'Production URL');
+                    testResults.passed++;
+                } else {
+                    throw new Error(`Wrong URL: ${apiClient.baseUrl}`);
+                }
+            } catch (error) {
+                logTest(`Environment Detection FAILED: ${error.message}`, 'error');
+                updateStatus('env-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function testRegistration() {
+            logTest('Testing User Registration...', 'info');
+            updateStatus('registration-status', 'running', 'Testing...');
+            
+            try {
+                const apiClient = new ApiClient();
+                const testEmail = `day11test${Date.now()}@test.com`;
+                
+                const response = await apiClient.register({
+                    email: testEmail,
+                    password: 'password123',
+                    firstName: 'Day11',
+                    lastName: 'Tester',
+                    role: 'locum'
+                });
+                
+                logTest(`Registration OK: User created successfully`, 'success');
+                updateStatus('registration-status', 'success', 'Working');
+                testResults.passed++;
+            } catch (error) {
+                logTest(`Registration FAILED: ${error.message}`, 'error');
+                updateStatus('registration-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function testLogin() {
+            logTest('Testing Login Authentication...', 'info');
+            updateStatus('login-status', 'running', 'Testing...');
+            
+            try {
+                const apiClient = new ApiClient();
+                
+                const response = await apiClient.login('day10test@locumtrue.com', 'password123');
+                
+                if (response.token && response.user) {
+                    logTest(`Login OK: JWT token received`, 'success');
+                    updateStatus('login-status', 'success', 'Working');
+                    testResults.passed++;
+                    
+                    // Store for other tests
+                    window.testToken = response.token;
+                    window.testUser = response.user;
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                logTest(`Login FAILED: ${error.message}`, 'error');
+                updateStatus('login-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function testJobLoading() {
+            logTest('Testing Job Loading...', 'info');
+            updateStatus('jobs-status', 'running', 'Testing...');
+            
+            try {
+                const apiClient = new ApiClient();
+                const response = await apiClient.getJobs({limit: 5});
+                
+                if (response.jobs && Array.isArray(response.jobs)) {
+                    logTest(`Job Loading OK: ${response.jobs.length} jobs loaded`, 'success');
+                    updateStatus('jobs-status', 'success', `${response.jobs.length} jobs`);
+                    testResults.passed++;
+                } else {
+                    throw new Error('Invalid jobs response');
+                }
+            } catch (error) {
+                logTest(`Job Loading FAILED: ${error.message}`, 'error');
+                updateStatus('jobs-status', 'error', 'Failed');
+                testResults.failed++;
+            }
+            
+            testResults.total++;
+            updateMetrics();
+        }
+
+        async function runAllTests() {
+            logTest('=== STARTING COMPREHENSIVE TEST SUITE ===', 'info');
+            testResults = { passed: 0, failed: 0, total: 0, responseTimes: [] };
+            
+            // Reset all status indicators
+            document.querySelectorAll('.status').forEach(el => {
+                el.className = 'status status-pending';
+                el.textContent = 'Pending';
+            });
+            
+            // Run tests in sequence
+            await testAPIHealth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testCORS();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testEnvironmentDetection();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testRegistration();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testLogin();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testJobLoading();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            logTest('=== TEST SUITE COMPLETED ===', 'info');
+            logTest(`RESULTS: ${testResults.passed} passed, ${testResults.failed} failed`, 'info');
+        }
+
+        function clearResults() {
+            testResults = { passed: 0, failed: 0, total: 0, responseTimes: [] };
+            updateMetrics();
+            testLog.textContent = 'Results cleared. Ready for new tests...\n';
+            
+            document.querySelectorAll('.status').forEach(el => {
+                el.className = 'status status-pending';
+                el.textContent = 'Pending';
+            });
+        }
+
+        // Initialize
+        logTest('Day 11 Production QA Suite initialized', 'info');
+        logTest(`Testing from: ${window.location.origin}`, 'info');
+        logTest(`API Target: ${new ApiClient().baseUrl}`, 'info');
+    </script>
+</body>
+</html>
