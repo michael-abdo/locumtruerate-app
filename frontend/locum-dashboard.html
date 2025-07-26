@@ -1843,6 +1843,181 @@
             box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.3);
         }
 
+        /* Authentication UI Styles */
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 1rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            background-color: var(--background-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Authentication Modal Styles */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .auth-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .auth-modal h2 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-group input {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .auth-form-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .auth-form-buttons .btn {
+            flex: 1;
+        }
+        
+        .loading-state {
+            display: none;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.1);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .success-message {
+            color: var(--success-color);
+            background-color: rgba(34, 197, 94, 0.1);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Content Protection */
+        .protected-content {
+            display: none;
+        }
+        
+        .protected-content.authenticated {
+            display: block;
+        }
+        
+        .login-required {
+            display: none;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--background-secondary);
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .login-required.show {
+            display: block;
+        }
+        
+        .login-required h2 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .login-required p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
         /* Enhanced focus for navigation elements */
         .nav-link:focus,
         .breadcrumb-link:focus {
@@ -2355,6 +2530,22 @@
                         </ul>
                     </li>
                 </ul>
+                
+                <!-- Authentication UI -->
+                <div id="auth-section" class="auth-section">
+                    <!-- User Info (visible when logged in) -->
+                    <div id="user-info" class="user-info" style="display: none;">
+                        <span id="user-display-name" class="user-name">Welcome!</span>
+                        <button id="logout-btn" class="btn btn-secondary btn-sm" type="button">Logout</button>
+                    </div>
+                    
+                    <!-- Login/Register Button (visible when not logged in) -->
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button id="show-login-btn" class="btn btn-primary btn-sm" type="button">Login</button>
+                        <button id="show-register-btn" class="btn btn-secondary btn-sm" type="button">Register</button>
+                    </div>
+                </div>
+                
                 <div class="nav-search" role="search">
                     <input type="search" 
                            id="global-search" 
@@ -2409,8 +2600,73 @@
             </div>
         </section>
 
+        <!-- Authentication Modals -->
+        <div id="login-modal" class="auth-modal">
+            <div class="auth-modal-content">
+                <h2>Login to Your Account</h2>
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required autocomplete="current-password">
+                    </div>
+                    <div class="auth-form-buttons">
+                        <button type="button" id="cancel-login-btn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" id="login-submit-btn" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+                <div id="login-loading" class="loading-state">Logging you in...</div>
+                <div id="login-error" class="error-message"></div>
+            </div>
+        </div>
+        
+        <div id="register-modal" class="auth-modal">
+            <div class="auth-modal-content">
+                <h2>Create Your Account</h2>
+                <form id="register-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="register-first-name">First Name</label>
+                        <input type="text" id="register-first-name" name="firstName" required autocomplete="given-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-last-name">Last Name</label>
+                        <input type="text" id="register-last-name" name="lastName" required autocomplete="family-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" name="password" required autocomplete="new-password" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-phone">Phone (optional)</label>
+                        <input type="tel" id="register-phone" name="phone" autocomplete="tel">
+                    </div>
+                    <div class="auth-form-buttons">
+                        <button type="button" id="cancel-register-btn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" id="register-submit-btn" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                <div id="register-loading" class="loading-state">Creating your account...</div>
+                <div id="register-error" class="error-message"></div>
+                <div id="register-success" class="success-message"></div>
+            </div>
+        </div>
+        
+        <!-- Login Required Message -->
+        <div id="login-required" class="login-required">
+            <h2>🔒 Login Required</h2>
+            <p>Please log in to access your personalized dashboard and view your locum assignments.</p>
+            <button id="login-required-btn" class="btn btn-primary">Login Now</button>
+        </div>
+        
         <!-- Main Content -->
-        <main id="main-content" class="main-content" role="main" aria-label="Locum dashboard content">
+        <main id="main-content" class="main-content protected-content" role="main" aria-label="Locum dashboard content">
             <div class="container">
                 <!-- Stats Overview -->
                 <section class="stats-grid" role="region" aria-labelledby="stats-heading">
@@ -5811,6 +6067,363 @@ American Board of Internal Medicine</textarea>
                 initLogger();
                 makeLoggerDraggable();
             }
+        })();
+
+        // Authentication Management
+        (function() {
+            const apiClient = new ApiClient();
+            let currentUser = null;
+
+            // Initialize authentication on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeAuthentication();
+                setupAuthEventListeners();
+            });
+
+            function initializeAuthentication() {
+                console.log('🔒 Initializing authentication...');
+                
+                // Check if user is already logged in
+                if (Auth.isLoggedIn()) {
+                    const user = Auth.getCurrentUser();
+                    const token = Auth.getToken();
+                    
+                    if (user && token) {
+                        apiClient.setAuthToken(token);
+                        currentUser = user;
+                        showAuthenticatedState();
+                        loadDashboardData();
+                        return;
+                    }
+                }
+                
+                // User not authenticated - show login required
+                showUnauthenticatedState();
+            }
+
+            function setupAuthEventListeners() {
+                // Show login modal
+                document.getElementById('show-login-btn').addEventListener('click', showLoginModal);
+                document.getElementById('login-required-btn').addEventListener('click', showLoginModal);
+                
+                // Show register modal
+                document.getElementById('show-register-btn').addEventListener('click', showRegisterModal);
+                
+                // Modal cancel buttons
+                document.getElementById('cancel-login-btn').addEventListener('click', hideLoginModal);
+                document.getElementById('cancel-register-btn').addEventListener('click', hideRegisterModal);
+                
+                // Form submissions
+                document.getElementById('login-form').addEventListener('submit', handleLogin);
+                document.getElementById('register-form').addEventListener('submit', handleRegister);
+                
+                // Logout button
+                document.getElementById('logout-btn').addEventListener('click', handleLogout);
+                
+                // Close modals on outside click
+                document.getElementById('login-modal').addEventListener('click', function(e) {
+                    if (e.target === this) hideLoginModal();
+                });
+                document.getElementById('register-modal').addEventListener('click', function(e) {
+                    if (e.target === this) hideRegisterModal();
+                });
+                
+                // Close modals on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        hideLoginModal();
+                        hideRegisterModal();
+                    }
+                });
+            }
+
+            function showLoginModal() {
+                document.getElementById('login-modal').classList.add('active');
+                document.getElementById('login-email').focus();
+                clearAuthMessages();
+            }
+
+            function hideLoginModal() {
+                document.getElementById('login-modal').classList.remove('active');
+                document.getElementById('login-form').reset();
+                clearAuthMessages();
+            }
+
+            function showRegisterModal() {
+                document.getElementById('register-modal').classList.add('active');
+                document.getElementById('register-first-name').focus();
+                clearAuthMessages();
+            }
+
+            function hideRegisterModal() {
+                document.getElementById('register-modal').classList.remove('active');
+                document.getElementById('register-form').reset();
+                clearAuthMessages();
+            }
+
+            function clearAuthMessages() {
+                document.getElementById('login-error').style.display = 'none';
+                document.getElementById('register-error').style.display = 'none';
+                document.getElementById('register-success').style.display = 'none';
+                document.getElementById('login-loading').style.display = 'none';
+                document.getElementById('register-loading').style.display = 'none';
+            }
+
+            async function handleLogin(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                
+                if (!email || !password) {
+                    showError('login-error', 'Please fill in all fields');
+                    return;
+                }
+                
+                setLoadingState('login', true);
+                
+                try {
+                    const response = await apiClient.login(email, password);
+                    
+                    if (response.token && response.user) {
+                        // Store authentication data
+                        Auth.login(response.token, response.user);
+                        currentUser = response.user;
+                        
+                        // Update UI
+                        showAuthenticatedState();
+                        hideLoginModal();
+                        
+                        // Load dashboard data
+                        await loadDashboardData();
+                        
+                        // Show success message
+                        if (typeof showToast === 'function') {
+                            showToast('Login successful! Welcome back.', 'success');
+                        }
+                        
+                        console.log('✅ Login successful:', response.user.email);
+                    } else {
+                        throw new Error('Invalid response from server');
+                    }
+                } catch (error) {
+                    console.error('❌ Login failed:', error);
+                    showError('login-error', error.message || 'Login failed. Please try again.');
+                } finally {
+                    setLoadingState('login', false);
+                }
+            }
+
+            async function handleRegister(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    firstName: document.getElementById('register-first-name').value.trim(),
+                    lastName: document.getElementById('register-last-name').value.trim(),
+                    email: document.getElementById('register-email').value.trim(),
+                    password: document.getElementById('register-password').value,
+                    phone: document.getElementById('register-phone').value.trim(),
+                    role: 'locum' // Default role for locum dashboard
+                };
+                
+                // Validation
+                if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+                    showError('register-error', 'Please fill in all required fields');
+                    return;
+                }
+                
+                if (formData.password.length < 6) {
+                    showError('register-error', 'Password must be at least 6 characters long');
+                    return;
+                }
+                
+                if (!isValidEmail(formData.email)) {
+                    showError('register-error', 'Please enter a valid email address');
+                    return;
+                }
+                
+                setLoadingState('register', true);
+                
+                try {
+                    const response = await apiClient.register(formData);
+                    
+                    // Show success message
+                    showSuccess('register-success', 'Account created successfully! Please log in with your new credentials.');
+                    
+                    // Clear form
+                    document.getElementById('register-form').reset();
+                    
+                    // Switch to login after 2 seconds
+                    setTimeout(() => {
+                        hideRegisterModal();
+                        showLoginModal();
+                        document.getElementById('login-email').value = formData.email;
+                        document.getElementById('login-password').focus();
+                    }, 2000);
+                    
+                    console.log('✅ Registration successful:', formData.email);
+                } catch (error) {
+                    console.error('❌ Registration failed:', error);
+                    showError('register-error', error.message || 'Registration failed. Please try again.');
+                } finally {
+                    setLoadingState('register', false);
+                }
+            }
+
+            async function handleLogout() {
+                try {
+                    // Call logout API
+                    await apiClient.logout();
+                } catch (error) {
+                    console.warn('⚠️ Logout API call failed:', error.message);
+                    // Continue with logout even if API call fails
+                }
+                
+                // Clear local authentication data
+                Auth.logout();
+                apiClient.clearAuthToken();
+                currentUser = null;
+                
+                // Update UI
+                showUnauthenticatedState();
+                
+                // Show success message
+                if (typeof showToast === 'function') {
+                    showToast('Logged out successfully', 'info');
+                }
+                
+                console.log('✅ Logout successful');
+            }
+
+            function showAuthenticatedState() {
+                // Show user info in nav
+                document.getElementById('user-info').style.display = 'flex';
+                document.getElementById('auth-buttons').style.display = 'none';
+                
+                // Update user display name
+                const displayName = Auth.getUserDisplayName();
+                document.getElementById('user-display-name').textContent = `Welcome, ${displayName}`;
+                
+                // Show protected content
+                const protectedContent = document.querySelector('.protected-content');
+                if (protectedContent) {
+                    protectedContent.classList.add('authenticated');
+                }
+                
+                // Hide login required message
+                document.getElementById('login-required').classList.remove('show');
+            }
+
+            function showUnauthenticatedState() {
+                // Hide user info in nav
+                document.getElementById('user-info').style.display = 'none';
+                document.getElementById('auth-buttons').style.display = 'flex';
+                
+                // Hide protected content
+                const protectedContent = document.querySelector('.protected-content');
+                if (protectedContent) {
+                    protectedContent.classList.remove('authenticated');
+                }
+                
+                // Show login required message
+                document.getElementById('login-required').classList.add('show');
+            }
+
+            async function loadDashboardData() {
+                if (!currentUser) return;
+                
+                console.log('📊 Loading dashboard data for user:', currentUser.email);
+                
+                try {
+                    // Update the dashboard with real user data
+                    await updateUserApplications();
+                    await updateRecentJobMatches();
+                    await updateUserStats();
+                    
+                    console.log('✅ Dashboard data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dashboard data:', error);
+                    if (typeof showToast === 'function') {
+                        showToast('Failed to load some dashboard data', 'warning');
+                    }
+                }
+            }
+
+            async function updateUserApplications() {
+                try {
+                    const applications = await apiClient.getMyApplications({ page: 1, limit: 5 });
+                    
+                    // Update applications section with real data
+                    // This would integrate with existing dashboard elements
+                    console.log('📋 User applications loaded:', applications.data?.length || 0);
+                } catch (error) {
+                    console.error('Failed to load applications:', error);
+                }
+            }
+
+            async function updateRecentJobMatches() {
+                try {
+                    const jobs = await apiClient.getJobs({ page: 1, limit: 5 });
+                    
+                    // Update job matches section with real data
+                    console.log('💼 Recent job matches loaded:', jobs.data?.length || 0);
+                } catch (error) {
+                    console.error('Failed to load job matches:', error);
+                }
+            }
+
+            async function updateUserStats() {
+                try {
+                    const applications = await apiClient.getMyApplications({ page: 1, limit: 100 });
+                    
+                    // Calculate and update user statistics
+                    const stats = {
+                        totalApplications: applications.total || 0,
+                        activeApplications: applications.data?.filter(app => app.status === 'pending').length || 0,
+                        acceptedApplications: applications.data?.filter(app => app.status === 'accepted').length || 0
+                    };
+                    
+                    console.log('📈 User stats calculated:', stats);
+                } catch (error) {
+                    console.error('Failed to calculate user stats:', error);
+                }
+            }
+
+            function setLoadingState(type, isLoading) {
+                const loadingElement = document.getElementById(`${type}-loading`);
+                const submitButton = document.getElementById(`${type}-submit-btn`);
+                
+                if (isLoading) {
+                    loadingElement.style.display = 'block';
+                    submitButton.disabled = true;
+                    submitButton.textContent = type === 'login' ? 'Logging in...' : 'Creating Account...';
+                } else {
+                    loadingElement.style.display = 'none';
+                    submitButton.disabled = false;
+                    submitButton.textContent = type === 'login' ? 'Login' : 'Register';
+                }
+            }
+
+            function showError(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+
+            function showSuccess(elementId, message) {
+                const successElement = document.getElementById(elementId);
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+            }
+
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            // Make loadDashboardData available globally for other functions
+            window.loadDashboardData = loadDashboardData;
+            window.currentUser = () => currentUser;
         })();
     </script>
 </body>
