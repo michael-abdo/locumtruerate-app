@@ -7286,6 +7286,50 @@ Dr. James Wilson`,
             updateApplicantsDisplay();
         }
 
+        function updateApplicantsDisplay() {
+            const applicantCards = document.querySelectorAll('.applicant-card');
+            const startIndex = (applicantsPagination.currentPage - 1) * applicantsPagination.itemsPerPage;
+            const endIndex = startIndex + applicantsPagination.itemsPerPage;
+            
+            // Hide all cards first
+            applicantCards.forEach(card => card.style.display = 'none');
+            
+            // Show only the cards for the current page
+            applicantsPagination.filteredItems.slice(startIndex, endIndex).forEach(card => {
+                card.style.display = 'flex';
+            });
+            
+            // Update pagination controls
+            const totalPages = Math.ceil(applicantsPagination.totalItems / applicantsPagination.itemsPerPage);
+            const prevBtn = document.getElementById('applicants-prev-btn');
+            const nextBtn = document.getElementById('applicants-next-btn');
+            const pageInfo = document.getElementById('applicants-pagination-info');
+            const pageNumbers = document.getElementById('applicants-page-numbers');
+            
+            // Update buttons
+            if (prevBtn) prevBtn.disabled = applicantsPagination.currentPage === 1;
+            if (nextBtn) nextBtn.disabled = applicantsPagination.currentPage === totalPages || totalPages === 0;
+            
+            // Update info text
+            if (pageInfo) {
+                const start = applicantsPagination.totalItems === 0 ? 0 : startIndex + 1;
+                const end = Math.min(endIndex, applicantsPagination.totalItems);
+                pageInfo.textContent = `Showing ${start}-${end} of ${applicantsPagination.totalItems} applicants`;
+            }
+            
+            // Update page numbers
+            if (pageNumbers) {
+                pageNumbers.innerHTML = '';
+                for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `page-number ${i === applicantsPagination.currentPage ? 'active' : ''}`;
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => goToApplicantsPage(i);
+                    pageNumbers.appendChild(pageBtn);
+                }
+            }
+        }
+
         // Advanced search functionality
         function showAdvancedSearch() {
             const modal = document.createElement('div');
@@ -7456,6 +7500,11 @@ Dr. James Wilson`,
                 // Add KPI refresh controls
                 if (typeof addKPIRefreshControls === 'function') {
                     addKPIRefreshControls();
+                }
+                
+                // Initialize applicants display
+                if (typeof updateApplicantsPagination === 'function') {
+                    updateApplicantsPagination();
                 }
                 
                 // Initialize message center with first message selected
