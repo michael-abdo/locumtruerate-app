@@ -155,7 +155,13 @@ router.post('/create-tables', async (req, res) => {
         job_id INTEGER NOT NULL REFERENCES jobs(id),
         status VARCHAR(20) DEFAULT 'pending',
         cover_letter TEXT,
+        expected_rate DECIMAL(10,2),
+        available_date DATE,
+        notes TEXT,
+        reviewed_at TIMESTAMP WITH TIME ZONE,
+        reviewed_by INTEGER REFERENCES users(id),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(user_id, job_id)
       )
     `);
@@ -210,6 +216,55 @@ router.get('/debug', async (req, res) => {
       error: 'debug_failed',
       message: error.message,
       timestamp: require('../config/config').utils.timestamp()
+    });
+  }
+});
+
+/**
+ * POST /api/v1/migrate/fix-applications-schema
+ * Drop and recreate applications table with correct schema
+ */
+router.post('/fix-applications-schema', async (req, res) => {
+  try {
+    config.logger.info('Fixing applications table schema...', 'MIGRATION');
+    
+    // Drop existing applications table
+    await pool.query('DROP TABLE IF EXISTS applications CASCADE');
+    
+    // Create applications table with correct schema
+    await pool.query(`
+      CREATE TABLE applications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        job_id INTEGER NOT NULL REFERENCES jobs(id),
+        status VARCHAR(20) DEFAULT 'pending',
+        cover_letter TEXT,
+        expected_rate DECIMAL(10,2),
+        available_date DATE,
+        notes TEXT,
+        reviewed_at TIMESTAMP WITH TIME ZONE,
+        reviewed_by INTEGER REFERENCES users(id),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, job_id)
+      )
+    `);
+    
+    config.logger.info('Applications table schema fixed successfully', 'MIGRATION');
+    
+    res.json({
+      success: true,
+      message: 'Applications table schema fixed successfully',
+      timestamp: config.utils.timestamp()
+    });
+    
+  } catch (error) {
+    config.logger.error('Failed to fix applications schema', error, 'MIGRATION');
+    res.status(500).json({
+      error: 'applications_schema_fix_failed',
+      message: 'Failed to fix applications table schema',
+      details: error.message,
+      timestamp: config.utils.timestamp()
     });
   }
 });
