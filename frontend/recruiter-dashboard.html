@@ -3306,23 +3306,8 @@
                 </div>
             `;
             
-            // Add backdrop click handler
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeJobModal();
-                }
-            });
-            
-            // Add escape key handler
-            const escapeHandler = function(e) {
-                if (e.key === 'Escape') {
-                    closeJobModal();
-                }
-            };
-            document.addEventListener('keydown', escapeHandler);
-            
-            // Store escape handler for cleanup
-            modal.escapeHandler = escapeHandler;
+            // Add universal modal handlers
+            addModalHandlers(modal, closeJobModal);
             
             // Prevent body scroll when modal is open
             document.body.style.overflow = 'hidden';
@@ -3347,6 +3332,27 @@
                     firstInput.focus();
                 }
             }, 200);
+        }
+
+        // Universal modal handlers
+        function addModalHandlers(modal, closeFunction) {
+            // Add backdrop click handler
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeFunction();
+                }
+            });
+            
+            // Add escape key handler
+            const escapeHandler = function(e) {
+                if (e.key === 'Escape') {
+                    closeFunction();
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+            
+            // Store escape handler for cleanup
+            modal.escapeHandler = escapeHandler;
         }
 
         function closeJobModal() {
@@ -3855,7 +3861,8 @@
             // Update filter button states
             const buttons = document.querySelectorAll('.filter-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            const activeButton = document.querySelector(`[data-filter="${filter}"]`);
+            if (activeButton) activeButton.classList.add('active');
             
             // Filter table rows
             const rows = document.querySelectorAll('#jobs-table-body tr');
@@ -4046,6 +4053,9 @@
                     </form>
                 </div>
             `;
+            
+            // Add universal modal handlers
+            addModalHandlers(modal, closeJobModal);
             
             document.body.appendChild(modal);
         }
@@ -7406,12 +7416,23 @@ Dr. James Wilson`,
                 </div>
             `;
             
+            // Add universal modal handlers
+            addModalHandlers(modal, closeAdvancedSearch);
+            
             document.body.appendChild(modal);
         }
 
         function closeAdvancedSearch() {
             const modal = document.querySelector('.compose-modal');
             if (modal) {
+                // Clean up escape key handler
+                if (modal.escapeHandler) {
+                    document.removeEventListener('keydown', modal.escapeHandler);
+                }
+                
+                // Restore body scroll
+                document.body.style.overflow = '';
+                
                 modal.remove();
             }
         }
