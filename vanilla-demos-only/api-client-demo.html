@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Client Demo - LocumTrueRate</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #2563eb;
+        }
+        
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .results {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .user-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>LocumTrueRate API Client Demo</h1>
+    
+    <!-- User Info Section -->
+    <div class="container user-info" id="userInfo" style="display: none;">
+        <h3>Current User</h3>
+        <p id="userDisplay"></p>
+        <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
+    
+    <!-- Authentication Section -->
+    <div class="container section" id="authSection">
+        <h2>Authentication</h2>
+        
+        <div class="grid">
+            <!-- Login Form -->
+            <div>
+                <h3>Login</h3>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" value="john.doe@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" value="password123" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div>
+                <h3>Register</h3>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="role" required>
+                            <option value="locum">Locum</option>
+                            <option value="recruiter">Recruiter</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Register</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="results" id="authResults"></div>
+    </div>
+    
+    <!-- Jobs Section -->
+    <div class="container section">
+        <h2>Jobs API</h2>
+        
+        <div class="form-group">
+            <button class="btn" onclick="getJobs()">Get Jobs</button>
+            <button class="btn" onclick="getJobById()">Get Job #1</button>
+            <button class="btn" onclick="searchJobs()">Search Jobs (CA)</button>
+        </div>
+        
+        <div class="results" id="jobResults"></div>
+    </div>
+    
+    <!-- Calculator Section -->
+    <div class="container section">
+        <h2>Calculator API</h2>
+        
+        <div class="grid">
+            <!-- Contract Calculator -->
+            <div>
+                <h3>Contract Calculator</h3>
+                <form id="contractForm" onsubmit="calculateContract(event)">
+                    <div class="form-group">
+                        <label>Hourly Rate</label>
+                        <input type="number" name="hourlyRate" value="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hours per Week</label>
+                        <input type="number" name="hoursPerWeek" value="40" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Weeks per Year</label>
+                        <input type="number" name="weeksPerYear" value="48" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="state" value="CA" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Expense Rate (%)</label>
+                        <input type="number" name="expenseRate" value="15" step="0.1" required>
+                    </div>
+                    <button type="submit" class="btn">Calculate</button>
+                </form>
+            </div>
+            
+            <!-- Paycheck Calculator -->
+            <div>
+                <h3>Paycheck Calculator</h3>
+                <form id="paycheckForm" onsubmit="calculatePaycheck(event)">
+                    <div class="form-group">
+                        <label>Regular Hours</label>
+                        <input type="number" name="regularHours" value="40" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Regular Rate</label>
+                        <input type="number" name="regularRate" value="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Overtime Hours</label>
+                        <input type="number" name="overtimeHours" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Overtime Rate</label>
+                        <input type="number" name="overtimeRate" value="300">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" name="state" value="CA" maxlength="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Period</label>
+                        <select name="period" required>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Bi-weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Calculate</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="results" id="calcResults"></div>
+    </div>
+
+    <!-- Load API Client Scripts -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    
+    <script>
+        // Initialize API client
+        const api = new ApiClient();
+        
+        // Initialize UI on page load
+        window.onload = function() {
+            UI.init();
+            updateUserDisplay();
+        };
+        
+        // Update user display
+        function updateUserDisplay() {
+            if (Auth.isLoggedIn()) {
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('userDisplay').textContent = 
+                    `Logged in as: ${Auth.getUserDisplayName()} (${Auth.getUserRole()})`;
+                
+                // Set token in API client
+                api.setAuthToken(Auth.getToken());
+            } else {
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('authSection').style.display = 'block';
+            }
+        }
+        
+        // Authentication handlers
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+            const email = form.email.value;
+            const password = form.password.value;
+            
+            UI.showLoading(form.querySelector('button[type="submit"]'), 'Logging in...');
+            
+            try {
+                const response = await api.login(email, password);
+                
+                // Save auth data
+                Auth.login(response.token, response.user, 86400); // 24 hours
+                
+                UI.showSuccess('Login successful!');
+                document.getElementById('authResults').textContent = 
+                    JSON.stringify(response, null, 2);
+                
+                updateUserDisplay();
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('authResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(form.querySelector('button[type="submit"]'));
+            }
+        }
+        
+        async function handleRegister(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const userData = Object.fromEntries(formData);
+            
+            UI.showLoading(form.querySelector('button[type="submit"]'), 'Registering...');
+            
+            try {
+                const response = await api.register(userData);
+                UI.showSuccess('Registration successful! Please login.');
+                document.getElementById('authResults').textContent = 
+                    JSON.stringify(response, null, 2);
+                form.reset();
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('authResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(form.querySelector('button[type="submit"]'));
+            }
+        }
+        
+        async function logout() {
+            try {
+                await api.logout();
+            } catch (error) {
+                // Ignore logout errors
+            }
+            
+            Auth.logout();
+            UI.showInfo('Logged out successfully');
+            updateUserDisplay();
+        }
+        
+        // Jobs API handlers
+        async function getJobs() {
+            UI.showLoading(document.getElementById('jobResults'), 'Loading jobs...');
+            
+            try {
+                const response = await api.getJobs({ limit: 5 });
+                document.getElementById('jobResults').textContent = 
+                    JSON.stringify(response, null, 2);
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('jobResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(document.getElementById('jobResults'));
+            }
+        }
+        
+        async function getJobById() {
+            UI.showLoading(document.getElementById('jobResults'), 'Loading job...');
+            
+            try {
+                const response = await api.getJob(1);
+                document.getElementById('jobResults').textContent = 
+                    JSON.stringify(response, null, 2);
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('jobResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(document.getElementById('jobResults'));
+            }
+        }
+        
+        async function searchJobs() {
+            UI.showLoading(document.getElementById('jobResults'), 'Searching jobs...');
+            
+            try {
+                const response = await api.getJobs({ 
+                    state: 'CA', 
+                    limit: 5,
+                    minRate: 150,
+                    maxRate: 300 
+                });
+                document.getElementById('jobResults').textContent = 
+                    JSON.stringify(response, null, 2);
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('jobResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(document.getElementById('jobResults'));
+            }
+        }
+        
+        // Calculator handlers
+        async function calculateContract(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                hourlyRate: parseFloat(formData.get('hourlyRate')),
+                hoursPerWeek: parseFloat(formData.get('hoursPerWeek')),
+                weeksPerYear: parseFloat(formData.get('weeksPerYear')),
+                state: formData.get('state'),
+                expenseRate: parseFloat(formData.get('expenseRate')) / 100
+            };
+            
+            UI.showLoading(document.getElementById('calcResults'), 'Calculating...');
+            
+            try {
+                const response = await api.calculateContract(data);
+                document.getElementById('calcResults').textContent = 
+                    JSON.stringify(response, null, 2);
+                UI.showSuccess('Contract calculation complete!');
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('calcResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(document.getElementById('calcResults'));
+            }
+        }
+        
+        async function calculatePaycheck(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                regularHours: parseFloat(formData.get('regularHours')),
+                regularRate: parseFloat(formData.get('regularRate')),
+                overtimeHours: parseFloat(formData.get('overtimeHours')) || 0,
+                overtimeRate: parseFloat(formData.get('overtimeRate')) || 0,
+                state: formData.get('state'),
+                period: formData.get('period')
+            };
+            
+            UI.showLoading(document.getElementById('calcResults'), 'Calculating...');
+            
+            try {
+                const response = await api.calculatePaycheck(data);
+                document.getElementById('calcResults').textContent = 
+                    JSON.stringify(response, null, 2);
+                UI.showSuccess('Paycheck calculation complete!');
+            } catch (error) {
+                UI.showError(error.message);
+                document.getElementById('calcResults').textContent = 
+                    `Error: ${error.message}`;
+            } finally {
+                UI.hideLoading(document.getElementById('calcResults'));
+            }
+        }
+    </script>
+</body>
+</html>

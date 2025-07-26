@@ -1,0 +1,55 @@
+{
+  "id": "locumtruerate-env",
+  "name": "LocumTrueRate Development",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "testEmail",
+      "value": "test@example.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "testPassword",
+      "value": "TestPass123",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "currentUserId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "lastCreatedJobId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "lastCreatedApplicationId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

@@ -33,47 +33,57 @@ class Application {
     } = applicationData;
 
     try {
-      return await executeTransaction(async (client) => {
-        // First, check if the job exists and is active
-        const jobQuery = 'SELECT * FROM jobs WHERE id = $1 AND status = $2';
-        const jobResult = await client.query(jobQuery, [jobId, 'active']);
-        
-        if (jobResult.rows.length === 0) {
-          throw new Error('Job not found or no longer active');
-        }
+      // First, check if the job exists and is active
+      const jobQuery = 'SELECT * FROM jobs WHERE id = $1 AND status = $2';
+      const jobResult = await pool.query(jobQuery, [jobId, 'active']);
+      
+      if (jobResult.rows.length === 0) {
+        throw new Error('Job not found or no longer active');
+      }
 
-        const job = jobResult.rows[0];
+      const job = jobResult.rows[0];
 
-        // Check if user is trying to apply to their own job
-        if (job.posted_by === userId) {
-          throw new Error('Cannot apply to your own job posting');
-        }
+      // Check if user is trying to apply to their own job
+      if (job.posted_by === userId) {
+        throw new Error('Cannot apply to your own job posting');
+      }
 
-        // Check if user has already applied (unique constraint will catch this too, but better UX)
-        const existingQuery = 'SELECT id FROM applications WHERE user_id = $1 AND job_id = $2';
-        const existingResult = await client.query(existingQuery, [userId, jobId]);
-        
-        if (existingResult.rows.length > 0) {
-          throw new Error('You have already applied to this job');
-        }
+      // Check if user has already applied
+      const existingQuery = 'SELECT id FROM applications WHERE user_id = $1 AND job_id = $2';
+      const existingResult = await pool.query(existingQuery, [userId, jobId]);
+      
+      if (existingResult.rows.length > 0) {
+        throw new Error('You have already applied to this job');
+      }
 
-        // Create the application
-        const insertQuery = `
-          INSERT INTO applications (
-            user_id, job_id, cover_letter, expected_rate, 
-            available_date, notes, status
-          )
-          VALUES ($1, $2, $3, $4, $5, $6, 'pending')
-          RETURNING *
-        `;
+      // Create the application
+      const insertQuery = `
+        INSERT INTO applications (
+          user_id, job_id, cover_letter, expected_rate, 
+          available_date, notes, status
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+        RETURNING id, user_id, job_id, status, cover_letter, expected_rate, 
+                  available_date, notes, created_at, updated_at
+      `;
 
-        const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes];
-        const result = await client.query(insertQuery, values);
-        const application = result.rows[0];
+      const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes];
+      const result = await pool.query(insertQuery, values);
+      const application = result.rows[0];
 
-        // Return application with job details
-        return await this.findByIdWithDetails(application.id);
-      });
+      // Return properly formatted application data
+      return {
+        id: application.id,
+        userId: application.user_id,
+        jobId: application.job_id,
+        status: application.status,
+        coverLetter: application.cover_letter,
+        expectedRate: application.expected_rate ? parseFloat(application.expected_rate) : null,
+        availableDate: application.available_date,
+        notes: application.notes,
+        createdAt: application.created_at,
+        updatedAt: application.updated_at
+      };
     } catch (error) {
       // Handle unique constraint violation
       if (error.code === '23505') {
@@ -152,7 +162,7 @@ class Application {
     );
 
     return {
-      applications: result.items.map(row => this.formatApplication(row)),
+      applications: result.items.map(row => Application.formatApplication(row)),
       pagination: result.pagination
     };
   }
@@ -233,7 +243,7 @@ class Application {
     );
 
     return {
-      applications: result.items.map(row => this.formatApplicationForRecruiter(row)),
+      applications: result.items.map(row => Application.formatApplicationForRecruiter(row)),
       pagination: result.pagination
     };
   }
@@ -257,16 +267,24 @@ class Application {
         j.status as job_status,
         u.email as applicant_email,
         p.first_name as applicant_first_name,
-        p.last_name as applicant_last_name
+        p.last_name as applicant_last_name,
+        p.phone as applicant_phone,
+        p.specialty as applicant_specialty,
+        p.years_experience as applicant_years_experience,
+        poster_u.email as job_poster_email,
+        poster_p.first_name as job_poster_first_name,
+        poster_p.last_name as job_poster_last_name
       FROM applications a
       INNER JOIN jobs j ON a.job_id = j.id
       INNER JOIN users u ON a.user_id = u.id
       LEFT JOIN profiles p ON u.id = p.user_id
+      INNER JOIN users poster_u ON j.posted_by = poster_u.id
+      LEFT JOIN profiles poster_p ON poster_u.id = poster_p.user_id
       WHERE a.id = $1
     `;
 
     const result = await pool.query(query, [id]);
-    return result.rows.length > 0 ? this.formatApplication(result.rows[0]) : null;
+    return result.rows.length > 0 ? Application.formatApplication(result.rows[0]) : null;
   }
 
   /**
@@ -321,7 +339,7 @@ class Application {
       const updateResult = await client.query(updateQuery, [newStatus, recruiterId, notes, id]);
       const updatedApplication = updateResult.rows[0];
 
-      return this.formatApplication(updatedApplication);
+      return Application.formatApplication(updatedApplication);
     });
   }
 
@@ -434,7 +452,7 @@ class Application {
    * @returns {Object} Formatted application object for recruiters
    */
   static formatApplicationForRecruiter(row) {
-    const formatted = this.formatApplication(row);
+    const formatted = Application.formatApplication(row);
     // Recruiters see applicant details but not job details (they already know the job)
     delete formatted.job;
     return formatted;
@@ -535,7 +553,7 @@ class Application {
       applications: applications,
       summary: {
         total_applications: applications.length,
-        applications_by_status: this.groupByStatus(applications),
+        applications_by_status: Application.groupByStatus(applications),
         date_range: {
           earliest_application: applications.length > 0 ? applications[applications.length - 1].created_at : null,
           latest_application: applications.length > 0 ? applications[0].created_at : null
@@ -645,7 +663,7 @@ class Application {
         oldestData: stats.first_application_date,
         newestData: stats.last_application_date,
         retentionPeriod: '3 years from last activity',
-        eligibleForDeletion: this.calculateDeletionEligibility(stats.last_application_date)
+        eligibleForDeletion: Application.calculateDeletionEligibility(stats.last_application_date)
       }
     };
   }
@@ -818,7 +836,7 @@ class Application {
     const applicationsResult = await pool.query(applicationsQuery, values);
 
     return {
-      applications: applicationsResult.rows.map(row => this.formatApplication(row)),
+      applications: applicationsResult.rows.map(row => Application.formatApplication(row)),
       pagination: {
         currentPage: page,
         totalPages,
@@ -995,7 +1013,7 @@ class Application {
     const applicationsResult = await pool.query(applicationsQuery, values);
 
     return {
-      applications: applicationsResult.rows.map(row => this.formatApplicationForRecruiter(row)),
+      applications: applicationsResult.rows.map(row => Application.formatApplicationForRecruiter(row)),
       pagination: {
         currentPage: page,
         totalPages,

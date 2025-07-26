@@ -1,0 +1,661 @@
+{
+  "info": {
+    "name": "LocumTrueRate API",
+    "description": "Complete API collection for LocumTrueRate job board platform with authentication, jobs, applications, calculators, and GDPR compliance endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test to check response time",
+          "pm.test(\"Response time is less than 1000ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has user data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('user');",
+                  "    pm.expect(jsonData.user).to.have.property('id');",
+                  "    pm.expect(jsonData.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test{{$timestamp}}@example.com\",\n    \"password\": \"TestPass123\",\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"role\": \"locum\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    ",
+                  "    // Save token for other requests",
+                  "    pm.environment.set(\"authToken\", jsonData.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "List Jobs",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/jobs?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "jobs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "state",
+                  "value": "CA",
+                  "disabled": true
+                },
+                {
+                  "key": "specialty",
+                  "value": "Emergency",
+                  "disabled": true
+                },
+                {
+                  "key": "minRate",
+                  "value": "150",
+                  "disabled": true
+                },
+                {
+                  "key": "maxRate",
+                  "value": "300",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "physician",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/jobs/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "jobs", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Emergency Medicine Physician\",\n    \"location\": \"San Francisco, CA\",\n    \"state\": \"CA\",\n    \"hourlyRateMin\": 200,\n    \"hourlyRateMax\": 350,\n    \"specialty\": \"Emergency Medicine\",\n    \"description\": \"Seeking experienced emergency medicine physician for busy urban hospital.\",\n    \"requirements\": [\"Board certified in Emergency Medicine\", \"Active state license\", \"BLS/ACLS certified\"],\n    \"companyName\": \"SF General Hospital\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "jobs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"hourlyRateMin\": 225,\n    \"hourlyRateMax\": 375,\n    \"description\": \"Updated: Seeking experienced emergency medicine physician for busy urban hospital with competitive rates.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/jobs/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "jobs", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/jobs/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "jobs", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Apply to Job",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"jobId\": 1,\n    \"coverLetter\": \"I am very interested in this position and believe my experience makes me an ideal candidate.\",\n    \"expectedRate\": 250,\n    \"availableDate\": \"2025-02-01\",\n    \"notes\": \"Available for immediate start if needed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "My Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/my?page=1&limit=10&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "my"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Applications for Job",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/for-job/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "for-job", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search My Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/search?search=physician&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "search"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "physician"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Job Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/for-job/1/search?search=experienced",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "for-job", "1", "search"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "experienced"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter Options",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/filter-options",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "filter-options"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"reviewed\",\n    \"notes\": \"Strong candidate, scheduling interview\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "1", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw Application",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/applications/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "applications", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Calculators",
+      "item": [
+        {
+          "name": "Contract Calculator",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"hourlyRate\": 200,\n    \"hoursPerWeek\": 40,\n    \"weeksPerYear\": 48,\n    \"state\": \"CA\",\n    \"expenseRate\": 0.15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/calculate/contract",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "calculate", "contract"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Paycheck Calculator",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"regularHours\": 40,\n    \"regularRate\": 200,\n    \"overtimeHours\": 10,\n    \"overtimeRate\": 300,\n    \"state\": \"CA\",\n    \"period\": \"weekly\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/calculate/paycheck",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "calculate", "paycheck"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Simple Paycheck",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grossPay\": 10000,\n    \"additionalDeductions\": 500,\n    \"state\": \"TX\",\n    \"period\": \"monthly\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/calculate/simple-paycheck",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "calculate", "simple-paycheck"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Tax Info",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/calculate/tax-info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "calculate", "tax-info"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "States List",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/calculate/states",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "calculate", "states"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "GDPR Data Export",
+      "item": [
+        {
+          "name": "Export My Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/data-export/my-data?format=json",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "data-export", "my-data"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "json"
+                },
+                {
+                  "key": "includeHistory",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "dateFrom",
+                  "value": "2025-01-01",
+                  "disabled": true
+                },
+                {
+                  "key": "dateTo",
+                  "value": "2025-12-31",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Privacy Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/data-export/privacy-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "data-export", "privacy-summary"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request Deletion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/data-export/request-deletion",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "data-export", "request-deletion"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

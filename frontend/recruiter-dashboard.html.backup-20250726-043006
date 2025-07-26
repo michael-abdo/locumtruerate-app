@@ -1709,11 +1709,6 @@
             }
         }
     </style>
-    <!-- API Client Integration -->
-    <script src="js/apiClient.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/api-integration.js"></script>
 </head>
 <body>
     <!-- Skip link for keyboard users -->

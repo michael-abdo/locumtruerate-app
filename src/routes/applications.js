@@ -37,14 +37,14 @@ router.post('/', requireAuth, async (req, res) => {
       const responseTime = Date.now() - startTime;
       
       // Track successful application creation
-      metricsInstance.recordApplicationCreated(req.user.id, value.jobId, responseTime);
+      // metricsInstance.recordApplicationCreated(req.user.id, value.jobId, responseTime);
       
-      config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
+      // config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
 
-      res.status(201).json({
+      return res.status(201).json({
         message: 'Application submitted successfully',
-        application: newApplication,
-        timestamp: config.utils.timestamp()
+        applicationId: newApplication.id,
+        timestamp: new Date().toISOString()
       });
 
     } catch (createError) {

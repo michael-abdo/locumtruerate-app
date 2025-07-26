@@ -1,0 +1,56 @@
+{
+    "success": true,
+    "data": {
+        "inputs": {
+            "hourlyRate": 200,
+            "hoursPerWeek": 40,
+            "weeksPerYear": 48,
+            "state": "CA",
+            "expenseRate": 0.15
+        },
+        "gross": {
+            "annual": 384000,
+            "monthly": 32000,
+            "weekly": 8000
+        },
+        "taxes": {
+            "federal": 106298.5,
+            "state": 35712,
+            "fica": {
+                "socialSecurity": 9932.4,
+                "medicare": 5568,
+                "additionalMedicare": 1656,
+                "total": 17156.4
+            },
+            "total": 159166.9
+        },
+        "afterTax": {
+            "annual": 224833.1,
+            "monthly": 18736.09,
+            "weekly": 4684.02
+        },
+        "expenses": {
+            "businessExpenses": 33724.96,
+            "expenseRate": 0.15
+        },
+        "net": {
+            "annual": 191108.14,
+            "monthly": 15925.68,
+            "weekly": 3981.42
+        },
+        "rates": {
+            "effectiveTaxRate": 41.45,
+            "effectiveExpenseRate": 15,
+            "takeHomeRate": 49.77
+        },
+        "timestamp": "2025-07-26T04:21:15.260Z",
+        "metadata": {
+            "calculationType": "contract",
+            "disclaimer": "This is an estimate for planning purposes only. Actual taxes may vary based on individual circumstances, deductions, and tax law changes.",
+            "taxYear": 2025,
+            "calculatedAt": "2025-07-26T04:21:15.260Z"
+        }
+    },
+    "timestamp": "2025-07-26T04:21:15.260Z",
+    "message": "Contract calculation completed"
+}

@@ -95,7 +95,12 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
       filterOptions: `/api/${API_VERSION}/applications/filter-options`,
       dataExport: `/api/${API_VERSION}/data-export/my-data`,
       privacySummary: `/api/${API_VERSION}/data-export/privacy-summary`,
-      deletionRequest: `/api/${API_VERSION}/data-export/request-deletion`
+      deletionRequest: `/api/${API_VERSION}/data-export/request-deletion`,
+      calculateContract: `/api/${API_VERSION}/calculate/contract`,
+      calculatePaycheck: `/api/${API_VERSION}/calculate/paycheck`,
+      calculateSimplePaycheck: `/api/${API_VERSION}/calculate/simple-paycheck`,
+      taxInfo: `/api/${API_VERSION}/calculate/tax-info`,
+      statesList: `/api/${API_VERSION}/calculate/states`
     }
   });
 });
@@ -150,6 +155,10 @@ app.use(`/api/${API_VERSION}/applications`, applicationsRoutes);
 // Data export routes (GDPR compliance)
 const dataExportRoutes = require('./routes/data-export');
 app.use(`/api/${API_VERSION}/data-export`, dataExportRoutes);
+
+// Calculator routes
+const calculateRoutes = require('./routes/calculate');
+app.use(`/api/${API_VERSION}/calculate`, calculateRoutes);
 
 // 404 handler
 app.use((req, res) => {

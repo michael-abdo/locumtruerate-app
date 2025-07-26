@@ -228,6 +228,200 @@ const dataExportSchemas = {
 };
 
 // =============================================================================
+// CALCULATOR SCHEMAS
+// =============================================================================
+
+const calculatorSchemas = {
+  contract: Joi.object({
+    hourlyRate: Joi.number()
+      .min(0.01)
+      .max(10000)
+      .required()
+      .messages({
+        'number.min': 'Hourly rate must be at least $0.01',
+        'number.max': 'Hourly rate cannot exceed $10,000',
+        'any.required': 'Hourly rate is required'
+      }),
+    hoursPerWeek: Joi.number()
+      .min(1)
+      .max(80)
+      .required()
+      .messages({
+        'number.min': 'Hours per week must be at least 1',
+        'number.max': 'Hours per week cannot exceed 80',
+        'any.required': 'Hours per week is required'
+      }),
+    weeksPerYear: Joi.number()
+      .min(1)
+      .max(52)
+      .required()
+      .messages({
+        'number.min': 'Weeks per year must be at least 1',
+        'number.max': 'Weeks per year cannot exceed 52',
+        'any.required': 'Weeks per year is required'
+      }),
+    state: Joi.string()
+      .length(2)
+      .uppercase()
+      .pattern(/^[A-Z]{2}$/)
+      .default('CA')
+      .messages({
+        'string.length': 'State must be a 2-letter abbreviation',
+        'string.pattern.base': 'State must be a valid 2-letter state code'
+      }),
+    expenseRate: Joi.number()
+      .min(0)
+      .max(0.5)
+      .default(0.15)
+      .messages({
+        'number.min': 'Expense rate cannot be negative',
+        'number.max': 'Expense rate cannot exceed 50%'
+      })
+  }),
+  
+  paycheck: Joi.object({
+    regularHours: Joi.number()
+      .min(0)
+      .max(168)
+      .default(0)
+      .messages({
+        'number.min': 'Regular hours cannot be negative',
+        'number.max': 'Regular hours cannot exceed 168 per week'
+      }),
+    regularRate: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Regular rate cannot be negative',
+        'number.max': 'Regular rate cannot exceed $10,000'
+      }),
+    overtimeHours: Joi.number()
+      .min(0)
+      .max(80)
+      .default(0)
+      .messages({
+        'number.min': 'Overtime hours cannot be negative',
+        'number.max': 'Overtime hours cannot exceed 80'
+      }),
+    overtimeRate: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Overtime rate cannot be negative',
+        'number.max': 'Overtime rate cannot exceed $10,000'
+      }),
+    callHours: Joi.number()
+      .min(0)
+      .max(168)
+      .default(0)
+      .messages({
+        'number.min': 'Call hours cannot be negative',
+        'number.max': 'Call hours cannot exceed 168 per week'
+      }),
+    callRate: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Call rate cannot be negative',
+        'number.max': 'Call rate cannot exceed $10,000'
+      }),
+    callbackHours: Joi.number()
+      .min(0)
+      .max(168)
+      .default(0)
+      .messages({
+        'number.min': 'Callback hours cannot be negative',
+        'number.max': 'Callback hours cannot exceed 168 per week'
+      }),
+    callbackRate: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Callback rate cannot be negative',
+        'number.max': 'Callback rate cannot exceed $10,000'
+      }),
+    housingStipend: Joi.number()
+      .min(0)
+      .max(50000)
+      .default(0)
+      .messages({
+        'number.min': 'Housing stipend cannot be negative',
+        'number.max': 'Housing stipend cannot exceed $50,000'
+      }),
+    mealStipend: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Meal stipend cannot be negative',
+        'number.max': 'Meal stipend cannot exceed $10,000'
+      }),
+    mileageReimbursement: Joi.number()
+      .min(0)
+      .max(10000)
+      .default(0)
+      .messages({
+        'number.min': 'Mileage reimbursement cannot be negative',
+        'number.max': 'Mileage reimbursement cannot exceed $10,000'
+      }),
+    state: Joi.string()
+      .length(2)
+      .uppercase()
+      .pattern(/^[A-Z]{2}$/)
+      .default('CA')
+      .messages({
+        'string.length': 'State must be a 2-letter abbreviation',
+        'string.pattern.base': 'State must be a valid 2-letter state code'
+      }),
+    period: Joi.string()
+      .valid('weekly', 'biweekly', 'semimonthly', 'monthly', 'annual')
+      .default('weekly')
+      .messages({
+        'any.only': 'Period must be one of: weekly, biweekly, semimonthly, monthly, annual'
+      })
+  }),
+  
+  simplePaycheck: Joi.object({
+    grossPay: Joi.number()
+      .min(0.01)
+      .max(1000000)
+      .required()
+      .messages({
+        'number.min': 'Gross pay must be at least $0.01',
+        'number.max': 'Gross pay cannot exceed $1,000,000',
+        'any.required': 'Gross pay is required'
+      }),
+    additionalDeductions: Joi.number()
+      .min(0)
+      .max(Joi.ref('grossPay'))
+      .default(0)
+      .messages({
+        'number.min': 'Additional deductions cannot be negative',
+        'number.max': 'Additional deductions cannot exceed gross pay'
+      }),
+    state: Joi.string()
+      .length(2)
+      .uppercase()
+      .pattern(/^[A-Z]{2}$/)
+      .default('CA')
+      .messages({
+        'string.length': 'State must be a 2-letter abbreviation',
+        'string.pattern.base': 'State must be a valid 2-letter state code'
+      }),
+    period: Joi.string()
+      .valid('weekly', 'biweekly', 'semimonthly', 'monthly', 'annual')
+      .default('weekly')
+      .messages({
+        'any.only': 'Period must be one of: weekly, biweekly, semimonthly, monthly, annual'
+      })
+  })
+};
+
+// =============================================================================
 // SCHEMA BUILDERS FOR DYNAMIC VALIDATION
 // =============================================================================
 
@@ -282,6 +476,7 @@ module.exports = {
   jobSchemas,
   applicationSchemas,
   dataExportSchemas,
+  calculatorSchemas,
   
   // Utility builders
   schemaBuilders,

@@ -8,6 +8,26 @@
 const { pool } = require('../db/connection');
 
 /**
+ * Execute a function within a database transaction
+ * @param {Function} operation - Function to execute within transaction
+ * @returns {Promise<any>} Result of the operation
+ */
+const executeTransaction = async (operation) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await operation(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+/**
  * Build a standardized WHERE clause from conditions array
  * @param {Array} conditions - Array of condition strings
  * @returns {string} Formatted WHERE clause
@@ -164,26 +184,6 @@ const buildRangeFilterCondition = (minValue, maxValue, field, paramIndex) => {
   };
 };
 
-/**
- * Safely execute a database transaction
- * @param {Function} callback - Transaction callback function
- * @returns {Promise<any>} Transaction result
- */
-const executeTransaction = async (callback) => {
-  const client = await pool.connect();
-  
-  try {
-    await client.query('BEGIN');
-    const result = await callback(client);
-    await client.query('COMMIT');
-    return result;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
-};
 
 module.exports = {
   buildWhereClause,
