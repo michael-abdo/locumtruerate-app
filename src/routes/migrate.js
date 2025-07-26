@@ -13,8 +13,8 @@ router.post('/init', async (req, res) => {
   try {
     config.logger.info('Starting database migration...', 'MIGRATION');
     
-    // Read the init.sql file
-    const sqlPath = path.join(__dirname, '../db/init.sql');
+    // Read the simple-init.sql file
+    const sqlPath = path.join(__dirname, '../db/simple-init.sql');
     const sqlContent = fs.readFileSync(sqlPath, 'utf8');
     
     // Clean and split SQL statements
@@ -98,6 +98,82 @@ router.get('/status', async (req, res) => {
     res.status(500).json({
       error: 'status_check_failed',
       message: 'Failed to check database status',
+      timestamp: config.utils.timestamp()
+    });
+  }
+});
+
+/**
+ * Simple table creation endpoint
+ * POST /api/v1/migrate/create-tables - Create basic tables
+ */
+router.post('/create-tables', async (req, res) => {
+  try {
+    config.logger.info('Creating basic tables...', 'MIGRATION');
+    
+    // Create users table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(20) NOT NULL DEFAULT 'locum',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Create basic sample user
+    await pool.query(`
+      INSERT INTO users (email, password_hash, role) VALUES
+      ('john.doe@example.com', '$2b$10$N9qo8uLOickgx2ZMRZoMye/6/SYG8ZnS3J8YqGw0L2OiQSfEf4LSu', 'locum')
+      ON CONFLICT (email) DO NOTHING
+    `);
+    
+    // Create jobs table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS jobs (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        location VARCHAR(255) NOT NULL,
+        state VARCHAR(2) NOT NULL,
+        specialty VARCHAR(100) NOT NULL,
+        description TEXT,
+        hourly_rate_min DECIMAL(10,2),
+        hourly_rate_max DECIMAL(10,2),
+        posted_by INTEGER NOT NULL REFERENCES users(id),
+        company_name VARCHAR(255),
+        status VARCHAR(20) DEFAULT 'active',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    
+    // Create applications table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS applications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        job_id INTEGER NOT NULL REFERENCES jobs(id),
+        status VARCHAR(20) DEFAULT 'pending',
+        cover_letter TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, job_id)
+      )
+    `);
+    
+    config.logger.info('Basic tables created successfully', 'MIGRATION');
+    
+    res.json({
+      success: true,
+      message: 'Basic database tables created successfully',
+      timestamp: config.utils.timestamp()
+    });
+    
+  } catch (error) {
+    config.logger.error('Failed to create tables', error, 'MIGRATION');
+    res.status(500).json({
+      error: 'table_creation_failed',
+      message: 'Failed to create database tables',
+      details: error.message,
       timestamp: config.utils.timestamp()
     });
   }
