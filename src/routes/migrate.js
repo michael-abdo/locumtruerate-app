@@ -221,6 +221,39 @@ router.get('/debug', async (req, res) => {
 });
 
 /**
+ * POST /api/v1/migrate/fix-jobs-schema
+ * Add missing updated_at column to jobs table
+ */
+router.post('/fix-jobs-schema', async (req, res) => {
+  try {
+    config.logger.info('Adding updated_at column to jobs table...', 'MIGRATION');
+    
+    // Add updated_at column to jobs table
+    await pool.query(`
+      ALTER TABLE jobs 
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    `);
+    
+    config.logger.info('Jobs table schema fixed successfully', 'MIGRATION');
+    
+    res.json({
+      success: true,
+      message: 'Jobs table updated_at column added successfully',
+      timestamp: config.utils.timestamp()
+    });
+    
+  } catch (error) {
+    config.logger.error('Failed to fix jobs schema', error, 'MIGRATION');
+    res.status(500).json({
+      error: 'jobs_schema_fix_failed',
+      message: 'Failed to fix jobs table schema',
+      details: error.message,
+      timestamp: config.utils.timestamp()
+    });
+  }
+});
+
+/**
  * POST /api/v1/migrate/fix-applications-schema
  * Drop and recreate applications table with correct schema
  */
