@@ -409,6 +409,11 @@
                 <li><a href="contract-calculator.html">Contract Calculator</a></li>
                 <li><a href="job-board.html">Job Board</a></li>
             </ul>
+            <div class="auth-section" id="authSection">
+                <button class="btn btn-primary" id="loginBtn" style="margin-right: 0.5rem; padding: 0.5rem 1rem;">Login</button>
+                <button class="btn btn-secondary" id="registerBtn" style="padding: 0.5rem 1rem;">Register</button>
+                <div id="userInfo" style="display: none; color: #2563eb; font-weight: 500;">Welcome, <span id="userName"></span>! <button class="btn btn-secondary" id="logoutBtn" style="padding: 0.25rem 0.5rem; font-size: 0.875rem; margin-left: 0.5rem;">Logout</button></div>
+            </div>
         </div>
     </nav>
 
@@ -564,7 +569,7 @@
 
                 <!-- Results Section -->
                 <div class="results-section">
-                    <h2 class="section-title">Paycheck Breakdown</h2>
+                    <h2 class="section-title">Paycheck Breakdown <span id="apiStatus" style="background-color: #f8d7da; color: #721c24; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem;">Local Mode</span></h2>
                     
                     <div class="result-item">
                         <span class="result-label">Regular Pay:</span>
@@ -648,10 +653,10 @@
                     </div>
                     
                     <!-- Calculation History -->
-                    <div id="calculation-history" class="calculation-history" style="display: none; margin-top: 2rem;">
+                    <div id="calculation-history" class="calculation-history" style="margin-top: 2rem;">
                         <h3 class="section-title">Calculation History</h3>
                         <div id="history-list" class="history-list">
-                            <!-- Saved calculations will appear here -->
+                            <p style="color: #6c757d; text-align: center;">No saved calculations yet. Login and save calculations to see history.</p>
                         </div>
                     </div>
                 </div>
@@ -983,9 +988,37 @@
             calculatePaycheck();
         }
 
-        // Save calculation
+        // Save calculation with authentication check
         function saveCalculation() {
-            savePaycheckCalculation();
+            // Check if user is authenticated
+            const token = Auth.getToken();
+            if (!token) {
+                LocumUtils.showToast('Please login to save calculations', 'warning');
+                return;
+            }
+
+            // Validate all inputs before saving
+            const regularHours = validateInput(document.getElementById('regularHours'));
+            const regularRate = validateInput(document.getElementById('regularRate'));
+            
+            // Check if any required fields have errors
+            const hasValidationErrors = [regularHours, regularRate].some(value => isNaN(value)) ||
+                                       document.querySelectorAll('.error').length > 0;
+            
+            if (hasValidationErrors) {
+                LocumUtils.showToast('Please fix validation errors before saving', 'error');
+                return;
+            }
+            
+            if (!currentCalculation) {
+                LocumUtils.showToast('No calculation to save', 'error');
+                return;
+            }
+            
+            // Save to history
+            savePaycheckCalculation(currentCalculation);
+            
+            LocumUtils.showToast('Calculation saved successfully!', 'success');
         }
         
         function OLD_saveCalculation() {
@@ -1076,6 +1109,20 @@ Generated: ${new Date().toLocaleDateString()}`;
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Initializing paycheck calculator...');
             
+            // Check authentication status and update UI
+            const token = Auth.getToken();
+            if (token) {
+                apiClient.setAuthToken(token);
+                updateAuthUI(true);
+            } else {
+                updateAuthUI(false);
+            }
+            
+            // Add auth button event listeners
+            document.getElementById('loginBtn').addEventListener('click', showLoginPrompt);
+            document.getElementById('registerBtn').addEventListener('click', showRegisterPrompt);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
             // Add event listeners to all inputs
             const inputs = document.querySelectorAll('input[type="number"], select');
             inputs.forEach(input => {
@@ -1107,6 +1154,78 @@ Generated: ${new Date().toLocaleDateString()}`;
             
             console.log('Calculator initialized successfully!');
         });
+        
+        // Authentication UI Management
+        function updateAuthUI(isAuthenticated) {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            
+            if (isAuthenticated) {
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                
+                // Get user info from localStorage or set default
+                const user = Auth.getUser();
+                userName.textContent = user?.firstName || 'User';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                registerBtn.style.display = 'inline-block';
+                userInfo.style.display = 'none';
+            }
+        }
+        
+        // Simple authentication prompts for testing
+        function showLoginPrompt() {
+            const email = prompt('Enter email (use: test@example.com):');
+            const password = prompt('Enter password (use: password123):');
+            
+            if (email === 'test@example.com' && password === 'password123') {
+                // Simulate successful login
+                const fakeToken = 'fake-jwt-token-' + Date.now();
+                Auth.setToken(fakeToken, 86400); // 24 hours
+                Auth.setUser({ firstName: 'Test', lastName: 'User', email: email });
+                apiClient.setAuthToken(fakeToken);
+                updateAuthUI(true);
+                LocumUtils.showToast('Login successful!', 'success');
+            } else {
+                LocumUtils.showToast('Invalid credentials. Use test@example.com / password123', 'error');
+            }
+        }
+        
+        function showRegisterPrompt() {
+            LocumUtils.showToast('Registration: Use Login with test@example.com / password123 for demo', 'warning');
+        }
+        
+        function logout() {
+            Auth.clearAuth();
+            apiClient.clearAuthToken();
+            updateAuthUI(false);
+            
+            // Clear calculation history
+            calculationHistory = [];
+            localStorage.removeItem('paycheckCalculationHistory');
+            displayPaycheckHistory();
+            
+            LocumUtils.showToast('Logged out successfully!', 'success');
+        }
+        
+        function updateApiStatus(isActive) {
+            const statusElement = document.getElementById('apiStatus');
+            if (statusElement) {
+                if (isActive) {
+                    statusElement.style.backgroundColor = '#d4edda';
+                    statusElement.style.color = '#155724';
+                    statusElement.textContent = 'API Active';
+                } else {
+                    statusElement.style.backgroundColor = '#f8d7da';
+                    statusElement.style.color = '#721c24';
+                    statusElement.textContent = 'Local Mode';
+                }
+            }
+        }
     </script>
 </body>
 </html>
