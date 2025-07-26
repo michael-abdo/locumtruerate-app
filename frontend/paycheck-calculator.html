@@ -66,6 +66,13 @@
             color: #333;
             font-weight: 500;
         }
+        
+        .nav-links a.active {
+            color: #2563eb;
+            font-weight: 600;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 0.25rem;
+        }
 
         .calculator-container {
             background-color: #fff;
@@ -405,7 +412,7 @@
             <a href="index.html" class="logo">LocumTrueRate</a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                <li><a href="paycheck-calculator.html" class="active">Paycheck Calculator</a></li>
                 <li><a href="contract-calculator.html">Contract Calculator</a></li>
                 <li><a href="job-board.html">Job Board</a></li>
             </ul>
@@ -990,9 +997,16 @@
 
         // Save calculation with authentication check
         function saveCalculation() {
+            console.log('Save calculation called');
+            
             // Check if user is authenticated
             const token = Auth.getToken();
+            const user = Auth.getCurrentUser();
+            
+            console.log('Auth check:', { token: !!token, user: !!user });
+            
             if (!token) {
+                console.log('Not authenticated - showing login prompt');
                 LocumUtils.showToast('Please login to save calculations', 'warning');
                 return;
             }
@@ -1016,6 +1030,7 @@
             }
             
             // Save to history
+            console.log('Saving calculation to history:', currentCalculation);
             savePaycheckCalculation(currentCalculation);
             
             LocumUtils.showToast('Calculation saved successfully!', 'success');
@@ -1168,7 +1183,7 @@ Generated: ${new Date().toLocaleDateString()}`;
                 userInfo.style.display = 'block';
                 
                 // Get user info from localStorage or set default
-                const user = Auth.getUser();
+                const user = Auth.getCurrentUser();
                 userName.textContent = user?.firstName || 'User';
             } else {
                 loginBtn.style.display = 'inline-block';
@@ -1180,18 +1195,31 @@ Generated: ${new Date().toLocaleDateString()}`;
         // Simple authentication prompts for testing
         function showLoginPrompt() {
             const email = prompt('Enter email (use: test@example.com):');
-            const password = prompt('Enter password (use: password123):');
+            if (!email) {
+                LocumUtils.showToast('Login cancelled', 'warning');
+                return;
+            }
             
-            if (email === 'test@example.com' && password === 'password123') {
+            const password = prompt('Enter password (use: password123):');
+            if (!password) {
+                LocumUtils.showToast('Login cancelled', 'warning');
+                return;
+            }
+            
+            console.log('Login attempt:', { email, password });
+            
+            if (email.toLowerCase().trim() === 'test@example.com' && password.trim() === 'password123') {
                 // Simulate successful login
                 const fakeToken = 'fake-jwt-token-' + Date.now();
                 Auth.setToken(fakeToken, 86400); // 24 hours
-                Auth.setUser({ firstName: 'Test', lastName: 'User', email: email });
+                Auth.setCurrentUser({ firstName: 'Test', lastName: 'User', email: email });
                 apiClient.setAuthToken(fakeToken);
                 updateAuthUI(true);
-                LocumUtils.showToast('Login successful!', 'success');
+                LocumUtils.showToast('Login successful! You can now save calculations.', 'success');
+                console.log('Login successful, token set:', fakeToken);
             } else {
-                LocumUtils.showToast('Invalid credentials. Use test@example.com / password123', 'error');
+                console.log('Login failed - Invalid credentials');
+                LocumUtils.showToast('Invalid credentials. Use: test@example.com / password123', 'error');
             }
         }
         
@@ -1200,7 +1228,8 @@ Generated: ${new Date().toLocaleDateString()}`;
         }
         
         function logout() {
-            Auth.clearAuth();
+            Auth.clearToken();
+            Auth.clearCurrentUser();
             apiClient.clearAuthToken();
             updateAuthUI(false);
             
