@@ -867,9 +867,16 @@
         ];
 
         let currentView = 'card';
-        let filteredJobs = [...jobsData];
+        let filteredJobs = [];
         let currentPage = 1;
         const jobsPerPage = 5; // Changed to show pagination with 6 jobs
+        
+        // Initialize filteredJobs after jobsData is defined
+        function initializeJobsData() {
+            console.log('🔧 Initializing jobs data');
+            filteredJobs = [...jobsData];
+            console.log('📊 Filtered jobs initialized with', filteredJobs.length, 'jobs');
+        }
         
         // Save job functionality
         function getSavedJobs() {
@@ -907,7 +914,15 @@
         }
 
         function renderJobs() {
+            console.log('🎨 Starting renderJobs function');
+            
             const grid = document.getElementById('jobsGrid');
+            if (!grid) {
+                console.error('❌ jobsGrid element not found!');
+                return;
+            }
+            
+            console.log('📋 Clearing existing content');
             grid.innerHTML = '';
             
             // Calculate pagination
@@ -916,55 +931,73 @@
             const endIndex = startIndex + jobsPerPage;
             const jobsToShow = filteredJobs.slice(startIndex, endIndex);
             
-            jobsToShow.forEach(job => {
+            console.log(`📄 Pagination: page ${currentPage} of ${totalPages}, showing ${jobsToShow.length} jobs`);
+            
+            if (jobsToShow.length === 0) {
+                console.warn('⚠️ No jobs to show on current page');
+                grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No jobs found matching your criteria.</div>';
+                document.getElementById('resultsCount').textContent = '0';
+                return;
+            }
+            
+            jobsToShow.forEach((job, index) => {
+                console.log(`🏗️ Creating job card ${index + 1}: ${job.title}`);
+                
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
                 jobCard.onclick = () => showJobDetail(job);
                 
-                jobCard.innerHTML = `
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">${job.title}</div>
-                            <div class="job-facility">${job.facility}</div>
-                            <div class="job-location">📍 ${job.location}</div>
+                try {
+                    jobCard.innerHTML = `
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.title}</div>
+                                <div class="job-facility">${job.facility}</div>
+                                <div class="job-location">📍 ${job.location}</div>
+                            </div>
+                            <div class="job-salary">
+                                <div style="font-size: 1rem; font-weight: 600;">${job.salary}</div>
+                                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: ${calculateTotalCompensation(job)}</div>
+                            </div>
                         </div>
-                        <div class="job-salary">
-                            <div style="font-size: 1rem; font-weight: 600;">${job.salary}</div>
-                            <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: ${calculateTotalCompensation(job)}</div>
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <div class="job-detail-label">Duration</div>
+                                <div class="job-detail-value">${job.duration}</div>
+                            </div>
+                            <div class="job-detail">
+                                <div class="job-detail-label">Hours/Week</div>
+                                <div class="job-detail-value">${job.hours}</div>
+                            </div>
+                            <div class="job-detail">
+                                <div class="job-detail-label">Housing</div>
+                                <div class="job-detail-value">${job.housing}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="job-details">
-                        <div class="job-detail">
-                            <div class="job-detail-label">Duration</div>
-                            <div class="job-detail-value">${job.duration}</div>
+                        <div class="job-description">${job.description}</div>
+                        <div class="job-tags">
+                            ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
                         </div>
-                        <div class="job-detail">
-                            <div class="job-detail-label">Hours/Week</div>
-                            <div class="job-detail-value">${job.hours}</div>
+                        <div class="job-actions">
+                            <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
+                            <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
+                            <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
+                                ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
+                            </button>
                         </div>
-                        <div class="job-detail">
-                            <div class="job-detail-label">Housing</div>
-                            <div class="job-detail-value">${job.housing}</div>
-                        </div>
-                    </div>
-                    <div class="job-description">${job.description}</div>
-                    <div class="job-tags">
-                        ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
-                    </div>
-                    <div class="job-actions">
-                        <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
-                        <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
-                        <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
-                            ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
-                        </button>
-                    </div>
-                `;
-                
-                grid.appendChild(jobCard);
+                    `;
+                    
+                    grid.appendChild(jobCard);
+                    console.log(`✅ Job card ${index + 1} added to grid`);
+                } catch (error) {
+                    console.error(`❌ Error creating job card ${index + 1}:`, error);
+                }
             });
             
             document.getElementById('resultsCount').textContent = filteredJobs.length;
             renderPagination(totalPages);
+            
+            console.log(`🎯 Render complete: ${jobsToShow.length} job cards should now be visible`);
         }
         
         function renderPagination(totalPages) {
@@ -1255,7 +1288,26 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM Content Loaded - Initializing Job Board');
+            console.log('📊 Sample job data count:', jobsData.length);
+            console.log('🎯 Jobs grid element:', document.getElementById('jobsGrid'));
+            
+            // Initialize the filtered jobs array with sample data
+            initializeJobsData();
+            
             renderJobs();
+            
+            // Verify jobs were rendered
+            setTimeout(() => {
+                const jobCards = document.querySelectorAll('.job-card');
+                console.log('✅ Job cards rendered:', jobCards.length);
+                if (jobCards.length === 0) {
+                    console.error('❌ NO JOB CARDS RENDERED! Debugging...');
+                    console.log('- Filtered jobs count:', filteredJobs.length);
+                    console.log('- Current page:', currentPage);
+                    console.log('- Jobs per page:', jobsPerPage);
+                }
+            }, 100);
             
             // Fix button click reliability (prevent rapid double-clicks only)
             const buttons = document.querySelectorAll('a[href], button');
