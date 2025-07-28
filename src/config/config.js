@@ -5,6 +5,33 @@
 
 require('dotenv').config();
 
+/**
+ * Parse DATABASE_URL into individual database configuration components
+ * Supports both postgresql:// and postgres:// protocols
+ * Returns null if URL is invalid or missing
+ */
+const parseDBUrl = (databaseUrl) => {
+  if (!databaseUrl) return null;
+  
+  try {
+    const url = new URL(databaseUrl);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: url.pathname.slice(1), // Remove leading slash
+      user: url.username,
+      password: url.password,
+      ssl: { rejectUnauthorized: false } // Required for Heroku PostgreSQL
+    };
+  } catch (error) {
+    console.warn('Failed to parse DATABASE_URL:', error.message);
+    return null;
+  }
+};
+
+// Parse DATABASE_URL if available, otherwise use individual variables
+const parsedDbConfig = parseDBUrl(process.env.DATABASE_URL);
+
 const config = {
   // Server configuration
   server: {
@@ -16,11 +43,12 @@ const config = {
   
   // Database configuration
   database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    name: process.env.DB_NAME || 'vanilla_api_dev',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
+    host: parsedDbConfig?.host || process.env.DB_HOST || 'localhost',
+    port: parsedDbConfig?.port || process.env.DB_PORT || 5432,
+    name: parsedDbConfig?.database || process.env.DB_NAME || 'vanilla_api_dev',
+    user: parsedDbConfig?.user || process.env.DB_USER || 'postgres',
+    password: parsedDbConfig?.password || process.env.DB_PASSWORD || 'postgres',
+    ssl: parsedDbConfig?.ssl || undefined,
     pool: {
       max: 20,
       idleTimeoutMillis: 30000,
