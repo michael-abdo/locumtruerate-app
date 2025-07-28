@@ -730,7 +730,7 @@
         let currentView = 'card';
         let filteredJobs = [...jobsData];
         let currentPage = 1;
-        const jobsPerPage = 5;
+        const jobsPerPage = 2; // Changed to 2 to show pagination with fewer jobs
         
         // Load jobs from API with comprehensive logging
         async function loadJobsFromAPI() {
@@ -1050,7 +1050,9 @@
                 const matchesSearch = job.title.toLowerCase().includes(search) || 
                                     job.facility.toLowerCase().includes(search) ||
                                     job.location.toLowerCase().includes(search);
-                const matchesSpecialty = !specialty || job.specialty === specialty;
+                const matchesSpecialty = !specialty || 
+                    job.specialty.toLowerCase().includes(specialty.toLowerCase()) ||
+                    job.specialty.toLowerCase().replace(/\s+/g, '') === specialty.toLowerCase();
                 const matchesLocation = !location || job.state === location;
                 
                 let matchesSalary = true;
@@ -1187,6 +1189,15 @@
         function closeModal() {
             document.getElementById('jobModal').classList.remove('active');
         }
+        
+        // Make functions available globally
+        window.closeModal = closeModal;
+        window.applyToJob = applyToJob;
+        window.calculateContract = calculateContract;
+        window.showJobDetail = showJobDetail;
+        window.goToPage = goToPage;
+        window.toggleView = toggleView;
+        window.toggleSaveJob = toggleSaveJob;
 
         function calculateContract(jobId) {
             // Simulate opening contract calculator with pre-filled data
