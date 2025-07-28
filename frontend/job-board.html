@@ -716,9 +716,16 @@
         // Job data will be loaded from API
         let jobsData = [];
         // Determine API URL based on current location
-        let apiBaseUrl = window.location.hostname === 'localhost' 
-            ? 'http://localhost:4000/api/v1'
-            : '/api/v1'; // Use relative URL for production
+        let apiBaseUrl;
+        if (window.location.hostname === 'localhost') {
+            apiBaseUrl = 'http://localhost:4000/api/v1';
+        } else if (window.location.hostname.includes('herokuapp.com')) {
+            // For Heroku deployments, use the same origin
+            apiBaseUrl = window.location.origin + '/api/v1';
+        } else {
+            // Default to relative URL
+            apiBaseUrl = '/api/v1';
+        }
 
         let currentView = 'card';
         let filteredJobs = [...jobsData];
