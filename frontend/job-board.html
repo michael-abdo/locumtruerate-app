@@ -713,104 +713,129 @@
     </div>
 
     <script>
-        // Sample job data
-        const jobsData = [
-            {
-                id: 1,
-                title: "Emergency Medicine Physician",
-                facility: "Metropolitan General Hospital",
-                location: "Los Angeles, CA",
-                salary: "$350/hr",
-                duration: "13 weeks",
-                hours: "48 hrs/week",
-                housing: "$1,800/week",
-                specialty: "emergency",
-                state: "california",
-                description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
-                requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
-                benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
-            },
-            {
-                id: 2,
-                title: "Internal Medicine Hospitalist",
-                facility: "Houston Medical Center",
-                location: "Houston, TX",
-                salary: "$285/hr",
-                duration: "26 weeks",
-                hours: "40 hrs/week",
-                housing: "$1,400/week",
-                specialty: "internal",
-                state: "texas",
-                description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
-                requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
-                benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
-            },
-            {
-                id: 3,
-                title: "Anesthesiologist",
-                facility: "Sunshine Surgery Center",
-                location: "Miami, FL",
-                salary: "$425/hr",
-                duration: "8 weeks",
-                hours: "50 hrs/week",
-                housing: "$2,000/week",
-                specialty: "anesthesiology",
-                state: "florida",
-                description: "Seeking experienced anesthesiologist for high-volume surgery center. Mix of outpatient and same-day procedures.",
-                requirements: ["Board Certified Anesthesiology", "ASC Experience Preferred", "Regional Blocks"],
-                benefits: ["Excellent Hourly Rate", "Housing Stipend", "Travel Reimbursement", "Flexible Schedule"]
-            },
-            {
-                id: 4,
-                title: "Radiologist - Teleradiology",
-                facility: "RadNet Solutions",
-                location: "Remote (NY Licensed)",
-                salary: "$295/hr",
-                duration: "Ongoing",
-                hours: "40 hrs/week",
-                housing: "Remote",
-                specialty: "radiology",
-                state: "new-york",
-                description: "Remote teleradiology position covering multiple hospital systems. Flexible scheduling with excellent work-life balance.",
-                requirements: ["Board Certified Radiology", "NY State License", "PACS Experience"],
-                benefits: ["Remote Work", "Flexible Hours", "Technology Stipend", "Professional Development"]
-            },
-            {
-                id: 5,
-                title: "General Surgeon",
-                facility: "Prairie Regional Medical",
-                location: "Chicago, IL",
-                salary: "$380/hr",
-                duration: "20 weeks",
-                hours: "60 hrs/week",
-                housing: "$1,600/week",
-                specialty: "surgery",
-                state: "illinois",
-                description: "Level 2 trauma center seeking general surgeon for call coverage and elective procedures. Teaching opportunities available.",
-                requirements: ["Board Certified General Surgery", "Trauma Experience", "Laparoscopic Skills"],
-                benefits: ["Competitive Compensation", "Housing Provided", "Call Stipend", "Teaching Bonus"]
-            },
-            {
-                id: 6,
-                title: "Emergency Medicine - Rural",
-                facility: "County Community Hospital",
-                location: "Fresno, CA",
-                salary: "$320/hr",
-                duration: "16 weeks",
-                hours: "36 hrs/week",
-                housing: "$1,200/week",
-                specialty: "emergency",
-                state: "california",
-                description: "Rural emergency department seeking EM physicians. Moderate volume with diverse patient population. Great lifestyle opportunity.",
-                requirements: ["Board Certified EM", "Rural Experience Preferred", "Procedures Required"],
-                benefits: ["Lifestyle Balance", "Housing Stipend", "Low Patient Volume", "Community Impact"]
-            }
-        ];
+        // Job data will be loaded from API
+        let jobsData = [];
+        let apiBaseUrl = '/api/v1';
 
         let currentView = 'card';
         let filteredJobs = [...jobsData];
         let currentPage = 1;
-        const jobsPerPage = 5; // Changed to show pagination with 6 jobs
+        const jobsPerPage = 5;
+        
+        // Load jobs from API with comprehensive logging
+        async function loadJobsFromAPI() {
+            console.log('🔄 Starting to load jobs from API...');
+            try {
+                const response = await fetch(`${apiBaseUrl}/jobs`);
+                console.log('📡 API Response received:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📋 Raw API data received:', data);
+                
+                if (data.jobs && Array.isArray(data.jobs)) {
+                    // Transform API data to match frontend format
+                    jobsData = data.jobs.map(job => transformJobData(job));
+                    console.log('✅ Jobs transformed successfully. Count:', jobsData.length);
+                    console.log('🎯 Sample job data:', jobsData[0]);
+                } else {
+                    console.warn('⚠️ No jobs array found in API response:', data);
+                    jobsData = [];
+                }
+                
+                // Update filtered jobs and re-render
+                filteredJobs = [...jobsData];
+                renderJobs();
+                
+                console.log('🎨 Jobs rendered. Total jobs:', jobsData.length);
+                
+            } catch (error) {
+                console.error('❌ Failed to load jobs from API:', error);
+                LocumUtils.showToast('Failed to load job listings. Please try again.', 'error');
+                
+                // Fallback to sample data for development
+                console.log('🔄 Loading fallback sample data...');
+                loadSampleData();
+            }
+        }
+        
+        // Transform API job data to frontend format
+        function transformJobData(apiJob) {
+            console.log('🔄 Transforming job:', apiJob.id, apiJob.title);
+            
+            // Handle salary range or single rate
+            let salary = 'Competitive';
+            if (apiJob.hourlyRateMin && apiJob.hourlyRateMax) {
+                if (apiJob.hourlyRateMin === apiJob.hourlyRateMax) {
+                    salary = `$${apiJob.hourlyRateMin}/hr`;
+                } else {
+                    salary = `$${apiJob.hourlyRateMin}-${apiJob.hourlyRateMax}/hr`;
+                }
+            } else if (apiJob.hourlyRateMin) {
+                salary = `$${apiJob.hourlyRateMin}+/hr`;
+            } else if (apiJob.hourlyRateMax) {
+                salary = `Up to $${apiJob.hourlyRateMax}/hr`;
+            }
+            
+            return {
+                id: apiJob.id,
+                title: apiJob.title || 'Unknown Position',
+                facility: apiJob.companyName || 'Unknown Facility',
+                location: apiJob.location || `${apiJob.state || 'Unknown'}`,
+                salary: salary,
+                duration: apiJob.duration || '13 weeks',
+                hours: apiJob.shiftType || '40 hrs/week',
+                housing: 'Provided', // API doesn't have housing info yet
+                specialty: apiJob.specialty || 'general',
+                state: (apiJob.state || '').toLowerCase().replace(' ', '-'),
+                description: apiJob.description || 'Great opportunity for healthcare professionals.',
+                requirements: apiJob.requirements || ['Board Certification Required'],
+                benefits: ['Competitive Package'] // API doesn't have benefits yet
+            };
+        }
+        
+        // Load sample data as fallback
+        function loadSampleData() {
+            console.log('📝 Loading sample data as fallback...');
+            jobsData = [
+                {
+                    id: 1,
+                    title: "Emergency Medicine Physician",
+                    facility: "Metropolitan General Hospital",
+                    location: "Los Angeles, CA",
+                    salary: "$350/hr",
+                    duration: "13 weeks",
+                    hours: "48 hrs/week",
+                    housing: "$1,800/week",
+                    specialty: "emergency",
+                    state: "california",
+                    description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
+                    requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                    benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
+                },
+                {
+                    id: 2,
+                    title: "Internal Medicine Hospitalist",
+                    facility: "Houston Medical Center",
+                    location: "Houston, TX",
+                    salary: "$285/hr",
+                    duration: "26 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,400/week",
+                    specialty: "internal",
+                    state: "texas",
+                    description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
+                    requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                    benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
+                }
+            ];
+            filteredJobs = [...jobsData];
+            renderJobs();
+            console.log('✅ Sample data loaded and rendered');
+        }
         
         // Save job functionality
         function getSavedJobs() {
@@ -1196,7 +1221,10 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            renderJobs();
+            console.log('🚀 Page loaded, initializing job board...');
+            
+            // Load jobs from API first
+            loadJobsFromAPI();
             
             // Fix button click reliability (prevent rapid double-clicks only)
             const buttons = document.querySelectorAll('a[href], button');
@@ -1213,6 +1241,8 @@
                     }, 500);
                 });
             });
+            
+            console.log('✅ Job board initialization complete');
         });
     </script>
 
