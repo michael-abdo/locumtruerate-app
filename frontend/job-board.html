@@ -765,7 +765,16 @@
                 
                 if (data.jobs && Array.isArray(data.jobs)) {
                     // Transform API data to match frontend format
-                    jobsData = data.jobs.map(job => transformJobData(job));
+                    jobsData = data.jobs.map((job, index) => {
+                        try {
+                            const transformed = transformJobData(job);
+                            console.log(`✅ Transformed job ${index + 1}:`, transformed);
+                            return transformed;
+                        } catch (err) {
+                            console.error(`❌ Failed to transform job ${index + 1}:`, err, job);
+                            return null;
+                        }
+                    }).filter(job => job !== null);
                     console.log('✅ Jobs transformed successfully. Count:', jobsData.length);
                     if (jobsData.length > 0) {
                         console.log('🎯 Sample job data:', jobsData[0]);
@@ -826,7 +835,7 @@
                 specialty: apiJob.specialty || 'general',
                 state: (apiJob.state || '').toLowerCase().replace(' ', '-'),
                 description: apiJob.description || 'Great opportunity for healthcare professionals.',
-                requirements: apiJob.requirements || ['Board Certification Required'],
+                requirements: Array.isArray(apiJob.requirements) ? apiJob.requirements : ['Board Certification Required'],
                 benefits: ['Competitive Package'] // API doesn't have benefits yet
             };
         }
@@ -907,7 +916,12 @@
         }
 
         function renderJobs() {
+            console.log('🎨 renderJobs called with filteredJobs:', filteredJobs.length);
             const grid = document.getElementById('jobsGrid');
+            if (!grid) {
+                console.error('❌ jobsGrid element not found!');
+                return;
+            }
             grid.innerHTML = '';
             
             // Calculate pagination
@@ -915,8 +929,10 @@
             const startIndex = (currentPage - 1) * jobsPerPage;
             const endIndex = startIndex + jobsPerPage;
             const jobsToShow = filteredJobs.slice(startIndex, endIndex);
+            console.log('📊 Pagination:', { totalPages, startIndex, endIndex, jobsToShow: jobsToShow.length });
             
-            jobsToShow.forEach(job => {
+            jobsToShow.forEach((job, index) => {
+                console.log(`🔨 Creating job card ${index + 1}/${jobsToShow.length}:`, job.title);
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
                 jobCard.onclick = () => showJobDetail(job);
@@ -949,7 +965,9 @@
                     </div>
                     <div class="job-description">${job.description}</div>
                     <div class="job-tags">
-                        ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
+                        ${job.requirements && job.requirements.length > 0 
+                            ? job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')
+                            : '<span class="job-tag">Board Certification Required</span>'}
                     </div>
                     <div class="job-actions">
                         <button class="btn btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
@@ -961,8 +979,10 @@
                 `;
                 
                 grid.appendChild(jobCard);
+                console.log(`✅ Job card appended to grid. Grid now has ${grid.children.length} children`);
             });
             
+            console.log(`🏁 Finished rendering ${jobsToShow.length} jobs. Grid has ${grid.children.length} total cards`);
             document.getElementById('resultsCount').textContent = filteredJobs.length;
             renderPagination(totalPages);
         }
@@ -1143,12 +1163,16 @@
                 
                 <h4 style="margin-bottom: 1rem;">Requirements</h4>
                 <ul style="margin-bottom: 2rem; padding-left: 1.5rem;">
-                    ${job.requirements.map(req => `<li style="margin-bottom: 0.5rem;">${req}</li>`).join('')}
+                    ${job.requirements && job.requirements.length > 0 
+                        ? job.requirements.map(req => `<li style="margin-bottom: 0.5rem;">${req}</li>`).join('')
+                        : '<li style="margin-bottom: 0.5rem;">Board Certification Required</li>'}
                 </ul>
                 
                 <h4 style="margin-bottom: 1rem;">Benefits</h4>
                 <ul style="margin-bottom: 2rem; padding-left: 1.5rem;">
-                    ${job.benefits.map(benefit => `<li style="margin-bottom: 0.5rem;">${benefit}</li>`).join('')}
+                    ${job.benefits && job.benefits.length > 0 
+                        ? job.benefits.map(benefit => `<li style="margin-bottom: 0.5rem;">${benefit}</li>`).join('')
+                        : '<li style="margin-bottom: 0.5rem;">Competitive Package</li>'}
                 </ul>
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
