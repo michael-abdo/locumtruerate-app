@@ -683,7 +683,7 @@
 
         // Calculate paycheck
         function calculatePaycheck() {
-            console.log('Calculating paycheck...');
+            console.log('calculatePaycheck called at', new Date().toISOString());
             
             // Get and validate inputs
             const regularHours = validateInput(document.getElementById('regularHours'));
@@ -721,12 +721,23 @@
             const totalDeductions = federalTax + stateTax + ficaTax;
             const netPay = totalGrossPay - totalDeductions + totalStipends;
 
+            console.log('Final values:', {
+                grossTaxable: totalGrossPay,
+                federalTax: federalTax,
+                stateTax: stateTax,
+                ficaTax: ficaTax,
+                totalStipends: totalStipends,
+                netPay: netPay
+            });
+
+            console.log('Updating display elements');
             // Update display
             document.getElementById('regularPay').textContent = formatCurrency(regularPay);
             document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
             document.getElementById('callPay').textContent = formatCurrency(callPay);
             document.getElementById('callbackPay').textContent = formatCurrency(callbackPay);
             document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
+            console.log('Total Gross Pay calculated:', formatCurrency(totalGrossPay));
             
             document.getElementById('housingStipendDisplay').textContent = formatCurrency(housingStipend);
             document.getElementById('mealStipendDisplay').textContent = formatCurrency(mealStipend);
@@ -737,6 +748,8 @@
             document.getElementById('stateTax').textContent = formatCurrency(stateTax);
             document.getElementById('ficaTax').textContent = formatCurrency(ficaTax);
             document.getElementById('netPay').textContent = formatCurrency(netPay);
+            console.log('Updated both netPay displays:', formatCurrency(netPay));
+            console.log('Display updated successfully');
         }
 
         // Simple federal tax calculation
@@ -853,6 +866,18 @@ Generated: ${new Date().toLocaleDateString()}`;
             showToast('[EMAIL] Opening email client...', 'success');
         }
 
+        // Make functions globally accessible for testing
+        window.calculatePaycheck = calculatePaycheck;
+        window.validateAndCalculate = function(input) {
+            validateInput(input);
+            calculatePaycheck();
+        };
+        window.setPeriod = setPeriod;
+        window.saveCalculation = saveCalculation;
+        window.printResults = printResults;
+        window.exportToPDF = exportToPDF;
+        window.emailResults = emailResults;
+
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Initializing paycheck calculator...');
@@ -881,10 +906,14 @@ Generated: ${new Date().toLocaleDateString()}`;
             document.getElementById('regularRate').addEventListener('input', function() {
                 const regularRate = parseFloat(this.value) || 0;
                 document.getElementById('overtimeRate').value = (regularRate * 1.5).toFixed(2);
+                calculatePaycheck();
             });
 
             // Run initial calculation
-            calculatePaycheck();
+            setTimeout(function() {
+                console.log('Running initial calculation...');
+                calculatePaycheck();
+            }, 100);
             
             console.log('Calculator initialized successfully!');
         });
