@@ -1277,30 +1277,73 @@
             }
         });
 
+        // Debug function to check state
+        window.debugJobBoard = function() {
+            console.log('🔍 Debug Job Board State:');
+            console.log('- jobsData length:', jobsData.length);
+            console.log('- filteredJobs length:', filteredJobs.length);
+            console.log('- currentPage:', currentPage);
+            console.log('- jobsPerPage:', jobsPerPage);
+            console.log('- apiBaseUrl:', apiBaseUrl);
+            console.log('- jobsGrid element:', document.getElementById('jobsGrid'));
+            console.log('- jobsGrid children:', document.getElementById('jobsGrid')?.children.length);
+            console.log('- resultsCount element:', document.getElementById('resultsCount'));
+            console.log('- resultsCount text:', document.getElementById('resultsCount')?.textContent);
+            if (jobsData.length > 0) {
+                console.log('- Sample job:', jobsData[0]);
+            }
+            return {
+                jobsData: jobsData,
+                filteredJobs: filteredJobs,
+                apiBaseUrl: apiBaseUrl
+            };
+        };
+        
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing job board...');
             
-            // Load jobs from API first
-            loadJobsFromAPI();
-            
-            // Fix button click reliability (prevent rapid double-clicks only)
-            const buttons = document.querySelectorAll('a[href], button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    // Prevent rapid double-clicking issues
-                    if (this.dataset.clicking) {
-                        e.preventDefault();
-                        return false;
-                    }
-                    this.dataset.clicking = 'true';
-                    setTimeout(() => {
-                        delete this.dataset.clicking;
-                    }, 500);
+            try {
+                // Check if LocumUtils is available
+                if (typeof LocumUtils === 'undefined') {
+                    console.error('❌ LocumUtils not loaded! Check common-utils.js');
+                    // Fallback: define minimal LocumUtils
+                    window.LocumUtils = {
+                        showToast: function(msg, type) { console.log(`[${type}] ${msg}`); },
+                        formatCurrency: function(amt) { return '$' + amt.toLocaleString(); },
+                        localStorage: function(key, val) {
+                            if (val !== undefined) {
+                                try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+                            } else {
+                                try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; }
+                            }
+                        }
+                    };
+                }
+                
+                // Load jobs from API first
+                loadJobsFromAPI();
+                
+                // Fix button click reliability (prevent rapid double-clicks only)
+                const buttons = document.querySelectorAll('a[href], button');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        // Prevent rapid double-clicking issues
+                        if (this.dataset.clicking) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        this.dataset.clicking = 'true';
+                        setTimeout(() => {
+                            delete this.dataset.clicking;
+                        }, 500);
+                    });
                 });
-            });
-            
-            console.log('✅ Job board initialization complete');
+                
+                console.log('✅ Job board initialization complete');
+            } catch (error) {
+                console.error('❌ Job board initialization error:', error);
+            }
         });
     </script>
 
