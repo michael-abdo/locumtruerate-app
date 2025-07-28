@@ -8,6 +8,7 @@ const dbConfig = {
   database: config.database.name,
   user: config.database.user,
   password: config.database.password,
+  ssl: config.database.ssl,
   ...config.database.pool
 };
 
