@@ -39,6 +39,9 @@ if (config.server.env === 'development') {
 // Performance metrics middleware
 app.use(metricsMiddleware);
 
+// Serve static files from frontend directory
+app.use(express.static('frontend'));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
