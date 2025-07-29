@@ -1476,19 +1476,35 @@
             const cleanDailyMiles = Math.max(0, dailyMiles);
             const cleanCompletionBonus = Math.max(0, completionBonus);
             
-            // Show warnings for negative values without stopping calculations
-            const negativeWarnings = [];
-            if (overtimeRate < 0) negativeWarnings.push(`Overtime rate cannot be negative (using $0)`);
-            if (beeperRate < 0) negativeWarnings.push(`Beeper rate cannot be negative (using $0)`);
-            if (beeperHours < 0) negativeWarnings.push(`Beeper hours cannot be negative (using 0)`);
-            if (foodStipend < 0) negativeWarnings.push(`Food stipend cannot be negative (using $0)`);
-            if (weeksOff < 0) negativeWarnings.push(`Weeks off cannot be negative (using 0)`);
-            if (dailyMiles < 0) negativeWarnings.push(`Daily miles cannot be negative (using 0)`);
-            if (completionBonus < 0) negativeWarnings.push(`Completion bonus cannot be negative (using $0)`);
+            console.log(`🧹 Clean Values: OT: $${cleanOvertimeRate}, Beeper: $${cleanBeeperRate}/${cleanBeeperHours}hrs, Food: $${cleanFoodStipend}, Miles: ${cleanDailyMiles}, Bonus: $${cleanCompletionBonus}`);
             
-            if (negativeWarnings.length > 0) {
-                console.warn(`⚠️ Negative value warnings:`, negativeWarnings);
-                const warningMessage = negativeWarnings[0]; // Show first warning
+            // Handle negative values: show warnings and reset fields to 0
+            const negativeFields = [
+                {original: overtimeRate, id: 'overtimeRate', name: 'Overtime rate'},
+                {original: beeperRate, id: 'beeperRate', name: 'Beeper rate'},
+                {original: beeperHours, id: 'beeperHours', name: 'Beeper hours'},
+                {original: foodStipend, id: 'foodStipend', name: 'Food stipend'},
+                {original: weeksOff, id: 'weeksOff', name: 'Weeks off'},
+                {original: dailyMiles, id: 'dailyMiles', name: 'Daily miles'},
+                {original: completionBonus, id: 'completionBonus', name: 'Completion bonus'}
+            ];
+            
+            let hasNegativeValues = false;
+            negativeFields.forEach(field => {
+                if (field.original < 0) {
+                    hasNegativeValues = true;
+                    console.warn(`⚠️ Negative value detected: ${field.name} = ${field.original}, resetting to 0`);
+                    const element = document.getElementById(field.id);
+                    if (element) {
+                        element.value = '0';
+                        console.log(`🔧 Reset ${field.id} to 0 in UI`);
+                    }
+                }
+            });
+            
+            if (hasNegativeValues) {
+                const warningMessage = 'Negative values not allowed - fields reset to zero';
+                console.warn(`⚠️ ${warningMessage}`);
                 if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
                     LocumUtils.showToast(warningMessage, 'warning');
                 } else {
@@ -1498,14 +1514,16 @@
             
             console.log('✅ Validation passed, proceeding with calculations...');
             
-            // Simple gross calculations only
-            const weeklyGrossPay = hourlyRate * hoursPerWeek;
-            const totalGrossPay = weeklyGrossPay * contractWeeks;
-            const totalHousingStipend = housingStipend * contractWeeks;
-            
-            // Calculate working weeks (accounting for time off)
+            // Calculate working weeks first (accounting for time off)
             const workingWeeks = Math.max(0, contractWeeks - cleanWeeksOff);
             console.log(`⏰ Working weeks: ${contractWeeks} - ${cleanWeeksOff} = ${workingWeeks}`);
+            
+            // Gross pay calculations using working weeks (not total contract weeks)
+            const weeklyGrossPay = hourlyRate * hoursPerWeek;
+            const totalGrossPay = weeklyGrossPay * workingWeeks; // Use working weeks, not contract weeks
+            const totalHousingStipend = housingStipend * contractWeeks; // Housing is still paid for full contract
+            
+            console.log(`💰 Base Pay: $${hourlyRate}/hr × ${hoursPerWeek} hrs/week × ${workingWeeks} weeks = $${totalGrossPay}`);
             
             // Overtime calculation (assuming overtime hours are included in hoursPerWeek)
             const overtimeHours = Math.max(0, hoursPerWeek - 40);
