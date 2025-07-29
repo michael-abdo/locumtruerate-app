@@ -1332,14 +1332,20 @@
             const resultElements = [
                 'regularPay', 'weeklyGrossPay', 
                 'grossTaxableIncome', 'totalHousingStipend', 'travelReimbursementResult', 'otherStipendsResult', 
-                'netTakeHome', 'totalContractValue', 
-                'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
+                'netTakeHome', 'totalContractValue', 'totalContractValueBreakdown',
+                'trueHourlyRate', 'yourContractRate', 'annualEquivalent',
+                // New compensation result fields
+                'overtimeCompensationResult', 'beeperCompensationResult', 'foodStipendResult', 
+                'mileageReimbursementResult', 'completionBonusResult'
             ];
             
             resultElements.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = '$0';
+                    console.log(`🧹 Cleared result field: ${id}`);
+                } else {
+                    console.warn(`⚠️ Result element not found for clearing: ${id}`);
                 }
             });
         }
@@ -1418,9 +1424,11 @@
             const dailyMiles = getInputValue('dailyMiles');
             const completionBonus = getInputValue('completionBonus');
             
-            // Log input values for debugging
-            console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
-            console.log(`💰 Stipends: Housing: $${housingStipend}/week, Travel: $${travelReimbursement}, Other: $${otherStipends}`);
+            // Log all input values for debugging
+            console.log(`📊 Core Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
+            console.log(`💰 Legacy Stipends: Housing: $${housingStipend}/week, Travel: $${travelReimbursement}, Other: $${otherStipends}`);
+            console.log(`📈 New Fields: Overtime: $${overtimeRate}/hr, Beeper: $${beeperRate}/hr for ${beeperHours}hrs/week, Food: $${foodStipend}/day`);
+            console.log(`⏰ Schedule: ${weeksOff} weeks off, ${shiftsPerWeek} shifts/week, ${dailyMiles} miles/day, Bonus: $${completionBonus}`);
             
             // Validation with visible error messages
             let hasErrors = false;
@@ -1445,12 +1453,40 @@
             if (contractWeeks > 52) {
                 console.warn('⚠️ Contract length over 1 year');
             }
-            if (travelReimbursement < 0 || otherStipends < 0 || housingStipend < 0) {
-                validationErrors.push('Values cannot be negative');
+            // Validate no negative values for all financial fields
+            const fieldsToValidate = [
+                {value: travelReimbursement, name: 'Travel Reimbursement'},
+                {value: otherStipends, name: 'Other Stipends'},
+                {value: housingStipend, name: 'Housing Stipend'},
+                {value: overtimeRate, name: 'Overtime Rate'},
+                {value: beeperRate, name: 'Beeper Call Rate'},
+                {value: beeperHours, name: 'Beeper Call Hours'},
+                {value: foodStipend, name: 'Food Stipend'},
+                {value: weeksOff, name: 'Weeks Off'},
+                {value: shiftsPerWeek, name: 'Shifts per Week'},
+                {value: dailyMiles, name: 'Daily Miles'},
+                {value: completionBonus, name: 'Completion Bonus'}
+            ];
+            
+            fieldsToValidate.forEach(field => {
+                if (field.value < 0) {
+                    validationErrors.push(`${field.name} cannot be negative`);
+                    hasErrors = true;
+                    console.error(`❌ VALIDATION: ${field.name} is negative: ${field.value}`);
+                }
+            });
+            
+            // Additional logical validations
+            if (weeksOff >= contractWeeks) {
+                validationErrors.push('Weeks off cannot equal or exceed contract length');
+                hasErrors = true;
+            }
+            if (shiftsPerWeek > 7) {
+                validationErrors.push('Shifts per week cannot exceed 7');
                 hasErrors = true;
             }
             
-            // Show validation errors
+            // Show validation errors and stop calculation if there are errors
             if (hasErrors) {
                 console.error('❌ Validation errors:', validationErrors);
                 // Show first error as toast notification (visible to user)
@@ -1461,6 +1497,11 @@
                         showNotification(validationErrors[0], 'error');
                     }
                 }
+                // Clear results when validation fails to prevent confusing $0 displays
+                clearResults();
+                updateButtonStates();
+                console.log('🚫 Calculation stopped due to validation errors');
+                return;
             }
             
             // Simple gross calculations only
@@ -1470,26 +1511,33 @@
             
             // Calculate working weeks (accounting for time off)
             const workingWeeks = Math.max(0, contractWeeks - weeksOff);
+            console.log(`⏰ Working weeks: ${contractWeeks} - ${weeksOff} = ${workingWeeks}`);
             
             // Overtime calculation (assuming overtime hours are included in hoursPerWeek)
+            const overtimeHours = Math.max(0, hoursPerWeek - 40);
             const overtimeCompensation = overtimeRate > hourlyRate ? 
-                (overtimeRate - hourlyRate) * Math.max(0, hoursPerWeek - 40) * workingWeeks : 0;
+                (overtimeRate - hourlyRate) * overtimeHours * workingWeeks : 0;
+            console.log(`🔥 Overtime: ${overtimeHours} hrs/week × ($${overtimeRate} - $${hourlyRate}) × ${workingWeeks} weeks = $${overtimeCompensation}`);
             
             // Beeper call compensation
             const beeperCompensation = beeperRate * beeperHours * workingWeeks;
+            console.log(`📞 Beeper: $${beeperRate}/hr × ${beeperHours} hrs/week × ${workingWeeks} weeks = $${beeperCompensation}`);
             
             // Food stipend calculation (daily rate × 7 days × working weeks)
             const foodStipendTotal = foodStipend * 7 * workingWeeks;
+            console.log(`🍽️ Food: $${foodStipend}/day × 7 days × ${workingWeeks} weeks = $${foodStipendTotal}`);
             
             // Mileage calculation (IRS rate $0.67/mile for 2024)
             const irsRate = 0.67;
             const totalMiles = dailyMiles * shiftsPerWeek * workingWeeks;
             const mileageReimbursement = totalMiles * irsRate;
+            console.log(`🚗 Mileage: ${dailyMiles} miles/day × ${shiftsPerWeek} shifts/week × ${workingWeeks} weeks = ${totalMiles} miles × $${irsRate} = $${mileageReimbursement}`);
             
             // Total contract value including all compensation
             const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
                                      otherStipends + overtimeCompensation + beeperCompensation + 
                                      foodStipendTotal + mileageReimbursement + completionBonus;
+            console.log(`💰 Total Contract: Base($${totalGrossPay}) + Housing($${totalHousingStipend}) + Travel($${travelReimbursement}) + Other($${otherStipends}) + Overtime($${overtimeCompensation}) + Beeper($${beeperCompensation}) + Food($${foodStipendTotal}) + Mileage($${mileageReimbursement}) + Bonus($${completionBonus}) = $${totalContractValue}`);
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
