@@ -1326,12 +1326,32 @@
         }
 
         async function saveContract() {
+            console.log('🔍 saveContract() called');
             try {
                 // Check if user is authenticated
                 const token = localStorage.getItem('authToken');
                 if (!token) {
-                    LocumUtils.showLoginModal();
-                    LocumUtils.showToast('Please log in to save contract calculations', 'warning');
+                    console.log('❌ No auth token found, showing login modal');
+                    // For demo/testing, save to localStorage instead
+                    const contractData = {
+                        id: Date.now(),
+                        timestamp: new Date().toISOString(),
+                        jobTitle: document.getElementById('jobTitle').value,
+                        hourlyRate: document.getElementById('hourlyRate').value,
+                        hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                        contractWeeks: document.getElementById('contractWeeks').value,
+                        housingStipend: document.getElementById('housingStipend').value,
+                        totalValue: document.getElementById('totalContractValue').textContent,
+                        trueHourlyRate: document.getElementById('trueHourlyRate').textContent
+                    };
+                    
+                    // Save to localStorage as fallback
+                    const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+                    savedContracts.unshift(contractData);
+                    localStorage.setItem('savedContracts', JSON.stringify(savedContracts.slice(0, 10))); // Keep last 10
+                    
+                    LocumUtils.showToast('Contract saved locally (demo mode)', 'success');
+                    console.log('✅ Contract saved to localStorage:', contractData);
                     return;
                 }
 
@@ -1888,9 +1908,11 @@
 
         // Print Results function with better fallback handling
         function printResults() {
+            console.log('🖨️ printResults() called');
             try {
                 // Try to print current page first (fallback for blocked pop-ups)
                 const printPage = () => {
+                    console.log('🖨️ Opening print dialog');
                     window.print();
                     showNotification('📄 Print dialog opened', 'success');
                 };
@@ -2063,6 +2085,7 @@
         
         // Email Results function with better fallback handling
         function emailResults() {
+            console.log('📧 emailResults() called');
             try {
                 const subject = `Contract Analysis - ${document.getElementById('jobTitle').value}`;
                 const body = `Contract Analysis Summary:
@@ -2080,6 +2103,7 @@ From: LocumTrueRate Contract Calculator`;
                     
                 const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 
+                console.log('📧 Attempting to open email client with mailto link');
                 // Try to open email client
                 const link = document.createElement('a');
                 link.href = mailtoLink;
@@ -2088,12 +2112,24 @@ From: LocumTrueRate Contract Calculator`;
                 link.click();
                 document.body.removeChild(link);
                 
-                // Show immediate feedback and fallback instructions
-                showNotification('📧 Opening email client...', 'info');
+                // Also copy to clipboard as fallback
+                const textToCopy = `${subject}\n\n${body}`;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        console.log('✅ Analysis copied to clipboard');
+                        showNotification('📧 Opening email client... Analysis also copied to clipboard!', 'success');
+                    }).catch(err => {
+                        console.error('❌ Clipboard copy failed:', err);
+                        showNotification('📧 Opening email client...', 'info');
+                    });
+                } else {
+                    console.log('⚠️ Clipboard API not available');
+                    showNotification('📧 Opening email client...', 'info');
+                }
                 
                 // Show additional instructions after a delay if email didn't open
                 setTimeout(() => {
-                    showNotification('💡 If email didn\'t open, copy this data manually from the results above', 'info');
+                    showNotification('💡 If email didn\'t open, the analysis was copied to your clipboard', 'info');
                 }, 3000);
                 
             } catch (error) {
@@ -2104,6 +2140,7 @@ From: LocumTrueRate Contract Calculator`;
         
         // Export CSV function with better error handling
         function exportCSV() {
+            console.log('📊 exportCSV() called');
             try {
                 // Gather all data for CSV export
                 const data = [
@@ -2159,6 +2196,7 @@ From: LocumTrueRate Contract Calculator`;
                 link.setAttribute('download', `contract_analysis_${document.getElementById('jobTitle').value.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
                 link.style.display = 'none';
                 
+                console.log('📊 Attempting to download CSV file');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -2168,6 +2206,7 @@ From: LocumTrueRate Contract Calculator`;
                     URL.revokeObjectURL(url);
                 }, 1000);
                 
+                console.log('✅ CSV download initiated');
                 showNotification('📊 CSV file downloaded successfully', 'success');
                 
             } catch (error) {
@@ -2271,12 +2310,14 @@ From: LocumTrueRate Contract Calculator`;
                     </html>
                 `;
                 
+                console.log('📄 Attempting PDF export...');
                 // Show immediate feedback
-                showNotification('📄 Opening PDF export...', 'info');
+                showNotification('📄 Preparing PDF export...', 'info');
                 
-                // Open print dialog for PDF generation in new tab
+                // First try: Attempt to open new window
                 const printWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
                 if (printWindow) {
+                    console.log('✅ Pop-up window opened successfully');
                     printWindow.document.write(pdfContent);
                     printWindow.document.close();
                     printWindow.focus();
@@ -2289,9 +2330,21 @@ From: LocumTrueRate Contract Calculator`;
                         };
                     }, 500);
                     
-                    showNotification('✅ PDF export opened in new tab', 'success');
+                    showNotification('✅ PDF export opened - use Print dialog to save as PDF', 'success');
                 } else {
-                    showNotification('⚠️ Pop-ups blocked. Please allow pop-ups and try again.', 'error');
+                    console.log('❌ Pop-up blocked, using fallback method');
+                    // Fallback: Create a download link for HTML file
+                    const blob = new Blob([pdfContent], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `contract-analysis-${analysis.jobTitle.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.html`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    showNotification('✅ Analysis downloaded as HTML file', 'success');
                 }
                 
             } catch (error) {
