@@ -870,7 +870,7 @@
                             <div class="form-group">
                                 <label class="form-label">Overtime Rate ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="overtimeRate" value="0" min="0" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter overtime rate">
+                                    <input type="number" class="form-input" id="overtimeRate" value="0" min="0" step="0.01" placeholder="Enter overtime rate">
                                     <div class="tooltip">Enter your overtime hourly rate (typically 1.5x base rate). Leave as 0 if no overtime is expected. This rate applies to hours worked beyond your regular schedule.</div>
                                 </div>
                                 <div class="form-help">Overtime hourly rate</div>
@@ -880,7 +880,7 @@
                             <div class="form-group">
                                 <label class="form-label">Hourly Beeper Call Rate ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="beeperRate" value="0" min="0" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter beeper call rate">
+                                    <input type="number" class="form-input" id="beeperRate" value="0" min="0" step="0.01" placeholder="Enter beeper call rate">
                                     <div class="tooltip">Enter your hourly rate when on beeper/call duty. This is compensation for being available to respond to calls, typically a fraction of your base rate.</div>
                                 </div>
                                 <div class="form-help">Rate while on call</div>
@@ -890,7 +890,7 @@
                             <div class="form-group">
                                 <label class="form-label">Beeper Call Hours per Week</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="beeperHours" value="0" min="0" max="168" step="1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter weekly call hours">
+                                    <input type="number" class="form-input" id="beeperHours" value="0" min="0" max="168" step="1" placeholder="Enter weekly call hours">
                                     <div class="tooltip">Enter the number of hours per week you'll be on beeper/call duty. This is time you must be available but not actively working.</div>
                                 </div>
                                 <div class="form-help">Weekly on-call hours</div>
@@ -908,7 +908,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Shifts per Week</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="shiftsPerWeek" value="5" min="0" max="7" step="0.5" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter shifts per week">
+                                        <input type="number" class="form-input" id="shiftsPerWeek" value="5" min="0" max="7" step="0.5" placeholder="Enter shifts per week">
                                         <div class="tooltip">Enter the number of shifts you'll work per week. This helps calculate daily rates and mileage costs. Typical schedules are 3-5 shifts per week for locum positions.</div>
                                     </div>
                                     <div class="form-help">Number of working days</div>
@@ -923,7 +923,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Weeks Off</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="weeksOff" value="0" min="0" max="52" step="1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter weeks off">
+                                        <input type="number" class="form-input" id="weeksOff" value="0" min="0" max="52" step="1" placeholder="Enter weeks off">
                                         <div class="tooltip">Enter the number of weeks you'll take off during the contract period (vacation, holidays, etc.). This will be subtracted from total contract weeks to calculate actual working weeks.</div>
                                     </div>
                                     <div class="form-help">Non-working weeks</div>
@@ -944,7 +944,7 @@
                             <div class="form-group">
                                 <label class="form-label">Daily Food Stipend ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="foodStipend" value="0" min="0" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter daily food stipend">
+                                    <input type="number" class="form-input" id="foodStipend" value="0" min="0" step="0.01" placeholder="Enter daily food stipend">
                                     <div class="tooltip">Enter your daily meal/food allowance. This is typically $50-150 per day for meals and incidentals. Will be calculated for all working days in your contract.</div>
                                 </div>
                                 <div class="form-help">Daily meal allowance</div>
@@ -974,7 +974,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Daily Round Trip Miles</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="dailyMiles" value="0" min="0" step="0.1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter daily miles">
+                                        <input type="number" class="form-input" id="dailyMiles" value="0" min="0" step="0.1" placeholder="Enter daily miles">
                                         <div class="tooltip">Enter your daily round trip commute distance in miles. This will be used to calculate mileage reimbursement at the current IRS rate ($0.67/mile for 2024).</div>
                                     </div>
                                     <div class="form-help">Round trip commute</div>
@@ -982,7 +982,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Completion Bonus ($)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="completionBonus" value="0" min="0" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter completion bonus">
+                                        <input type="number" class="form-input" id="completionBonus" value="0" min="0" step="0.01" placeholder="Enter completion bonus">
                                         <div class="tooltip">Enter any bonus paid upon successful completion of the contract. This is typically paid as a lump sum at the end of your assignment.</div>
                                     </div>
                                     <div class="form-help">End-of-contract bonus</div>
@@ -2899,12 +2899,31 @@ From: LocumTrueRate Contract Calculator`;
             });
             
             // Add event listeners for all input fields to trigger automatic recalculation
-            const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends', 'overtimeRate', 'beeperRate', 'beeperHours', 'foodStipend', 'weeksOff', 'shiftsPerWeek', 'dailyMiles', 'completionBonus'];
             inputFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
                     element.addEventListener('input', function() {
                         console.log(`📝 Input changed: ${fieldId} = ${this.value}`);
+                        
+                        // Validate input value
+                        const value = parseFloat(this.value);
+                        if (this.value !== '' && (isNaN(value) || value < 0)) {
+                            console.warn(`⚠️ Invalid input for ${fieldId}: ${this.value}`);
+                            this.classList.add('error');
+                            
+                            // Show validation error toast
+                            const fieldLabel = this.previousElementSibling?.textContent || fieldId;
+                            if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                                LocumUtils.showToast(`${fieldLabel} cannot be negative`, 'error');
+                            } else if (typeof showNotification !== 'undefined') {
+                                showNotification(`${fieldLabel} cannot be negative`, 'error');
+                            }
+                            return; // Don't recalculate with invalid values
+                        } else {
+                            this.classList.remove('error');
+                        }
+                        
                         calculateContract();
                     });
                 } else {
@@ -2914,6 +2933,7 @@ From: LocumTrueRate Contract Calculator`;
             
             // Also add listeners for dropdown changes
             const dropdownFields = ['jobTitle', 'contractType', 'workState'];
+            let attachedDropdowns = 0;
             dropdownFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
@@ -2921,8 +2941,18 @@ From: LocumTrueRate Contract Calculator`;
                         console.log(`📝 Dropdown changed: ${fieldId} = ${this.value}`);
                         calculateContract();
                     });
+                    attachedDropdowns++;
+                    console.log(`✅ Event listeners attached to dropdown ${fieldId}`);
                 }
             });
+            
+            console.log(`✅ Event listeners setup complete: ${inputFields.length} inputs, ${attachedDropdowns}/${dropdownFields.length} dropdowns`);
+
+            // Perform initial calculation with default values
+            console.log('🔄 Performing initial calculation with default values...');
+            setTimeout(() => {
+                calculateContract();
+            }, 100);
 
             // Check for edit parameter in URL
             checkForEditMode();
