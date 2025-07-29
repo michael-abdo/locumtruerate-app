@@ -1525,7 +1525,7 @@
             // Basic calculations
             const weeklyGrossPay = hourlyRate * hoursPerWeek;
             const totalGrossPay = weeklyGrossPay * workingWeeks; // Use working weeks for pay
-            const totalHousingStipend = housingStipend * contractWeeks; // Housing still uses full contract
+            const totalHousingStipend = housingStipend * workingWeeks; // Housing uses working weeks like other weekly calculations
             
             console.log('💰 Base calculations: weeklyGrossPay=' + weeklyGrossPay + ', totalGrossPay=' + totalGrossPay);
             
