@@ -1517,16 +1517,15 @@
             
             console.log('✅ Validation passed, proceeding with calculations...');
             
-            // Calculate working weeks first (accounting for time off)
-            const workingWeeks = Math.max(0, contractWeeks - cleanWeeksOff);
-            console.log(`⏰ Working weeks: ${contractWeeks} - ${cleanWeeksOff} = ${workingWeeks}`);
-            
-            // Gross pay calculations using working weeks (not total contract weeks)
+            // SIMPLIFIED CALCULATION TEST - Just basic math
             const weeklyGrossPay = hourlyRate * hoursPerWeek;
-            const totalGrossPay = weeklyGrossPay * workingWeeks; // Use working weeks, not contract weeks
-            const totalHousingStipend = housingStipend * contractWeeks; // Housing is still paid for full contract
+            const totalGrossPay = weeklyGrossPay * contractWeeks; // Use original logic first
+            const totalHousingStipend = housingStipend * contractWeeks;
             
-            console.log(`💰 Base Pay: $${hourlyRate}/hr × ${hoursPerWeek} hrs/week × ${workingWeeks} weeks = $${totalGrossPay}`);
+            console.log('💰 Basic calculation: weeklyGrossPay=' + weeklyGrossPay + ', totalGrossPay=' + totalGrossPay);
+            
+            // Calculate working weeks after basic calculation works
+            const workingWeeks = Math.max(1, contractWeeks - cleanWeeksOff); // Ensure at least 1 week
             
             // Overtime calculation (assuming overtime hours are included in hoursPerWeek)
             const overtimeHours = Math.max(0, hoursPerWeek - 40);
@@ -1548,11 +1547,9 @@
             const mileageReimbursement = totalMiles * irsRate;
             console.log(`🚗 Mileage: ${cleanDailyMiles} miles/day × ${cleanShiftsPerWeek} shifts/week × ${workingWeeks} weeks = ${totalMiles} miles × $${irsRate} = $${mileageReimbursement}`);
             
-            // Total contract value including all compensation
-            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
-                                     otherStipends + overtimeCompensation + beeperCompensation + 
-                                     foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
-            console.log('💰 Total Contract calculated: $' + totalContractValue);
+            // SIMPLIFIED: Start with just basic contract value
+            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
+            console.log('💰 SIMPLIFIED Contract Value: $' + totalContractValue);
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
