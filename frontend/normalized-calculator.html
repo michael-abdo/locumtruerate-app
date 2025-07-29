@@ -1474,7 +1474,7 @@
             const cleanBeeperRate = Math.max(0, beeperRate);
             const cleanBeeperHours = Math.max(0, beeperHours);
             const cleanFoodStipend = Math.max(0, foodStipend);
-            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks - 1)); // Ensure at least 1 working week
+            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks)); // Allow weeks off up to contract length
             const cleanShiftsPerWeek = Math.max(0, Math.min(shiftsPerWeek, 7));
             const cleanDailyMiles = Math.max(0, dailyMiles);
             const cleanCompletionBonus = Math.max(0, completionBonus);
@@ -1519,7 +1519,7 @@
             console.log('✅ Validation passed, proceeding with calculations...');
             
             // Calculate working weeks (accounting for time off)
-            const workingWeeks = Math.max(1, contractWeeks - cleanWeeksOff); // Ensure at least 1 week
+            const workingWeeks = Math.max(0, contractWeeks - cleanWeeksOff); // Allow 0 working weeks for edge cases
             console.log('⏰ Working weeks: ' + contractWeeks + ' - ' + cleanWeeksOff + ' = ' + workingWeeks);
             
             // Basic calculations
@@ -1549,8 +1549,8 @@
                                      foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
             console.log('💰 Total Contract Value: $' + totalContractValue);
             
-            // True hourly rate calculation
-            const totalHours = hoursPerWeek * contractWeeks;
+            // True hourly rate calculation - use working weeks not contract weeks
+            const totalHours = hoursPerWeek * workingWeeks;
             const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
             
             // Annual equivalent (52 weeks)
