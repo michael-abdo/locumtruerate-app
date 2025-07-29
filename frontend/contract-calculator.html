@@ -1029,10 +1029,17 @@
                                 </div>
                                 <div class="result-item">
                                     <div>
-                                        <span class="result-label">Other Stipends</span>
-                                        <div class="result-subtext">Meals, travel</div>
+                                        <span class="result-label">Travel Reimbursement</span>
+                                        <div class="result-subtext">One-time travel payment</div>
                                     </div>
-                                    <span class="result-value" id="otherStipends">$0</span>
+                                    <span class="result-value" id="travelReimbursementResult">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Other Stipends</span>
+                                        <div class="result-subtext">Meals, CME, other benefits</div>
+                                    </div>
+                                    <span class="result-value" id="otherStipendsResult">$0</span>
                                 </div>
                             </div>
 
@@ -1211,7 +1218,7 @@
         function clearResults() {
             const resultElements = [
                 'regularPay', 'weeklyGrossPay', 
-                'grossTaxableIncome', 'totalHousingStipend', 'otherStipends', 
+                'grossTaxableIncome', 'totalHousingStipend', 'travelReimbursementResult', 'otherStipendsResult', 
                 'netTakeHome', 'totalContractValue', 
                 'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
             ];
@@ -1290,6 +1297,7 @@
             
             // Log input values for debugging
             console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
+            console.log(`💰 Stipends: Housing: $${housingStipend}/week, Travel: $${travelReimbursement}, Other: $${otherStipends}`);
             
             // Validation with visible error messages
             let hasErrors = false;
@@ -1323,8 +1331,12 @@
             if (hasErrors) {
                 console.error('❌ Validation errors:', validationErrors);
                 // Show first error as toast notification (visible to user)
-                if (validationErrors.length > 0 && typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast(validationErrors[0], 'error');
+                if (validationErrors.length > 0) {
+                    if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                        LocumUtils.showToast(validationErrors[0], 'error');
+                    } else {
+                        showNotification(validationErrors[0], 'error');
+                    }
                 }
             }
             
@@ -1348,7 +1360,8 @@
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalContractValueBreakdown': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'travelReimbursementResult': '$' + travelReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'otherStipendsResult': '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
                 'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
@@ -1375,7 +1388,8 @@
             }
             
             // Log calculation results
-            console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
+            console.log(`📊 Calculations: Weekly: $${weeklyGrossPay.toFixed(2)}, Housing Total: $${totalHousingStipend.toFixed(2)}, Contract Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
+            console.log(`📈 Setting result values...`);
             
             // Update button states after calculation
             updateButtonStates();
@@ -1406,7 +1420,11 @@
                     savedContracts.unshift(contractData);
                     localStorage.setItem('savedContracts', JSON.stringify(savedContracts.slice(0, 10))); // Keep last 10
                     
-                    LocumUtils.showToast('Contract saved locally (demo mode)', 'success');
+                    if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                        LocumUtils.showToast('Contract saved locally (demo mode)', 'success');
+                    } else {
+                        showNotification('Contract saved locally (demo mode)', 'success');
+                    }
                     console.log('✅ Contract saved to localStorage:', contractData);
                     return;
                 }
@@ -2537,7 +2555,8 @@ From: LocumTrueRate Contract Calculator`;
                 'yourContractRate': 'Your Contract Rate',
                 'annualEquivalent': 'Annual Equivalent',
                 'totalHousingStipend': 'Total Housing Stipend',
-                'otherStipends': 'Other Stipends Result',
+                'travelReimbursementResult': 'Travel Reimbursement Result',
+                'otherStipendsResult': 'Other Stipends Result',
                 'grossTaxableIncome': 'Gross Taxable Income',
                 'netTakeHome': 'Net Take Home',
                 'regularPay': 'Regular Pay',
