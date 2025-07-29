@@ -1381,6 +1381,9 @@
             console.log('🔄 calculateContract() called');
             console.log('🔍 Checking if DOM is ready...');
             
+            // DEBUG: Simple test to verify function is running
+            console.log('🚨 DEBUG: Function started successfully');
+            
             // Check if elements exist
             const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
             for (const id of inputElementIds) {
@@ -1557,6 +1560,9 @@
             
             // Annual equivalent (52 weeks)
             const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
+            
+            // DEBUG: Check if calculations produced values
+            console.log(`🚨 DEBUG: totalGrossPay=${totalGrossPay}, beeperCompensation=${beeperCompensation}, totalContractValue=${totalContractValue}`);
 
             // Update display elements - only update elements that exist
             const elements = {
@@ -1603,6 +1609,9 @@
             
             // Update button states after calculation
             updateButtonStates();
+            
+            // DEBUG: Function completed successfully
+            console.log('🚨 DEBUG: Function completed successfully');
         }
 
         async function saveContract() {
