@@ -1431,89 +1431,64 @@
             console.log(`📈 New Fields: Overtime: $${overtimeRate}/hr, Beeper: $${beeperRate}/hr for ${beeperHours}hrs/week, Food: $${foodStipend}/day`);
             console.log(`⏰ Schedule: ${weeksOff} weeks off, ${shiftsPerWeek} shifts/week, ${dailyMiles} miles/day, Bonus: $${completionBonus}`);
             
-            // Validation with visible error messages - separate critical from warnings
-            let hasCriticalErrors = false;
-            const criticalErrors = [];
-            const warnings = [];
-            
-            // Critical validations that must stop calculations
+            // Simple validation - only stop for critical errors
             if (hourlyRate <= 0) {
-                criticalErrors.push('Hourly rate must be greater than $0');
-                hasCriticalErrors = true;
-            }
-            if (hoursPerWeek <= 0) {
-                criticalErrors.push('Hours per week must be greater than 0');
-                hasCriticalErrors = true;
-            }
-            if (hoursPerWeek > 168) {
-                criticalErrors.push('Hours per week cannot exceed 168');
-                hasCriticalErrors = true;
-            }
-            if (contractWeeks <= 0) {
-                criticalErrors.push('Contract length must be at least 1 week');
-                hasCriticalErrors = true;
-            }
-            
-            // Warning validations that show message but allow calculations
-            if (contractWeeks > 52) {
-                warnings.push('Contract length over 1 year');
-            }
-            if (weeksOff >= contractWeeks) {
-                warnings.push('Weeks off cannot equal or exceed contract length');
-            }
-            if (shiftsPerWeek > 7) {
-                warnings.push('Shifts per week cannot exceed 7');
-            }
-            
-            // Validate no negative values - these are warnings, not critical errors
-            const fieldsToValidate = [
-                {value: travelReimbursement, name: 'Travel Reimbursement', id: 'travelReimbursement'},
-                {value: otherStipends, name: 'Other Stipends', id: 'otherStipends'},
-                {value: housingStipend, name: 'Housing Stipend', id: 'housingStipend'},
-                {value: overtimeRate, name: 'Overtime Rate', id: 'overtimeRate'},
-                {value: beeperRate, name: 'Beeper Call Rate', id: 'beeperRate'},
-                {value: beeperHours, name: 'Beeper Call Hours', id: 'beeperHours'},
-                {value: foodStipend, name: 'Food Stipend', id: 'foodStipend'},
-                {value: weeksOff, name: 'Weeks Off', id: 'weeksOff'},
-                {value: shiftsPerWeek, name: 'Shifts per Week', id: 'shiftsPerWeek'},
-                {value: dailyMiles, name: 'Daily Miles', id: 'dailyMiles'},
-                {value: completionBonus, name: 'Completion Bonus', id: 'completionBonus'}
-            ];
-            
-            fieldsToValidate.forEach(field => {
-                if (field.value < 0) {
-                    warnings.push(`${field.name} cannot be negative - correcting to 0`);
-                    console.warn(`⚠️ VALIDATION: ${field.name} is negative: ${field.value}, correcting to 0`);
-                    // Reset negative values to 0 for calculation and in the UI
-                    const element = document.getElementById(field.id);
-                    if (element) {
-                        element.value = '0';
-                        console.log(`🔧 Corrected ${field.id} from ${field.value} to 0`);
-                    } else {
-                        console.error(`❌ Could not find element to correct: ${field.id}`);
-                    }
-                }
-            });
-            
-            // Show critical errors and stop calculation
-            if (hasCriticalErrors) {
-                console.error('❌ Critical validation errors:', criticalErrors);
-                const errorMessage = criticalErrors[0]; // Show first critical error
+                console.error('❌ Critical: Hourly rate must be greater than $0');
                 if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast(errorMessage, 'error');
+                    LocumUtils.showToast('Hourly rate must be greater than $0', 'error');
                 } else {
-                    showNotification(errorMessage, 'error');
+                    showNotification('Hourly rate must be greater than $0', 'error');
                 }
                 clearResults();
                 updateButtonStates();
-                console.log('🚫 Calculation stopped due to critical validation errors');
+                return;
+            }
+            if (hoursPerWeek <= 0 || hoursPerWeek > 168) {
+                console.error('❌ Critical: Hours per week must be between 1 and 168');
+                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                    LocumUtils.showToast('Hours per week must be between 1 and 168', 'error');
+                } else {
+                    showNotification('Hours per week must be between 1 and 168', 'error');
+                }
+                clearResults();
+                updateButtonStates();
+                return;
+            }
+            if (contractWeeks <= 0) {
+                console.error('❌ Critical: Contract length must be at least 1 week');
+                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                    LocumUtils.showToast('Contract length must be at least 1 week', 'error');
+                } else {
+                    showNotification('Contract length must be at least 1 week', 'error');
+                }
+                clearResults();
+                updateButtonStates();
                 return;
             }
             
-            // Show warnings but continue with calculations
-            if (warnings.length > 0) {
-                console.warn('⚠️ Validation warnings:', warnings);
-                const warningMessage = warnings[0]; // Show first warning
+            // Clean negative values for calculations (no UI changes)
+            const cleanOvertimeRate = Math.max(0, overtimeRate);
+            const cleanBeeperRate = Math.max(0, beeperRate);
+            const cleanBeeperHours = Math.max(0, beeperHours);
+            const cleanFoodStipend = Math.max(0, foodStipend);
+            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks - 0.1)); // Ensure some working weeks
+            const cleanShiftsPerWeek = Math.max(0, Math.min(shiftsPerWeek, 7));
+            const cleanDailyMiles = Math.max(0, dailyMiles);
+            const cleanCompletionBonus = Math.max(0, completionBonus);
+            
+            // Show warnings for negative values without stopping calculations
+            const negativeWarnings = [];
+            if (overtimeRate < 0) negativeWarnings.push(`Overtime rate cannot be negative (using $0)`);
+            if (beeperRate < 0) negativeWarnings.push(`Beeper rate cannot be negative (using $0)`);
+            if (beeperHours < 0) negativeWarnings.push(`Beeper hours cannot be negative (using 0)`);
+            if (foodStipend < 0) negativeWarnings.push(`Food stipend cannot be negative (using $0)`);
+            if (weeksOff < 0) negativeWarnings.push(`Weeks off cannot be negative (using 0)`);
+            if (dailyMiles < 0) negativeWarnings.push(`Daily miles cannot be negative (using 0)`);
+            if (completionBonus < 0) negativeWarnings.push(`Completion bonus cannot be negative (using $0)`);
+            
+            if (negativeWarnings.length > 0) {
+                console.warn(`⚠️ Negative value warnings:`, negativeWarnings);
+                const warningMessage = negativeWarnings[0]; // Show first warning
                 if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
                     LocumUtils.showToast(warningMessage, 'warning');
                 } else {
@@ -1521,17 +1496,7 @@
                 }
             }
             
-            // Re-read values after any corrections to ensure we use corrected values in calculations
-            const correctedOvertimeRate = Math.max(0, getInputValue('overtimeRate'));
-            const correctedBeeperRate = Math.max(0, getInputValue('beeperRate'));
-            const correctedBeeperHours = Math.max(0, getInputValue('beeperHours'));
-            const correctedFoodStipend = Math.max(0, getInputValue('foodStipend'));
-            const correctedWeeksOff = Math.max(0, getInputValue('weeksOff'));
-            const correctedShiftsPerWeek = Math.max(0, getInputValue('shiftsPerWeek', 5));
-            const correctedDailyMiles = Math.max(0, getInputValue('dailyMiles'));
-            const correctedCompletionBonus = Math.max(0, getInputValue('completionBonus'));
-            
-            console.log('🔧 Using corrected values for calculations...');
+            console.log('✅ Validation passed, proceeding with calculations...');
             
             // Simple gross calculations only
             const weeklyGrossPay = hourlyRate * hoursPerWeek;
@@ -1539,34 +1504,34 @@
             const totalHousingStipend = housingStipend * contractWeeks;
             
             // Calculate working weeks (accounting for time off)
-            const workingWeeks = Math.max(0, contractWeeks - correctedWeeksOff);
-            console.log(`⏰ Working weeks: ${contractWeeks} - ${correctedWeeksOff} = ${workingWeeks}`);
+            const workingWeeks = Math.max(0, contractWeeks - cleanWeeksOff);
+            console.log(`⏰ Working weeks: ${contractWeeks} - ${cleanWeeksOff} = ${workingWeeks}`);
             
             // Overtime calculation (assuming overtime hours are included in hoursPerWeek)
             const overtimeHours = Math.max(0, hoursPerWeek - 40);
-            const overtimeCompensation = correctedOvertimeRate > hourlyRate ? 
-                (correctedOvertimeRate - hourlyRate) * overtimeHours * workingWeeks : 0;
-            console.log(`🔥 Overtime: ${overtimeHours} hrs/week × ($${correctedOvertimeRate} - $${hourlyRate}) × ${workingWeeks} weeks = $${overtimeCompensation}`);
+            const overtimeCompensation = cleanOvertimeRate > hourlyRate ? 
+                (cleanOvertimeRate - hourlyRate) * overtimeHours * workingWeeks : 0;
+            console.log(`🔥 Overtime: ${overtimeHours} hrs/week × ($${cleanOvertimeRate} - $${hourlyRate}) × ${workingWeeks} weeks = $${overtimeCompensation}`);
             
             // Beeper call compensation
-            const beeperCompensation = correctedBeeperRate * correctedBeeperHours * workingWeeks;
-            console.log(`📞 Beeper: $${correctedBeeperRate}/hr × ${correctedBeeperHours} hrs/week × ${workingWeeks} weeks = $${beeperCompensation}`);
+            const beeperCompensation = cleanBeeperRate * cleanBeeperHours * workingWeeks;
+            console.log(`📞 Beeper: $${cleanBeeperRate}/hr × ${cleanBeeperHours} hrs/week × ${workingWeeks} weeks = $${beeperCompensation}`);
             
             // Food stipend calculation (daily rate × 7 days × working weeks)
-            const foodStipendTotal = correctedFoodStipend * 7 * workingWeeks;
-            console.log(`🍽️ Food: $${correctedFoodStipend}/day × 7 days × ${workingWeeks} weeks = $${foodStipendTotal}`);
+            const foodStipendTotal = cleanFoodStipend * 7 * workingWeeks;
+            console.log(`🍽️ Food: $${cleanFoodStipend}/day × 7 days × ${workingWeeks} weeks = $${foodStipendTotal}`);
             
             // Mileage calculation (IRS rate $0.67/mile for 2024)
             const irsRate = 0.67;
-            const totalMiles = correctedDailyMiles * correctedShiftsPerWeek * workingWeeks;
+            const totalMiles = cleanDailyMiles * cleanShiftsPerWeek * workingWeeks;
             const mileageReimbursement = totalMiles * irsRate;
-            console.log(`🚗 Mileage: ${correctedDailyMiles} miles/day × ${correctedShiftsPerWeek} shifts/week × ${workingWeeks} weeks = ${totalMiles} miles × $${irsRate} = $${mileageReimbursement}`);
+            console.log(`🚗 Mileage: ${cleanDailyMiles} miles/day × ${cleanShiftsPerWeek} shifts/week × ${workingWeeks} weeks = ${totalMiles} miles × $${irsRate} = $${mileageReimbursement}`);
             
             // Total contract value including all compensation
             const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
                                      otherStipends + overtimeCompensation + beeperCompensation + 
-                                     foodStipendTotal + mileageReimbursement + correctedCompletionBonus;
-            console.log(`💰 Total Contract: Base($${totalGrossPay}) + Housing($${totalHousingStipend}) + Travel($${travelReimbursement}) + Other($${otherStipends}) + Overtime($${overtimeCompensation}) + Beeper($${beeperCompensation}) + Food($${foodStipendTotal}) + Mileage($${mileageReimbursement}) + Bonus($${correctedCompletionBonus}) = $${totalContractValue}`);
+                                     foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
+            console.log(`💰 Total Contract: Base($${totalGrossPay}) + Housing($${totalHousingStipend}) + Travel($${travelReimbursement}) + Other($${otherStipends}) + Overtime($${overtimeCompensation}) + Beeper($${beeperCompensation}) + Food($${foodStipendTotal}) + Mileage($${mileageReimbursement}) + Bonus($${cleanCompletionBonus}) = $${totalContractValue}`);
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
@@ -1588,7 +1553,7 @@
                 'beeperCompensationResult': '$' + beeperCompensation.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'foodStipendResult': '$' + foodStipendTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'mileageReimbursementResult': '$' + mileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'completionBonusResult': '$' + correctedCompletionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'completionBonusResult': '$' + cleanCompletionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
                 'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
