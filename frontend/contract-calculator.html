@@ -1266,9 +1266,9 @@
             // Show validation errors
             if (hasErrors) {
                 console.error('❌ Validation errors:', validationErrors);
-                // Show first error as notification
-                if (typeof showNotification === 'function' && validationErrors.length > 0) {
-                    showNotification(`❌ ${validationErrors[0]}`, 'error');
+                // Show first error as toast notification (visible to user)
+                if (validationErrors.length > 0 && typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                    LocumUtils.showToast(validationErrors[0], 'error');
                 }
             }
             
@@ -2355,10 +2355,6 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
         
-        // Simplified calculation trigger for hourly rate changes
-        document.getElementById('hourlyRate').addEventListener('input', function() {
-            calculateContract();
-        });
 
         // Check for pre-filled data from job board
         function checkPrefilledData() {
@@ -2597,6 +2593,32 @@ From: LocumTrueRate Contract Calculator`;
                 });
             });
             
+            // Add event listeners for all input fields to trigger automatic recalculation
+            const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            inputFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        console.log(`📝 Input changed: ${fieldId} = ${this.value}`);
+                        calculateContract();
+                    });
+                } else {
+                    console.error(`❌ Could not find input field: ${fieldId}`);
+                }
+            });
+            
+            // Also add listeners for dropdown changes
+            const dropdownFields = ['jobTitle', 'contractType', 'workState'];
+            dropdownFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.addEventListener('change', function() {
+                        console.log(`📝 Dropdown changed: ${fieldId} = ${this.value}`);
+                        calculateContract();
+                    });
+                }
+            });
+
             // Check for edit parameter in URL
             checkForEditMode();
 
