@@ -1474,12 +1474,12 @@
             const cleanBeeperRate = Math.max(0, beeperRate);
             const cleanBeeperHours = Math.max(0, beeperHours);
             const cleanFoodStipend = Math.max(0, foodStipend);
-            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks - 0.1)); // Ensure some working weeks
+            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks - 1)); // Ensure at least 1 working week
             const cleanShiftsPerWeek = Math.max(0, Math.min(shiftsPerWeek, 7));
             const cleanDailyMiles = Math.max(0, dailyMiles);
             const cleanCompletionBonus = Math.max(0, completionBonus);
             
-            console.log(`🧹 Clean Values: OT: $${cleanOvertimeRate}, Beeper: $${cleanBeeperRate}/${cleanBeeperHours}hrs, Food: $${cleanFoodStipend}, Miles: ${cleanDailyMiles}, Bonus: $${cleanCompletionBonus}`);
+            console.log('🧹 Clean Values calculated successfully');
             
             // Handle negative values: show warnings and reset fields to 0
             const negativeFields = [
@@ -1552,7 +1552,7 @@
             const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
                                      otherStipends + overtimeCompensation + beeperCompensation + 
                                      foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
-            console.log(`💰 Total Contract: Base($${totalGrossPay}) + Housing($${totalHousingStipend}) + Travel($${travelReimbursement}) + Other($${otherStipends}) + Overtime($${overtimeCompensation}) + Beeper($${beeperCompensation}) + Food($${foodStipendTotal}) + Mileage($${mileageReimbursement}) + Bonus($${cleanCompletionBonus}) = $${totalContractValue}`);
+            console.log('💰 Total Contract calculated: $' + totalContractValue);
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
