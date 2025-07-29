@@ -1507,49 +1507,47 @@
             
             if (hasNegativeValues) {
                 const warningMessage = 'Negative values not allowed - fields reset to zero';
-                console.warn(`⚠️ ${warningMessage}`);
+                console.warn('⚠️ ' + warningMessage);
                 if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
                     LocumUtils.showToast(warningMessage, 'warning');
                 } else {
                     showNotification(warningMessage, 'warning');
                 }
+                console.log('🚨 DEBUG: Negative validation triggered and fields reset');
             }
             
             console.log('✅ Validation passed, proceeding with calculations...');
             
-            // SIMPLIFIED CALCULATION TEST - Just basic math
-            const weeklyGrossPay = hourlyRate * hoursPerWeek;
-            const totalGrossPay = weeklyGrossPay * contractWeeks; // Use original logic first
-            const totalHousingStipend = housingStipend * contractWeeks;
-            
-            console.log('💰 Basic calculation: weeklyGrossPay=' + weeklyGrossPay + ', totalGrossPay=' + totalGrossPay);
-            
-            // Calculate working weeks after basic calculation works
+            // Calculate working weeks (accounting for time off)
             const workingWeeks = Math.max(1, contractWeeks - cleanWeeksOff); // Ensure at least 1 week
+            console.log('⏰ Working weeks: ' + contractWeeks + ' - ' + cleanWeeksOff + ' = ' + workingWeeks);
             
-            // Overtime calculation (assuming overtime hours are included in hoursPerWeek)
+            // Basic calculations
+            const weeklyGrossPay = hourlyRate * hoursPerWeek;
+            const totalGrossPay = weeklyGrossPay * workingWeeks; // Use working weeks for pay
+            const totalHousingStipend = housingStipend * contractWeeks; // Housing still uses full contract
+            
+            console.log('💰 Base calculations: weeklyGrossPay=' + weeklyGrossPay + ', totalGrossPay=' + totalGrossPay);
+            
+            // New compensation calculations
             const overtimeHours = Math.max(0, hoursPerWeek - 40);
             const overtimeCompensation = cleanOvertimeRate > hourlyRate ? 
                 (cleanOvertimeRate - hourlyRate) * overtimeHours * workingWeeks : 0;
-            console.log(`🔥 Overtime: ${overtimeHours} hrs/week × ($${cleanOvertimeRate} - $${hourlyRate}) × ${workingWeeks} weeks = $${overtimeCompensation}`);
             
-            // Beeper call compensation
             const beeperCompensation = cleanBeeperRate * cleanBeeperHours * workingWeeks;
-            console.log(`📞 Beeper: $${cleanBeeperRate}/hr × ${cleanBeeperHours} hrs/week × ${workingWeeks} weeks = $${beeperCompensation}`);
-            
-            // Food stipend calculation (daily rate × 7 days × working weeks)
             const foodStipendTotal = cleanFoodStipend * 7 * workingWeeks;
-            console.log(`🍽️ Food: $${cleanFoodStipend}/day × 7 days × ${workingWeeks} weeks = $${foodStipendTotal}`);
             
-            // Mileage calculation (IRS rate $0.67/mile for 2024)
             const irsRate = 0.67;
             const totalMiles = cleanDailyMiles * cleanShiftsPerWeek * workingWeeks;
             const mileageReimbursement = totalMiles * irsRate;
-            console.log(`🚗 Mileage: ${cleanDailyMiles} miles/day × ${cleanShiftsPerWeek} shifts/week × ${workingWeeks} weeks = ${totalMiles} miles × $${irsRate} = $${mileageReimbursement}`);
             
-            // SIMPLIFIED: Start with just basic contract value
-            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
-            console.log('💰 SIMPLIFIED Contract Value: $' + totalContractValue);
+            console.log('🔥 New compensation: overtime=' + overtimeCompensation + ', beeper=' + beeperCompensation + ', food=' + foodStipendTotal + ', mileage=' + mileageReimbursement);
+            
+            // Total contract value including all compensation
+            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
+                                     otherStipends + overtimeCompensation + beeperCompensation + 
+                                     foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
+            console.log('💰 Total Contract Value: $' + totalContractValue);
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
