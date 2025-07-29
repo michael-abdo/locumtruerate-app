@@ -840,7 +840,7 @@
                             <div class="form-group">
                                 <label class="form-label">Job Title</label>
                                 <div class="tooltip-wrapper">
-                                    <select class="form-input form-select" id="jobTitle" onchange="calculateContract()">
+                                    <select class="form-input form-select" id="jobTitle">
                                         <option value="MD">MD (Medical Doctor)</option>
                                         <option value="CRNA">CRNA (Certified Registered Nurse Anesthetist)</option>
                                         <option value="NP">NP (Nurse Practitioner)</option>
@@ -858,7 +858,7 @@
                             <div class="form-group">
                                 <label class="form-label">Hourly Rate ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hourly rate" required>
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" placeholder="Enter hourly rate" required>
                                     <div class="tooltip">Enter your base hourly rate before overtime. This is the standard rate you'll be paid for regular hours worked. Does not include overtime premiums or stipends.</div>
                                 </div>
                                 <div class="form-help">Base hourly rate</div>
@@ -869,14 +869,14 @@
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hours per week" required>
+                                        <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" placeholder="Enter hours per week" required>
                                         <div class="tooltip">Enter the total number of hours you'll work per week at the standard hourly rate. This typically ranges from 36-48 hours for most locum positions. Maximum allowed is 168 hours (24 hours × 7 days).</div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Contract Length (weeks)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter contract length" required>
+                                        <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" placeholder="Enter contract length" required>
                                         <div class="tooltip">Enter the total duration of your contract in weeks. Common lengths are 8-13 weeks for locum tenens assignments, with some extending to 26 or 52 weeks. This determines your total earning potential.</div>
                                     </div>
                                 </div>
@@ -886,7 +886,7 @@
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($ per week)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01">
                                     <div class="tooltip">Enter the weekly housing allowance provided by your employer. This can range from $800-2000+ per week depending on location and housing type. May be provided as furnished housing or cash allowance.</div>
                                 </div>
                                 <div class="form-help">Weekly housing allowance</div>
@@ -896,7 +896,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Travel Reimbursement ($)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01" oninput="calculateContract()">
+                                        <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01">
                                         <div class="tooltip">Enter the total travel reimbursement amount provided. This covers transportation costs to/from your assignment location and is typically a one-time payment ranging from $500-2000+ depending on distance.</div>
                                     </div>
                                     <div class="form-help">One-time travel allowance</div>
@@ -904,7 +904,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Other Stipends ($)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="otherStipends" value="2000" min="0" step="0.01" oninput="calculateContract()">
+                                        <input type="number" class="form-input" id="otherStipends" value="2000" min="0" step="0.01">
                                         <div class="tooltip">Enter total amount for additional benefits like meal stipends, CME allowances, license reimbursement, malpractice insurance, or completion bonuses. This varies widely by employer and contract type.</div>
                                     </div>
                                     <div class="form-help">Total other benefits</div>
@@ -918,7 +918,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Contract Type</label>
                                     <div class="tooltip-wrapper">
-                                        <select class="form-input form-select" id="contractType" onchange="calculateContract()">
+                                        <select class="form-input form-select" id="contractType">
                                             <option value="locum">Locum Tenens</option>
                                             <option value="permanent">Permanent Placement</option>
                                             <option value="per-diem">Per Diem</option>
@@ -929,7 +929,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Contract State</label>
                                     <div class="tooltip-wrapper">
-                                        <select class="form-input form-select" id="workState" onchange="calculateContract()">
+                                        <select class="form-input form-select" id="workState">
                                         <option value="">Select State</option>
                                         <option value="AL">Alabama</option>
                                         <option value="AK">Alaska</option>
@@ -1358,10 +1358,6 @@
                 'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalContractValueBreakdown': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'travelReimbursementResult': '$' + travelReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'otherStipendsResult': '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
                 'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
@@ -2685,14 +2681,30 @@ From: LocumTrueRate Contract Calculator`;
             });
             
             // Add event listeners for all input fields to trigger automatic recalculation
+            console.log('🔄 Setting up real-time calculation event listeners...');
+            
             const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            let attachedInputs = 0;
             inputFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
+                    // Remove any existing listeners to prevent duplicates
+                    element.removeEventListener('input', calculateContract);
+                    element.removeEventListener('change', calculateContract);
+                    element.removeEventListener('keyup', calculateContract);
+                    
+                    // Add new listeners
                     element.addEventListener('input', function() {
                         console.log(`📝 Input changed: ${fieldId} = ${this.value}`);
                         calculateContract();
                     });
+                    element.addEventListener('change', function() {
+                        console.log(`📝 Input changed (change event): ${fieldId} = ${this.value}`);
+                        calculateContract();
+                    });
+                    
+                    attachedInputs++;
+                    console.log(`✅ Event listeners attached to ${fieldId}`);
                 } else {
                     console.error(`❌ Could not find input field: ${fieldId}`);
                 }
@@ -2700,15 +2712,30 @@ From: LocumTrueRate Contract Calculator`;
             
             // Also add listeners for dropdown changes
             const dropdownFields = ['jobTitle', 'contractType', 'workState'];
+            let attachedDropdowns = 0;
             dropdownFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
+                    // Remove any existing listeners to prevent duplicates
+                    element.removeEventListener('change', calculateContract);
+                    
                     element.addEventListener('change', function() {
                         console.log(`📝 Dropdown changed: ${fieldId} = ${this.value}`);
                         calculateContract();
                     });
+                    
+                    attachedDropdowns++;
+                    console.log(`✅ Event listeners attached to dropdown ${fieldId}`);
                 }
             });
+            
+            console.log(`✅ Event listeners setup complete: ${attachedInputs}/${inputFields.length} inputs, ${attachedDropdowns}/${dropdownFields.length} dropdowns`);
+
+            // Perform initial calculation with default values
+            console.log('🔄 Performing initial calculation with default values...');
+            setTimeout(() => {
+                calculateContract();
+            }, 100);
 
             // Check for edit parameter in URL
             checkForEditMode();
