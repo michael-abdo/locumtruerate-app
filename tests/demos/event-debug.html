@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Debug Test</title>
+</head>
+<body>
+    <h1>Event Handler Debug</h1>
+    <input type="number" id="testInput" value="100" oninput="testHandler(this)">
+    <div id="results"></div>
+    
+    <script>
+        let eventCount = 0;
+        
+        function log(msg) {
+            document.getElementById('results').innerHTML += `<div>${msg}</div>`;
+        }
+        
+        // Test if this gets called
+        window.testHandler = function(input) {
+            eventCount++;
+            log(`Event #${eventCount}: Input changed to ${input.value}`);
+            
+            // Check if DOM elements exist
+            const elem = document.getElementById('testInput');
+            if (elem) {
+                log(`✓ Element found: ${elem.tagName}`);
+            } else {
+                log(`✗ Element NOT found`);
+            }
+            
+            // Test if this survives multiple calls
+            if (eventCount === 3) {
+                log(`After 3 calls, still working!`);
+            }
+        };
+        
+        log('Script loaded');
+        
+        // Test programmatic event
+        setTimeout(() => {
+            log('Testing programmatic event...');
+            const input = document.getElementById('testInput');
+            input.value = '200';
+            input.dispatchEvent(new Event('input'));
+        }, 2000);
+    </script>
+</body>
+</html>

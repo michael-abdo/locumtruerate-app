@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Integration Test</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            background: var(--background-color, #f9fafb);
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .user-info {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .console-output {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Authentication Integration Test</h1>
+        
+        <div class="test-section">
+            <h2>Authentication Status</h2>
+            <div id="auth-status" class="status">Checking...</div>
+            <div id="user-info" class="user-info" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test Actions</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testLogin()">Test Login Modal</button>
+                <button class="btn btn-primary" onclick="testRegister()">Test Register Modal</button>
+                <button class="btn btn-secondary" onclick="checkAuthState()">Check Auth State</button>
+                <button class="btn btn-danger" onclick="testLogout()">Test Logout</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Direct API Test</h2>
+            <div class="test-buttons">
+                <button class="btn btn-primary" onclick="testDirectLogin()">Direct Login API</button>
+                <button class="btn btn-primary" onclick="testDirectRegister()">Direct Register API</button>
+                <button class="btn btn-secondary" onclick="testProtectedEndpoint()">Test Protected Endpoint</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div id="console" class="console-output">Ready for testing...</div>
+        </div>
+    </div>
+
+    <script>
+        // Console output helper
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
+            console.innerHTML += `\n[${timestamp}] ${prefix} ${message}`;
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        // Check initial auth state
+        function checkAuthState() {
+            const statusEl = document.getElementById('auth-status');
+            const userInfoEl = document.getElementById('user-info');
+            
+            if (typeof AuthManager === 'undefined') {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'AuthManager not loaded!';
+                log('AuthManager is not available', 'error');
+                return;
+            }
+            
+            const isAuthenticated = AuthManager.isAuthenticated();
+            const user = AuthManager.getUser();
+            
+            if (isAuthenticated) {
+                statusEl.className = 'status success';
+                statusEl.textContent = 'Authenticated';
+                
+                userInfoEl.style.display = 'block';
+                userInfoEl.innerHTML = `
+                    <strong>User:</strong> ${user.firstName} ${user.lastName}<br>
+                    <strong>Email:</strong> ${user.email}<br>
+                    <strong>Role:</strong> ${user.role}<br>
+                    <strong>Token:</strong> ${AuthManager.getToken().substring(0, 20)}...
+                `;
+                
+                log(`Authenticated as ${user.email}`, 'success');
+            } else {
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Not Authenticated';
+                userInfoEl.style.display = 'none';
+                log('Not authenticated', 'info');
+            }
+        }
+        
+        // Test login modal
+        function testLogin() {
+            log('Opening login modal...');
+            if (typeof LocumUtils !== 'undefined' && LocumUtils.showLoginModal) {
+                LocumUtils.showLoginModal();
+                log('Login modal opened', 'success');
+            } else {
+                log('LocumUtils.showLoginModal not available', 'error');
+            }
+        }
+        
+        // Test register modal
+        function testRegister() {
+            log('Opening register modal...');
+            if (typeof LocumUtils !== 'undefined' && LocumUtils.showRegisterModal) {
+                LocumUtils.showRegisterModal();
+                log('Register modal opened', 'success');
+            } else {
+                log('LocumUtils.showRegisterModal not available', 'error');
+            }
+        }
+        
+        // Test direct login API
+        async function testDirectLogin() {
+            log('Testing direct login API...');
+            
+            const email = prompt('Enter test email:', 'test@example.com');
+            const password = prompt('Enter test password:', 'password123');
+            
+            if (!email || !password) {
+                log('Login cancelled', 'error');
+                return;
+            }
+            
+            try {
+                const response = await AuthAPI.login(email, password);
+                log(`Login successful! Token: ${response.token.substring(0, 20)}...`, 'success');
+                checkAuthState();
+            } catch (error) {
+                log(`Login failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test direct register API
+        async function testDirectRegister() {
+            log('Testing direct register API...');
+            
+            const timestamp = Date.now();
+            const userData = {
+                email: `test-${timestamp}@example.com`,
+                password: 'password123',
+                firstName: 'Test',
+                lastName: 'User',
+                role: 'locum',
+                phone: '555-0123'
+            };
+            
+            log(`Attempting to register: ${userData.email}`);
+            
+            try {
+                const response = await AuthAPI.register(userData);
+                log(`Registration successful! User ID: ${response.user.id}`, 'success');
+                checkAuthState();
+            } catch (error) {
+                log(`Registration failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test logout
+        async function testLogout() {
+            log('Testing logout...');
+            
+            try {
+                await AuthAPI.logout();
+                log('Logout successful', 'success');
+                checkAuthState();
+            } catch (error) {
+                log(`Logout error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test protected endpoint
+        async function testProtectedEndpoint() {
+            log('Testing protected endpoint...');
+            
+            try {
+                const response = await ApiClient.get('/jobs');
+                log(`Successfully fetched ${response.jobs.length} jobs`, 'success');
+                log(`First job: ${response.jobs[0]?.title || 'No jobs'}`, 'info');
+            } catch (error) {
+                log(`Protected endpoint error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Listen for auth state changes
+        window.addEventListener('authStateChanged', (event) => {
+            log(`Auth state changed: ${event.detail.isAuthenticated ? 'Authenticated' : 'Not authenticated'}`, 'info');
+            checkAuthState();
+        });
+        
+        // Check auth state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded, checking auth state...');
+            checkAuthState();
+        });
+    </script>
+</body>
+</html>

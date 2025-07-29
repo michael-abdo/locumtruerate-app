@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Capture Test</title>
+    <style>
+        .error { color: red; background: #ffe6e6; padding: 5px; margin: 5px 0; }
+        .success { color: green; background: #e6ffe6; padding: 5px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Complete Error Capture Test</h1>
+    <input type="number" id="testInput" value="100" oninput="handleInput(this)">
+    <div id="output"></div>
+    
+    <script>
+        let callCount = 0;
+        
+        // Comprehensive error capture
+        window.addEventListener('error', function(e) {
+            log(`WINDOW ERROR: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            log(`UNHANDLED PROMISE: ${e.reason}`, 'error');
+        });
+        
+        function log(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('output').appendChild(div);
+        }
+        
+        // Global function for oninput
+        window.handleInput = function(input) {
+            callCount++;
+            log(`CALL #${callCount}: handleInput called with value ${input.value}`);
+            
+            try {
+                // Test if this causes an error
+                if (callCount === 2) {
+                    log('About to call nonExistentFunction()');
+                    nonExistentFunction(); // This will cause an error on the 2nd call
+                }
+                
+                log(`SUCCESS: Call #${callCount} completed`);
+            } catch (e) {
+                log(`CAUGHT ERROR on call #${callCount}: ${e.message}`, 'error');
+            }
+        };
+        
+        log('Script loaded and ready');
+        
+        // Test immediate call
+        setTimeout(() => {
+            log('Testing immediate call...');
+            handleInput(document.getElementById('testInput'));
+        }, 1000);
+    </script>
+</body>
+</html>

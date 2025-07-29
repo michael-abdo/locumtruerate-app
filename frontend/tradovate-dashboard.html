@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradovate Account Dashboard - Fixed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .accounts-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .accounts-table th, .accounts-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .accounts-table th {
+            background: #f8f8f8;
+            font-weight: bold;
+        }
+        
+        .action-controls {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        .control-group input, .control-group select {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .action-buttons {
+            margin-top: 15px;
+        }
+        
+        .action-buttons button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .action-buttons button:hover {
+            background: #45a049;
+        }
+        
+        .action-buttons button.exit-all {
+            background: #f44336;
+        }
+        
+        .action-buttons button.exit-all:hover {
+            background: #da190b;
+        }
+        
+        /* Success message styles */
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Status message styles */
+        .status-message {
+            color: #0066cc;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .status-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Tradovate Account Dashboard</h1>
+        
+        <!-- Success/Status Message Container -->
+        <div id="successMessage" class="success-message"></div>
+        
+        <!-- Account Table -->
+        <table class="accounts-table">
+            <thead>
+                <tr>
+                    <th>Account</th>
+                    <th>Position</th>
+                    <th>P&L</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="accountsTableBody">
+                <tr>
+                    <td>DEMO3655059</td>
+                    <td>NQ 2</td>
+                    <td id="pnl-1">$1,250.00</td>
+                    <td>Active</td>
+                </tr>
+                <tr>
+                    <td>DEMO3655059-1</td>
+                    <td>NQ 1</td>
+                    <td id="pnl-2">$625.00</td>
+                    <td>Active</td>
+                </tr>
+                <tr>
+                    <td>DEMO3655059-2</td>
+                    <td>Flat</td>
+                    <td id="pnl-3">$0.00</td>
+                    <td>Flat</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Action Controls -->
+        <div class="action-controls">
+            <h2>Action Controls</h2>
+            
+            <div class="control-group">
+                <label>Symbol:</label>
+                <input type="text" id="symbol" value="NQ" />
+            </div>
+            
+            <div class="control-group">
+                <label>Quantity:</label>
+                <input type="number" id="quantity" value="1" min="1" />
+            </div>
+            
+            <div class="control-group">
+                <label>Target:</label>
+                <input type="checkbox" id="target" />
+                <label>Stop:</label>
+                <input type="checkbox" id="stop" />
+            </div>
+            
+            <div class="control-group">
+                <label>Account:</label>
+                <select id="accountSelect">
+                    <option value="all">All Accounts</option>
+                    <option value="DEMO3655059">DEMO3655059</option>
+                    <option value="DEMO3655059-1">DEMO3655059-1</option>
+                    <option value="DEMO3655059-2">DEMO3655059-2</option>
+                </select>
+            </div>
+            
+            <div class="status-message" id="statusMessage"></div>
+            
+            <div class="action-buttons">
+                <button onclick="executeIn()">In</button>
+                <button onclick="executeOut()">Out</button>
+                <button class="exit-all" onclick="executeExitAll()" id="exitAllBtn">Exit All</button>
+                <button class="exit-all" onclick="executeClearAll()" id="clearAllBtn">Clear All</button>
+                <button onclick="executeFlip()" id="flipBtn">Flip</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Helper function to show success message
+        function showSuccessMessage(message) {
+            try {
+                console.log('✅ Success:', message);
+                const successEl = document.getElementById('successMessage');
+                if (!successEl) {
+                    console.error('❌ Success message element not found!');
+                    return;
+                }
+                successEl.textContent = message;
+                successEl.classList.add('show');
+                console.log('📢 Success message displayed:', successEl.classList.contains('show'));
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    successEl.classList.remove('show');
+                    console.log('🔕 Success message hidden');
+                }, 5000);
+            } catch (error) {
+                console.error('❌ Error showing success message:', error);
+            }
+        }
+        
+        // Helper function to show status message
+        function showStatusMessage(message) {
+            console.log('ℹ️ Status:', message);
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.classList.add('show');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                statusEl.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Get selected accounts
+        function getSelectedAccounts() {
+            const accountSelect = document.getElementById('accountSelect').value;
+            if (accountSelect === 'all') {
+                return ['DEMO3655059', 'DEMO3655059-1', 'DEMO3655059-2'];
+            }
+            return [accountSelect];
+        }
+        
+        // Execute "In" action (copy trade)
+        function executeIn() {
+            console.log('🔄 Executing IN action');
+            const symbol = document.getElementById('symbol').value;
+            const quantity = document.getElementById('quantity').value;
+            const accounts = getSelectedAccounts();
+            
+            // Simulate trade execution
+            console.log(`📊 Opening ${quantity} ${symbol} on ${accounts.length} account(s)`);
+            
+            // Update P&L values to simulate trade
+            updatePnLValues();
+            
+            // Show success message (FIX for Step 6)
+            showSuccessMessage(`✅ Successfully opened ${quantity} ${symbol} position${accounts.length > 1 ? 's' : ''}`);
+            
+            // Show status message with number of accounts affected (FIX for Step 7)
+            showStatusMessage(`📊 ${accounts.length} account${accounts.length > 1 ? 's' : ''} affected`);
+        }
+        
+        // Execute "Out" action
+        function executeOut() {
+            console.log('🔄 Executing OUT action');
+            const accounts = getSelectedAccounts();
+            
+            // Simulate closing positions
+            console.log(`📉 Closing positions on ${accounts.length} account(s)`);
+            
+            // Update P&L values
+            updatePnLValues();
+            
+            // Show success message (FIX for Step 8)
+            if (accounts.length === 1) {
+                showSuccessMessage(`✅ Successfully closed position on account ${accounts[0]}`);
+            } else {
+                showSuccessMessage(`✅ Successfully closed positions on ${accounts.length} accounts`);
+            }
+            
+            // Show status message
+            showStatusMessage(`📊 ${accounts.length} account${accounts.length > 1 ? 's' : ''} affected`);
+        }
+        
+        // Execute "Exit All" action
+        function executeExitAll() {
+            try {
+                console.log('🔄 Executing EXIT ALL action');
+                console.log('📍 Function called at:', new Date().toISOString());
+                
+                // Get selected accounts
+                const accounts = getSelectedAccounts();
+                console.log('📋 Selected accounts:', accounts);
+                
+                // Simulate exiting all positions
+                console.log('🚪 Exiting all positions on selected accounts');
+                
+                // Update table to show positions closed
+                updateAccountTable('exit', accounts);
+                
+                // Show confirmation message with account count
+                const successMsg = `✅ Successfully exited all positions on ${accounts.length} account${accounts.length > 1 ? 's' : ''}`;
+                const statusMsg = `📊 ${accounts.length} account${accounts.length > 1 ? 's' : ''} affected - All positions closed`;
+                
+                console.log('📢 Showing success message:', successMsg);
+                showSuccessMessage(successMsg);
+                
+                console.log('📢 Showing status message:', statusMsg);
+                showStatusMessage(statusMsg);
+                
+                console.log('✅ EXIT ALL completed successfully');
+            } catch (error) {
+                console.error('❌ Error in executeExitAll:', error);
+                showSuccessMessage('❌ Error executing Exit All: ' + error.message);
+            }
+        }
+        
+        // Execute "Clear All" action
+        function executeClearAll() {
+            try {
+                console.log('🔄 Executing CLEAR ALL action');
+                console.log('📍 Function called at:', new Date().toISOString());
+                
+                // Get all accounts (clear all always affects all accounts)
+                const accounts = ['DEMO3655059', 'DEMO3655059-1', 'DEMO3655059-2'];
+                console.log('📋 Clearing all accounts:', accounts);
+                
+                // Simulate clearing all orders
+                console.log('🧹 Clearing all orders on all accounts');
+                
+                // Update table to reflect cleared state
+                updateAccountTable('clear', accounts);
+                
+                // Show confirmation message
+                const successMsg = '✅ Successfully cleared all orders on all accounts';
+                const statusMsg = '📊 3 accounts affected - All orders cleared';
+                
+                console.log('📢 Showing success message:', successMsg);
+                showSuccessMessage(successMsg);
+                
+                console.log('📢 Showing status message:', statusMsg);
+                showStatusMessage(statusMsg);
+                
+                console.log('✅ CLEAR ALL completed successfully');
+            } catch (error) {
+                console.error('❌ Error in executeClearAll:', error);
+                showSuccessMessage('❌ Error executing Clear All: ' + error.message);
+            }
+        }
+        
+        // Execute "Flip" action
+        function executeFlip() {
+            try {
+                console.log('🔄 Executing FLIP action');
+                console.log('📍 Function called at:', new Date().toISOString());
+                
+                // Get selected accounts
+                const accounts = getSelectedAccounts();
+                const symbol = document.getElementById('symbol').value;
+                console.log('📋 Selected accounts:', accounts);
+                console.log('📊 Symbol:', symbol);
+                
+                // Simulate flipping positions
+                console.log(`🔄 Flipping positions on ${accounts.length} account(s)`);
+                
+                // Update table to show flipped positions
+                updateAccountTable('flip', accounts);
+                
+                // Show confirmation message
+                const successMsg = `✅ Successfully flipped ${symbol} positions on ${accounts.length} account${accounts.length > 1 ? 's' : ''}`;
+                const statusMsg = `📊 ${accounts.length} account${accounts.length > 1 ? 's' : ''} affected - Positions reversed`;
+                
+                console.log('📢 Showing success message:', successMsg);
+                showSuccessMessage(successMsg);
+                
+                console.log('📢 Showing status message:', statusMsg);
+                showStatusMessage(statusMsg);
+                
+                console.log('✅ FLIP completed successfully');
+            } catch (error) {
+                console.error('❌ Error in executeFlip:', error);
+                showSuccessMessage('❌ Error executing Flip: ' + error.message);
+            }
+        }
+        
+        // Update P&L values (simulates trading activity)
+        function updatePnLValues() {
+            const accounts = getSelectedAccounts();
+            
+            if (accounts.includes('DEMO3655059') || accounts.includes('all')) {
+                const newValue = Math.floor(Math.random() * 3000) - 500;
+                document.getElementById('pnl-1').textContent = `$${newValue.toFixed(2)}`;
+            }
+            
+            if (accounts.includes('DEMO3655059-1') || accounts.includes('all')) {
+                const newValue = Math.floor(Math.random() * 2000) - 300;
+                document.getElementById('pnl-2').textContent = `$${newValue.toFixed(2)}`;
+            }
+            
+            if (accounts.includes('DEMO3655059-2') || accounts.includes('all')) {
+                const newValue = Math.floor(Math.random() * 1500) - 200;
+                document.getElementById('pnl-3').textContent = `$${newValue.toFixed(2)}`;
+            }
+        }
+        
+        // Update account table based on action
+        function updateAccountTable(action, accounts) {
+            try {
+                console.log(`📊 Updating account table for action: ${action}`);
+                const tbody = document.getElementById('accountsTableBody');
+                if (!tbody) {
+                    console.error('❌ Account table body not found!');
+                    return;
+                }
+                
+                const rows = tbody.querySelectorAll('tr');
+                console.log(`📝 Found ${rows.length} rows in account table`);
+                
+                // Check if there are any positions to update
+                let hasActivePositions = false;
+                rows.forEach(row => {
+                    if (row.cells[3] && row.cells[3].textContent !== 'Flat') {
+                        hasActivePositions = true;
+                    }
+                });
+                
+                // Handle empty position scenario gracefully
+                if (!hasActivePositions && (action === 'exit' || action === 'flip')) {
+                    console.log('⚠️ No active positions to ' + action);
+                    showSuccessMessage(`⚠️ No active positions to ${action}`);
+                    return;
+                }
+                
+                rows.forEach((row, index) => {
+                    if (!row.cells || row.cells.length < 4) {
+                        console.warn(`⚠️ Row ${index} has insufficient cells`);
+                        return;
+                    }
+                    
+                    const accountCell = row.cells[0].textContent;
+                    if (accounts.includes(accountCell) || accounts.includes('all')) {
+                        switch(action) {
+                            case 'exit':
+                            case 'clear':
+                                row.cells[1].textContent = 'Flat';
+                                row.cells[2].textContent = '$0.00';
+                                row.cells[3].textContent = 'Flat';
+                                break;
+                            case 'flip':
+                                const currentPos = row.cells[1].textContent;
+                                if (currentPos.includes('NQ') || currentPos.includes('ES')) {
+                                    const match = currentPos.match(/-?\d+/);
+                                    const qty = parseInt(match ? match[0] : '1');
+                                    const symbol = currentPos.match(/[A-Z]+/)[0];
+                                    row.cells[1].textContent = `${symbol} ${-qty}`;
+                                    // Flip P&L sign
+                                    const currentPnL = parseFloat(row.cells[2].textContent.replace('$', '').replace(',', ''));
+                                    row.cells[2].textContent = `$${(-currentPnL).toFixed(2)}`;
+                                } else if (currentPos === 'Flat') {
+                                    console.log(`📋 Account ${accountCell} is already flat`);
+                                }
+                                break;
+                            default:
+                                updatePnLValues();
+                        }
+                    }
+                });
+                
+                // Log table update
+                console.log('✅ Account table updated successfully');
+            } catch (error) {
+                console.error('❌ Error updating account table:', error);
+                showSuccessMessage('❌ Error updating positions: ' + error.message);
+            }
+        }
+        
+        // Add comprehensive logging
+        console.log('🚀 Tradovate Account Dashboard initialized');
+        console.log('📋 Available accounts:', ['DEMO3655059', 'DEMO3655059-1', 'DEMO3655059-2']);
+        console.log('🔧 Version: 1.0.1 - Fixed QA Issues');
+        console.log('📅 Deployment Date:', new Date().toISOString());
+        
+        // Log all user interactions with timestamps
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const timestamp = new Date().toISOString();
+                console.log(`🖱️ [${timestamp}] Button clicked: ${e.target.textContent}`);
+                console.log(`📊 Current state:`, {
+                    symbol: document.getElementById('symbol').value,
+                    quantity: document.getElementById('quantity').value,
+                    selectedAccount: document.getElementById('accountSelect').value,
+                    target: document.getElementById('target').checked,
+                    stop: document.getElementById('stop').checked
+                });
+            });
+        });
+        
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('change', function(e) {
+                const timestamp = new Date().toISOString();
+                console.log(`📝 [${timestamp}] Input changed: ${e.target.id} = ${e.target.value}`);
+            });
+        });
+        
+        // Log table state changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    console.log('📊 Table updated:', mutation.target.textContent);
+                }
+            });
+        });
+        
+        // Observe table changes
+        const tableBody = document.getElementById('accountsTableBody');
+        observer.observe(tableBody, { childList: true, characterData: true, subtree: true });
+        
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('❌ Error detected:', e.message, 'at', e.filename, ':', e.lineno);
+        });
+        
+        // DOM Ready check and initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 DOM fully loaded');
+            
+            // Verify all critical elements exist
+            const criticalElements = [
+                { id: 'successMessage', name: 'Success Message Container' },
+                { id: 'statusMessage', name: 'Status Message Container' },
+                { id: 'accountsTableBody', name: 'Accounts Table Body' },
+                { id: 'symbol', name: 'Symbol Input' },
+                { id: 'quantity', name: 'Quantity Input' },
+                { id: 'accountSelect', name: 'Account Select' }
+            ];
+            
+            let allElementsFound = true;
+            criticalElements.forEach(elem => {
+                const el = document.getElementById(elem.id);
+                if (!el) {
+                    console.error(`❌ Critical element missing: ${elem.name} (${elem.id})`);
+                    allElementsFound = false;
+                } else {
+                    console.log(`✅ Found: ${elem.name}`);
+                }
+            });
+            
+            if (allElementsFound) {
+                console.log('🎆 All critical elements loaded successfully!');
+                
+                // Run a self-test
+                console.log('🧪 Running self-test...');
+                try {
+                    // Test message display
+                    showSuccessMessage('🧪 TEST: Dashboard initialized successfully!');
+                    setTimeout(() => {
+                        showStatusMessage('🧪 TEST: Status messages working');
+                    }, 1000);
+                    
+                    console.log('✅ Self-test passed!');
+                } catch (error) {
+                    console.error('❌ Self-test failed:', error);
+                }
+            }
+            
+            // Test button functionality
+            const buttons = document.querySelectorAll('.action-buttons button');
+            console.log(`🔘 Found ${buttons.length} action buttons`);
+            buttons.forEach(btn => {
+                console.log(`  - ${btn.textContent}: onclick = ${btn.onclick ? 'defined' : 'undefined'}`);
+                // Add event listener as backup if onclick is not working
+                if (btn.id === 'exitAllBtn' && !btn.onclick) {
+                    btn.addEventListener('click', executeExitAll);
+                    console.log('🔧 Added fallback listener for Exit All');
+                }
+                if (btn.id === 'clearAllBtn' && !btn.onclick) {
+                    btn.addEventListener('click', executeClearAll);
+                    console.log('🔧 Added fallback listener for Clear All');
+                }
+                if (btn.id === 'flipBtn' && !btn.onclick) {
+                    btn.addEventListener('click', executeFlip);
+                    console.log('🔧 Added fallback listener for Flip');
+                }
+            });
+            
+            // Verify functions are defined
+            const requiredFunctions = [
+                'executeExitAll', 'executeClearAll', 'executeFlip',
+                'showSuccessMessage', 'showStatusMessage', 'updateAccountTable'
+            ];
+            
+            requiredFunctions.forEach(fnName => {
+                if (typeof window[fnName] === 'function') {
+                    console.log(`✅ Function ${fnName} is defined`);
+                } else {
+                    console.error(`❌ Function ${fnName} is NOT defined!`);
+                }
+            });
+        });
+        
+        // Add a manual test function for debugging
+        window.testDashboard = function() {
+            console.log('🧪 Starting manual dashboard test...');
+            try {
+                showSuccessMessage('🧪 Manual test: Success message working!');
+                showStatusMessage('🧪 Manual test: Status message working!');
+                console.log('✅ Manual test passed!');
+            } catch (error) {
+                console.error('❌ Manual test failed:', error);
+            }
+        };
+        
+        // Simulate account data loading (prevent 500 errors)
+        function loadAccountData() {
+            console.log('📡 Loading account data...');
+            try {
+                // This is a demo, so we're using static data
+                // In production, this would fetch from an API
+                const mockData = [
+                    { account: 'DEMO3655059', position: 'NQ 2', pnl: 1250.00, status: 'Active' },
+                    { account: 'DEMO3655059-1', position: 'NQ 1', pnl: 625.00, status: 'Active' },
+                    { account: 'DEMO3655059-2', position: 'Flat', pnl: 0.00, status: 'Flat' }
+                ];
+                
+                console.log('✅ Account data loaded successfully:', mockData);
+                return mockData;
+            } catch (error) {
+                console.error('❌ Error loading account data:', error);
+                // Return empty data to prevent crashes
+                return [];
+            }
+        }
+        
+        // Initialize account data on load
+        const accountData = loadAccountData();
+    </script>
+</body>
+</html>

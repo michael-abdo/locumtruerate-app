@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Auth Test</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Authentication Test</h1>
+        <p>Testing authentication modal functionality with minimal setup.</p>
+        
+        <button type="button" onclick="showLogin()">Show Login Modal</button>
+        <button type="button" onclick="showRegister()">Show Register Modal</button>
+        <button type="button" onclick="checkStatus()">Check Status</button>
+        
+        <div id="status">Page loaded. Click buttons to test functionality.</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    
+    <script>
+        function updateStatus(message) {
+            const status = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            status.textContent += `[${timestamp}] ${message}\n`;
+        }
+
+        function showLogin() {
+            updateStatus('showLogin() called');
+            
+            try {
+                if (typeof LocumUtils === 'undefined') {
+                    updateStatus('ERROR: LocumUtils is undefined');
+                    return;
+                }
+                
+                if (typeof LocumUtils.showLoginModal !== 'function') {
+                    updateStatus('ERROR: showLoginModal is not a function');
+                    return;
+                }
+                
+                updateStatus('Calling LocumUtils.showLoginModal()...');
+                LocumUtils.showLoginModal();
+                updateStatus('Login modal function called successfully');
+                
+            } catch (error) {
+                updateStatus('ERROR in showLogin: ' + error.message);
+                console.error('showLogin error:', error);
+            }
+        }
+
+        function showRegister() {
+            updateStatus('showRegister() called');
+            
+            try {
+                if (typeof LocumUtils === 'undefined') {
+                    updateStatus('ERROR: LocumUtils is undefined');
+                    return;
+                }
+                
+                if (typeof LocumUtils.showRegisterModal !== 'function') {
+                    updateStatus('ERROR: showRegisterModal is not a function');
+                    return;
+                }
+                
+                updateStatus('Calling LocumUtils.showRegisterModal()...');
+                LocumUtils.showRegisterModal();
+                updateStatus('Register modal function called successfully');
+                
+            } catch (error) {
+                updateStatus('ERROR in showRegister: ' + error.message);
+                console.error('showRegister error:', error);
+            }
+        }
+
+        function checkStatus() {
+            updateStatus('checkStatus() called');
+            updateStatus('LocumUtils defined: ' + (typeof LocumUtils !== 'undefined'));
+            updateStatus('AuthManager defined: ' + (typeof AuthManager !== 'undefined'));
+            updateStatus('AuthAPI defined: ' + (typeof AuthAPI !== 'undefined'));
+            
+            if (typeof LocumUtils !== 'undefined') {
+                updateStatus('LocumUtils functions: ' + Object.keys(LocumUtils).length);
+            }
+        }
+
+        // Test on page load
+        window.addEventListener('load', function() {
+            updateStatus('Window loaded');
+            checkStatus();
+        });
+
+        // Error handling
+        window.addEventListener('error', function(event) {
+            updateStatus('JS ERROR: ' + event.message + ' at ' + event.filename + ':' + event.lineno);
+        });
+    </script>
+</body>
+</html>

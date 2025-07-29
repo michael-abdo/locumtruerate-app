@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Calculator Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        iframe {
+            width: 100%;
+            height: 800px;
+            border: 2px solid #333;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Calculator Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Calculator Preview</h2>
+        <iframe id="calculator-frame" src="frontend/index.html#calculator-preview"></iframe>
+    </div>
+
+    <script>
+        const testResults = document.getElementById('test-results');
+        const frame = document.getElementById('calculator-frame');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'result';
+            if (type === 'success') div.classList.add('success');
+            if (type === 'error') div.classList.add('error');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            testResults.appendChild(div);
+        }
+
+        function clearResults() {
+            testResults.innerHTML = '';
+        }
+
+        async function waitForFrame() {
+            return new Promise(resolve => {
+                if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+                    resolve();
+                } else {
+                    frame.onload = resolve;
+                }
+            });
+        }
+
+        async function runAllTests() {
+            clearResults();
+            log('Starting Interactive Calculator Tests...');
+            
+            await waitForFrame();
+            const doc = frame.contentDocument;
+            const win = frame.contentWindow;
+            
+            // Test 24: Change Hourly Rate
+            log('Test 24: Changing Hourly Rate to 90...');
+            try {
+                const hourlyRateInput = doc.getElementById('hourlyRate');
+                const weeklyPayBefore = doc.getElementById('weeklyPay').textContent;
+                
+                hourlyRateInput.value = '90';
+                hourlyRateInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const weeklyPayAfter = doc.getElementById('weeklyPay').textContent;
+                if (weeklyPayBefore !== weeklyPayAfter) {
+                    log(`✓ Test 24 PASSED: Weekly pay changed from ${weeklyPayBefore} to ${weeklyPayAfter}`, 'success');
+                } else {
+                    log(`✗ Test 24 FAILED: Weekly pay did not change (still ${weeklyPayAfter})`, 'error');
+                }
+            } catch (e) {
+                log(`✗ Test 24 ERROR: ${e.message}`, 'error');
+            }
+
+            // Test 25: Change Hours per Week
+            log('Test 25: Changing Hours per Week to 45...');
+            try {
+                const hoursInput = doc.getElementById('hoursPerWeek');
+                const weeklyPayBefore = doc.getElementById('weeklyPay').textContent;
+                
+                hoursInput.value = '45';
+                hoursInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const weeklyPayAfter = doc.getElementById('weeklyPay').textContent;
+                if (weeklyPayBefore !== weeklyPayAfter) {
+                    log(`✓ Test 25 PASSED: Weekly pay changed from ${weeklyPayBefore} to ${weeklyPayAfter}`, 'success');
+                } else {
+                    log(`✗ Test 25 FAILED: Weekly pay did not change (still ${weeklyPayAfter})`, 'error');
+                }
+            } catch (e) {
+                log(`✗ Test 25 ERROR: ${e.message}`, 'error');
+            }
+
+            // Test 29: Tab Switching
+            log('Test 29: Testing tab switching to Paycheck Calculator...');
+            try {
+                const tabs = doc.querySelectorAll('.calc-tab');
+                const contractCalc = doc.getElementById('contract-calc');
+                const paycheckCalc = doc.getElementById('paycheck-calc');
+                
+                // Click Paycheck tab
+                tabs[1].click();
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const contractVisible = win.getComputedStyle(contractCalc).display !== 'none';
+                const paycheckVisible = win.getComputedStyle(paycheckCalc).display !== 'none';
+                
+                if (!contractVisible && paycheckVisible) {
+                    log('✓ Test 29 PASSED: Successfully switched to Paycheck Calculator', 'success');
+                } else {
+                    log(`✗ Test 29 FAILED: Tab switch failed (contract: ${contractVisible}, paycheck: ${paycheckVisible})`, 'error');
+                }
+                
+                // Test switching back
+                tabs[0].click();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const contractVisibleAfter = win.getComputedStyle(contractCalc).display !== 'none';
+                const paycheckVisibleAfter = win.getComputedStyle(paycheckCalc).display !== 'none';
+                
+                if (contractVisibleAfter && !paycheckVisibleAfter) {
+                    log('✓ Test 29b PASSED: Successfully switched back to Contract Calculator', 'success');
+                } else {
+                    log(`✗ Test 29b FAILED: Tab switch back failed`, 'error');
+                }
+            } catch (e) {
+                log(`✗ Test 29 ERROR: ${e.message}`, 'error');
+            }
+
+            // Test 30-34: Paycheck Calculator inputs
+            log('Tests 30-34: Testing Paycheck Calculator inputs...');
+            try {
+                // Switch to Paycheck tab
+                const tabs = doc.querySelectorAll('.calc-tab');
+                tabs[1].click();
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // Test 30: Regular Hours
+                const regularHoursInput = doc.getElementById('regularHours');
+                const regularPayBefore = doc.getElementById('regularPay').textContent;
+                
+                regularHoursInput.value = '36';
+                regularHoursInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const regularPayAfter = doc.getElementById('regularPay').textContent;
+                if (regularPayBefore !== regularPayAfter) {
+                    log(`✓ Test 30 PASSED: Regular pay changed from ${regularPayBefore} to ${regularPayAfter}`, 'success');
+                } else {
+                    log(`✗ Test 30 FAILED: Regular pay did not change`, 'error');
+                }
+
+                // Test 31: Overtime Hours
+                const overtimeHoursInput = doc.getElementById('overtimeHours');
+                const overtimePayBefore = doc.getElementById('overtimePay').textContent;
+                
+                overtimeHoursInput.value = '12';
+                overtimeHoursInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const overtimePayAfter = doc.getElementById('overtimePay').textContent;
+                if (overtimePayBefore !== overtimePayAfter) {
+                    log(`✓ Test 31 PASSED: Overtime pay changed from ${overtimePayBefore} to ${overtimePayAfter}`, 'success');
+                } else {
+                    log(`✗ Test 31 FAILED: Overtime pay did not change`, 'error');
+                }
+
+            } catch (e) {
+                log(`✗ Tests 30-34 ERROR: ${e.message}`, 'error');
+            }
+
+            log('All tests completed!', 'success');
+        }
+
+        // Auto-scroll to calculator section when loaded
+        frame.onload = function() {
+            try {
+                const calcSection = frame.contentDocument.querySelector('.calculator-preview');
+                if (calcSection) {
+                    calcSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (e) {
+                console.error('Could not scroll to calculator:', e);
+            }
+        };
+    </script>
+</body>
+</html>

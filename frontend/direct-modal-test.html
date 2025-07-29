@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Modal Test</title>
+    
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            background: #f9fafb;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 14px;
+        }
+        
+        #debug-output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Direct Modal Test</h1>
+        <p>Direct testing of modal HTML injection and visibility.</p>
+        
+        <button class="test-btn" onclick="testDirectModal()">Test Direct Modal</button>
+        <button class="test-btn" onclick="testLocumUtils()">Test LocumUtils</button>
+        <button class="test-btn" onclick="clearModals()">Clear All Modals</button>
+        
+        <div id="debug-output"></div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            output.textContent += logMessage + '\n';
+            output.scrollTop = output.scrollHeight;
+            console.log('DIRECT-TEST:', logMessage);
+        }
+        
+        function testDirectModal() {
+            log('Testing direct modal injection...');
+            
+            // First clear any existing modals
+            const existing = document.getElementById('testModal');
+            if (existing) existing.remove();
+            
+            // Inject modal HTML directly
+            const modalHTML = `
+                <div id="testModal" class="auth-modal" style="display: flex;">
+                    <div class="modal-backdrop"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Direct Test Modal</h2>
+                            <button type="button" class="modal-close" onclick="document.getElementById('testModal').remove()">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>This is a directly injected modal for testing CSS visibility.</p>
+                            <button onclick="document.getElementById('testModal').remove()">Close Modal</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            log('Modal HTML injected');
+            
+            // Check if modal was created
+            const modal = document.getElementById('testModal');
+            if (modal) {
+                log('SUCCESS: Modal found in DOM');
+                log('Modal display: ' + modal.style.display);
+                log('Modal position: ' + window.getComputedStyle(modal).position);
+                log('Modal z-index: ' + window.getComputedStyle(modal).zIndex);
+                log('Modal width: ' + modal.offsetWidth + 'px');
+                log('Modal height: ' + modal.offsetHeight + 'px');
+                
+                // Check CSS classes
+                const computedStyle = window.getComputedStyle(modal);
+                log('Background color: ' + computedStyle.backgroundColor);
+                log('Backdrop filter: ' + computedStyle.backdropFilter);
+                
+                // Force high visibility
+                modal.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
+                modal.style.zIndex = '99999';
+                log('Forced red background for visibility test');
+                
+            } else {
+                log('ERROR: Modal not found after injection');
+            }
+        }
+        
+        function testLocumUtils() {
+            log('Testing LocumUtils modal...');
+            
+            if (typeof LocumUtils === 'undefined') {
+                log('ERROR: LocumUtils not available');
+                return;
+            }
+            
+            if (typeof LocumUtils.showLoginModal !== 'function') {
+                log('ERROR: showLoginModal not available');
+                log('Available functions: ' + Object.keys(LocumUtils).join(', '));
+                return;
+            }
+            
+            try {
+                log('Calling LocumUtils.showLoginModal()...');
+                LocumUtils.showLoginModal();
+                
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if (modal) {
+                        log('SUCCESS: LocumUtils modal created');
+                        log('Display: ' + modal.style.display);
+                        log('Position: ' + window.getComputedStyle(modal).position);
+                        log('Z-index: ' + window.getComputedStyle(modal).zIndex);
+                        log('Width: ' + modal.offsetWidth + 'px');
+                        log('Height: ' + modal.offsetHeight + 'px');
+                        
+                        // Force visibility
+                        modal.style.backgroundColor = 'rgba(0, 255, 0, 0.8)';
+                        modal.style.zIndex = '99999';
+                        log('Forced green background for LocumUtils modal');
+                        
+                    } else {
+                        log('ERROR: LocumUtils modal not found');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                log('Stack: ' + error.stack);
+            }
+        }
+        
+        function clearModals() {
+            log('Clearing all modals...');
+            
+            const modals = document.querySelectorAll('[id*="Modal"], [id*="modal"]');
+            log('Found ' + modals.length + ' modal elements');
+            
+            modals.forEach((modal, i) => {
+                log(`Removing modal ${i}: ${modal.id}`);
+                modal.remove();
+            });
+            
+            log('All modals cleared');
+        }
+        
+        // Initial diagnostics
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded - running diagnostics...');
+            log('LocumUtils available: ' + (typeof LocumUtils !== 'undefined'));
+            log('AuthManager available: ' + (typeof AuthManager !== 'undefined'));
+            log('AuthAPI available: ' + (typeof AuthAPI !== 'undefined'));
+            
+            if (typeof LocumUtils !== 'undefined') {
+                const functions = Object.keys(LocumUtils);
+                log('LocumUtils functions (' + functions.length + '): ' + functions.slice(0, 5).join(', ') + '...');
+                log('showLoginModal: ' + (typeof LocumUtils.showLoginModal === 'function'));
+                log('showRegisterModal: ' + (typeof LocumUtils.showRegisterModal === 'function'));
+            }
+        });
+    </script>
+</body>
+</html>

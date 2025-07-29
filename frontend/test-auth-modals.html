@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Modals Test</title>
+    
+    <!-- Production CSS Files -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    
+    <style>
+        /* Test page specific styles only */
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            background: var(--background-color, #f9fafb);
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--surface-color, white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color, #e2e8f0);
+        }
+        
+        .test-container h1 {
+            color: var(--text-primary, #1e293b);
+            margin-bottom: 1rem;
+        }
+        
+        .test-container p {
+            color: var(--text-secondary, #64748b);
+            margin-bottom: 2rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            background: var(--primary-color, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+        
+        .test-btn:hover {
+            background: var(--primary-hover, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--background-color, #f3f4f6);
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            border: 1px solid var(--border-color, #e2e8f0);
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .test-container {
+                padding: 24px;
+            }
+            
+            .test-buttons {
+                flex-direction: column;
+            }
+            
+            .test-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Authentication Modals Test</h1>
+        <p>Test the login and register modal functionality.</p>
+        
+        <div class="test-buttons">
+            <button type="button" class="test-btn" onclick="testShowLoginModal()">Show Login Modal</button>
+            <button type="button" class="test-btn" onclick="testShowRegisterModal()">Show Register Modal</button>
+            <button type="button" class="test-btn" onclick="runTests()">Run All Tests</button>
+        </div>
+        
+        <div id="test-results" class="test-results" style="display: none;"></div>
+    </div>
+
+    <!-- Load authentication system -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    
+    <script>
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('JavaScript Error:', event.error);
+            alert('JavaScript Error: ' + event.message + ' at ' + event.filename + ':' + event.lineno);
+        });
+
+        // Test functions
+        function logResult(message, isSuccess = true) {
+            try {
+                const results = document.getElementById('test-results');
+                if (!results) {
+                    console.error('test-results element not found');
+                    return;
+                }
+                results.style.display = 'block';
+                const timestamp = new Date().toLocaleTimeString();
+                const status = isSuccess ? '✅' : '❌';
+                results.innerHTML += `[${timestamp}] ${status} ${message}\n`;
+                console.log(`[${status}] ${message}`);
+            } catch (error) {
+                console.error('Error in logResult:', error);
+                alert('Error logging result: ' + error.message);
+            }
+        }
+        
+        // Test Show Login Modal function
+        function testShowLoginModal() {
+            try {
+                logResult('Attempting to show login modal...');
+                
+                // Debug: Check if LocumUtils is loaded
+                if (typeof LocumUtils === 'undefined') {
+                    logResult('❌ LocumUtils is not defined', false);
+                    return;
+                }
+            } catch (error) {
+                logResult('❌ Critical error in testShowLoginModal: ' + error.message, false);
+                return;
+            }
+            
+            logResult('✅ LocumUtils is loaded');
+            
+            // Debug: Check if showLoginModal function exists
+            if (typeof LocumUtils.showLoginModal !== 'function') {
+                logResult('❌ LocumUtils.showLoginModal is not a function', false);
+                logResult(`Available functions: ${Object.keys(LocumUtils).join(', ')}`);
+                return;
+            }
+            
+            logResult('✅ LocumUtils.showLoginModal function exists');
+            
+            try {
+                LocumUtils.showLoginModal();
+                logResult('✅ Login modal function called successfully');
+                
+                // Check if modal was created in DOM
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if (modal) {
+                        logResult('✅ Login modal DOM element created');
+                        if (modal.style.display === 'flex') {
+                            logResult('✅ Login modal is visible');
+                        } else {
+                            logResult(`❌ Login modal display style: ${modal.style.display}`, false);
+                        }
+                    } else {
+                        logResult('❌ Login modal DOM element not found', false);
+                    }
+                }, 100);
+                
+            } catch (error) {
+                logResult(`❌ Error opening login modal: ${error.message}`, false);
+                console.error('Login modal error:', error);
+            }
+        }
+        
+        // Test Show Register Modal function
+        function testShowRegisterModal() {
+            logResult('Attempting to show register modal...');
+            
+            // Debug: Check if LocumUtils is loaded
+            if (typeof LocumUtils === 'undefined') {
+                logResult('❌ LocumUtils is not defined', false);
+                return;
+            }
+            
+            logResult('✅ LocumUtils is loaded');
+            
+            // Debug: Check if showRegisterModal function exists
+            if (typeof LocumUtils.showRegisterModal !== 'function') {
+                logResult('❌ LocumUtils.showRegisterModal is not a function', false);
+                logResult(`Available functions: ${Object.keys(LocumUtils).join(', ')}`);
+                return;
+            }
+            
+            logResult('✅ LocumUtils.showRegisterModal function exists');
+            
+            try {
+                LocumUtils.showRegisterModal();
+                logResult('✅ Register modal function called successfully');
+                
+                // Check if modal was created in DOM
+                setTimeout(() => {
+                    const modal = document.getElementById('registerModal');
+                    if (modal) {
+                        logResult('✅ Register modal DOM element created');
+                        if (modal.style.display === 'flex') {
+                            logResult('✅ Register modal is visible');
+                        } else {
+                            logResult(`❌ Register modal display style: ${modal.style.display}`, false);
+                        }
+                    } else {
+                        logResult('❌ Register modal DOM element not found', false);
+                    }
+                }, 100);
+                
+            } catch (error) {
+                logResult(`❌ Error opening register modal: ${error.message}`, false);
+                console.error('Register modal error:', error);
+            }
+        }
+        
+        function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '';
+            results.style.display = 'block';
+            
+            logResult('Starting authentication modal tests...');
+            
+            // Test 1: Check if LocumUtils is available
+            if (typeof LocumUtils !== 'undefined') {
+                logResult('LocumUtils is available');
+            } else {
+                logResult('LocumUtils is not available', false);
+                return;
+            }
+            
+            // Test 2: Check if modal functions exist
+            const requiredFunctions = [
+                'showLoginModal', 'hideLoginModal', 
+                'showRegisterModal', 'hideRegisterModal',
+                'switchToLogin', 'switchToRegister'
+            ];
+            
+            requiredFunctions.forEach(func => {
+                if (typeof LocumUtils[func] === 'function') {
+                    logResult(`Function ${func} exists`);
+                } else {
+                    logResult(`Function ${func} is missing`, false);
+                }
+            });
+            
+            // Test 3: Check if AuthManager is available
+            if (typeof AuthManager !== 'undefined') {
+                logResult('AuthManager is available');
+                
+                // Test authentication state
+                const isAuth = AuthManager.isAuthenticated();
+                logResult(`Authentication state: ${isAuth ? 'Authenticated' : 'Not authenticated'}`);
+                
+                if (isAuth) {
+                    const user = AuthManager.getUser();
+                    logResult(`Authenticated user: ${user.firstName} ${user.lastName} (${user.email})`);
+                }
+            } else {
+                logResult('AuthManager is not available', false);
+            }
+            
+            // Test 4: Check if AuthAPI is available
+            if (typeof AuthAPI !== 'undefined') {
+                logResult('AuthAPI is available');
+            } else {
+                logResult('AuthAPI is not available', false);
+            }
+            
+            // Test 5: Try to show login modal
+            try {
+                LocumUtils.showLoginModal();
+                logResult('Login modal showed successfully');
+                
+                // Check if modal exists in DOM
+                setTimeout(() => {
+                    const loginModal = document.getElementById('loginModal');
+                    if (loginModal) {
+                        logResult('Login modal DOM element created');
+                        
+                        // Check if modal is visible
+                        if (loginModal.style.display === 'flex') {
+                            logResult('Login modal is visible');
+                        } else {
+                            logResult('Login modal is not visible', false);
+                        }
+                        
+                        // Test form elements
+                        const emailInput = document.getElementById('loginEmail');
+                        const passwordInput = document.getElementById('loginPassword');
+                        const submitButton = document.getElementById('loginSubmit');
+                        
+                        if (emailInput && passwordInput && submitButton) {
+                            logResult('All login form elements found');
+                        } else {
+                            logResult('Some login form elements are missing', false);
+                        }
+                        
+                        // Hide modal
+                        LocumUtils.hideLoginModal();
+                        logResult('Login modal hidden successfully');
+                    } else {
+                        logResult('Login modal DOM element not created', false);
+                    }
+                }, 100);
+            } catch (error) {
+                logResult(`Error showing login modal: ${error.message}`, false);
+            }
+            
+            // Test 6: Try to show register modal
+            setTimeout(() => {
+                try {
+                    LocumUtils.showRegisterModal();
+                    logResult('Register modal showed successfully');
+                    
+                    // Check if modal exists in DOM
+                    setTimeout(() => {
+                        const registerModal = document.getElementById('registerModal');
+                        if (registerModal) {
+                            logResult('Register modal DOM element created');
+                            
+                            // Test form elements
+                            const firstNameInput = document.getElementById('registerFirstName');
+                            const lastNameInput = document.getElementById('registerLastName');
+                            const emailInput = document.getElementById('registerEmail');
+                            const passwordInput = document.getElementById('registerPassword');
+                            const roleSelect = document.getElementById('registerRole');
+                            
+                            if (firstNameInput && lastNameInput && emailInput && passwordInput && roleSelect) {
+                                logResult('All register form elements found');
+                            } else {
+                                logResult('Some register form elements are missing', false);
+                            }
+                            
+                            // Hide modal
+                            LocumUtils.hideRegisterModal();
+                            logResult('Register modal hidden successfully');
+                        } else {
+                            logResult('Register modal DOM element not created', false);
+                        }
+                    }, 100);
+                } catch (error) {
+                    logResult(`Error showing register modal: ${error.message}`, false);
+                }
+            }, 200);
+            
+            setTimeout(() => {
+                logResult('All automated tests completed!');
+            }, 500);
+        }
+        
+        // Test on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                logResult('Page loaded, testing authentication modals...');
+                
+                // Test if basic DOM manipulation works
+                logResult('DOM manipulation test: ' + document.title);
+                
+                // Quick availability check
+                if (typeof LocumUtils !== 'undefined') {
+                    logResult('✅ LocumUtils loaded successfully');
+                    logResult('✅ Available functions: ' + Object.keys(LocumUtils).length);
+                } else {
+                    logResult('❌ LocumUtils not loaded');
+                }
+                
+                if (typeof AuthManager !== 'undefined') {
+                    logResult('✅ AuthManager loaded successfully');
+                } else {
+                    logResult('❌ AuthManager not loaded');
+                }
+                
+                if (typeof AuthAPI !== 'undefined') {
+                    logResult('✅ AuthAPI loaded successfully');
+                } else {
+                    logResult('❌ AuthAPI not loaded');
+                }
+            } catch (error) {
+                console.error('Error in DOMContentLoaded:', error);
+                alert('Error during page load: ' + error.message);
+            }
+        });
+
+        // Additional test - immediate execution
+        setTimeout(() => {
+            try {
+                logResult('Delayed test - JavaScript still working');
+            } catch (error) {
+                console.error('Delayed test failed:', error);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

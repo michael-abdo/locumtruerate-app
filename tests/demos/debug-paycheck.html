@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Paycheck Calculator</title>
+</head>
+<body>
+    <h1>Debug Paycheck Calculator</h1>
+    <div id="debug-output"></div>
+    
+    <script>
+        // Test the exact same logic as the paycheck calculator
+        console.log('=== DEBUG SCRIPT STARTING ===');
+        
+        let currentPeriod = 'weekly';
+        const periodMultipliers = {
+            'weekly': 1,
+            'biweekly': 2,
+            'monthly': 4.33
+        };
+        
+        console.log('Variables defined:', {currentPeriod, periodMultipliers});
+        
+        // Test calculatePaycheck function
+        function calculatePaycheck() {
+            console.log('calculatePaycheck called at', new Date().toISOString());
+            try {
+                const multiplier = periodMultipliers[currentPeriod];
+                console.log('Multiplier:', multiplier);
+                
+                // Test getValidatedValue
+                const testValue = getValidatedValue('regularHours');
+                console.log('Test getValidatedValue result:', testValue);
+                
+                console.log('calculatePaycheck executed successfully');
+                return true;
+            } catch (error) {
+                console.error('Error in calculatePaycheck:', error);
+                return false;
+            }
+        }
+        
+        // Test getValidatedValue function
+        function getValidatedValue(fieldId) {
+            console.log('getValidatedValue called for:', fieldId);
+            
+            // Create a mock input element for testing
+            const mockInput = document.createElement('input');
+            mockInput.id = fieldId;
+            mockInput.value = '40';
+            document.body.appendChild(mockInput);
+            
+            const input = document.getElementById(fieldId);
+            if (!input) {
+                console.error('Input element not found for ID:', fieldId);
+                return 0;
+            }
+            
+            const value = input.value.trim();
+            console.log('Raw input value:', value);
+            
+            if (value === '') {
+                console.log('Field is empty, returning 0');
+                return 0;
+            }
+            
+            const numValue = parseFloat(value);
+            console.log('Parsed numeric value:', numValue);
+            
+            if (isNaN(numValue) || numValue < 0) {
+                console.log('Invalid value, returning 0');
+                return 0;
+            }
+            
+            console.log('Returning valid value:', numValue);
+            return numValue;
+        }
+        
+        // Test the initialization logic
+        (function initializeCalculator() {
+            console.log('=== INITIALIZATION STARTING ===');
+            
+            if (document.readyState === 'loading') {
+                console.log('DOM is still loading, adding event listener');
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM loaded, calling calculatePaycheck');
+                    const result = calculatePaycheck();
+                    console.log('calculatePaycheck result:', result);
+                });
+            } else {
+                console.log('DOM already ready, calling calculatePaycheck');
+                const result = calculatePaycheck();
+                console.log('calculatePaycheck result:', result);
+            }
+            
+            console.log('=== INITIALIZATION COMPLETE ===');
+        })();
+        
+        // Add some debugging info
+        console.log('document.readyState:', document.readyState);
+        console.log('typeof calculatePaycheck:', typeof calculatePaycheck);
+        console.log('typeof getValidatedValue:', typeof getValidatedValue);
+        
+        // Test function execution manually
+        setTimeout(() => {
+            console.log('=== MANUAL EXECUTION TEST ===');
+            try {
+                const result = calculatePaycheck();
+                console.log('Manual calculatePaycheck result:', result);
+            } catch (error) {
+                console.error('Manual execution error:', error);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

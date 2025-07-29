@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Detection Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .error { background: #ffe6e6; padding: 10px; margin: 10px 0; border-left: 4px solid red; }
+        .success { background: #e6ffe6; padding: 10px; margin: 10px 0; border-left: 4px solid green; }
+        .info { background: #e6f3ff; padding: 10px; margin: 10px 0; border-left: 4px solid blue; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Error Detection Test</h1>
+    <div id="log"></div>
+    
+    <button onclick="testBasicJS()">Test Basic JS</button>
+    <button onclick="testLocumUtilsLoad()">Test LocumUtils Loading</button>
+    <button onclick="testModalFunction()">Test Modal Function</button>
+
+    <script>
+        let errorCount = 0;
+        let logDiv = document.getElementById('log');
+
+        function logMessage(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            logDiv.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Capture all JavaScript errors
+        window.addEventListener('error', function(event) {
+            errorCount++;
+            logMessage(`JS ERROR #${errorCount}: ${event.message}<br>
+                       File: ${event.filename}<br>
+                       Line: ${event.lineno}, Column: ${event.colno}<br>
+                       Stack: ${event.error ? event.error.stack : 'No stack trace'}`, 'error');
+        });
+
+        // Capture unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            errorCount++;
+            logMessage(`PROMISE REJECTION #${errorCount}: ${event.reason}`, 'error');
+        });
+
+        function testBasicJS() {
+            try {
+                logMessage('Basic JavaScript test started', 'info');
+                logMessage('Current URL: ' + window.location.href, 'success');
+                logMessage('Document ready state: ' + document.readyState, 'success');
+                logMessage('Basic JavaScript working!', 'success');
+            } catch (error) {
+                logMessage('Basic JS test failed: ' + error.message, 'error');
+            }
+        }
+
+        function testLocumUtilsLoad() {
+            logMessage('Testing LocumUtils loading...', 'info');
+            
+            // Check if scripts are loaded
+            const scripts = document.querySelectorAll('script[src]');
+            logMessage(`Found ${scripts.length} external scripts:`, 'info');
+            scripts.forEach((script, index) => {
+                logMessage(`Script ${index + 1}: ${script.src}`, 'info');
+            });
+
+            // Test LocumUtils
+            if (typeof LocumUtils === 'undefined') {
+                logMessage('LocumUtils is UNDEFINED - major problem!', 'error');
+            } else {
+                logMessage('LocumUtils is defined - good!', 'success');
+                logMessage('LocumUtils type: ' + typeof LocumUtils, 'success');
+                
+                if (LocumUtils && typeof LocumUtils === 'object') {
+                    const keys = Object.keys(LocumUtils);
+                    logMessage(`LocumUtils has ${keys.length} properties`, 'success');
+                    logMessage('First 10 functions: ' + keys.slice(0, 10).join(', '), 'info');
+                }
+            }
+
+            // Test AuthManager
+            if (typeof AuthManager === 'undefined') {
+                logMessage('AuthManager is UNDEFINED', 'error');
+            } else {
+                logMessage('AuthManager is defined', 'success');
+            }
+
+            // Test AuthAPI
+            if (typeof AuthAPI === 'undefined') {
+                logMessage('AuthAPI is UNDEFINED', 'error');
+            } else {
+                logMessage('AuthAPI is defined', 'success');
+            }
+        }
+
+        function testModalFunction() {
+            logMessage('Testing modal function call...', 'info');
+            
+            try {
+                if (typeof LocumUtils === 'undefined') {
+                    logMessage('Cannot test modal - LocumUtils undefined', 'error');
+                    return;
+                }
+
+                if (typeof LocumUtils.showLoginModal !== 'function') {
+                    logMessage('showLoginModal is not a function!', 'error');
+                    logMessage('LocumUtils keys: ' + Object.keys(LocumUtils).join(', '), 'info');
+                    return;
+                }
+
+                logMessage('Calling LocumUtils.showLoginModal()...', 'info');
+                LocumUtils.showLoginModal();
+                logMessage('Modal function call completed without error', 'success');
+
+                // Check if modal was created
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if (modal) {
+                        logMessage('Modal element found in DOM!', 'success');
+                        logMessage('Modal display: ' + modal.style.display, 'info');
+                        logMessage('Modal className: ' + modal.className, 'info');
+                    } else {
+                        logMessage('Modal element NOT found in DOM', 'error');
+                    }
+                }, 300);
+
+            } catch (error) {
+                logMessage('Modal test failed with error: ' + error.message, 'error');
+                logMessage('Error stack: ' + error.stack, 'error');
+            }
+        }
+
+        // Auto-run basic test on load
+        document.addEventListener('DOMContentLoaded', function() {
+            logMessage('DOM loaded - starting automatic tests', 'info');
+            testBasicJS();
+            
+            setTimeout(() => {
+                logMessage('Running LocumUtils test after delay...', 'info');
+                testLocumUtilsLoad();
+            }, 1000);
+        });
+    </script>
+
+    <!-- Load the actual scripts -->
+    <script src="js/apiClient.js" onerror="logMessage('Failed to load apiClient.js', 'error')"></script>
+    <script src="js/common-utils.js" onerror="logMessage('Failed to load common-utils.js', 'error')"></script>
+</body>
+</html>

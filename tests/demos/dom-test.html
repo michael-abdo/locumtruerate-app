@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Display Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log-entry { margin: 5px 0; padding: 5px; background: #f0f0f0; border-left: 3px solid #007acc; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>DOM Display Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Function to display messages on the page (not console)
+        function displayMessage(message, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `log-entry ${type}`;
+            div.textContent = message;
+            document.getElementById('test-results').appendChild(div);
+        }
+        
+        try {
+            displayMessage('🔧 Script 1: Starting test', 'log');
+            
+            // Test basic functionality
+            displayMessage('✅ Script 1: Basic JavaScript works', 'success');
+            
+            // Test function definition
+            function testFunction() {
+                displayMessage('✅ Script 1: Function definition works', 'success');
+                return true;
+            }
+            
+            // Test function execution
+            const result = testFunction();
+            displayMessage(`✅ Script 1: Function returned: ${result}`, 'success');
+            
+            // Test variable access
+            let currentPeriod = 'weekly';
+            displayMessage(`✅ Script 1: Variable access works: ${currentPeriod}`, 'success');
+            
+            // Test object definition
+            const periodMultipliers = {
+                'weekly': 1,
+                'biweekly': 2,
+                'monthly': 4.33
+            };
+            displayMessage(`✅ Script 1: Object definition works: ${JSON.stringify(periodMultipliers)}`, 'success');
+            
+            displayMessage('🔧 Script 1: Test completed successfully', 'log');
+            
+        } catch (error) {
+            displayMessage(`❌ Script 1: Error occurred: ${error.message}`, 'error');
+        }
+    </script>
+    
+    <script>
+        try {
+            displayMessage('🔧 Script 2: Starting second script', 'log');
+            
+            // Test if we can access first script's functions
+            if (typeof testFunction === 'function') {
+                displayMessage('✅ Script 2: Can access first script function', 'success');
+                testFunction();
+            } else {
+                displayMessage('❌ Script 2: Cannot access first script function', 'error');
+            }
+            
+            displayMessage('🔧 Script 2: Test completed', 'log');
+            
+        } catch (error) {
+            displayMessage(`❌ Script 2: Error occurred: ${error.message}`, 'error');
+        }
+    </script>
+</body>
+</html>

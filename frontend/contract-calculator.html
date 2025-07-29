@@ -1,0 +1,3054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Calculator - LocumTrueRate</title>
+    <!-- Centralized CSS Variables -->
+    <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    <style>
+        /* Using centralized CSS variables from css/variables.css */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
+            z-index: 1000;
+            margin-top: 0;
+            pointer-events: none;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+            z-index: 999;
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pre-filled Alert */
+        .prefilled-alert {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .prefilled-alert.show {
+            display: block;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            padding: 3rem 0;
+        }
+
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .calculator-form {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .calculator-results {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 6rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.65rem;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+        
+        .form-select:hover {
+            background-color: var(--gray-50);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .form-error {
+            font-size: 0.85rem;
+            color: var(--error-color);
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Tooltip System */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-primary);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            white-space: normal;
+            width: 400px;
+            min-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+            transform: translateX(-50%) translateY(-5px);
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--text-primary);
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .form-group:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tooltip positioning */
+        @media (max-width: 768px) {
+            .tooltip {
+                position: fixed;
+                bottom: auto;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 320px;
+                min-width: 320px;
+                margin-bottom: 0;
+            }
+            
+            .tooltip::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tooltip {
+                width: 280px;
+                min-width: 280px;
+            }
+        }
+
+        .btn-primary:disabled, .btn-secondary:disabled, .btn-accent:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary:disabled:hover, .btn-secondary:disabled:hover, .btn-accent:disabled:hover {
+            transform: none;
+            background-color: var(--primary-color);
+        }
+
+        /* Saved Contracts Modal Styles */
+        .saved-calculations-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .calculation-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--surface-color);
+        }
+
+        .calculation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculation-header h4 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .calculation-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .calculation-details {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .calculation-details p {
+            margin: 0.25rem 0;
+            color: var(--text-secondary);
+        }
+
+        .calculation-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .calculation-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Results */
+        .results-summary {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-summary h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .results-summary .amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .results-summary .rate {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .results-breakdown {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--border-color);
+        }
+
+        .result-item.highlight {
+            border-left-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .result-item.warning {
+            border-left-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-subtext {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .comparison-card {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .comparison-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .comparison-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .comparison-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-accent:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .page-header {
+                padding: 2rem 0;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .calculator-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .calculator-results {
+                position: static;
+                top: auto;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .floating-logger {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-height: 200px;
+            }
+            
+            .results-summary .amount {
+                font-size: 2rem;
+            }
+            
+            .calculator-form,
+            .calculator-results {
+                padding: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+            
+            .calculator-form, .calculator-results {
+                padding: 1rem;
+            }
+            
+            .results-summary .amount {
+                font-size: 1.8rem;
+            }
+            
+            .comparison-section {
+                padding: 1rem;
+            }
+            
+            .form-input {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .btn-primary, .btn-secondary, .btn-accent {
+                padding: 0.875rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .action-buttons {
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>LocumTrueRate</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link active">Contract Calculator</a></li>
+                    <li><a href="calculation-history.html" class="nav-link">History</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Authentication buttons (shown when not logged in) -->
+                    <li class="auth-buttons" data-auth-hidden>
+                        <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()">Login</button>
+                        <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                    </li>
+                    
+                    <!-- User menu (shown when logged in) -->
+                    <li class="user-menu" data-auth-visible style="display: none;">
+                        <span class="user-name"></span>
+                        <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Contract Calculator</h1>
+                <p>Calculate true hourly rates and total contract value with detailed compensation breakdown</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <section class="calculator-section">
+                <div class="container">
+                    <!-- Pre-filled Alert -->
+                    <div class="prefilled-alert" id="prefilledAlert">
+                        <h3>📋 Job Data Pre-filled</h3>
+                        <p>Contract details have been automatically filled from your selected job posting. Feel free to adjust any values.</p>
+                    </div>
+
+                    <div class="calculator-container">
+                        <!-- Calculator Form -->
+                        <div class="calculator-form">
+                            <h2 class="section-title">Contract Details</h2>
+                            
+                            <!-- Basic Contract Info -->
+                            <div class="form-group">
+                                <label class="form-label">Job Title</label>
+                                <div class="tooltip-wrapper">
+                                    <select class="form-input form-select" id="jobTitle" onchange="calculateContract()">
+                                        <option value="MD">MD (Medical Doctor)</option>
+                                        <option value="CRNA">CRNA (Certified Registered Nurse Anesthetist)</option>
+                                        <option value="NP">NP (Nurse Practitioner)</option>
+                                        <option value="PA">PA (Physician Assistant)</option>
+                                        <option value="RN">RN (Registered Nurse)</option>
+                                        <option value="AA">AA (Anesthesiologist Assistant)</option>
+                                        <option value="Tech">Tech (Medical Technician)</option>
+                                    </select>
+                                    <div class="tooltip">Select your professional title. This helps us calculate industry-standard rates and compare against relevant benchmarks for your specialty.</div>
+                                </div>
+                            </div>
+
+
+                            <!-- Hourly Rate (Simplified) -->
+                            <div class="form-group">
+                                <label class="form-label">Hourly Rate ($)</label>
+                                <div class="tooltip-wrapper">
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hourly rate" required>
+                                    <div class="tooltip">Enter your base hourly rate before overtime. This is the standard rate you'll be paid for regular hours worked. Does not include overtime premiums or stipends.</div>
+                                </div>
+                                <div class="form-help">Base hourly rate</div>
+                            </div>
+
+                            <!-- Schedule -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Hours per Week</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hours per week" required>
+                                        <div class="tooltip">Enter the total number of hours you'll work per week at the standard hourly rate. This typically ranges from 36-48 hours for most locum positions. Maximum allowed is 168 hours (24 hours × 7 days).</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Contract Length (weeks)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter contract length" required>
+                                        <div class="tooltip">Enter the total duration of your contract in weeks. Common lengths are 8-13 weeks for locum tenens assignments, with some extending to 26 or 52 weeks. This determines your total earning potential.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stipends -->
+                            <div class="form-group">
+                                <label class="form-label">Housing Stipend ($ per week)</label>
+                                <div class="tooltip-wrapper">
+                                    <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="tooltip">Enter the weekly housing allowance provided by your employer. This can range from $800-2000+ per week depending on location and housing type. May be provided as furnished housing or cash allowance.</div>
+                                </div>
+                                <div class="form-help">Weekly housing allowance</div>
+                            </div>
+
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Travel Reimbursement ($)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01" oninput="calculateContract()">
+                                        <div class="tooltip">Enter the total travel reimbursement amount provided. This covers transportation costs to/from your assignment location and is typically a one-time payment ranging from $500-2000+ depending on distance.</div>
+                                    </div>
+                                    <div class="form-help">One-time travel allowance</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Other Stipends ($)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="otherStipends" value="2000" min="0" step="0.01" oninput="calculateContract()">
+                                        <div class="tooltip">Enter total amount for additional benefits like meal stipends, CME allowances, license reimbursement, malpractice insurance, or completion bonuses. This varies widely by employer and contract type.</div>
+                                    </div>
+                                    <div class="form-help">Total other benefits</div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Contract Type and State -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Contract Type</label>
+                                    <div class="tooltip-wrapper">
+                                        <select class="form-input form-select" id="contractType" onchange="calculateContract()">
+                                            <option value="locum">Locum Tenens</option>
+                                            <option value="permanent">Permanent Placement</option>
+                                            <option value="per-diem">Per Diem</option>
+                                        </select>
+                                        <div class="tooltip">Select your contract type. Locum Tenens are temporary assignments with higher rates, Permanent Placement offers stability with benefits, and Per Diem provides flexible scheduling with variable hours.</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Contract State</label>
+                                    <div class="tooltip-wrapper">
+                                        <select class="form-input form-select" id="workState" onchange="calculateContract()">
+                                        <option value="">Select State</option>
+                                        <option value="AL">Alabama</option>
+                                        <option value="AK">Alaska</option>
+                                        <option value="AZ">Arizona</option>
+                                        <option value="AR">Arkansas</option>
+                                        <option value="CA">California</option>
+                                        <option value="CO">Colorado</option>
+                                        <option value="CT">Connecticut</option>
+                                        <option value="DE">Delaware</option>
+                                        <option value="FL">Florida</option>
+                                        <option value="GA">Georgia</option>
+                                        <option value="HI">Hawaii</option>
+                                        <option value="ID">Idaho</option>
+                                        <option value="IL">Illinois</option>
+                                        <option value="IN">Indiana</option>
+                                        <option value="IA">Iowa</option>
+                                        <option value="KS">Kansas</option>
+                                        <option value="KY">Kentucky</option>
+                                        <option value="LA">Louisiana</option>
+                                        <option value="ME">Maine</option>
+                                        <option value="MD">Maryland</option>
+                                        <option value="MA">Massachusetts</option>
+                                        <option value="MI">Michigan</option>
+                                        <option value="MN">Minnesota</option>
+                                        <option value="MS">Mississippi</option>
+                                        <option value="MO">Missouri</option>
+                                        <option value="MT">Montana</option>
+                                        <option value="NE">Nebraska</option>
+                                        <option value="NV">Nevada</option>
+                                        <option value="NH">New Hampshire</option>
+                                        <option value="NJ">New Jersey</option>
+                                        <option value="NM">New Mexico</option>
+                                        <option value="NY">New York</option>
+                                        <option value="NC">North Carolina</option>
+                                        <option value="ND">North Dakota</option>
+                                        <option value="OH">Ohio</option>
+                                        <option value="OK">Oklahoma</option>
+                                        <option value="OR">Oregon</option>
+                                        <option value="PA">Pennsylvania</option>
+                                        <option value="RI">Rhode Island</option>
+                                        <option value="SC">South Carolina</option>
+                                        <option value="SD">South Dakota</option>
+                                        <option value="TN">Tennessee</option>
+                                        <option value="TX">Texas</option>
+                                        <option value="UT">Utah</option>
+                                        <option value="VT">Vermont</option>
+                                        <option value="VA">Virginia</option>
+                                        <option value="WA">Washington</option>
+                                        <option value="WV">West Virginia</option>
+                                        <option value="WI">Wisconsin</option>
+                                        <option value="WY">Wyoming</option>
+                                        </select>
+                                        <div class="tooltip">Select the state where you'll be working. This information helps with location-specific market rate comparisons and may affect certain calculations or compliance requirements.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="calculator-results">
+                            <h2 class="section-title">Contract Analysis</h2>
+                            
+                            <div class="results-summary">
+                                <h3>Total Contract Value</h3>
+                                <div class="amount" id="totalContractValue">$0</div>
+                                <div class="rate">True Hourly Rate: <span id="trueHourlyRate">$0.00</span></div>
+                            </div>
+
+                            <div class="results-breakdown">
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Regular Pay</span>
+                                        <div class="result-subtext">40 hrs/week × $350/hr</div>
+                                    </div>
+                                    <span class="result-value" id="regularPay">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Weekly Gross Pay</span>
+                                        <div class="result-subtext">Gross income per week</div>
+                                    </div>
+                                    <span class="result-value" id="weeklyGrossPay">$0.00</span>
+                                </div>
+                                <div class="result-item highlight">
+                                    <div>
+                                        <span class="result-label">Total Contract Value</span>
+                                        <div class="result-subtext">Total gross earnings</div>
+                                    </div>
+                                    <span class="result-value" id="totalContractValueBreakdown">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Housing Stipend</span>
+                                        <div class="result-subtext">Weekly housing allowance</div>
+                                    </div>
+                                    <span class="result-value" id="totalHousingStipend">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Other Stipends</span>
+                                        <div class="result-subtext">Meals, travel</div>
+                                    </div>
+                                    <span class="result-value" id="otherStipends">$0</span>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" onclick="loadSavedContracts()" title="Load saved contract calculations">📂 Load Saved <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" onclick="window.open('calculation-history.html', '_blank')" title="View all calculation history">📋 View History</button>
+                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
+                                <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
+                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
+                                <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
+                                <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
+                                <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Section -->
+                    <div class="comparison-section">
+                        <h3 class="section-title">Contract Comparison</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Compare this contract with industry averages and your saved contracts</p>
+                        
+                        <div class="comparison-grid">
+                            <div class="comparison-card">
+                                <h4>Your Contract</h4>
+                                <div class="comparison-value" id="yourContractRate">$0.00</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">True Hourly Rate</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Market Average</h4>
+                                <div class="comparison-value">$385.00</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">EM Specialists</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Your Previous</h4>
+                                <div class="comparison-value">$422.50</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Last Contract</p>
+                            </div>
+                            <div class="comparison-card">
+                                <h4>Annual Equivalent</h4>
+                                <div class="comparison-value" id="annualEquivalent">$0</div>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">If worked year-round</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>LocumTrueRate</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Removed complex validation - using simple real-time calculations only
+        
+        // Check if all required fields are valid
+        function areAllFieldsValid() {
+            console.log('🔍 areAllFieldsValid() called');
+            const requiredFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks'];
+            let allValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                if (!input) {
+                    console.error(`❌ VALIDATION FAILED: Required field element not found: ${fieldId}`);
+                    allValid = false;
+                    return;
+                }
+                
+                const value = parseFloat(input.value.trim());
+                let isValid = !isNaN(value) && value > 0;
+                
+                // Special validation for specific fields
+                if (fieldId === 'hoursPerWeek' && value > 168) {
+                    isValid = false;
+                    console.error(`❌ VALIDATION FAILED: ${fieldId} = ${value} (exceeds 168 hours/week)`);
+                } else if (fieldId === 'contractWeeks' && value > 52) {
+                    console.warn(`⚠️ WARNING: ${fieldId} = ${value} (exceeds 52 weeks)`);
+                } else if (!isValid) {
+                    console.error(`❌ VALIDATION FAILED: ${fieldId} = ${value} (must be > 0)`);
+                }
+                
+                if (!isValid) allValid = false;
+            });
+            
+            console.log(allValid ? '✅ All fields are valid' : '❌ Some fields failed validation');
+            return allValid;
+        }
+        
+        // Clear results when validation fails
+        function clearResults() {
+            const resultElements = [
+                'regularPay', 'weeklyGrossPay', 
+                'grossTaxableIncome', 'totalHousingStipend', 'otherStipends', 
+                'netTakeHome', 'totalContractValue', 
+                'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
+            ];
+            
+            resultElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = '$0';
+                }
+            });
+        }
+        
+        // Update button states based on validation
+        function updateButtonStates() {
+            const isValid = areAllFieldsValid();
+            const hasCalculatedResults = parseFloat(document.getElementById('totalContractValue').textContent.replace(/[$,]/g, '')) > 0;
+            
+            // Save and Compare buttons require valid fields
+            const saveBtn = document.querySelector('.btn-primary[onclick="saveContract()"]');
+            const compareBtn = document.querySelector('.btn-secondary[onclick="compareContracts()"]');
+            const findJobsBtn = document.querySelector('.btn-accent[onclick="findSimilarJobs()"]');
+            
+            if (saveBtn) saveBtn.disabled = !isValid;
+            if (compareBtn) compareBtn.disabled = !isValid;
+            if (findJobsBtn) findJobsBtn.disabled = !isValid;
+            
+            // Export, Print, Email buttons enabled if we have calculated results
+            const exportBtn = document.getElementById('exportPdfButton');
+            const exportCSVBtn = document.getElementById('exportCsvButton');
+            const printBtn = document.getElementById('printButton');
+            const emailBtn = document.getElementById('emailButton');
+            
+            if (exportBtn) exportBtn.disabled = !hasCalculatedResults;
+            if (exportCSVBtn) exportCSVBtn.disabled = !hasCalculatedResults;
+            if (printBtn) printBtn.disabled = !hasCalculatedResults;
+            if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
+        }
+
+        function calculateContract() {
+            console.log('🔄 calculateContract() called');
+            console.log('🔍 Checking if DOM is ready...');
+            
+            // Check if elements exist
+            const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            for (const id of inputElementIds) {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    console.error(`❌ Element not found: ${id}`);
+                    return;
+                }
+            }
+            
+            console.log('✅ All input elements found');
+            console.log('🔄 Calculating contract (simplified gross only)...');
+            
+            // Get input values - simplified fields only
+            console.log('📊 Getting input values...');
+            
+            const getInputValue = (id, defaultValue = 0) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    console.error(`❌ CRITICAL: Cannot find input element: ${id}`);
+                    return defaultValue;
+                }
+                const value = parseFloat(elem.value) || defaultValue;
+                console.log(`🔹 ${id}: ${value}`);
+                return value;
+            };
+            
+            const hourlyRate = getInputValue('hourlyRate');
+            const hoursPerWeek = getInputValue('hoursPerWeek');
+            const contractWeeks = getInputValue('contractWeeks');
+            const housingStipend = getInputValue('housingStipend');
+            const travelReimbursement = getInputValue('travelReimbursement');
+            const otherStipends = getInputValue('otherStipends');
+            
+            // Log input values for debugging
+            console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
+            
+            // Validation with visible error messages
+            let hasErrors = false;
+            const validationErrors = [];
+            
+            if (hourlyRate <= 0) {
+                validationErrors.push('Hourly rate must be greater than $0');
+                hasErrors = true;
+            }
+            if (hoursPerWeek <= 0) {
+                validationErrors.push('Hours per week must be greater than 0');
+                hasErrors = true;
+            }
+            if (hoursPerWeek > 168) {
+                validationErrors.push('Hours per week cannot exceed 168');
+                hasErrors = true;
+            }
+            if (contractWeeks <= 0) {
+                validationErrors.push('Contract length must be at least 1 week');
+                hasErrors = true;
+            }
+            if (contractWeeks > 52) {
+                console.warn('⚠️ Contract length over 1 year');
+            }
+            if (travelReimbursement < 0 || otherStipends < 0 || housingStipend < 0) {
+                validationErrors.push('Values cannot be negative');
+                hasErrors = true;
+            }
+            
+            // Show validation errors
+            if (hasErrors) {
+                console.error('❌ Validation errors:', validationErrors);
+                // Show first error as notification
+                if (typeof showNotification === 'function' && validationErrors.length > 0) {
+                    showNotification(`❌ ${validationErrors[0]}`, 'error');
+                }
+            }
+            
+            // Simple gross calculations only
+            const weeklyGrossPay = hourlyRate * hoursPerWeek;
+            const totalGrossPay = weeklyGrossPay * contractWeeks;
+            const totalHousingStipend = housingStipend * contractWeeks;
+            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
+            
+            // True hourly rate calculation
+            const totalHours = hoursPerWeek * contractWeeks;
+            const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
+            
+            // Annual equivalent (52 weeks)
+            const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
+
+            // Update display elements - only update elements that exist
+            const elements = {
+                'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+                'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'totalContractValueBreakdown': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
+                'yourContractRate': '$' + trueHourlyRate.toFixed(2),
+                'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
+            };
+
+            // Safely update each element
+            console.log('📊 Updating result display elements...');
+            const failedUpdates = [];
+            Object.keys(elements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = elements[id];
+                    console.log(`✅ Updated ${id}: ${elements[id]}`);
+                } else {
+                    failedUpdates.push(id);
+                    console.error(`❌ FAILED TO UPDATE: Result element not found: ${id}`);
+                }
+            });
+            
+            if (failedUpdates.length > 0) {
+                console.error(`❌❌❌ CRITICAL: Failed to update ${failedUpdates.length} result elements!`);
+                console.error(`Failed elements: ${failedUpdates.join(', ')}`);
+                console.error('This is why calculations appear as $0!');
+            }
+            
+            // Log calculation results
+            console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
+            
+            // Update button states after calculation
+            updateButtonStates();
+        }
+
+        async function saveContract() {
+            try {
+                // Check if user is authenticated
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    LocumUtils.showLoginModal();
+                    LocumUtils.showToast('Please log in to save contract calculations', 'warning');
+                    return;
+                }
+
+                // Always allow saving, but warn if validation issues exist
+                const hasValidationErrors = !areAllFieldsValid();
+                if (hasValidationErrors) {
+                    LocumUtils.showToast('Saving contract with validation errors', 'warning');
+                }
+
+                // Collect all form data
+                const calculationData = {
+                    calculation_type: 'contract',
+                    title: `Contract Analysis - ${document.getElementById('jobTitle').value || 'Unnamed Position'}`,
+                    description: `${document.getElementById('contractWeeks').value} week contract analysis`,
+                    
+                    // Primary rate
+                    hourly_rate: parseFloat(document.getElementById('hourlyRate').value) || 0,
+                    hours_per_week: parseFloat(document.getElementById('hoursPerWeek').value) || 0,
+                    
+                    // Contract specific fields
+                    contract_weeks: parseInt(document.getElementById('contractWeeks').value) || 0,
+                    contract_type: document.getElementById('contractType').value,
+                    
+                    // Stipends and benefits
+                    housing_stipend: parseFloat(document.getElementById('housingStipend').value) || 0,
+                    travel_reimbursement: parseFloat(document.getElementById('travelReimbursement').value) || 0,
+                    other_stipends: parseFloat(document.getElementById('otherStipends').value) || 0,
+                    
+                    // Location
+                    work_state: document.getElementById('workState').value,
+                    
+                    // Calculated results
+                    gross_pay: parseFloat(document.getElementById('weeklyGrossPay').textContent.replace(/[$,]/g, '')) || 0,
+                    net_pay: parseFloat(document.getElementById('netTakeHome').textContent.replace(/[$,]/g, '')) || 0,
+                    total_contract_value: parseFloat(document.getElementById('totalContractValue').textContent.replace(/[$,]/g, '')) || 0,
+                    true_hourly_rate: parseFloat(document.getElementById('trueHourlyRate').textContent.replace(/[$,]/g, '')) || 0,
+                    annual_equivalent: parseFloat(document.getElementById('annualEquivalent').textContent.replace(/[$,]/g, '')) || 0,
+                    
+                    // Additional metadata
+                    notes: `Contract for ${document.getElementById('jobTitle').value || 'position'} in ${document.getElementById('workState').value}`
+                };
+
+                // Call API to save calculation
+                const response = await fetch('/api/v1/calculations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(calculationData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('💾 Contract saved successfully:', result.data);
+                    
+                    // Show success notification
+                    showNotification('✅ Contract analysis saved successfully!', 'success');
+                    
+                    // Also save to localStorage as backup for comparison functionality
+                    const backupData = {
+                        timestamp: new Date().toISOString(),
+                        jobTitle: document.getElementById('jobTitle').value,
+                        hourlyRate: document.getElementById('hourlyRate').value,
+                        hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                        contractWeeks: document.getElementById('contractWeeks').value,
+                        workState: document.getElementById('workState').value,
+                        totalValue: document.getElementById('totalContractValue').textContent,
+                        trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                        weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
+                    };
+                    
+                    let savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+                    savedContracts.unshift(backupData);
+                    savedContracts = savedContracts.slice(0, 10); // Keep only last 10
+                    localStorage.setItem('savedContracts', JSON.stringify(savedContracts));
+                    localStorage.setItem('lastContractCalculation', JSON.stringify(calculationData));
+                    
+                    // Update comparison cards with new data if available
+                    updateComparisonCards();
+                } else {
+                    const error = await response.json();
+                    LocumUtils.showToast(`Save failed: ${error.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving contract calculation:', error);
+                LocumUtils.showToast('Error saving contract calculation. Please try again.', 'error');
+                
+                // Fallback to localStorage only functionality
+                const fallbackData = {
+                    timestamp: new Date().toISOString(),
+                    jobTitle: document.getElementById('jobTitle').value,
+                    hourlyRate: document.getElementById('hourlyRate').value,
+                    contractWeeks: document.getElementById('contractWeeks').value
+                };
+                localStorage.setItem('contractCalculationBackup', JSON.stringify(fallbackData));
+                showNotification('⚠️ Saved locally as backup. Login and try again to save to account.', 'warning');
+            }
+        }
+
+        // Load saved contract calculations from API
+        async function loadSavedContracts() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    LocumUtils.showToast('Please log in to view saved calculations', 'warning');
+                    return;
+                }
+
+                const response = await fetch('/api/v1/calculations?calculation_type=contract&limit=10', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showSavedContractsModal(result.data);
+                } else {
+                    const error = await response.json();
+                    LocumUtils.showToast(`Failed to load calculations: ${error.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading calculations:', error);
+                LocumUtils.showToast('Error loading saved calculations', 'error');
+            }
+        }
+
+        // Show saved contracts in a modal
+        function showSavedContractsModal(contracts) {
+            const modalHTML = `
+                <div id="savedContractsModal" class="auth-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Saved Contract Calculations</h2>
+                            <button type="button" class="modal-close" onclick="closeSavedContractsModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="saved-calculations-list">
+                                ${contracts.length === 0 ? 
+                                    '<p>No saved contract calculations found.</p>' : 
+                                    contracts.map(contract => `
+                                        <div class="calculation-item" data-id="${contract.id}">
+                                            <div class="calculation-header">
+                                                <h4>${contract.title || 'Contract Calculation'}</h4>
+                                                <span class="calculation-date">${new Date(contract.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                            <div class="calculation-details">
+                                                <p><strong>Rate:</strong> $${contract.hourly_rate}/hr | <strong>Hours:</strong> ${contract.hours_per_week}/week | <strong>Duration:</strong> ${contract.contract_weeks} weeks</p>
+                                                <p><strong>Contract Value:</strong> $${contract.total_contract_value?.toLocaleString() || '0'} | <strong>True Rate:</strong> $${contract.true_hourly_rate}/hr</p>
+                                                <p><strong>State:</strong> ${contract.work_state || 'N/A'} | <strong>Type:</strong> ${contract.contract_type || 'N/A'}</p>
+                                            </div>
+                                            <div class="calculation-actions">
+                                                <button type="button" class="btn btn-primary" onclick="loadContract(${contract.id})">Load</button>
+                                                <button type="button" class="btn btn-secondary" onclick="duplicateContract(${contract.id})">Duplicate</button>
+                                                <button type="button" class="btn btn-outline" onclick="toggleContractFavorite(${contract.id})">${contract.is_favorite ? '★' : '☆'}</button>
+                                                <button type="button" class="btn btn-outline" onclick="deleteContract(${contract.id})" style="color: #dc3545;">Delete</button>
+                                            </div>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove existing modal if present
+            const existingModal = document.getElementById('savedContractsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            const modal = document.getElementById('savedContractsModal');
+            modal.style.display = 'flex';
+            
+            // Focus trap and ESC key handling
+            modal.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeSavedContractsModal();
+                }
+            });
+        }
+
+        // Close saved contracts modal
+        function closeSavedContractsModal() {
+            const modal = document.getElementById('savedContractsModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Load a specific contract calculation
+        async function loadContract(contractId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${contractId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const contract = result.data;
+                    
+                    // Populate form with contract data
+                    document.getElementById('jobTitle').value = contract.title?.replace('Contract Analysis - ', '') || 'Position';
+                    document.getElementById('hourlyRate').value = contract.hourly_rate || 0;
+                    document.getElementById('hoursPerWeek').value = contract.hours_per_week || 40;
+                    document.getElementById('contractWeeks').value = contract.contract_weeks || 13;
+                    document.getElementById('contractType').value = contract.contract_type || 'locum';
+                    document.getElementById('housingStipend').value = contract.housing_stipend || 0;
+                    document.getElementById('travelReimbursement').value = contract.travel_reimbursement || 0;
+                    document.getElementById('otherStipends').value = contract.other_stipends || 0;
+                    document.getElementById('workState').value = contract.work_state || 'CA';
+                    
+                    // Recalculate
+                    calculateContract();
+                    
+                    // Close modal
+                    closeSavedContractsModal();
+                    
+                    LocumUtils.showToast('Contract calculation loaded successfully!', 'success');
+                } else {
+                    LocumUtils.showToast('Failed to load contract calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading contract calculation:', error);
+                LocumUtils.showToast('Error loading contract calculation', 'error');
+            }
+        }
+
+        // Duplicate a contract calculation
+        async function duplicateContract(contractId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${contractId}/duplicate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: `Copy - Contract Analysis - ${new Date().toLocaleDateString()}`
+                    })
+                });
+
+                if (response.ok) {
+                    LocumUtils.showToast('Contract calculation duplicated successfully!', 'success');
+                    loadSavedContracts(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to duplicate contract calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error duplicating contract calculation:', error);
+                LocumUtils.showToast('Error duplicating contract calculation', 'error');
+            }
+        }
+
+        // Toggle favorite status for contract
+        async function toggleContractFavorite(contractId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${contractId}/favorite`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    LocumUtils.showToast(result.message, 'success');
+                    loadSavedContracts(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to update favorite status', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+                LocumUtils.showToast('Error updating favorite status', 'error');
+            }
+        }
+
+        // Delete a contract calculation
+        async function deleteContract(contractId) {
+            if (!confirm('Are you sure you want to delete this contract calculation? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${contractId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    LocumUtils.showToast('Contract calculation deleted successfully!', 'success');
+                    loadSavedContracts(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to delete contract calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting contract calculation:', error);
+                LocumUtils.showToast('Error deleting contract calculation', 'error');
+            }
+        }
+
+        function compareContracts() {
+            const isLoggedIn = localStorage.getItem('userToken'); // Simulate login check
+            if (!isLoggedIn) {
+                showGuestLoginModal('compare');
+                return;
+            }
+            
+            const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+            if (savedContracts.length === 0) {
+                LocumUtils.showToast('No saved contracts found. Save this contract first to enable comparisons.', 'info');
+                saveContract();
+                return;
+            }
+            
+            // Create comparison modal/overlay
+            const currentContract = {
+                jobTitle: document.getElementById('jobTitle').value,
+                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                totalValue: document.getElementById('totalContractValue').textContent,
+                weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
+                netTakeHome: document.getElementById('netTakeHome').textContent,
+                contractWeeks: document.getElementById('contractWeeks').value,
+                hoursPerWeek: document.getElementById('hoursPerWeek').value
+            };
+            
+            // Generate comparison HTML
+            const comparisonHTML = `
+                <div id="comparison-modal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 30px;
+                        border-radius: 10px;
+                        max-width: 90vw;
+                        max-height: 90vh;
+                        overflow-y: auto;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    ">
+                        <h2 style="text-align: center; margin-bottom: 20px; color: #2563eb;">Contract Comparison</h2>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <thead>
+                                <tr style="background: #f3f4f6;">
+                                    <th style="padding: 12px; border: 1px solid #e2e8f0;">Metric</th>
+                                    <th style="padding: 12px; border: 1px solid #e2e8f0; background: #dbeafe;">Current Contract</th>
+                                    ${savedContracts.slice(0, 3).map((contract, index) => 
+                                        `<th style="padding: 12px; border: 1px solid #e2e8f0;">Previous ${index + 1}</th>`
+                                    ).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">Position</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.jobTitle}</td>
+                                    ${savedContracts.slice(0, 3).map(contract => 
+                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.jobTitle}</td>`
+                                    ).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">True Hourly Rate</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff; font-weight: bold;">${currentContract.trueHourlyRate}</td>
+                                    ${savedContracts.slice(0, 3).map(contract => 
+                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.trueHourlyRate}</td>`
+                                    ).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">Total Contract Value</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.totalValue}</td>
+                                    ${savedContracts.slice(0, 3).map(contract => 
+                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.totalValue}</td>`
+                                    ).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">Weekly Gross Pay</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.weeklyGrossPay}</td>
+                                    ${savedContracts.slice(0, 3).map(contract => 
+                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.weeklyGrossPay || 'N/A'}</td>`
+                                    ).join('')}
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">Contract Length</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff;">${currentContract.contractWeeks} weeks</td>
+                                    ${savedContracts.slice(0, 3).map(contract => 
+                                        `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.contractWeeks || 'N/A'} weeks</td>`
+                                    ).join('')}
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div style="text-align: center;">
+                            <button onclick="closeComparisonModal()" style="
+                                background: #2563eb;
+                                color: white;
+                                padding: 10px 20px;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                                font-size: 16px;
+                            ">Close Comparison</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert modal into page
+            document.body.insertAdjacentHTML('beforeend', comparisonHTML);
+        }
+        
+        function closeComparisonModal() {
+            const modal = document.getElementById('comparison-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Guest login modal for Save/Compare functionality
+        function showGuestLoginModal(action) {
+            const actionText = action === 'save' ? 'save contracts' : 'compare contracts';
+            const modalHTML = `
+                <div id="guest-login-modal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div style="
+                        background: white;
+                        padding: 40px;
+                        border-radius: 12px;
+                        max-width: 450px;
+                        text-align: center;
+                        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+                    ">
+                        <h2 style="color: #2563eb; margin-bottom: 20px;">🔑 Account Required</h2>
+                        <p style="margin-bottom: 25px; color: #6b7280; line-height: 1.6;">
+                            To ${actionText}, you need a free LocumTrueRate account. Your saved contracts will be available across all your devices.
+                        </p>
+                        
+                        <div style="display: flex; gap: 15px; flex-direction: column;">
+                            <button onclick="simulateLogin()" style="
+                                background: #2563eb;
+                                color: white;
+                                padding: 12px 24px;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 16px;
+                                font-weight: 600;
+                            ">🚀 Sign Up Free (Demo)</button>
+                            
+                            <button onclick="simulateLogin()" style="
+                                background: transparent;
+                                color: #2563eb;
+                                padding: 12px 24px;
+                                border: 2px solid #2563eb;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 16px;
+                                font-weight: 600;
+                            ">📧 Login (Demo)</button>
+                            
+                            <button onclick="closeGuestLoginModal()" style="
+                                background: transparent;
+                                color: #6b7280;
+                                padding: 8px 16px;
+                                border: none;
+                                cursor: pointer;
+                                font-size: 14px;
+                            ">Maybe Later</button>
+                        </div>
+                        
+                        <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
+                            <strong>Free forever:</strong> Save unlimited contracts, compare offers, export analyses
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function closeGuestLoginModal() {
+            const modal = document.getElementById('guest-login-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function simulateLogin() {
+            // Simulate login process
+            showNotification('🔑 Logging in...', 'info');
+            
+            setTimeout(() => {
+                localStorage.setItem('userToken', 'demo-token-12345');
+                localStorage.setItem('userName', 'Demo User');
+                showNotification('✅ Successfully logged in!', 'success');
+                closeGuestLoginModal();
+                
+                // Update button states
+                updateButtonStates();
+                
+                // Show welcome message
+                setTimeout(() => {
+                    showNotification('💡 You can now save and compare contracts!', 'info');
+                }, 1500);
+                
+            }, 1000);
+        }
+
+        function findSimilarJobs() {
+            const jobTitle = document.getElementById('jobTitle').value;
+            const hourlyRate = document.getElementById('hourlyRate').value;
+            
+            // Simulate finding similar jobs
+            LocumUtils.showToast(`Finding similar ${jobTitle} positions with rates near $${hourlyRate}/hr. Redirecting to job board...`, 'info', 4000);
+            
+            setTimeout(() => {
+                window.location.href = 'job-board.html#similar-jobs';
+            }, 1000);
+        }
+
+        // Print Results function with better fallback handling
+        function printResults() {
+            try {
+                // Try to print current page first (fallback for blocked pop-ups)
+                const printPage = () => {
+                    window.print();
+                    showNotification('📄 Print dialog opened', 'success');
+                };
+                
+                // Check if pop-ups are blocked by trying to open a window
+                const testWindow = window.open('', '_blank', 'width=1,height=1');
+                if (testWindow) {
+                    testWindow.close();
+                    
+                    // Create a clean print version without navigation and buttons
+                    const printContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
+                            <style>
+                                body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                                h1 { color: #2563eb; text-align: center; margin-bottom: 20px; }
+                                .summary { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                                .results { display: grid; gap: 10px; }
+                                .result-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+                                .total { font-weight: bold; font-size: 1.1em; }
+                                @media print { body { margin: 0; } }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>Contract Analysis Report</h1>
+                            <div class="summary">
+                                <p><strong>Position:</strong> ${document.getElementById('jobTitle').value}</p>
+                                <p><strong>Contract:</strong> ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week</p>
+                                <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                            </div>
+                            <div class="results">
+                                <div class="result-row total"><span>Total Contract Value:</span><span>${document.getElementById('totalContractValue').textContent}</span></div>
+                                <div class="result-row total"><span>True Hourly Rate:</span><span>${document.getElementById('trueHourlyRate').textContent}</span></div>
+                                <div class="result-row"><span>Weekly Gross Pay:</span><span>${document.getElementById('weeklyGrossPay').textContent}</span></div>
+                                <div class="result-row"><span>Regular Pay:</span><span>${document.getElementById('regularPay').textContent}</span></div>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                    
+                    // Open print dialog in new window
+                    const printWindow = window.open('', '_blank', 'width=800,height=600');
+                    printWindow.document.write(printContent);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    
+                    // Wait for content to load then trigger print dialog
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.onafterprint = function() {
+                            printWindow.close();
+                        };
+                    }, 500);
+                    
+                    showNotification('📄 Print dialog opened in new tab', 'success');
+                } else {
+                    // Pop-ups blocked, print current page
+                    showNotification('⚠️ Pop-ups blocked. Printing current page...', 'info');
+                    setTimeout(printPage, 500);
+                }
+            } catch (error) {
+                console.error('Print error:', error);
+                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+            }
+        }
+        
+        // Print Results function (DUPLICATE - COMMENTED OUT)
+        // function printResults() {
+            try {
+                // Create a print-friendly version of the results
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                            .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+                            .contract-details { margin-bottom: 20px; }
+                            .results-section { margin-bottom: 20px; }
+                            .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
+                            .result-label { font-weight: bold; color: #2563eb; }
+                            .result-value { float: right; font-weight: bold; }
+                            .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
+                            @media print { 
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Contract Analysis Report</h1>
+                            <p>Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                        </div>
+                        
+                        <div class="contract-details">
+                            <h2>Contract Details</h2>
+                            <div class="result-item">
+                                <span class="result-label">Position:</span>
+                                <span class="result-value">${document.getElementById('jobTitle').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Hourly Rate:</span>
+                                <span class="result-value">$${document.getElementById('hourlyRate').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Hours per Week:</span>
+                                <span class="result-value">${document.getElementById('hoursPerWeek').value}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Contract Length:</span>
+                                <span class="result-value">${document.getElementById('contractWeeks').value} weeks</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Housing Stipend:</span>
+                                <span class="result-value">$${document.getElementById('housingStipend').value}/week</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Travel Reimbursement:</span>
+                                <span class="result-value">$${document.getElementById('travelReimbursement').value}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="results-section">
+                            <h2>Financial Analysis</h2>
+                            <div class="result-item">
+                                <span class="result-label">Weekly Gross Pay:</span>
+                                <span class="result-value">${document.getElementById('weeklyGrossPay').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Contract Value:</span>
+                                <span class="result-value">${document.getElementById('totalContractValue').textContent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">True Hourly Rate:</span>
+                                <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="footer">
+                            <p>This analysis was generated using LocumTrueRate Contract Calculator</p>
+                            <p>Visit <strong>locumtruerate.com</strong> for more tools and job opportunities</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                printWindow.document.write(printContent);
+                printWindow.document.close();
+                
+                // Wait for content to load, then print
+                printWindow.onload = function() {
+                    printWindow.print();
+                };
+                
+                showNotification('🖨️ Print dialog opened', 'success');
+                
+            } catch (error) {
+                console.error('Print error:', error);
+                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+            }
+        // } // END OF DUPLICATE FUNCTION
+        
+        // Email Results function with better fallback handling
+        function emailResults() {
+            try {
+                const subject = `Contract Analysis - ${document.getElementById('jobTitle').value}`;
+                const body = `Contract Analysis Summary:
+
+Position: ${document.getElementById('jobTitle').value}
+Contract: ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week
+
+Total Contract Value: ${document.getElementById('totalContractValue').textContent}
+True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
+Weekly Gross Pay: ${document.getElementById('weeklyGrossPay').textContent}
+
+Generated: ${new Date().toLocaleDateString()}
+
+From: LocumTrueRate Contract Calculator`;
+                    
+                const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                
+                // Try to open email client
+                const link = document.createElement('a');
+                link.href = mailtoLink;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show immediate feedback and fallback instructions
+                showNotification('📧 Opening email client...', 'info');
+                
+                // Show additional instructions after a delay if email didn't open
+                setTimeout(() => {
+                    showNotification('💡 If email didn\'t open, copy this data manually from the results above', 'info');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Email error:', error);
+                showNotification('⚠️ Email failed. Please copy the analysis data manually.', 'error');
+            }
+        }
+        
+        // Export CSV function with better error handling
+        function exportCSV() {
+            try {
+                // Gather all data for CSV export
+                const data = [
+                    ['Contract Analysis Report'],
+                    ['Generated', new Date().toLocaleDateString()],
+                    [],
+                    ['Contract Details'],
+                    ['Position', document.getElementById('jobTitle').value],
+                    ['Contract Type', document.getElementById('contractType').value],
+                    ['Work State', document.getElementById('workState').options[document.getElementById('workState').selectedIndex].text],
+                    [],
+                    ['Contract Terms'],
+                    ['Hourly Rate', document.getElementById('hourlyRate').value],
+                    ['Hours per Week', document.getElementById('hoursPerWeek').value],
+                    ['Contract Weeks', document.getElementById('contractWeeks').value],
+                    [],
+                    ['Benefits'],
+                    ['Housing Stipend (Weekly)', document.getElementById('housingStipend').value],
+                    ['Travel Reimbursement', document.getElementById('travelReimbursement').value],
+                    ['Other Stipends', document.getElementById('otherStipends').value],
+                    [],
+                    ['Gross Calculation Results'],
+                    ['Total Contract Value', document.getElementById('totalContractValue').textContent],
+                    ['True Hourly Rate', document.getElementById('trueHourlyRate').textContent],
+                    ['Weekly Gross Pay', document.getElementById('weeklyGrossPay').textContent],
+                    ['Total Housing Stipend', document.getElementById('totalHousingStipend').textContent],
+                    ['Annual Equivalent', document.getElementById('annualEquivalent').textContent]
+                ];
+                
+                // Convert data to CSV format
+                const csvContent = data.map(row => 
+                    row.map(cell => {
+                        // Escape quotes and wrap in quotes if contains comma
+                        const cellStr = String(cell || '');
+                        if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                            return '"' + cellStr.replace(/"/g, '""') + '"';
+                        }
+                        return cellStr;
+                    }).join(',')
+                ).join('\n');
+                
+                // Create and download CSV file
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                
+                if (!window.URL || !window.URL.createObjectURL) {
+                    throw new Error('Browser does not support file downloads');
+                }
+                
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', `contract_analysis_${document.getElementById('jobTitle').value.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up the URL after download
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 1000);
+                
+                showNotification('📊 CSV file downloaded successfully', 'success');
+                
+            } catch (error) {
+                console.error('CSV export error:', error);
+                showNotification('⚠️ CSV export failed. Please try again or check browser settings.', 'error');
+            }
+        }
+
+        function exportAnalysis() {
+            try {
+                // Generate comprehensive contract analysis for PDF export
+                const analysis = {
+                    jobTitle: document.getElementById('jobTitle').value,
+                    hourlyRate: document.getElementById('hourlyRate').value,
+                    hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                    contractWeeks: document.getElementById('contractWeeks').value,
+                    housingStipend: document.getElementById('housingStipend').value,
+                    totalValue: document.getElementById('totalContractValue').textContent,
+                    trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                    weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
+                    timestamp: new Date().toLocaleDateString()
+                };
+                
+                // Create HTML content for PDF
+                const pdfContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Contract Analysis - ${analysis.jobTitle}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+                            h1 { color: #2563eb; text-align: center; margin-bottom: 30px; }
+                            h2 { color: #1e293b; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; }
+                            .header-info { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+                            .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+                            .summary-card { border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; text-align: center; }
+                            .summary-card h3 { margin: 0 0 10px; color: #6b7280; font-size: 14px; }
+                            .summary-card .amount { font-size: 24px; font-weight: bold; color: #1e293b; }
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+                            th { background: #f3f4f6; font-weight: 600; }
+                            .total-row { font-weight: bold; border-top: 2px solid #1e293b; }
+                            .footer { margin-top: 40px; text-align: center; color: #6b7280; font-size: 12px; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Contract Analysis Report</h1>
+                        
+                        <div class="header-info">
+                            <h2>Contract Details</h2>
+                            <p><strong>Position:</strong> ${analysis.jobTitle}</p>
+                            <p><strong>Contract Length:</strong> ${analysis.contractWeeks} weeks</p>
+                            <p><strong>Hours per Week:</strong> ${analysis.hoursPerWeek}</p>
+                            <p><strong>Generated:</strong> ${analysis.timestamp}</p>
+                        </div>
+                        
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <h3>Total Contract Value</h3>
+                                <div class="amount">${analysis.totalValue}</div>
+                            </div>
+                            <div class="summary-card">
+                                <h3>True Hourly Rate</h3>
+                                <div class="amount">${analysis.trueHourlyRate}</div>
+                            </div>
+                            <div class="summary-card">
+                                <h3>Weekly Gross Pay</h3>
+                                <div class="amount">${analysis.weeklyGrossPay}</div>
+                            </div>
+                        </div>
+                        
+                        <h2>Pay Breakdown</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Rate/Amount</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Regular Pay</td>
+                                    <td>$${analysis.hourlyRate}/hr</td>
+                                    <td>${analysis.regularPay}</td>
+                                </tr>
+                                <tr>
+                                    <td>Housing Stipend</td>
+                                    <td>$${analysis.housingStipend}/week</td>
+                                    <td>Weekly housing allowance</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="footer">
+                            <p>Generated by LocumTrueRate Contract Calculator</p>
+                            <p><em>This analysis is for informational purposes only. Consult with financial advisors for tax planning.</em></p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                // Show immediate feedback
+                showNotification('📄 Opening PDF export...', 'info');
+                
+                // Open print dialog for PDF generation in new tab
+                const printWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes,resizable=yes');
+                if (printWindow) {
+                    printWindow.document.write(pdfContent);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    
+                    // Wait for content to load then trigger print dialog manually
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.onafterprint = function() {
+                            printWindow.close();
+                        };
+                    }, 500);
+                    
+                    showNotification('✅ PDF export opened in new tab', 'success');
+                } else {
+                    showNotification('⚠️ Pop-ups blocked. Please allow pop-ups and try again.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification('⚠️ PDF export failed. Please try again or check browser settings.', 'error');
+            }
+        }
+
+        
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                z-index: 10001;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = '#10b981';
+            } else if (type === 'error') {
+                notification.style.background = '#ef4444';
+            } else {
+                notification.style.background = '#2563eb';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Fade in
+            setTimeout(() => notification.style.opacity = '1', 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+        
+        // Update comparison cards with saved contract data
+        function updateComparisonCards() {
+            const savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
+            if (savedContracts.length > 0) {
+                const lastContract = savedContracts[0];
+                const previousCard = document.querySelector('.comparison-grid .comparison-card:nth-child(3)');
+                if (previousCard) {
+                    const valueElement = previousCard.querySelector('.comparison-value');
+                    if (valueElement && lastContract.trueHourlyRate) {
+                        valueElement.textContent = lastContract.trueHourlyRate;
+                    }
+                }
+            }
+        }
+        
+        // Simplified calculation trigger for hourly rate changes
+        document.getElementById('hourlyRate').addEventListener('input', function() {
+            calculateContract();
+        });
+
+        // Check for pre-filled data from job board
+        function checkPrefilledData() {
+            console.log('🔍 checkPrefilledData() called');
+            const calculatorData = localStorage.getItem('calculatorData');
+            if (calculatorData) {
+                const data = JSON.parse(calculatorData);
+                
+                // Fill form with job data
+                if (data.hourlyRate) document.getElementById('hourlyRate').value = data.hourlyRate;
+                if (data.hoursPerWeek) document.getElementById('hoursPerWeek').value = data.hoursPerWeek;
+                if (data.contractWeeks) document.getElementById('contractWeeks').value = data.contractWeeks;
+                if (data.housingStipend) document.getElementById('housingStipend').value = data.housingStipend;
+                if (data.jobTitle) document.getElementById('jobTitle').value = data.jobTitle;
+                
+                // Show alert
+                document.getElementById('prefilledAlert').classList.add('show');
+                
+                // Clear the data
+                localStorage.removeItem('calculatorData');
+                
+                // Calculate with new data
+                console.log('🔄 Calling calculateContract() from checkPrefilledData');
+                calculateContract();
+            } else {
+                console.log('📝 No prefilled data found in localStorage');
+            }
+        }
+
+        // Authentication functions
+        function handleLogout() {
+            if (typeof AuthManager !== 'undefined') {
+                AuthManager.logout();
+                updateUserProfile();
+                LocumUtils.showToast('Successfully logged out', 'success');
+            }
+        }
+
+        function updateUserProfile() {
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            
+            if (token && userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Show user menu, hide auth buttons
+                    const authButtons = document.querySelector('.auth-buttons');
+                    const userMenu = document.querySelector('.user-menu');
+                    const userName = document.querySelector('.user-name');
+                    
+                    if (authButtons) authButtons.style.display = 'none';
+                    if (userMenu) {
+                        userMenu.style.display = 'flex';
+                        if (userName) userName.textContent = user.email || user.name || 'User';
+                    }
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
+            } else {
+                // Show auth buttons, hide user menu
+                const authButtons = document.querySelector('.auth-buttons');
+                const userMenu = document.querySelector('.user-menu');
+                
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.style.display = 'none';
+            }
+        }
+
+        // Initialize calculator
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 DOMContentLoaded event fired');
+            
+            // Comprehensive element checking
+            console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
+            
+            // Check all input elements
+            const inputElements = {
+                'jobTitle': 'Job Title dropdown',
+                'hourlyRate': 'Hourly Rate input',
+                'hoursPerWeek': 'Hours per Week input',
+                'contractWeeks': 'Contract Weeks input',
+                'housingStipend': 'Housing Stipend input',
+                'travelReimbursement': 'Travel Reimbursement input',
+                'otherStipends': 'Other Stipends input',
+                'contractType': 'Contract Type dropdown',
+                'workState': 'Work State dropdown'
+            };
+            
+            console.log('🔍 Checking input elements...');
+            const missingInputs = [];
+            Object.entries(inputElements).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingInputs.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING INPUT: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Check all result display elements
+            console.log('🔍 Checking result display elements...');
+            const resultElements = {
+                'weeklyGrossPay': 'Weekly Gross Pay',
+                'totalContractValue': 'Total Contract Value',
+                'trueHourlyRate': 'True Hourly Rate',
+                'yourContractRate': 'Your Contract Rate',
+                'annualEquivalent': 'Annual Equivalent',
+                'totalHousingStipend': 'Total Housing Stipend',
+                'otherStipends': 'Other Stipends Result',
+                'grossTaxableIncome': 'Gross Taxable Income',
+                'netTakeHome': 'Net Take Home',
+                'regularPay': 'Regular Pay',
+            };
+            
+            const missingResults = [];
+            Object.entries(resultElements).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingResults.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING RESULT ELEMENT: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Check action buttons
+            console.log('🔍 Checking action buttons...');
+            const actionButtons = {
+                'saveButton': 'Save Button',
+                'compareButton': 'Compare Button',
+                'printButton': 'Print Button',
+                'exportPdfButton': 'Export PDF Button',
+                'exportCsvButton': 'Export CSV Button',
+                'shareButton': 'Share Button'
+            };
+            
+            const missingButtons = [];
+            Object.entries(actionButtons).forEach(([id, name]) => {
+                const elem = document.getElementById(id);
+                if (!elem) {
+                    missingButtons.push(`${name} (#${id})`);
+                    console.error(`❌ MISSING BUTTON: ${name} (#${id})`);
+                } else {
+                    console.log(`✅ Found: ${name} (#${id})`);
+                }
+            });
+            
+            // Summary
+            console.log('📊 ELEMENT CHECK SUMMARY:');
+            console.log(`🔵 Missing ${missingInputs.length} input elements`);
+            console.log(`🔴 Missing ${missingResults.length} result elements`);
+            console.log(`🟠 Missing ${missingButtons.length} action buttons`);
+            
+            if (missingInputs.length > 0 || missingResults.length > 0) {
+                console.error('❌❌❌ CRITICAL FAILURES DETECTED! Calculator cannot function properly!');
+                console.error('Missing elements will cause JavaScript errors and prevent calculations');
+            }
+            
+            try {
+                console.log('🔍 Calling checkPrefilledData()...');
+                checkPrefilledData();
+                console.log('✅ checkPrefilledData() completed');
+                
+                console.log('🔍 Calling updateButtonStates()...');
+                updateButtonStates();
+                console.log('✅ updateButtonStates() completed');
+                
+                console.log('🔍 Calling calculateContract()...');
+                calculateContract();
+                console.log('✅ calculateContract() completed');
+            } catch (error) {
+                console.error('❌ Error during initialization:', error);
+                console.error('Stack trace:', error.stack);
+            }
+            
+            // Fix input field usability issues
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                // Fix Ctrl+A to only select input text, not entire page
+                input.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'a') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.select();
+                    }
+                });
+                
+                // Better double-click behavior
+                input.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    this.select();
+                });
+                
+                // Focus behavior - more reliable selection
+                input.addEventListener('focus', function(e) {
+                    // Prevent immediate selection to fix typing glitch
+                    if (e.detail === 0) {  // Keyboard focus
+                        this.select();
+                    } else {  // Mouse focus
+                        setTimeout(() => this.select(), 50);
+                    }
+                });
+                
+                // Fix first keystroke issue
+                input.addEventListener('click', function() {
+                    this.focus();
+                });
+                
+                // Clear error state on input
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        this.classList.remove('error');
+                        const errorElement = document.getElementById(this.id + '-error');
+                        if (errorElement) {
+                            errorElement.classList.remove('show');
+                        }
+                    }
+                });
+            });
+            
+            // Fix button click reliability (prevent rapid double-clicks only)
+            const buttons = document.querySelectorAll('a[href], button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Prevent rapid double-clicking issues
+                    if (this.dataset.clicking) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    this.dataset.clicking = 'true';
+                    setTimeout(() => {
+                        delete this.dataset.clicking;
+                    }, 500);
+                });
+            });
+            
+            // Check for edit parameter in URL
+            checkForEditMode();
+
+            // Initialize authentication state
+            updateUserProfile();
+        });
+
+        // Check if we're in edit mode and load calculation data
+        async function checkForEditMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            
+            if (editId) {
+                try {
+                    const response = await ApiClient.get(`/calculations/${editId}`);
+                    if (response.success && response.data.calculation_type === 'contract') {
+                        loadCalculationForEdit(response.data);
+                        showNotification('Contract calculation loaded for editing!', 'success');
+                    } else {
+                        showNotification('Failed to load contract calculation for editing', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error loading contract calculation for edit:', error);
+                    showNotification('Failed to load calculation: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load calculation data into the form for editing
+        function loadCalculationForEdit(calc) {
+            // Basic calculation fields
+            if (calc.hourly_rate) document.getElementById('hourlyRate').value = calc.hourly_rate;
+            if (calc.hours_per_week) document.getElementById('hoursPerWeek').value = calc.hours_per_week;
+            if (calc.contract_weeks) document.getElementById('contractWeeks').value = calc.contract_weeks;
+            if (calc.contract_type) document.getElementById('contractType').value = calc.contract_type;
+            if (calc.work_state) document.getElementById('workState').value = calc.work_state;
+            
+            // Stipends
+            if (calc.housing_stipend) document.getElementById('housingStipend').value = calc.housing_stipend;
+            if (calc.travel_reimbursement) document.getElementById('travelReimbursement').value = calc.travel_reimbursement;
+            if (calc.other_stipends) document.getElementById('otherStipends').value = calc.other_stipends;
+            
+            // Recalculate with loaded data
+            calculateContract();
+        }
+    </script>
+
+    <!-- Floating Logger Component -->
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+        <span id="fab-icon">🔍</span>
+    </button>
+    
+    <div id="floating-logger" class="floating-logger">
+        <div class="logger-header">
+            <span class="logger-title">Console Logger</span>
+            <div class="logger-controls">
+                <button class="logger-btn" onclick="clearLogs()" title="Clear logs">🗑️</button>
+                <button class="logger-btn" onclick="copyLogs()" title="Copy logs">📋</button>
+                <button class="logger-btn" onclick="minimizeLogger()" title="Minimize logger">
+                    <span id="minimize-icon">−</span>
+                </button>
+                <button class="logger-btn" onclick="toggleLogger()" title="Toggle logger">
+                    <span id="toggle-icon">▼</span>
+                </button>
+            </div>
+        </div>
+        <div id="logger-content" class="logger-content">
+            <div id="logger-messages" class="logger-messages"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Floating Logger Styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --background-color: #f8fafc;
+            --text-primary: #1e293b;
+            --text-muted: #94a3b8;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        /* Floating Action Button for toggling logger */
+        .logger-toggle-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .logger-toggle-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .logger-toggle-fab.visible {
+            display: flex;
+        }
+
+        .floating-logger {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 400px;
+            max-width: 85vw;
+            background-color: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 9999;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .floating-logger.hidden {
+            display: none;
+        }
+
+        .logger-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.6rem 0.6rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .logger-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .logger-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .logger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .logger-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .logger-content {
+            max-height: 250px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .logger-content.collapsed {
+            max-height: 0;
+        }
+
+        .logger-messages {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 250px;
+            background-color: var(--background-color);
+        }
+
+        .log-entry {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border-color);
+            background-color: var(--surface-color);
+            border-radius: 0.5rem;
+            word-wrap: break-word;
+            line-height: 1.6; /* Better OCR readability */
+            letter-spacing: 0.02em; /* Slight letter spacing for OCR */
+        }
+
+        .log-entry.log {
+            border-left-color: var(--primary-color);
+        }
+
+        .log-entry.warn {
+            border-left-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.08);
+        }
+
+        .log-entry.error {
+            border-left-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.08);
+        }
+
+        .log-timestamp {
+            color: var(--text-muted);
+            font-size: 12px; /* Larger for OCR */
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+
+        .log-message {
+            color: var(--text-primary);
+            font-size: 14px; /* Ensure consistent size */
+            font-weight: 400;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .floating-logger {
+                width: calc(100vw - 40px);
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Floating Logger Implementation
+        (function() {
+            // Store original console methods
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            // Logger state
+            let isCollapsed = false;
+            let isHidden = false;
+            const maxLogs = 100;
+            const logs = [];
+            
+            // Initialize logger
+            function initLogger() {
+                // Override console methods
+                console.log = function(...args) {
+                    logMessage('log', args);
+                    originalLog.apply(console, args);
+                };
+                
+                console.warn = function(...args) {
+                    logMessage('warn', args);
+                    originalWarn.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                    logMessage('error', args);
+                    originalError.apply(console, args);
+                };
+                
+                // Add initial message
+                console.log('🚀 Floating Logger initialized');
+                
+                // Default to minimized to avoid UI obstruction
+                isHidden = true;
+            }
+            
+            // Log message to floating logger
+            function logMessage(type, args) {
+                const timestamp = new Date().toLocaleTimeString();
+                const message = args.map(arg => {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg, null, 2);
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+                
+                // Add to logs array
+                logs.push({ type, timestamp, message });
+                if (logs.length > maxLogs) {
+                    logs.shift();
+                }
+                
+                // Update UI
+                updateLoggerUI();
+            }
+            
+            // Update logger UI
+            function updateLoggerUI() {
+                const messagesContainer = document.getElementById('logger-messages');
+                if (!messagesContainer) return;
+                
+                messagesContainer.innerHTML = logs.map(log => `
+                    <div class="log-entry ${log.type}">
+                        <span class="log-timestamp">${log.timestamp}</span>
+                        <span class="log-message">${escapeHtml(log.message)}</span>
+                    </div>
+                `).join('');
+                
+                // Auto-scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Escape HTML for safe display
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            // Toggle logger visibility (show/hide entire logger)
+            window.toggleLoggerVisibility = function() {
+                isHidden = !isHidden;
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                
+                if (isHidden) {
+                    logger.classList.add('hidden');
+                    fab.classList.add('visible');
+                } else {
+                    logger.classList.remove('hidden');
+                    fab.classList.remove('visible');
+                }
+            };
+            
+            // Minimize logger (hide from view, show FAB)
+            window.minimizeLogger = function() {
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                logger.classList.add('hidden');
+                fab.classList.add('visible');
+                isHidden = true;
+            };
+            
+            // Toggle logger collapse/expand
+            window.toggleLogger = function() {
+                isCollapsed = !isCollapsed;
+                const content = document.getElementById('logger-content');
+                const icon = document.getElementById('toggle-icon');
+                
+                if (isCollapsed) {
+                    content.classList.add('collapsed');
+                    icon.textContent = '▲';
+                } else {
+                    content.classList.remove('collapsed');
+                    icon.textContent = '▼';
+                }
+            };
+            
+            // Clear logs
+            window.clearLogs = function() {
+                logs.length = 0;
+                updateLoggerUI();
+                console.log('🗑️ Logs cleared');
+            };
+            
+            // Copy logs to clipboard
+            window.copyLogs = function() {
+                const logText = logs.map(log => 
+                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+                ).join('\n');
+                
+                navigator.clipboard.writeText(logText).then(() => {
+                    console.log('📋 Logs copied to clipboard');
+                }).catch(err => {
+                    console.error('Failed to copy logs:', err);
+                });
+            };
+            
+            // Make logger draggable
+            function makeLoggerDraggable() {
+                const logger = document.getElementById('floating-logger');
+                const header = logger.querySelector('.logger-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+                
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+                
+                function dragStart(e) {
+                    if (e.target.closest('.logger-controls')) return;
+                    
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                    
+                    if (e.target === header || e.target.closest('.logger-title')) {
+                        isDragging = true;
+                    }
+                }
+                
+                function drag(e) {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    logger.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+                
+                function dragEnd() {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                }
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    initLogger();
+                    makeLoggerDraggable();
+                    // Start visible for debugging
+                    // document.getElementById('floating-logger').classList.add('hidden');
+                    // document.getElementById('logger-toggle-fab').classList.add('visible');
+                    console.log('🚀 Debug logger started in visible mode');
+                });
+            } else {
+                initLogger();
+                makeLoggerDraggable();
+                // Start visible for debugging
+                // setTimeout(() => {
+                //     document.getElementById('floating-logger').classList.add('hidden');
+                //     document.getElementById('logger-toggle-fab').classList.add('visible');
+                // }, 100);
+                console.log('🚀 Debug logger started in visible mode');
+            }
+        })();
+    </script>
+</body>
+</html>

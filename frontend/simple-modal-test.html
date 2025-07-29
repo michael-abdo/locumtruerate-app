@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Modal Test</title>
+    
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            background: #f9fafb;
+        }
+        
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-btn {
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        #debug-output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Simple Modal Test</h1>
+        <p>Testing authentication modals with minimal setup.</p>
+        
+        <button class="test-btn" onclick="testLogin()">Test Login Modal</button>
+        <button class="test-btn" onclick="testRegister()">Test Register Modal</button>
+        <button class="test-btn" onclick="runDiagnostics()">Run Diagnostics</button>
+        
+        <div id="debug-output"></div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('debug-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            output.textContent += logMessage + '\n';
+            console.log('MODAL-DEBUG:', logMessage);
+        }
+        
+        function testLogin() {
+            log('Testing login modal...');
+            
+            try {
+                if (typeof LocumUtils === 'undefined') {
+                    log('ERROR: LocumUtils is undefined');
+                    return;
+                }
+                
+                if (typeof LocumUtils.showLoginModal !== 'function') {
+                    log('ERROR: showLoginModal is not a function');
+                    log('Available LocumUtils functions: ' + Object.keys(LocumUtils).join(', '));
+                    return;
+                }
+                
+                // Check if modal already exists before calling function
+                let existingModal = document.getElementById('loginModal');
+                log('Modal exists before call: ' + (existingModal ? 'YES' : 'NO'));
+                
+                log('Calling LocumUtils.showLoginModal()...');
+                LocumUtils.showLoginModal();
+                log('Function call completed');
+                
+                setTimeout(() => {
+                    const modal = document.getElementById('loginModal');
+                    if (modal) {
+                        log('SUCCESS: Login modal found in DOM');
+                        log('Modal display style: ' + modal.style.display);
+                        log('Modal classList: ' + modal.className);
+                        log('Modal innerHTML length: ' + modal.innerHTML.length);
+                        log('Modal offsetWidth: ' + modal.offsetWidth);
+                        log('Modal offsetHeight: ' + modal.offsetHeight);
+                        log('Modal position: ' + window.getComputedStyle(modal).position);
+                        log('Modal z-index: ' + window.getComputedStyle(modal).zIndex);
+                        log('Modal visibility: ' + window.getComputedStyle(modal).visibility);
+                        log('Modal opacity: ' + window.getComputedStyle(modal).opacity);
+                        
+                        // Check if backdrop exists
+                        const backdrop = modal.querySelector('.modal-backdrop');
+                        log('Backdrop exists: ' + (backdrop ? 'YES' : 'NO'));
+                        
+                        // Check if modal content exists  
+                        const content = modal.querySelector('.modal-content');
+                        log('Modal content exists: ' + (content ? 'YES' : 'NO'));
+                        if (content) {
+                            log('Content offsetWidth: ' + content.offsetWidth);
+                            log('Content offsetHeight: ' + content.offsetHeight);
+                        }
+                        
+                        // Try to make it more visible
+                        log('Attempting to force visibility...');
+                        modal.style.display = 'flex';
+                        modal.style.position = 'fixed';
+                        modal.style.top = '0';
+                        modal.style.left = '0';
+                        modal.style.width = '100%';
+                        modal.style.height = '100%';
+                        modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                        modal.style.zIndex = '9999';
+                        log('Forced styling applied');
+                        
+                    } else {
+                        log('ERROR: Login modal not found in DOM after call');
+                        // Check if any modal-related elements exist
+                        const allModals = document.querySelectorAll('[id*="modal"]');
+                        log('Found elements with "modal" in ID: ' + allModals.length);
+                        allModals.forEach((el, i) => {
+                            log(`Modal ${i}: ${el.id} - display: ${el.style.display}`);
+                        });
+                    }
+                }, 200);
+                
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                log('ERROR Stack: ' + error.stack);
+                console.error('Login test error:', error);
+            }
+        }
+        
+        function testRegister() {
+            log('Testing register modal...');
+            
+            try {
+                if (typeof LocumUtils === 'undefined') {
+                    log('ERROR: LocumUtils is undefined');
+                    return;
+                }
+                
+                if (typeof LocumUtils.showRegisterModal !== 'function') {
+                    log('ERROR: showRegisterModal is not a function');
+                    return;
+                }
+                
+                log('Calling LocumUtils.showRegisterModal()...');
+                LocumUtils.showRegisterModal();
+                
+                setTimeout(() => {
+                    const modal = document.getElementById('registerModal');
+                    if (modal) {
+                        log('SUCCESS: Register modal created in DOM');
+                        log('Modal display style: ' + modal.style.display);
+                    } else {
+                        log('ERROR: Register modal not found in DOM');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                log('ERROR: ' + error.message);
+                console.error('Register test error:', error);
+            }
+        }
+        
+        function runDiagnostics() {
+            log('Running diagnostics...');
+            
+            // Check if scripts loaded
+            log('LocumUtils defined: ' + (typeof LocumUtils !== 'undefined'));
+            log('AuthManager defined: ' + (typeof AuthManager !== 'undefined'));
+            log('AuthAPI defined: ' + (typeof AuthAPI !== 'undefined'));
+            
+            if (typeof LocumUtils !== 'undefined') {
+                log('LocumUtils functions: ' + Object.keys(LocumUtils).length);
+                log('showLoginModal available: ' + (typeof LocumUtils.showLoginModal === 'function'));
+                log('showRegisterModal available: ' + (typeof LocumUtils.showRegisterModal === 'function'));
+            }
+            
+            // Check CSS files
+            const cssFiles = ['variables.css', 'components.css', 'common-utils.css'];
+            cssFiles.forEach(file => {
+                const link = document.querySelector(`link[href*="${file}"]`);
+                log(`CSS ${file} loaded: ${link ? 'YES' : 'NO'}`);
+            });
+        }
+        
+        // Error handling
+        window.onerror = function(message, source, lineno, colno, error) {
+            log(`JS ERROR: ${message} at ${source}:${lineno}:${colno}`);
+            if (error && error.stack) {
+                log(`Stack: ${error.stack}`);
+            }
+            return false;
+        };
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            log(`PROMISE REJECTION: ${event.reason}`);
+        });
+
+        // Auto-run diagnostics on load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded, running initial diagnostics...');
+            runDiagnostics();
+            
+            // Also auto-test login modal after 2 seconds
+            setTimeout(() => {
+                log('Auto-testing login modal...');
+                testLogin();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

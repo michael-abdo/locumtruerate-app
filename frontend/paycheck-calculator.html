@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paycheck Calculator - LocumTrueRate</title>
+    <!-- Centralized CSS Variables -->
+    <link rel="stylesheet" href="css/variables.css">
+    <!-- Common Utilities -->
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    <style>
+        /* Using centralized CSS variables from css/variables.css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navbar {
+            background-color: #fff;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .calculator-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .input-section, .results-section {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2563eb;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .period-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .period-tab {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .period-tab.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-label {
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .result-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #2563eb;
+            font-size: 1.25rem;
+        }
+
+        .result-total .result-value {
+            color: #2563eb;
+        }
+
+        .button-group {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-outline:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success {
+            background-color: #28a745;
+        }
+
+        .toast.error {
+            background-color: #dc3545;
+        }
+
+        .toast.warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Tooltip System */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            white-space: nowrap;
+            max-width: 300px;
+            white-space: normal;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+            transform: translateX(-50%) translateY(-5px);
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .input-group:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Responsive tooltip positioning */
+        @media (max-width: 768px) {
+            .tooltip {
+                position: fixed;
+                bottom: auto;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 280px;
+                margin-bottom: 0;
+            }
+            
+            .tooltip::after {
+                display: none;
+            }
+        }
+        
+        /* Footer styles */
+        .footer {
+            background-color: #1f2937;
+            color: #9ca3af;
+            padding: 3rem 0 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Saved Calculations Modal Styles */
+        .saved-calculations-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .calculation-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f9f9f9;
+        }
+
+        .calculation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculation-header h4 {
+            margin: 0;
+            color: #2563eb;
+        }
+
+        .calculation-date {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .calculation-details {
+            margin: 0.5rem 0;
+            font-size: 0.875rem;
+        }
+
+        .calculation-details p {
+            margin: 0.25rem 0;
+            color: #555;
+        }
+
+        .calculation-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .calculation-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">LocumTrueRate</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                <li><a href="job-board.html">Job Board</a></li>
+                <li><a href="calculation-history.html">History</a></li>
+                
+                <!-- Authentication buttons (shown when not logged in) -->
+                <li class="auth-buttons" data-auth-hidden>
+                    <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()" style="margin-left: 1rem; margin-right: 0.5rem;">Login</button>
+                    <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                </li>
+                
+                <!-- User menu (shown when logged in) -->
+                <li class="user-menu" data-auth-visible style="display: none; margin-left: 1rem;">
+                    <span class="user-name" style="margin-right: 1rem; color: #666;"></span>
+                    <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="calculator-container">
+            <h1>Paycheck Calculator</h1>
+            
+            <!-- Period Selection -->
+            <div class="period-tabs">
+                <button class="period-tab active" data-period="weekly">Weekly</button>
+                <button class="period-tab" data-period="biweekly">Biweekly</button>
+                <button class="period-tab" data-period="monthly">Monthly</button>
+            </div>
+
+            <div class="calculator-grid">
+                <!-- Input Section -->
+                <div class="input-section">
+                    <h2 class="section-title">Earnings Input</h2>
+                    
+                    <div class="form-group">
+                        <label for="regularHours">Regular Hours <span style="color: #dc3545;">*</span></label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="regularHours" value="40" min="0" max="168" step="0.01" required>
+                            <div class="tooltip">Enter the number of regular hours worked at the standard hourly rate. This typically ranges from 32-48 hours per week for most healthcare positions.</div>
+                        </div>
+                        <div class="error-message" id="regularHours-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regularRate">Regular Rate ($/hr) <span style="color: #dc3545;">*</span></label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="regularRate" value="85.00" min="0" step="0.01" required>
+                            <div class="tooltip">Enter your standard hourly rate for regular hours. This is your base compensation rate before overtime premiums, stipends, or other additional payments.</div>
+                        </div>
+                        <div class="error-message" id="regularRate-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="overtimeHours">Overtime Hours</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="overtimeHours" value="8" min="0" max="168" step="0.01">
+                            <div class="tooltip">Enter hours worked beyond your regular schedule that qualify for overtime pay. Typically paid at 1.5x the regular rate for hours over 40 per week.</div>
+                        </div>
+                        <div class="error-message" id="overtimeHours-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="overtimeRate">Overtime Rate ($/hr)</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="overtimeRate" value="127.50" min="0" step="0.01">
+                            <div class="tooltip">Enter your overtime hourly rate. This is usually 1.5 times your regular rate (time and a half) but may vary based on your contract terms.</div>
+                        </div>
+                        <div class="error-message" id="overtimeRate-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="callHours">Call Hours</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callHours" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter hours spent on-call (available but not actively working). This is typically paid at a lower rate than regular hours and may include nights, weekends, or holidays.</div>
+                        </div>
+                        <div class="error-message" id="callHours-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="callRate">Call Rate ($/hr)</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callRate" value="25.00" min="0" step="0.01">
+                            <div class="tooltip">Enter the hourly rate paid for on-call time. This is usually significantly lower than your regular rate, typically ranging from $15-50 per hour depending on specialty.</div>
+                        </div>
+                        <div class="error-message" id="callRate-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="callbackHours">Callback Hours</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callbackHours" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter hours worked when called in from on-call status. These are actual working hours that occur during your on-call period, usually paid at regular or overtime rates.</div>
+                        </div>
+                        <div class="error-message" id="callbackHours-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="callbackRate">Callback Rate ($/hr)</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="callbackRate" value="127.50" min="0" step="0.01">
+                            <div class="tooltip">Enter the hourly rate for callback hours when you're called in to work. This is often the same as overtime rate or regular rate depending on your contract terms.</div>
+                        </div>
+                        <div class="error-message" id="callbackRate-error"></div>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 1.5rem;">Stipends</h3>
+
+                    <div class="form-group">
+                        <label for="housingStipend">Housing Stipend</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="housingStipend" value="1200" min="0" step="0.01">
+                            <div class="tooltip">Enter the weekly housing allowance amount. This tax-free benefit covers accommodation costs and typically ranges from $800-2000+ depending on location and housing type.</div>
+                        </div>
+                        <div class="error-message" id="housingStipend-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mealStipend">Meal Stipend</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="mealStipend" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter the weekly meal allowance amount. This tax-free benefit covers food expenses and typically ranges from $200-500 per week depending on your contract terms.</div>
+                        </div>
+                        <div class="error-message" id="mealStipend-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mileageReimbursement">Mileage Reimbursement</label>
+                        <div class="tooltip-wrapper">
+                            <input type="number" id="mileageReimbursement" value="0" min="0" step="0.01">
+                            <div class="tooltip">Enter weekly mileage reimbursement amount. This tax-free benefit covers transportation costs related to work and is typically calculated based on miles driven or a flat weekly rate.</div>
+                        </div>
+                        <div class="error-message" id="mileageReimbursement-error"></div>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 1.5rem;">Tax Settings</h3>
+
+                    <div class="form-group">
+                        <label for="taxState">Tax State</label>
+                        <div class="tooltip-wrapper">
+                            <select id="taxState">
+                                <option value="no-tax">No State Tax</option>
+                                <option value="ca">California (9.3%)</option>
+                                <option value="ny">New York (6.85%)</option>
+                                <option value="tx">Texas (0%)</option>
+                                <option value="fl">Florida (0%)</option>
+                                <option value="wa">Washington (0%)</option>
+                                <option value="custom">Custom Rate</option>
+                            </select>
+                            <div class="tooltip">Select the state where you'll be working for tax purposes. State tax rates vary significantly, with some states having no income tax while others may exceed 10%. Choose 'Custom Rate' for specific calculations.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filingStatus">Filing Status</label>
+                        <div class="tooltip-wrapper">
+                            <select id="filingStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married Filing Jointly</option>
+                                <option value="married-separate">Married Filing Separately</option>
+                                <option value="head">Head of Household</option>
+                            </select>
+                            <div class="tooltip">Select your tax filing status. This affects your federal tax brackets and withholdings. Single and Married Filing Separately typically have higher rates than Married Filing Jointly or Head of Household.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <h2 class="section-title">Paycheck Breakdown</h2>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Regular Pay:</span>
+                        <span class="result-value" id="regularPay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Overtime Pay:</span>
+                        <span class="result-value" id="overtimePay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Call Pay:</span>
+                        <span class="result-value" id="callPay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Callback Pay:</span>
+                        <span class="result-value" id="callbackPay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item result-total">
+                        <span class="result-label">Total Gross Pay (Taxable):</span>
+                        <span class="result-value" id="totalGrossPay">$0.00</span>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 1.5rem;">Stipends (Non-Taxable)</h3>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Housing:</span>
+                        <span class="result-value" id="housingStipendDisplay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Meals:</span>
+                        <span class="result-value" id="mealStipendDisplay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Mileage:</span>
+                        <span class="result-value" id="mileageDisplay">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Total Stipends:</span>
+                        <span class="result-value" id="totalStipends">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item result-total">
+                        <span class="result-label">Total Gross Pay (w/ Stipends):</span>
+                        <span class="result-value" id="totalGrossPayWithStipends">$0.00</span>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 1.5rem;">Deductions</h3>
+                    
+                    <div class="result-item">
+                        <span class="result-label">Federal Tax:</span>
+                        <span class="result-value" id="federalTax">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">State Tax:</span>
+                        <span class="result-value" id="stateTax">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span class="result-label">FICA (7.65%):</span>
+                        <span class="result-value" id="ficaTax">$0.00</span>
+                    </div>
+                    
+                    <div class="result-item result-total">
+                        <span class="result-label">Net Pay:</span>
+                        <span class="result-value" id="netPay">$0.00</span>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="saveBtn">Save Calculation</button>
+                        <button class="btn btn-secondary" id="loadBtn">Load Saved</button>
+                        <button class="btn btn-secondary" onclick="window.open('calculation-history.html', '_blank')">View History</button>
+                        <button class="btn btn-secondary" id="printBtn">Print Results</button>
+                        <button class="btn btn-secondary" id="exportBtn">Export PDF</button>
+                        <button class="btn btn-secondary" id="emailBtn">Email Results</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State variables
+        let currentPeriod = 'weekly';
+        const periodMultipliers = {
+            'weekly': 1,
+            'biweekly': 2,
+            'monthly': 4.33
+        };
+
+        // State tax rates
+        const stateTaxRates = {
+            'no-tax': 0,
+            'ca': 0.093,
+            'ny': 0.0685,
+            'tx': 0,
+            'fl': 0,
+            'wa': 0,
+            'custom': 0.05
+        };
+
+        // Using centralized showToast from LocumUtils
+
+        // Using centralized formatCurrency from LocumUtils
+
+        // Custom validation for paycheck calculator (extends LocumUtils.validateInput)
+        function validateInput(input) {
+            // Handle empty or invalid input
+            if (!input.value || input.value.trim() === '') {
+                const errorElement = document.getElementById(input.id + '-error');
+                
+                // Check if this is a required field
+                if (input.hasAttribute('required')) {
+                    if (errorElement) {
+                        errorElement.textContent = 'This field is required';
+                        errorElement.classList.add('show');
+                    }
+                    return null; // Return null for required empty fields
+                }
+                
+                if (errorElement) {
+                    errorElement.classList.remove('show');
+                }
+                return 0; // Return 0 for empty fields to prevent NaN
+            }
+
+            // Use base validation first
+            const isValid = LocumUtils.validateInput(input, 'number');
+            if (!isValid) return 0;
+
+            const value = parseFloat(input.value);
+            
+            // Handle NaN explicitly
+            if (isNaN(value)) {
+                return 0;
+            }
+            
+            const errorElement = document.getElementById(input.id + '-error');
+
+            // Additional paycheck-specific validation
+            if (input.id.includes('Hours') && value > 168) {
+                if (errorElement) {
+                    errorElement.textContent = 'Hours cannot exceed 168 per week';
+                    errorElement.classList.add('show');
+                }
+                input.value = 168;
+                return 168;
+            }
+
+            if (value > 999999) {
+                if (errorElement) {
+                    errorElement.textContent = 'Value too large';
+                    errorElement.classList.add('show');
+                }
+                input.value = 999999;
+                return 999999;
+            }
+
+            // Clear any error messages for valid input
+            if (errorElement) {
+                errorElement.classList.remove('show');
+            }
+
+            return value;
+        }
+
+        // Clear all result displays
+        function clearResults() {
+            document.getElementById('regularPay').textContent = '$0.00';
+            document.getElementById('overtimePay').textContent = '$0.00';
+            document.getElementById('callPay').textContent = '$0.00';
+            document.getElementById('callbackPay').textContent = '$0.00';
+            document.getElementById('totalGrossPay').textContent = '$0.00';
+            document.getElementById('housingStipendDisplay').textContent = '$0.00';
+            document.getElementById('mealStipendDisplay').textContent = '$0.00';
+            document.getElementById('mileageDisplay').textContent = '$0.00';
+            document.getElementById('totalStipends').textContent = '$0.00';
+            document.getElementById('totalGrossPayWithStipends').textContent = '$0.00';
+            document.getElementById('federalTax').textContent = '$0.00';
+            document.getElementById('stateTax').textContent = '$0.00';
+            document.getElementById('ficaTax').textContent = '$0.00';
+            document.getElementById('netPay').textContent = '$0.00';
+        }
+
+        // Calculate paycheck
+        function calculatePaycheck() {
+            console.log('=== PAYCHECK CALCULATION START ===');
+            console.log('Current period:', currentPeriod);
+            console.log('Period multiplier:', periodMultipliers[currentPeriod]);
+            
+            // Get and validate inputs
+            const regularHoursEl = document.getElementById('regularHours');
+            const regularRateEl = document.getElementById('regularRate');
+            
+            console.log('Regular hours element:', regularHoursEl?.value);
+            console.log('Regular rate element:', regularRateEl?.value);
+            
+            const regularHours = validateInput(regularHoursEl);
+            const regularRate = validateInput(regularRateEl);
+            
+            console.log('Validated regular hours:', regularHours);
+            console.log('Validated regular rate:', regularRate);
+            
+            // Check for required fields
+            if (regularHours === null || regularRate === null) {
+                console.log('Required fields missing - clearing results');
+                // Clear all results if required fields are missing
+                clearResults();
+                return;
+            }
+            const overtimeHours = validateInput(document.getElementById('overtimeHours'));
+            const overtimeRate = validateInput(document.getElementById('overtimeRate'));
+            const callHours = validateInput(document.getElementById('callHours'));
+            const callRate = validateInput(document.getElementById('callRate'));
+            const callbackHours = validateInput(document.getElementById('callbackHours'));
+            const callbackRate = validateInput(document.getElementById('callbackRate'));
+            const housingStipend = validateInput(document.getElementById('housingStipend'));
+            const mealStipend = validateInput(document.getElementById('mealStipend'));
+            const mileageReimbursement = validateInput(document.getElementById('mileageReimbursement'));
+
+            // Get multiplier for period
+            const multiplier = periodMultipliers[currentPeriod];
+
+            // Calculate pay components
+            const regularPay = regularHours * regularRate * multiplier;
+            const overtimePay = overtimeHours * overtimeRate * multiplier;
+            const callPay = callHours * callRate * multiplier;
+            const callbackPay = callbackHours * callbackRate * multiplier;
+            const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+
+            console.log('=== PAY CALCULATIONS ===');
+            console.log('Regular pay:', regularPay, '=', regularHours, '*', regularRate, '*', multiplier);
+            console.log('Overtime pay:', overtimePay, '=', overtimeHours, '*', overtimeRate, '*', multiplier);
+            console.log('Call pay:', callPay);
+            console.log('Callback pay:', callbackPay);
+            console.log('Total gross pay:', totalGrossPay);
+
+            // Calculate stipends with period multiplier
+            const totalStipends = (housingStipend + mealStipend + mileageReimbursement) * multiplier;
+
+            console.log('=== STIPENDS ===');
+            console.log('Housing:', housingStipend * multiplier);
+            console.log('Meals:', mealStipend * multiplier);
+            console.log('Mileage:', mileageReimbursement * multiplier);
+            console.log('Total stipends:', totalStipends);
+
+            // Calculate taxes
+            const ficaTax = totalGrossPay * 0.0765;
+            const federalTax = calculateFederalTax(totalGrossPay);
+            const selectedState = document.getElementById('taxState').value;
+            const stateTaxRate = stateTaxRates[selectedState];
+            const stateTax = totalGrossPay * stateTaxRate;
+
+            const totalDeductions = federalTax + stateTax + ficaTax;
+            const netPay = totalGrossPay - totalDeductions + totalStipends;
+            const totalGrossPayWithStipends = totalGrossPay + totalStipends;
+
+            console.log('=== TAXES ===');
+            console.log('Federal tax:', federalTax);
+            console.log('State tax:', stateTax, '(rate:', stateTaxRate, ')');
+            console.log('FICA tax:', ficaTax);
+            console.log('Total deductions:', totalDeductions);
+            console.log('Net pay:', netPay);
+
+            // Update display using LocumUtils.formatCurrency
+            console.log('=== UPDATING DISPLAY ===');
+            document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(regularPay);
+            document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(overtimePay);
+            document.getElementById('callPay').textContent = LocumUtils.formatCurrency(callPay);
+            document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(callbackPay);
+            document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(totalGrossPay);
+            console.log('Total gross pay element updated to:', LocumUtils.formatCurrency(totalGrossPay));
+            
+            document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(housingStipend * multiplier);
+            document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(mealStipend * multiplier);
+            document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(mileageReimbursement * multiplier);
+            document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(totalStipends);
+            document.getElementById('totalGrossPayWithStipends').textContent = LocumUtils.formatCurrency(totalGrossPayWithStipends);
+            
+            document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(federalTax);
+            document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(stateTax);
+            document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(ficaTax);
+            document.getElementById('netPay').textContent = LocumUtils.formatCurrency(netPay);
+            
+            console.log('=== CALCULATION COMPLETE ===');
+        }
+
+        // Simple federal tax calculation
+        function calculateFederalTax(grossPay) {
+            // Simplified federal tax calculation
+            const annualizedGross = grossPay * 52 / periodMultipliers[currentPeriod];
+            let tax = 0;
+
+            if (annualizedGross > 539900) {
+                tax = 162718 + (annualizedGross - 539900) * 0.37;
+            } else if (annualizedGross > 215950) {
+                tax = 49335 + (annualizedGross - 215950) * 0.35;
+            } else if (annualizedGross > 170050) {
+                tax = 33271 + (annualizedGross - 170050) * 0.32;
+            } else if (annualizedGross > 89075) {
+                tax = 15213 + (annualizedGross - 89075) * 0.28;
+            } else if (annualizedGross > 41775) {
+                tax = 4807 + (annualizedGross - 41775) * 0.22;
+            } else if (annualizedGross > 10275) {
+                tax = 1027 + (annualizedGross - 10275) * 0.12;
+            } else {
+                tax = annualizedGross * 0.10;
+            }
+
+            // Convert back to period amount
+            return tax * periodMultipliers[currentPeriod] / 52;
+        }
+
+        // Set period
+        function setPeriod(period) {
+            currentPeriod = period;
+            
+            // Update active tab
+            document.querySelectorAll('.period-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.period === period) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Recalculate
+            calculatePaycheck();
+        }
+
+        // Save calculation to API
+        async function saveCalculation() {
+            try {
+                // Check if user is authenticated
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    LocumUtils.showLoginModal();
+                    LocumUtils.showToast('Please log in to save calculations', 'warning');
+                    return;
+                }
+
+                // Collect all form data
+                const calculationData = {
+                    calculation_type: 'paycheck',
+                    title: `Paycheck Calculation - ${new Date().toLocaleDateString()}`,
+                    description: `${currentPeriod} paycheck calculation`,
+                    
+                    // Primary rate
+                    hourly_rate: parseFloat(document.getElementById('regularRate').value) || 0,
+                    
+                    // Paycheck specific fields
+                    regular_hours: parseFloat(document.getElementById('regularHours').value) || 0,
+                    regular_rate: parseFloat(document.getElementById('regularRate').value) || 0,
+                    overtime_hours: parseFloat(document.getElementById('overtimeHours').value) || 0,
+                    overtime_rate: parseFloat(document.getElementById('overtimeRate').value) || 0,
+                    call_hours: parseFloat(document.getElementById('callHours').value) || 0,
+                    call_rate: parseFloat(document.getElementById('callRate').value) || 0,
+                    callback_hours: parseFloat(document.getElementById('callbackHours').value) || 0,
+                    callback_rate: parseFloat(document.getElementById('callbackRate').value) || 0,
+                    pay_period: currentPeriod,
+                    
+                    // Stipends
+                    housing_stipend: parseFloat(document.getElementById('housingStipend').value) || 0,
+                    meal_stipend: parseFloat(document.getElementById('mealStipend').value) || 0,
+                    mileage_reimbursement: parseFloat(document.getElementById('mileageReimbursement').value) || 0,
+                    
+                    // Tax settings
+                    tax_state: document.getElementById('taxState').value,
+                    filing_status: document.getElementById('filingStatus').value,
+                    
+                    // Calculated results
+                    gross_pay: parseFloat(document.getElementById('totalGrossPay').textContent.replace(/[$,]/g, '')) || 0,
+                    federal_tax: parseFloat(document.getElementById('federalTax').textContent.replace(/[$,]/g, '')) || 0,
+                    state_tax: parseFloat(document.getElementById('stateTax').textContent.replace(/[$,]/g, '')) || 0,
+                    fica_tax: parseFloat(document.getElementById('ficaTax').textContent.replace(/[$,]/g, '')) || 0,
+                    net_pay: parseFloat(document.getElementById('netPay').textContent.replace(/[$,]/g, '')) || 0,
+                    total_stipends: parseFloat(document.getElementById('totalStipends').textContent.replace(/[$,]/g, '')) || 0,
+                    
+                    // Calculate true hourly rate
+                    true_hourly_rate: calculateTrueHourlyRate()
+                };
+
+                // Call API to save calculation
+                const response = await fetch('/api/v1/calculations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(calculationData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    LocumUtils.showToast('Calculation saved successfully!', 'success');
+                    
+                    // Also save to localStorage as backup
+                    localStorage.setItem('lastPaycheckCalculation', JSON.stringify(calculationData));
+                } else {
+                    const error = await response.json();
+                    LocumUtils.showToast(`Save failed: ${error.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving calculation:', error);
+                LocumUtils.showToast('Error saving calculation. Please try again.', 'error');
+                
+                // Fallback to localStorage
+                const fallbackData = {
+                    period: currentPeriod,
+                    regularHours: document.getElementById('regularHours').value,
+                    regularRate: document.getElementById('regularRate').value,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('paycheckCalculationBackup', JSON.stringify(fallbackData));
+            }
+        }
+
+        // Calculate true hourly rate including stipends
+        function calculateTrueHourlyRate() {
+            const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
+            const overtimeHours = parseFloat(document.getElementById('overtimeHours').value) || 0;
+            const callHours = parseFloat(document.getElementById('callHours').value) || 0;
+            const callbackHours = parseFloat(document.getElementById('callbackHours').value) || 0;
+            
+            const totalHours = regularHours + overtimeHours + callHours + callbackHours;
+            const grossPay = parseFloat(document.getElementById('totalGrossPay').textContent.replace(/[$,]/g, '')) || 0;
+            const totalStipends = parseFloat(document.getElementById('totalStipends').textContent.replace(/[$,]/g, '')) || 0;
+            
+            if (totalHours === 0) return 0;
+            
+            return ((grossPay + totalStipends) / totalHours).toFixed(2);
+        }
+
+        // Load saved calculations from API
+        async function loadSavedCalculations() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    LocumUtils.showToast('Please log in to view saved calculations', 'warning');
+                    return;
+                }
+
+                const response = await fetch('/api/v1/calculations?calculation_type=paycheck&limit=10', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showSavedCalculationsModal(result.data);
+                } else {
+                    const error = await response.json();
+                    LocumUtils.showToast(`Failed to load calculations: ${error.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading calculations:', error);
+                LocumUtils.showToast('Error loading saved calculations', 'error');
+            }
+        }
+
+        // Show saved calculations in a modal
+        function showSavedCalculationsModal(calculations) {
+            const modalHTML = `
+                <div id="savedCalculationsModal" class="auth-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Saved Paycheck Calculations</h2>
+                            <button type="button" class="modal-close" onclick="closeSavedCalculationsModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="saved-calculations-list">
+                                ${calculations.length === 0 ? 
+                                    '<p>No saved calculations found.</p>' : 
+                                    calculations.map(calc => `
+                                        <div class="calculation-item" data-id="${calc.id}">
+                                            <div class="calculation-header">
+                                                <h4>${calc.title || 'Paycheck Calculation'}</h4>
+                                                <span class="calculation-date">${new Date(calc.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                            <div class="calculation-details">
+                                                <p><strong>Rate:</strong> $${calc.regular_rate}/hr | <strong>Hours:</strong> ${calc.regular_hours} | <strong>Period:</strong> ${calc.pay_period}</p>
+                                                <p><strong>Net Pay:</strong> $${calc.net_pay?.toFixed(2) || '0.00'} | <strong>True Rate:</strong> $${calc.true_hourly_rate}/hr</p>
+                                            </div>
+                                            <div class="calculation-actions">
+                                                <button type="button" class="btn btn-primary" onclick="loadCalculation(${calc.id})">Load</button>
+                                                <button type="button" class="btn btn-secondary" onclick="duplicateCalculation(${calc.id})">Duplicate</button>
+                                                <button type="button" class="btn btn-outline" onclick="toggleFavorite(${calc.id})">${calc.is_favorite ? '★' : '☆'}</button>
+                                                <button type="button" class="btn btn-outline" onclick="deleteCalculation(${calc.id})" style="color: #dc3545;">Delete</button>
+                                            </div>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove existing modal if present
+            const existingModal = document.getElementById('savedCalculationsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Show modal
+            const modal = document.getElementById('savedCalculationsModal');
+            modal.style.display = 'flex';
+            
+            // Focus trap and ESC key handling
+            modal.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeSavedCalculationsModal();
+                }
+            });
+        }
+
+        // Close saved calculations modal
+        function closeSavedCalculationsModal() {
+            const modal = document.getElementById('savedCalculationsModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Load a specific calculation
+        async function loadCalculation(calculationId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${calculationId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const calc = result.data;
+                    
+                    // Populate form with calculation data
+                    document.getElementById('regularHours').value = calc.regular_hours || 40;
+                    document.getElementById('regularRate').value = calc.regular_rate || 0;
+                    document.getElementById('overtimeHours').value = calc.overtime_hours || 0;
+                    document.getElementById('overtimeRate').value = calc.overtime_rate || 0;
+                    document.getElementById('callHours').value = calc.call_hours || 0;
+                    document.getElementById('callRate').value = calc.call_rate || 0;
+                    document.getElementById('callbackHours').value = calc.callback_hours || 0;
+                    document.getElementById('callbackRate').value = calc.callback_rate || 0;
+                    document.getElementById('housingStipend').value = calc.housing_stipend || 0;
+                    document.getElementById('mealStipend').value = calc.meal_stipend || 0;
+                    document.getElementById('mileageReimbursement').value = calc.mileage_reimbursement || 0;
+                    document.getElementById('taxState').value = calc.tax_state || 'no-tax';
+                    document.getElementById('filingStatus').value = calc.filing_status || 'single';
+                    
+                    // Set period
+                    if (calc.pay_period) {
+                        setPeriod(calc.pay_period);
+                    }
+                    
+                    // Recalculate
+                    calculatePaycheck();
+                    
+                    // Close modal
+                    closeSavedCalculationsModal();
+                    
+                    LocumUtils.showToast('Calculation loaded successfully!', 'success');
+                } else {
+                    LocumUtils.showToast('Failed to load calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading calculation:', error);
+                LocumUtils.showToast('Error loading calculation', 'error');
+            }
+        }
+
+        // Duplicate a calculation
+        async function duplicateCalculation(calculationId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${calculationId}/duplicate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title: `Copy - Paycheck Calculation - ${new Date().toLocaleDateString()}`
+                    })
+                });
+
+                if (response.ok) {
+                    LocumUtils.showToast('Calculation duplicated successfully!', 'success');
+                    loadSavedCalculations(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to duplicate calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error duplicating calculation:', error);
+                LocumUtils.showToast('Error duplicating calculation', 'error');
+            }
+        }
+
+        // Toggle favorite status
+        async function toggleFavorite(calculationId) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${calculationId}/favorite`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    LocumUtils.showToast(result.message, 'success');
+                    loadSavedCalculations(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to update favorite status', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+                LocumUtils.showToast('Error updating favorite status', 'error');
+            }
+        }
+
+        // Delete a calculation
+        async function deleteCalculation(calculationId) {
+            if (!confirm('Are you sure you want to delete this calculation? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/v1/calculations/${calculationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    LocumUtils.showToast('Calculation deleted successfully!', 'success');
+                    loadSavedCalculations(); // Refresh the list
+                } else {
+                    LocumUtils.showToast('Failed to delete calculation', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting calculation:', error);
+                LocumUtils.showToast('Error deleting calculation', 'error');
+            }
+        }
+
+        // Print results
+        function printResults() {
+            window.print();
+            LocumUtils.showToast('Print dialog opened', 'success');
+        }
+
+        // Export to PDF
+        function exportToPDF() {
+            // Create text content
+            const content = `Paycheck Analysis - ${currentPeriod}
+            
+Regular Pay: ${document.getElementById('regularPay').textContent}
+Overtime Pay: ${document.getElementById('overtimePay').textContent}
+Total Gross Pay: ${document.getElementById('totalGrossPay').textContent}
+Net Pay: ${document.getElementById('netPay').textContent}
+
+Generated: ${new Date().toLocaleDateString()}`;
+            
+            // Create blob and download
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `paycheck-analysis-${currentPeriod}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            LocumUtils.showToast('Paycheck summary downloaded!', 'success');
+        }
+
+        // Email results
+        function emailResults() {
+            const subject = `Paycheck Analysis - ${currentPeriod}`;
+            const body = `Paycheck Analysis Summary:
+
+Period: ${currentPeriod}
+
+EARNINGS:
+Regular Pay: ${document.getElementById('regularPay').textContent}
+Overtime Pay: ${document.getElementById('overtimePay').textContent}
+Total Gross Pay: ${document.getElementById('totalGrossPay').textContent}
+
+DEDUCTIONS:
+Federal Tax: ${document.getElementById('federalTax').textContent}
+State Tax: ${document.getElementById('stateTax').textContent}
+FICA Tax: ${document.getElementById('ficaTax').textContent}
+
+NET PAY: ${document.getElementById('netPay').textContent}
+
+Generated: ${new Date().toLocaleDateString()}`;
+            
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            LocumUtils.showToast('Opening email client...', 'success');
+        }
+
+        // Authentication functions
+        function handleLogout() {
+            if (typeof AuthManager !== 'undefined') {
+                AuthManager.logout();
+                updateUserProfile();
+                LocumUtils.showToast('Successfully logged out', 'success');
+            }
+        }
+
+        function updateUserProfile() {
+            const token = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            
+            if (token && userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    
+                    // Show user menu, hide auth buttons
+                    const authButtons = document.querySelector('.auth-buttons');
+                    const userMenu = document.querySelector('.user-menu');
+                    const userName = document.querySelector('.user-name');
+                    
+                    if (authButtons) authButtons.style.display = 'none';
+                    if (userMenu) {
+                        userMenu.style.display = 'flex';
+                        if (userName) userName.textContent = user.email || user.name || 'User';
+                    }
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
+            } else {
+                // Show auth buttons, hide user menu
+                const authButtons = document.querySelector('.auth-buttons');
+                const userMenu = document.querySelector('.user-menu');
+                
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.style.display = 'none';
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing paycheck calculator...');
+            
+            // Add event listeners to all inputs
+            const inputs = document.querySelectorAll('input[type="number"], select');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculatePaycheck);
+                input.addEventListener('change', calculatePaycheck);
+            });
+
+            // Add event listeners to period tabs
+            document.querySelectorAll('.period-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    setPeriod(this.dataset.period);
+                });
+            });
+
+            // Add event listeners to buttons
+            document.getElementById('saveBtn').addEventListener('click', saveCalculation);
+            document.getElementById('loadBtn').addEventListener('click', loadSavedCalculations);
+            document.getElementById('printBtn').addEventListener('click', printResults);
+            document.getElementById('exportBtn').addEventListener('click', exportToPDF);
+            document.getElementById('emailBtn').addEventListener('click', emailResults);
+
+            // Auto-set overtime rate when regular rate changes
+            document.getElementById('regularRate').addEventListener('input', function() {
+                const regularRate = parseFloat(this.value) || 0;
+                document.getElementById('overtimeRate').value = (regularRate * 1.5).toFixed(2);
+            });
+
+            // Check for edit parameter in URL
+            checkForEditMode();
+
+            // Run initial calculation
+            calculatePaycheck();
+            
+            // Initialize authentication state
+            updateUserProfile();
+            
+            console.log('Calculator initialized successfully!');
+        });
+
+        // Check if we're in edit mode and load calculation data
+        async function checkForEditMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            
+            if (editId) {
+                try {
+                    const response = await ApiClient.get(`/calculations/${editId}`);
+                    if (response.success && response.data.calculation_type === 'paycheck') {
+                        loadCalculationForEdit(response.data);
+                        showNotification('Calculation loaded for editing!', 'success');
+                    } else {
+                        showNotification('Failed to load calculation for editing', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error loading calculation for edit:', error);
+                    showNotification('Failed to load calculation: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load calculation data into the form for editing
+        function loadCalculationForEdit(calc) {
+            // Basic calculation fields
+            if (calc.hourly_rate) document.getElementById('hourlyRate').value = calc.hourly_rate;
+            if (calc.regular_hours) document.getElementById('regularHours').value = calc.regular_hours;
+            if (calc.regular_rate) document.getElementById('regularRate').value = calc.regular_rate;
+            if (calc.overtime_hours) document.getElementById('overtimeHours').value = calc.overtime_hours;
+            if (calc.overtime_rate) document.getElementById('overtimeRate').value = calc.overtime_rate;
+            if (calc.call_hours) document.getElementById('callHours').value = calc.call_hours;
+            if (calc.call_rate) document.getElementById('callRate').value = calc.call_rate;
+            if (calc.callback_hours) document.getElementById('callbackHours').value = calc.callback_hours;
+            if (calc.callback_rate) document.getElementById('callbackRate').value = calc.callback_rate;
+            
+            // Stipends
+            if (calc.housing_stipend) document.getElementById('housingStipend').value = calc.housing_stipend;
+            if (calc.meal_stipend) document.getElementById('mealStipend').value = calc.meal_stipend;
+            
+            // Tax settings
+            if (calc.pay_period) setPeriod(calc.pay_period);
+            if (calc.tax_state) document.getElementById('taxState').value = calc.tax_state;
+            if (calc.filing_status) document.getElementById('filingStatus').value = calc.filing_status;
+            
+            // Recalculate with loaded data
+            calculatePaycheck();
+        }
+    </script>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h4>LocumTrueRate</h4>
+                    <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Tools</h5>
+                    <ul>
+                        <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                        <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                        <li><a href="job-board.html">Job Board</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Support</h5>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

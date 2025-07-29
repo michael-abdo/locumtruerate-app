@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal JS Test</title>
+</head>
+<body>
+    <h1>Minimal JavaScript Test</h1>
+    <button onclick="alert('JavaScript is working!')">Test JS</button>
+    <button onclick="testFunction()">Test Custom Function</button>
+    <div id="output">No output yet</div>
+
+    <script>
+        function testFunction() {
+            document.getElementById('output').innerHTML = 'Custom function works! Time: ' + new Date().toLocaleTimeString();
+            console.log('testFunction called successfully');
+        }
+        
+        // Test on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('output').innerHTML = 'DOM loaded successfully at ' + new Date().toLocaleTimeString();
+            console.log('DOM loaded successfully');
+        });
+
+        // Add alert to confirm script is running
+        console.log('Script is executing');
+    </script>
+</body>
+</html>

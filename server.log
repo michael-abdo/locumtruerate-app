@@ -1,0 +1,306 @@
+
+> locumtruerate-vanilla-demos@1.0.0 start
+> node src/server.js
+
+[dotenv@17.2.1] injecting env (16) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+2025-07-29T00:57:47.689Z - INFO [SERVER_STARTUP]: Testing database connection...
+2025-07-29T00:57:47.791Z - INFO [DB_CONNECTION]: Database connected successfully at: Tue Jul 29 2025 00:57:47 GMT+0000 (Coordinated Universal Time)
+🚀 LocumTrueRate API Server
+2025-07-29T00:57:47.794Z - INFO [SERVER_STARTUP]: Version: v1
+2025-07-29T00:57:47.795Z - INFO [SERVER_STARTUP]: Port: 4000
+2025-07-29T00:57:47.795Z - INFO [SERVER_STARTUP]: Environment: development
+2025-07-29T00:57:47.795Z - INFO [SERVER_STARTUP]: Database: ✅ Connected
+2025-07-29T00:57:47.795Z - INFO [SERVER_STARTUP]: URL: http://localhost:4000
+2025-07-29T00:57:47.795Z - INFO [SERVER_STARTUP]: API Base: http://localhost:4000/api/v1
+2025-07-29T00:57:56.762Z - GET /health
+2025-07-29T00:58:00.535Z - GET /health
+2025-07-29T00:58:00.563Z - POST /api/v1/auth/login
+2025-07-29T00:58:00.564Z - INFO [AUTH_LOGIN]: Login attempt started
+2025-07-29T00:58:00.652Z - INFO [AUTH_LOGIN]: User logged in successfully: locum@example.com
+2025-07-29T00:58:00.677Z - GET /api/v1/applications
+2025-07-29T00:58:00.698Z - POST /api/v1/applications
+2025-07-29T00:58:00.726Z - GET /api/v1/applications
+2025-07-29T00:58:00.732Z - ERROR [APPLICATION_FETCH]: Error fetching applications
+Error details: error: column a.is_active does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getAll (/home/Mike/projects/jobboard/src/models/Application.js:146:29)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:74:24 {
+  length: 110,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '137',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:58:00.756Z - GET /api/v1/applications/stats
+2025-07-29T00:58:00.782Z - ERROR [APPLICATION_STATS]: Error fetching application statistics
+Error details: error: column "application_status" does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getStatistics (/home/Mike/projects/jobboard/src/models/Application.js:404:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:103:23 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '102',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:58:00.803Z - GET /api/v1/applications/by-status/submitted
+2025-07-29T00:58:00.827Z - ERROR [APPLICATION_BY_STATUS]: Error fetching applications by status
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getByStatus (/home/Mike/projects/jobboard/src/models/Application.js:544:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:126:30 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:58:00.850Z - GET /api/v1/applications/recent
+2025-07-29T00:58:00.873Z - ERROR [APPLICATION_RECENT]: Error fetching recent applications
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getRecent (/home/Mike/projects/jobboard/src/models/Application.js:570:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:148:30 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:58:00.896Z - POST /api/v1/applications/search
+2025-07-29T00:58:00.923Z - ERROR [APPLICATION_SEARCH]: Error performing application search
+Error details: error: column a.is_active does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getAll (/home/Mike/projects/jobboard/src/models/Application.js:146:29)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:179:24 {
+  length: 110,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '137',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:58:00.944Z - POST /api/v1/applications
+2025-07-29T00:59:39.388Z - GET /health
+2025-07-29T00:59:39.405Z - POST /api/v1/auth/login
+2025-07-29T00:59:39.406Z - INFO [AUTH_LOGIN]: Login attempt started
+2025-07-29T00:59:39.509Z - INFO [AUTH_LOGIN]: User logged in successfully: locum@example.com
+2025-07-29T00:59:39.533Z - GET /api/v1/applications
+2025-07-29T00:59:39.554Z - POST /api/v1/applications
+2025-07-29T00:59:39.571Z - INFO [APPLICATION_CREATE]: Application created: 1 by user 54 for job 1
+2025-07-29T00:59:39.596Z - GET /api/v1/applications
+2025-07-29T00:59:39.601Z - ERROR [APPLICATION_FETCH]: Error fetching applications
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getAll (/home/Mike/projects/jobboard/src/models/Application.js:171:28)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:74:24 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:59:39.623Z - GET /api/v1/applications/1
+2025-07-29T00:59:39.647Z - ERROR [APPLICATION_FETCH]: Error fetching application
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getById (/home/Mike/projects/jobboard/src/models/Application.js:210:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:204:29 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:59:39.668Z - PUT /api/v1/applications/1
+2025-07-29T00:59:39.699Z - INFO [APPLICATION_UPDATE]: Application updated: 1 by user 54
+2025-07-29T00:59:39.719Z - PATCH /api/v1/applications/1/status
+2025-07-29T00:59:39.729Z - INFO [APPLICATION_STATUS_UPDATE]: Application status updated: 1 to under_review by user 54
+2025-07-29T00:59:39.750Z - POST /api/v1/applications/1/documents
+2025-07-29T00:59:39.757Z - INFO [APPLICATION_DOCUMENT_ADD]: Document added to application: 1 by user 54
+2025-07-29T00:59:39.780Z - POST /api/v1/applications/1/communications
+2025-07-29T00:59:39.787Z - INFO [APPLICATION_COMMUNICATION_ADD]: Communication added to application: 1 by user 54
+2025-07-29T00:59:39.807Z - POST /api/v1/applications/1/reminders
+2025-07-29T00:59:39.813Z - INFO [APPLICATION_REMINDER_ADD]: Reminder added to application: 1 by user 54
+2025-07-29T00:59:39.833Z - GET /api/v1/applications/stats
+2025-07-29T00:59:39.881Z - GET /api/v1/applications/by-status/submitted
+2025-07-29T00:59:39.884Z - ERROR [APPLICATION_BY_STATUS]: Error fetching applications by status
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getByStatus (/home/Mike/projects/jobboard/src/models/Application.js:544:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:126:30 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:59:39.905Z - GET /api/v1/applications/recent
+2025-07-29T00:59:39.927Z - ERROR [APPLICATION_RECENT]: Error fetching recent applications
+Error details: error: column u.name does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getRecent (/home/Mike/projects/jobboard/src/models/Application.js:570:24)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:148:30 {
+  length: 104,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '59',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:59:39.949Z - POST /api/v1/applications/search
+2025-07-29T00:59:39.972Z - ERROR [APPLICATION_SEARCH]: Error performing application search
+Error details: error: column j.company does not exist
+    at /home/Mike/projects/jobboard/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Application.getAll (/home/Mike/projects/jobboard/src/models/Application.js:146:29)
+    at async /home/Mike/projects/jobboard/src/routes/applications.js:179:24 {
+  length: 108,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '414',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3647',
+  routine: 'errorMissingColumn'
+}
+2025-07-29T00:59:39.993Z - POST /api/v1/applications
+2025-07-29T00:59:40.016Z - PATCH /api/v1/applications/1/status
+2025-07-29T01:57:47.594Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T02:57:47.612Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T03:57:47.636Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T04:57:47.650Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T05:57:47.667Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T06:57:47.680Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T07:57:47.690Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T08:57:47.699Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T09:57:47.705Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T10:57:47.705Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T11:57:47.717Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T12:57:47.742Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T13:57:47.766Z - INFO [METRICS]: Metrics cleanup completed
+2025-07-29T14:57:47.785Z - INFO [METRICS]: Metrics cleanup completed

@@ -1,0 +1,553 @@
+{
+  "info": {
+    "name": "LocumTrueRate - Calculations API",
+    "description": "Complete test collection for Calculations API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "calculation_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (responseCode.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', response.data.token);",
+                  "    pm.test('Login successful', () => {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data.token).to.not.be.empty;",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Login failed', () => {",
+                  "        pm.expect.fail('Authentication failed');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"locum@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calculations CRUD",
+      "item": [
+        {
+          "name": "Create Paycheck Calculation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (responseCode.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('calculation_id', response.data.id);",
+                  "    pm.test('Paycheck calculation created', () => {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "        pm.expect(response.data.calculation_type).to.equal('paycheck');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calculation_type\": \"paycheck\",\n  \"title\": \"Test Paycheck Calculation\",\n  \"description\": \"Testing paycheck calculator API\",\n  \"hourly_rate\": 85.00,\n  \"regular_hours\": 40,\n  \"regular_rate\": 85.00,\n  \"overtime_hours\": 8,\n  \"overtime_rate\": 127.50,\n  \"call_hours\": 0,\n  \"call_rate\": 25.00,\n  \"callback_hours\": 0,\n  \"callback_rate\": 127.50,\n  \"housing_stipend\": 1200,\n  \"meal_stipend\": 300,\n  \"pay_period\": \"weekly\",\n  \"tax_state\": \"no-tax\",\n  \"filing_status\": \"single\",\n  \"gross_pay\": 4420.00,\n  \"federal_tax\": 800.00,\n  \"state_tax\": 0.00,\n  \"fica_tax\": 338.13,\n  \"net_pay\": 3281.87,\n  \"total_stipends\": 1500.00,\n  \"true_hourly_rate\": 95.50,\n  \"notes\": \"Test calculation for API\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        },
+        {
+          "name": "Create Contract Calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calculation_type\": \"contract\",\n  \"title\": \"Test Contract Calculation\",\n  \"description\": \"Testing contract calculator API\",\n  \"hourly_rate\": 300.00,\n  \"hours_per_week\": 40,\n  \"contract_weeks\": 13,\n  \"contract_type\": \"locum\",\n  \"housing_stipend\": 1500,\n  \"travel_reimbursement\": 2000,\n  \"other_stipends\": 500,\n  \"work_state\": \"CA\",\n  \"total_contract_value\": 171000.00,\n  \"true_hourly_rate\": 325.00,\n  \"annual_equivalent\": 676000.00,\n  \"notes\": \"Test contract calculation\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        },
+        {
+          "name": "Get All Calculations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get calculations successful', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        },
+        {
+          "name": "Get Calculation by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Calculation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Test Calculation\",\n  \"hourly_rate\": 90.00,\n  \"notes\": \"Updated via Postman API test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Calculation",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calculation Actions",
+      "item": [
+        {
+          "name": "Toggle Favorite",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}/favorite",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}", "favorite"]
+            }
+          }
+        },
+        {
+          "name": "Duplicate Calculation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Duplicated Test Calculation\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}/duplicate",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}", "duplicate"]
+            }
+          }
+        },
+        {
+          "name": "Archive Calculation",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"archived\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations/{{calculation_id}}/archive",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "{{calculation_id}}", "archive"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Query and Statistics",
+      "item": [
+        {
+          "name": "Get Calculation Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations/stats",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Query Paycheck Calculations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations?calculation_type=paycheck&limit=10&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"],
+              "query": [
+                {
+                  "key": "calculation_type",
+                  "value": "paycheck"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Query Contract Calculations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations?calculation_type=contract&limit=10&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"],
+              "query": [
+                {
+                  "key": "calculation_type",
+                  "value": "contract"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Query Favorite Calculations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations?favorites=true&limit=10&page=1",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"],
+              "query": [
+                {
+                  "key": "favorites",
+                  "value": "true"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "Invalid Calculation Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Validation error returned', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calculation_type\": \"invalid_type\",\n  \"hourly_rate\": 85.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        },
+        {
+          "name": "Missing Required Field",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Validation error for missing field', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calculation_type\": \"paycheck\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        },
+        {
+          "name": "Excessive Hours Validation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Hours validation works', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calculation_type\": \"paycheck\",\n  \"hourly_rate\": 85.00,\n  \"regular_hours\": 100,\n  \"overtime_hours\": 100\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling",
+      "item": [
+        {
+          "name": "Unauthorized Access",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Unauthorized access blocked', () => {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/calculations",
+              "host": ["{{base_url}}"],
+              "path": ["calculations"]
+            }
+          },
+          "auth": {
+            "type": "noauth"
+          }
+        },
+        {
+          "name": "Invalid Calculation ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid ID handled', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations/invalid_id",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "invalid_id"]
+            }
+          }
+        },
+        {
+          "name": "Non-existent Calculation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Non-existent calculation returns 404', () => {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/calculations/999999",
+              "host": ["{{base_url}}"],
+              "path": ["calculations", "999999"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
