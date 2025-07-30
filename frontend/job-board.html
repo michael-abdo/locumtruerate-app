@@ -928,6 +928,29 @@
             };
         }
         
+        // Ensure sample data is always available
+        function ensureSampleData() {
+            if (!jobsData || jobsData.length === 0) {
+                console.log('📝 Sample data missing, reloading...');
+                loadSampleData();
+            }
+        }
+        
+        // Reset all filters and show all jobs
+        function resetFilters() {
+            console.log('🔄 Resetting all filters...');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('salaryFilter').value = '';
+            document.getElementById('contractTypeFilter').value = '';
+            
+            ensureSampleData();
+            filteredJobs = [...jobsData];
+            renderJobs();
+            console.log('✅ Filters reset, showing all jobs');
+        }
+        
         // Load sample data as fallback
         function loadSampleData() {
             console.log('📝 Loading sample data as fallback...');
@@ -1005,6 +1028,15 @@
             console.log('🎨 About to render jobs...');
             renderJobs();
             console.log('✅ Sample data loaded and rendered');
+            
+            // Ensure the grid has jobs after a short delay (in case of timing issues)
+            setTimeout(() => {
+                const grid = document.getElementById('jobsGrid');
+                if (grid && grid.children.length === 0) {
+                    console.warn('⚠️ Grid is empty after render, forcing re-render...');
+                    renderJobs();
+                }
+            }, 500);
             
             // Update results count immediately
             const resultsElement = document.getElementById('resultsCount');
@@ -1256,10 +1288,17 @@
                 contractType: contractType
             });
             
-            // Ensure we have jobs to filter
+            // Ensure we have jobs to filter - reload sample data if needed
             if (!jobsData || jobsData.length === 0) {
-                console.warn('⚠️ No jobsData to filter');
-                filteredJobs = [];
+                console.warn('⚠️ No jobsData to filter, reloading sample data...');
+                loadSampleData();
+                return;
+            }
+            
+            // If all filters are empty, show all jobs
+            if (!search && !specialty && !location && !salary && !contractType) {
+                console.log('✅ No filters applied, showing all jobs');
+                filteredJobs = [...jobsData];
                 renderJobs();
                 return;
             }
@@ -1537,6 +1576,8 @@
         window.goToPage = goToPage;
         window.toggleView = toggleView;
         window.toggleSaveJob = toggleSaveJob;
+        window.resetFilters = resetFilters;
+        window.ensureSampleData = ensureSampleData;
         
         // Ensure toggleSaveJob is available immediately
         if (typeof window.toggleSaveJob !== 'function') {
@@ -1954,6 +1995,13 @@
                 setTimeout(() => {
                     console.log('🔍 Running post-initialization QA validation...');
                     window.validateJobBoard();
+                    
+                    // Final safety check - ensure jobs are visible
+                    ensureSampleData();
+                    if (filteredJobs.length === 0) {
+                        console.log('🚨 Final safety check: No jobs visible, forcing reload...');
+                        resetFilters();
+                    }
                 }, 1000);
                 
                 // Set up event listeners after DOM is ready
