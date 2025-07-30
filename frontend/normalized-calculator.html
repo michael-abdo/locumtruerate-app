@@ -2197,11 +2197,12 @@
             }, 1000);
         }
 
-        // Print Results function - NUCLEAR BLOCK
+        // Print Results function - NON-BLOCKING MONITOR
         function printResults() {
-            console.error('🚨🚨🚨 printResults() CALLED - COMPLETELY BLOCKED!');
+            console.error('🚨🚨🚨 printResults() CALLED - BLOCKED!');
             console.error('Call stack:', new Error().stack);
-            alert('printResults() was called! Check console.');
+            console.error('Timestamp:', new Date().toISOString());
+            // Block but don't use alert() - would timeout automated tools
             return false;
         }
         
@@ -2695,12 +2696,13 @@ From: LocumTrueRate Contract Calculator`;
         // NUCLEAR PRINT BLOCKER - OVERRIDE EVERYTHING
         console.log('🚨 NUCLEAR PRINT BLOCKER ACTIVATED');
         
-        // Override window.print IMMEDIATELY
+        // Override window.print IMMEDIATELY - NO BLOCKING ALERTS
         const originalPrint = window.print;
         window.print = function() {
             console.error('🚨🚨🚨 PRINT BLOCKED: Something tried to print!');
             console.error('Stack trace:', new Error().stack);
-            alert('PRINT BLOCKED! Check console for details.');
+            console.error('Timestamp:', new Date().toISOString());
+            // NO ALERT - would block automated tools
             return false;
         };
         
