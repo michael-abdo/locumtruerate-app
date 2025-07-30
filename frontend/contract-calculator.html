@@ -2023,81 +2023,54 @@
             }, 1000);
         }
 
-        // Print Results function - NUCLEAR BLOCK
+        // Print Results function
         function printResults() {
-            console.error('🚨🚨🚨 printResults() CALLED - COMPLETELY BLOCKED!');
-            console.error('Call stack:', new Error().stack);
-            alert('printResults() was called! Check console.');
-            return false;
-            
-            // Continue with normal validation but monitor everything
             try {
-                console.log('🔍 Normal print function flow - monitoring for auto-execution');
+                // Check if results are available
+                const trueHourlyRate = document.getElementById('trueHourlyRate');
+                const weeklyGrossPay = document.getElementById('weeklyGrossPay');
+                const totalContractValue = document.getElementById('totalContractValue');
                 
-                // Check if this is being auto-called (no event or untrusted event)
-                if (typeof event === 'undefined' || !event || event.isTrusted === false) {
-                    console.error('🚨 AUTO-PRINT ATTEMPT BLOCKED: No trusted user event');
-                    console.error('Event details:', event);
-                    return false;
+                if (!trueHourlyRate || !weeklyGrossPay || !totalContractValue || 
+                    !trueHourlyRate.textContent || !weeklyGrossPay.textContent || !totalContractValue.textContent) {
+                    showNotification('No calculation results to print', 'warning');
+                    return;
                 }
                 
-                // Check if called by proper button click
-                if (!event.target || !event.target.closest || !event.target.closest('button')) {
-                    console.error('🚨 AUTO-PRINT ATTEMPT BLOCKED: Not from button click');
-                    console.error('Event target:', event.target);
-                    return false;
-                }
+                // Create a clean print version
+                const printContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Contract Analysis Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                            h1 { color: #2563eb; text-align: center; margin-bottom: 20px; }
+                            .summary { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                            .results { display: grid; gap: 10px; }
+                            .result-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+                            .total { font-weight: bold; font-size: 1.1em; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Contract Analysis Report</h1>
+                        <div class="summary">
+                            <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div class="results">
+                            <div class="result-row total"><span>Total Contract Value:</span><span>${totalContractValue.textContent}</span></div>
+                            <div class="result-row total"><span>True Hourly Rate:</span><span>${trueHourlyRate.textContent}</span></div>
+                            <div class="result-row"><span>Weekly Gross Pay:</span><span>${weeklyGrossPay.textContent}</span></div>
+                        </div>
+                    </body>
+                    </html>
+                `;
                 
-                console.log('✅ Valid user-initiated print request - would normally print here');
-                showNotification('Print function called but disabled for debugging', 'info');
-                return false;
-                
-            } catch (error) {
-                console.error('🚨 Error in print function:', error);
-                return false;
-            }
-                
-                // Check if pop-ups are blocked by trying to open a window
-                const testWindow = window.open('', '_blank', 'width=1,height=1');
-                if (testWindow) {
-                    testWindow.close();
-                    
-                    // Create a clean print version without navigation and buttons
-                    const printContent = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <meta charset="UTF-8">
-                            <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
-                            <style>
-                                body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-                                h1 { color: #2563eb; text-align: center; margin-bottom: 20px; }
-                                .summary { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-                                .results { display: grid; gap: 10px; }
-                                .result-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
-                                .total { font-weight: bold; font-size: 1.1em; }
-                                @media print { body { margin: 0; } }
-                            </style>
-                        </head>
-                        <body>
-                            <h1>Contract Analysis Report</h1>
-                            <div class="summary">
-                                <p><strong>Position:</strong> ${document.getElementById('jobTitle').value}</p>
-                                <p><strong>Contract:</strong> ${document.getElementById('contractWeeks').value} weeks, ${document.getElementById('hoursPerWeek').value} hrs/week</p>
-                                <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
-                            </div>
-                            <div class="results">
-                                <div class="result-row total"><span>Total Contract Value:</span><span>${document.getElementById('totalContractValue').textContent}</span></div>
-                                <div class="result-row total"><span>True Hourly Rate:</span><span>${document.getElementById('trueHourlyRate').textContent}</span></div>
-                                <div class="result-row"><span>Weekly Gross Pay:</span><span>${document.getElementById('weeklyGrossPay').textContent}</span></div>
-                                <div class="result-row"><span>Regular Pay:</span><span>${document.getElementById('regularPay').textContent}</span></div>
-                            </div>
-                        </body>
-                        </html>
-                    `;
-                    
-                    // Open print dialog in new window
-                    const printWindow = window.open('', '_blank', 'width=800,height=600');
+                // Open print dialog in new window
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                if (printWindow) {
                     printWindow.document.write(printContent);
                     printWindow.document.close();
                     printWindow.focus();
@@ -2110,118 +2083,15 @@
                         };
                     }, 500);
                     
-                    showNotification('📄 Print dialog opened in new tab', 'success');
+                    showNotification('Print dialog opened', 'success');
                 } else {
-                    // Pop-ups blocked, DO NOT auto-print - require explicit user action
-                    showNotification('⚠️ Pop-ups blocked. Please use your browser\'s print menu (Ctrl+P)', 'warning');
-                    console.log('⚠️ Auto-print blocked - requires user interaction');
+                    showNotification('Pop-ups blocked. Please use Ctrl+P to print', 'warning');
                 }
             } catch (error) {
                 console.error('Print error:', error);
-                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+                showNotification('Print failed. Please use Ctrl+P to print manually.', 'error');
             }
         }
-        
-        // Print Results function (DUPLICATE - COMMENTED OUT)
-        // function printResults() {
-            try {
-                // Create a print-friendly version of the results
-                const printWindow = window.open('', '_blank', 'width=800,height=600');
-                
-                const printContent = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-                            .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
-                            .contract-details { margin-bottom: 20px; }
-                            .results-section { margin-bottom: 20px; }
-                            .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
-                            .result-label { font-weight: bold; color: #2563eb; }
-                            .result-value { float: right; font-weight: bold; }
-                            .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
-                            @media print { 
-                                body { margin: 0; }
-                                .no-print { display: none; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>Contract Analysis Report</h1>
-                            <p>Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-                        </div>
-                        
-                        <div class="contract-details">
-                            <h2>Contract Details</h2>
-                            <div class="result-item">
-                                <span class="result-label">Position:</span>
-                                <span class="result-value">${document.getElementById('jobTitle').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Hourly Rate:</span>
-                                <span class="result-value">$${document.getElementById('hourlyRate').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Hours per Week:</span>
-                                <span class="result-value">${document.getElementById('hoursPerWeek').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Contract Length:</span>
-                                <span class="result-value">${document.getElementById('contractWeeks').value} weeks</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Housing Stipend:</span>
-                                <span class="result-value">$${document.getElementById('housingStipend').value}/week</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Travel Reimbursement:</span>
-                                <span class="result-value">$${document.getElementById('travelReimbursement').value}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="results-section">
-                            <h2>Financial Analysis</h2>
-                            <div class="result-item">
-                                <span class="result-label">Weekly Gross Pay:</span>
-                                <span class="result-value">${document.getElementById('weeklyGrossPay').textContent}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Total Contract Value:</span>
-                                <span class="result-value">${document.getElementById('totalContractValue').textContent}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">True Hourly Rate:</span>
-                                <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
-                            </div>
-                            
-                        </div>
-                        
-                        <div class="footer">
-                            <p>This analysis was generated using LocumTrueRate Contract Calculator</p>
-                            <p>Visit <strong>locumtruerate.com</strong> for more tools and job opportunities</p>
-                        </div>
-                    </body>
-                    </html>
-                `;
-                
-                printWindow.document.write(printContent);
-                printWindow.document.close();
-                
-                // Wait for content to load, then print
-                printWindow.onload = function() {
-                    printWindow.print();
-                };
-                
-                showNotification('🖨️ Print dialog opened', 'success');
-                
-            } catch (error) {
-                console.error('Print error:', error);
-                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
-            }
-        // } // END OF DUPLICATE FUNCTION
         
         // Email Results function with better fallback handling
         function emailResults() {
@@ -2609,96 +2479,20 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // NUCLEAR PRINT BLOCKER - OVERRIDE EVERYTHING
-        console.log('🚨 NUCLEAR PRINT BLOCKER ACTIVATED');
-        
-        // Override window.print IMMEDIATELY
-        const originalPrint = window.print;
-        window.print = function() {
-            console.error('🚨🚨🚨 PRINT BLOCKED: Something tried to print!');
-            console.error('Stack trace:', new Error().stack);
-            alert('PRINT BLOCKED! Check console for details.');
-            return false;
-        };
-        
-        // Block beforeprint events
-        window.addEventListener('beforeprint', function(e) {
-            console.error('🚨🚨🚨 BEFOREPRINT EVENT BLOCKED!');
-            console.error('Event:', e);
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        });
-        
-        // Override media query print detection
-        if (window.matchMedia) {
-            const printMedia = window.matchMedia('print');
-            printMedia.addListener(function(mq) {
-                if (mq.matches) {
-                    console.error('🚨🚨🚨 PRINT MEDIA QUERY DETECTED!');
-                }
-            });
-        }
-        
-        console.log('🚨 NUCLEAR PRINT BLOCKER INSTALLED');
-        
-        // DISABLE ALL PRINT CSS - Add styles to override any print media queries
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @media print {
-                * { display: none !important; }
-                body::before {
-                    content: "PRINT DISABLED FOR DEBUGGING" !important;
-                    display: block !important;
-                    font-size: 24px !important;
-                    text-align: center !important;
-                    margin: 50px !important;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        console.log('🚨 PRINT CSS DISABLED');
-        
-        // FORCE CACHE BUST
-        console.log('🚨🚨🚨 CACHE BUSTED VERSION LOADED - NO MORE AUTO PRINT!');
-        
-        // MINIMAL LOAD MONITORING
-        console.log('🔍 Page loading - minimal monitoring active');
         
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOMContentLoaded event fired - minimal monitoring');
             
-            // Comprehensive element checking
-            console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
+            // Initialize the calculator
+            try {
+                checkPrefilledData();
+                updateButtonStates();
+                calculateContract();
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
             
-            // Check all input elements
-            const inputElements = {
-                'jobTitle': 'Job Title dropdown',
-                'hourlyRate': 'Hourly Rate input',
-                'hoursPerWeek': 'Hours per Week input',
-                'contractWeeks': 'Contract Weeks input',
-                'housingStipend': 'Housing Stipend input',
-                'travelReimbursement': 'Travel Reimbursement input',
-                'otherStipends': 'Other Stipends input',
-                'contractType': 'Contract Type dropdown',
-                'workState': 'Work State dropdown'
-            };
-            
-            console.log('🔍 Checking input elements...');
-            const missingInputs = [];
-            Object.entries(inputElements).forEach(([id, name]) => {
-                const elem = document.getElementById(id);
-                if (!elem) {
-                    missingInputs.push(`${name} (#${id})`);
-                    console.error(`❌ MISSING INPUT: ${name} (#${id})`);
-                } else {
-                    console.log(`✅ Found: ${name} (#${id})`);
-                }
-            });
-            
-            // Check all result display elements
-            console.log('🔍 Checking result display elements...');
+            // Setup event listeners for input fields
             const resultElements = {
                 'weeklyGrossPay': 'Weekly Gross Pay',
                 'totalContractValue': 'Total Contract Value',
