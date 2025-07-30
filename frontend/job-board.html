@@ -896,6 +896,13 @@
         // Transform API job data to frontend format
         function transformJobData(apiJob) {
             console.log('🔄 Transforming job:', apiJob.id, apiJob.title);
+            console.log('📊 API job data:', {
+                hourlyRateMin: apiJob.hourlyRateMin,
+                hourlyRateMax: apiJob.hourlyRateMax,
+                location: apiJob.location,
+                companyName: apiJob.companyName,
+                specialty: apiJob.specialty
+            });
             
             // Handle salary range or single rate
             let salary = 'Competitive';
@@ -911,7 +918,7 @@
                 salary = `Up to $${apiJob.hourlyRateMax}/hr`;
             }
             
-            return {
+            const transformedJob = {
                 id: apiJob.id,
                 title: apiJob.title || 'Unknown Position',
                 facility: apiJob.companyName || 'Unknown Facility',
@@ -929,6 +936,16 @@
                 recruiterEmail: apiJob.postedByEmail,
                 recruiterName: apiJob.postedByName
             };
+            
+            console.log('✅ Job transformed successfully:', {
+                id: transformedJob.id,
+                title: transformedJob.title,
+                facility: transformedJob.facility,
+                location: transformedJob.location,
+                salary: transformedJob.salary
+            });
+            
+            return transformedJob;
         }
         
         // Ensure sample data is always available
@@ -1944,10 +1961,14 @@
                 // Then try to load from API in background
                 console.log('🌐 Attempting to load jobs from API...');
                 loadJobsFromAPI().then(() => {
-                    console.log('✅ API call completed, ensuring jobs are displayed...');
-                    // Always ensure we have jobs visible
-                    ensureSampleData();
+                    console.log('✅ API call completed. Current jobsData length:', jobsData.length);
+                    // Only fallback to sample data if API data is empty
+                    if (jobsData.length === 0) {
+                        console.log('⚠️ No API data loaded, using sample data...');
+                        ensureSampleData();
+                    }
                     filteredJobs = [...jobsData];
+                    console.log('🎨 About to render', filteredJobs.length, 'jobs');
                     renderJobs();
                 }).catch(error => {
                     console.error('❌ API load failed, ensuring sample data is visible:', error);
