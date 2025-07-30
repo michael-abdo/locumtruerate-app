@@ -798,8 +798,105 @@
     </div>
 
     <script>
-        // Job data will be loaded from API
-        let jobsData = [];
+        // Initialize with sample data to ensure jobs are always available
+        let jobsData = [
+            {
+                id: 1,
+                title: "Emergency Medicine Physician",
+                facility: "Metropolitan General Hospital",
+                location: "Los Angeles, CA",
+                salary: "$350/hr",
+                duration: "13 weeks",
+                hours: "48 hrs/week",
+                housing: "$1,800/week",
+                specialty: "emergency",
+                state: "california",
+                stateCode: "CA",
+                description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
+                requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
+            },
+            {
+                id: 2,
+                title: "Internal Medicine Hospitalist",
+                facility: "Houston Medical Center",
+                location: "Houston, TX",
+                salary: "$285/hr",
+                duration: "26 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,400/week",
+                specialty: "internal",
+                state: "texas",
+                stateCode: "TX",
+                description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
+                requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
+            },
+            {
+                id: 3,
+                title: "Anesthesiologist",
+                facility: "Chicago Surgical Center",
+                location: "Chicago, IL",
+                salary: "$400/hr",
+                duration: "16 weeks",
+                hours: "50 hrs/week",
+                housing: "$2,000/week",
+                specialty: "anesthesiology",
+                state: "illinois",
+                stateCode: "IL",
+                description: "Busy surgical center needs experienced anesthesiologists for diverse case mix including cardiac, neuro, and trauma cases.",
+                requirements: ["Board Certified Anesthesia", "Cardiac Experience", "Available Immediately"],
+                benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule", "CME Support"]
+            },
+            {
+                id: 4,
+                title: "Radiologist",
+                facility: "Florida Imaging Associates",
+                location: "Miami, FL",
+                salary: "$320/hr",
+                duration: "20 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,600/week",
+                specialty: "radiology",
+                state: "florida",
+                stateCode: "FL",
+                description: "High-volume radiology practice seeking diagnostic radiologist for general imaging with subspecialty opportunities.",
+                requirements: ["Board Certified Radiology", "PACS Experience", "Florida License"],
+                benefits: ["Competitive Salary", "Housing Provided", "Technology Bonus", "Continuing Education"]
+            },
+            {
+                id: 5,
+                title: "Family Medicine Physician",
+                facility: "Denver Community Health",
+                location: "Denver, CO",
+                salary: "$275/hr",
+                duration: "13 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,500/week",
+                specialty: "family",
+                state: "colorado",
+                stateCode: "CO",
+                description: "Community health center seeking family medicine physician for outpatient care with focus on underserved populations.",
+                requirements: ["Board Certified FM", "Spanish Speaking Preferred", "Community Health Experience"],
+                benefits: ["Loan Forgiveness Program", "Housing Stipend", "Flexible Schedule", "CME Allowance"]
+            },
+            {
+                id: 6,
+                title: "Cardiologist",
+                facility: "Boston Heart Institute",
+                location: "Boston, MA",
+                salary: "$425/hr",
+                duration: "26 weeks",
+                hours: "45 hrs/week",
+                housing: "$2,200/week",
+                specialty: "cardiology",
+                state: "massachusetts",
+                stateCode: "MA",
+                description: "Leading cardiac center seeking interventional cardiologist for cath lab coverage and inpatient consults.",
+                requirements: ["Board Certified Cardiology", "Interventional Fellowship", "Active License"],
+                benefits: ["Premium Compensation", "Relocation Assistance", "Research Opportunities", "Full Benefits"]
+            }
+        ];
         // Determine API URL based on current location
         let apiBaseUrl;
         if (window.location.hostname === 'localhost') {
@@ -987,111 +1084,18 @@
         
         // Load sample data as fallback
         function loadSampleData() {
-            console.log('📝 Loading sample data as fallback...');
+            // This function is now deprecated since jobsData is pre-initialized with sample data
+            // Keeping it for backward compatibility but it just ensures filteredJobs is synced
+            console.log('📝 loadSampleData called - jobs already pre-initialized:', jobsData.length);
             
-            jobsData = [
-                {
-                    id: 1,
-                    title: "Emergency Medicine Physician",
-                    facility: "Metropolitan General Hospital",
-                    location: "Los Angeles, CA",
-                    salary: "$350/hr",
-                    duration: "13 weeks",
-                    hours: "48 hrs/week",
-                    housing: "$1,800/week",
-                    specialty: "emergency",
-                    state: "california",
-                    stateCode: "CA",
-                    description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
-                    requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
-                    benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
-                },
-                {
-                    id: 2,
-                    title: "Internal Medicine Hospitalist",
-                    facility: "Houston Medical Center",
-                    location: "Houston, TX",
-                    salary: "$285/hr",
-                    duration: "26 weeks",
-                    hours: "40 hrs/week",
-                    housing: "$1,400/week",
-                    specialty: "internal",
-                    state: "texas",
-                    stateCode: "TX",
-                    description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
-                    requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
-                    benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
-                },
-                {
-                    id: 3,
-                    title: "Anesthesiologist",
-                    facility: "Chicago Surgical Center",
-                    location: "Chicago, IL",
-                    salary: "$400/hr",
-                    duration: "16 weeks",
-                    hours: "50 hrs/week", 
-                    housing: "$2,000/week",
-                    specialty: "anesthesiology",
-                    state: "illinois",
-                    stateCode: "IL",
-                    description: "Busy surgical center needs experienced anesthesiologists for diverse case mix including cardiac, neuro, and trauma cases.",
-                    requirements: ["Board Certified Anesthesia", "Cardiac Experience", "Available Immediately"],
-                    benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule", "CME Support"]
-                },
-                {
-                    id: 4,
-                    title: "Radiologist",
-                    facility: "Florida Imaging Associates",
-                    location: "Miami, FL",
-                    salary: "$320/hr",
-                    duration: "20 weeks",
-                    hours: "40 hrs/week",
-                    housing: "$1,600/week",
-                    specialty: "radiology",
-                    state: "florida",
-                    stateCode: "FL",
-                    description: "High-volume radiology practice seeking diagnostic radiologist for general imaging with subspecialty opportunities.",
-                    requirements: ["Board Certified Radiology", "PACS Experience", "Florida License"],
-                    benefits: ["Competitive Salary", "Housing Provided", "Technology Bonus", "Continuing Education"]
-                },
-                {
-                    id: 5,
-                    title: "Family Medicine Physician",
-                    facility: "Denver Community Health",
-                    location: "Denver, CO",
-                    salary: "$275/hr",
-                    duration: "13 weeks",
-                    hours: "40 hrs/week",
-                    housing: "$1,500/week",
-                    specialty: "family",
-                    state: "colorado",
-                    stateCode: "CO",
-                    description: "Community health center seeking family medicine physician for outpatient care with focus on underserved populations.",
-                    requirements: ["Board Certified FM", "Spanish Speaking Preferred", "Community Health Experience"],
-                    benefits: ["Loan Forgiveness Program", "Housing Stipend", "Flexible Schedule", "CME Allowance"]
-                },
-                {
-                    id: 6,
-                    title: "Cardiologist",
-                    facility: "Boston Heart Institute",
-                    location: "Boston, MA",
-                    salary: "$425/hr",
-                    duration: "26 weeks",
-                    hours: "45 hrs/week",
-                    housing: "$2,200/week",
-                    specialty: "cardiology",
-                    state: "massachusetts",
-                    stateCode: "MA",
-                    description: "Leading cardiac center seeking interventional cardiologist for cath lab coverage and inpatient consults.",
-                    requirements: ["Board Certified Cardiology", "Interventional Fellowship", "Active License"],
-                    benefits: ["Premium Compensation", "Relocation Assistance", "Research Opportunities", "Full Benefits"]
-                }
-            ];
-            
-            // Update filtered jobs and render
-            filteredJobs = [...jobsData];
-            console.log('✅ Sample data loaded. Jobs count:', jobsData.length);
-            renderJobs();
+            // Just ensure filteredJobs is synced with jobsData
+            if (jobsData && jobsData.length > 0) {
+                filteredJobs = [...jobsData];
+                renderJobs();
+                console.log('✅ filteredJobs synced with pre-initialized data. Jobs count:', filteredJobs.length);
+            } else {
+                console.error('❌ CRITICAL: jobsData is empty when it should be pre-initialized!');
+            }
         }
         
         // Reset all filters and show all jobs
@@ -1957,11 +1961,12 @@
                     };
                 }
                 
-                // Initialize with sample data first to ensure jobs are visible
-                console.log('🚀 Loading initial sample data to ensure jobs are visible...');
+                // Initialize filteredJobs with pre-populated jobsData
+                console.log('🚀 Initializing job board with pre-populated data...');
                 console.log('📊 Initial state - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
-                loadSampleData();
-                console.log('📊 After loadSampleData - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
+                filteredJobs = [...jobsData];
+                renderJobs();
+                console.log('📊 After initialization - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 
                 // Then try to load from API in background
                 console.log('🌐 Attempting to load jobs from API...');
