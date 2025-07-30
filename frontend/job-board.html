@@ -1017,18 +1017,8 @@
             
             } catch (error) {
                 console.error('❌ Error in loadSampleData:', error);
-                console.error('❌ Error stack:', error.stack);
-                
-                // Try ultra-simple fallback
-                console.log('🔄 Attempting ultra-simple fallback...');
-                try {
-                    const grid = document.getElementById('jobsGrid');
-                    if (grid) {
-                        grid.innerHTML = '<div style="padding: 20px; background: red; color: white;">FALLBACK: Sample data loading failed!</div>';
-                    }
-                } catch (fallbackError) {
-                    console.error('❌ Even fallback failed:', fallbackError);
-                }
+                // Show error message to user
+                LocumUtils.showToast('Failed to load job listings. Please refresh the page.', 'error');
             }
         }
         
@@ -1121,19 +1111,8 @@
             console.log('📊 Pagination:', { totalPages, startIndex, endIndex, jobsToShow: jobsToShow.length });
             
             jobsToShow.forEach((job, index) => {
-                console.log(`🔨 Creating job card ${index + 1}/${jobsToShow.length}:`, job.title);
-                console.log('🔍 Job object:', job);
-                
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
-                // Force visibility in case of CSS issues
-                jobCard.style.display = 'block';
-                jobCard.style.minHeight = '200px';
-                jobCard.style.border = '1px solid #ccc';
-                jobCard.style.margin = '10px 0';
-                jobCard.style.padding = '20px';
-                jobCard.style.backgroundColor = '#f9f9f9';
-                console.log('📦 Created jobCard element:', jobCard);
                 
                 jobCard.onclick = (e) => {
                     // Don't open modal if clicking on action buttons
@@ -1145,7 +1124,6 @@
                     showJobDetail(job);
                 };
                 
-                console.log('🎨 About to set innerHTML for job card');
                 jobCard.innerHTML = `
                     <div class="job-header">
                         <div>
@@ -1187,29 +1165,10 @@
                     </div>
                 `;
                 
-                console.log('✅ innerHTML set successfully. JobCard HTML length:', jobCard.innerHTML.length);
-                console.log('🎯 Grid element before appendChild:', grid);
-                console.log('📏 Grid children count before appendChild:', grid.children.length);
-                
-                try {
-                    grid.appendChild(jobCard);
-                    console.log(`✅ Job card appended to grid successfully`);
-                    console.log('📏 Grid children count after appendChild:', grid.children.length);
-                    console.log('🔍 Grid innerHTML length after appendChild:', grid.innerHTML.length);
-                } catch (error) {
-                    console.error('❌ Error appending job card to grid:', error);
-                }
+                grid.appendChild(jobCard);
             });
             
             console.log(`🏁 Finished rendering ${jobsToShow.length} jobs. Grid has ${grid.children.length} total cards`);
-            
-            // Final verification
-            console.log('🔍 Final DOM verification:');
-            console.log('   - Grid element exists:', !!grid);
-            console.log('   - Grid is in DOM:', document.body.contains(grid));
-            console.log('   - Grid children count:', grid.children.length);
-            console.log('   - Grid innerHTML length:', grid.innerHTML.length);
-            console.log('   - Jobs with class "job-card":', grid.querySelectorAll('.job-card').length);
             
             const resultsElement = document.getElementById('resultsCount');
             if (resultsElement) {
@@ -1904,41 +1863,6 @@
             return checks;
         };
         
-        // IMMEDIATE EXECUTION TEST - this should execute right away
-        console.log('🚨 IMMEDIATE EXECUTION TEST - Script is running!');
-        console.log('🚨 Document readyState:', document.readyState);
-        console.log('🚨 Current time:', new Date().toISOString());
-        
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('🚨 JavaScript error detected:', e.error);
-            console.error('🚨 Error message:', e.message);
-            console.error('🚨 Error filename:', e.filename);
-            console.error('🚨 Error line:', e.lineno);
-            console.error('🚨 Error column:', e.colno);
-        });
-        
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('🚨 Unhandled promise rejection:', e.reason);
-        });
-        
-        // Try immediate DOM manipulation
-        setTimeout(function() {
-            console.log('🚨 Timeout executed, trying immediate DOM access...');
-            const jobsGrid = document.getElementById('jobsGrid');
-            console.log('🚨 jobsGrid found immediately:', !!jobsGrid);
-            if (jobsGrid) {
-                const immediateTest = document.createElement('div');
-                immediateTest.innerHTML = '🚨 IMMEDIATE TEST - This should be visible right away!';
-                immediateTest.style.backgroundColor = 'orange';
-                immediateTest.style.padding = '30px';
-                immediateTest.style.border = '5px solid purple';
-                immediateTest.style.fontSize = '20px';
-                immediateTest.style.textAlign = 'center';
-                jobsGrid.appendChild(immediateTest);
-                console.log('🚨 Immediate test div added');
-            }
-        }, 100);
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -1969,32 +1893,8 @@
                     };
                 }
                 
-                // IMPORTANT: Initialize with sample data immediately to ensure jobs are visible
+                // Initialize with sample data immediately to ensure jobs are visible
                 console.log('🚀 Loading initial sample data to ensure jobs are visible...');
-                
-                // First, test basic DOM manipulation
-                console.log('🧪 Testing basic DOM access...');
-                const jobsGrid = document.getElementById('jobsGrid');
-                console.log('📍 jobsGrid element found:', !!jobsGrid);
-                if (jobsGrid) {
-                    console.log('🔍 jobsGrid element details:', {
-                        tagName: jobsGrid.tagName,
-                        className: jobsGrid.className,
-                        childrenCount: jobsGrid.children.length,
-                        innerHTML: jobsGrid.innerHTML
-                    });
-                    
-                    // Add a test div to see if DOM manipulation works at all
-                    const testDiv = document.createElement('div');
-                    testDiv.innerHTML = '🧪 TEST CARD - If you see this, DOM manipulation works!';
-                    testDiv.style.backgroundColor = 'yellow';
-                    testDiv.style.padding = '20px';
-                    testDiv.style.border = '2px solid red';
-                    testDiv.style.margin = '10px';
-                    jobsGrid.appendChild(testDiv);
-                    console.log('🧪 Test div added. Grid children count:', jobsGrid.children.length);
-                }
-                
                 loadSampleData();
                 
                 // Then try to load from API in background
