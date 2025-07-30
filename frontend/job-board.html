@@ -1044,10 +1044,25 @@
             console.log('📊 Sample data created. Jobs count:', jobsData.length);
             console.log('🎯 filteredJobs initialized with:', filteredJobs.length, 'jobs');
             
+            // Update results count BEFORE rendering
+            const resultsElement = document.getElementById('resultsCount');
+            if (resultsElement) {
+                resultsElement.textContent = jobsData.length;
+                console.log('📊 Results count updated to:', jobsData.length, 'BEFORE rendering');
+            } else {
+                console.error('❌ Results count element not found!');
+            }
+            
             // Force immediate render - this is crucial
             console.log('🎨 About to render jobs...');
             renderJobs();
             console.log('✅ Sample data loaded and rendered');
+            
+            // Double-check results count after render
+            if (resultsElement) {
+                resultsElement.textContent = jobsData.length;
+                console.log('📊 Results count double-checked after render:', jobsData.length);
+            }
             
             // Ensure the grid has jobs after a short delay (in case of timing issues)
             setTimeout(() => {
@@ -1056,16 +1071,12 @@
                     console.warn('⚠️ Grid is empty after render, forcing re-render...');
                     renderJobs();
                 }
+                // Triple-check results count
+                if (resultsElement) {
+                    resultsElement.textContent = jobsData.length;
+                    console.log('📊 Results count triple-checked in timeout:', jobsData.length);
+                }
             }, 500);
-            
-            // Update results count immediately
-            const resultsElement = document.getElementById('resultsCount');
-            if (resultsElement) {
-                resultsElement.textContent = jobsData.length;
-                console.log('📊 Results count updated to:', jobsData.length);
-            } else {
-                console.error('❌ Results count element not found!');
-            }
             
             } catch (error) {
                 console.error('❌ Error in loadSampleData:', error);
@@ -1954,12 +1965,8 @@
                     };
                 }
                 
-                // Initialize with sample data immediately to ensure jobs are visible
-                console.log('🚀 Loading initial sample data to ensure jobs are visible...');
-                loadSampleData();
-                
-                // Then try to load from API in background
-                console.log('🌐 Attempting to load jobs from API...');
+                // Try to load from API first, with sample data as fallback
+                console.log('🌐 Attempting to load jobs from API first...');
                 loadJobsFromAPI().then(() => {
                     console.log('✅ API call completed. Current jobsData length:', jobsData.length);
                     // Only fallback to sample data if API data is empty
@@ -1971,11 +1978,9 @@
                     console.log('🎨 About to render', filteredJobs.length, 'jobs');
                     renderJobs();
                 }).catch(error => {
-                    console.error('❌ API load failed, ensuring sample data is visible:', error);
-                    // Ensure sample data is loaded and displayed
-                    ensureSampleData();
-                    filteredJobs = [...jobsData];
-                    renderJobs();
+                    console.error('❌ API load failed, loading sample data as fallback:', error);
+                    // Load sample data when API fails
+                    loadSampleData();
                 });
                 
                 // Ensure sort dropdown is visible
