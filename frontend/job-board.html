@@ -1983,10 +1983,7 @@
                     window.LocumUtils = {
                         showToast: function(msg, type) { 
                             console.log(`[${type}] ${msg}`);
-                            // Show toast notification
-                            if (window.LocumUtils && window.LocumUtils.showToast) {
-                                window.LocumUtils.showToast(msg, type);
-                            }
+                            // Simple fallback toast - just log to console
                         },
                         formatCurrency: function(amt) { return '$' + amt.toLocaleString(); },
                         localStorage: function(key, val) {
@@ -1999,23 +1996,39 @@
                     };
                 }
                 
-                // Try to load from API first, with sample data as fallback
-                console.log('🌐 Attempting to load jobs from API first...');
+                // EMERGENCY DEBUG: Force immediate job display to diagnose issue
+                console.log('🚨 EMERGENCY DEBUG: Loading sample data first to ensure jobs display...');
+                loadSampleData();
+                
+                // Then try to load from API
+                console.log('🌐 Attempting to load jobs from API...');
                 loadJobsFromAPI().then(() => {
                     console.log('✅ API call completed. Current jobsData length:', jobsData.length);
-                    // Only fallback to sample data if API data is empty
-                    if (jobsData.length === 0) {
-                        console.log('⚠️ No API data loaded, using sample data...');
-                        ensureSampleData();
+                    if (jobsData.length > 0) {
+                        console.log('🎯 API data loaded successfully, keeping API jobs');
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    } else {
+                        console.log('⚠️ No API data, keeping sample data displayed');
                     }
-                    filteredJobs = [...jobsData];
-                    console.log('🎨 About to render', filteredJobs.length, 'jobs');
-                    renderJobs();
                 }).catch(error => {
-                    console.error('❌ API load failed, loading sample data as fallback:', error);
-                    // Load sample data when API fails
-                    loadSampleData();
+                    console.error('❌ API load failed, keeping sample data:', error);
                 });
+                
+                // EMERGENCY FAILSAFE: Force job display after 2 seconds if nothing is shown
+                setTimeout(() => {
+                    const resultsElement = document.getElementById('resultsCount');
+                    const currentCount = resultsElement ? parseInt(resultsElement.textContent) : 0;
+                    if (currentCount === 0) {
+                        console.log('🚨 EMERGENCY FAILSAFE: No jobs displayed after 2 seconds, forcing display...');
+                        if (jobsData.length === 0) {
+                            loadSampleData();
+                        } else {
+                            filteredJobs = [...jobsData];
+                            renderJobs();
+                        }
+                    }
+                }, 2000);
                 
                 // Ensure sort dropdown is visible
                 const sortDropdown = document.getElementById('sortFilter');
