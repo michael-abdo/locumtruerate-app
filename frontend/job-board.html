@@ -728,7 +728,7 @@
                                 <button class="view-btn" onclick="toggleView('list')">📄 List</button>
                             </div>
                             <div class="results-info">
-                                <span id="resultsCount">24</span> positions found
+                                <span id="resultsCount">0</span> positions found
                             </div>
                         </div>
                     </div>
@@ -1104,8 +1104,19 @@
             
             jobsToShow.forEach((job, index) => {
                 console.log(`🔨 Creating job card ${index + 1}/${jobsToShow.length}:`, job.title);
+                console.log('🔍 Job object:', job);
+                
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
+                // Force visibility in case of CSS issues
+                jobCard.style.display = 'block';
+                jobCard.style.minHeight = '200px';
+                jobCard.style.border = '1px solid #ccc';
+                jobCard.style.margin = '10px 0';
+                jobCard.style.padding = '20px';
+                jobCard.style.backgroundColor = '#f9f9f9';
+                console.log('📦 Created jobCard element:', jobCard);
+                
                 jobCard.onclick = (e) => {
                     // Don't open modal if clicking on action buttons
                     if (e.target.closest('.job-actions')) {
@@ -1116,6 +1127,7 @@
                     showJobDetail(job);
                 };
                 
+                console.log('🎨 About to set innerHTML for job card');
                 jobCard.innerHTML = `
                     <div class="job-header">
                         <div>
@@ -1157,11 +1169,30 @@
                     </div>
                 `;
                 
-                grid.appendChild(jobCard);
-                console.log(`✅ Job card appended to grid. Grid now has ${grid.children.length} children`);
+                console.log('✅ innerHTML set successfully. JobCard HTML length:', jobCard.innerHTML.length);
+                console.log('🎯 Grid element before appendChild:', grid);
+                console.log('📏 Grid children count before appendChild:', grid.children.length);
+                
+                try {
+                    grid.appendChild(jobCard);
+                    console.log(`✅ Job card appended to grid successfully`);
+                    console.log('📏 Grid children count after appendChild:', grid.children.length);
+                    console.log('🔍 Grid innerHTML length after appendChild:', grid.innerHTML.length);
+                } catch (error) {
+                    console.error('❌ Error appending job card to grid:', error);
+                }
             });
             
             console.log(`🏁 Finished rendering ${jobsToShow.length} jobs. Grid has ${grid.children.length} total cards`);
+            
+            // Final verification
+            console.log('🔍 Final DOM verification:');
+            console.log('   - Grid element exists:', !!grid);
+            console.log('   - Grid is in DOM:', document.body.contains(grid));
+            console.log('   - Grid children count:', grid.children.length);
+            console.log('   - Grid innerHTML length:', grid.innerHTML.length);
+            console.log('   - Jobs with class "job-card":', grid.querySelectorAll('.job-card').length);
+            
             const resultsElement = document.getElementById('resultsCount');
             if (resultsElement) {
                 resultsElement.textContent = filteredJobs.length;
