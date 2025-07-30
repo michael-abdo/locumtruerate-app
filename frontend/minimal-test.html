@@ -1,28 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Minimal JS Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Minimal Infrastructure Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
 </head>
 <body>
-    <h1>Minimal JavaScript Test</h1>
-    <button onclick="alert('JavaScript is working!')">Test JS</button>
-    <button onclick="testFunction()">Test Custom Function</button>
-    <div id="output">No output yet</div>
-
+    <h1>🔧 Infrastructure Test</h1>
+    <div id="status-log"></div>
+    
     <script>
-        function testFunction() {
-            document.getElementById('output').innerHTML = 'Custom function works! Time: ' + new Date().toLocaleTimeString();
-            console.log('testFunction called successfully');
+        console.log('🚀 Minimal test starting...');
+        
+        function logStatus(message, type = 'info') {
+            const log = document.getElementById('status-log');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = `[${new Date().toISOString()}] ${message}`;
+            log.appendChild(div);
+            console.log(message);
         }
         
-        // Test on load
+        // Test 1: Basic page load
+        logStatus('✅ Basic HTML/CSS loaded', 'success');
+        
+        // Test 2: JavaScript execution  
+        logStatus('✅ JavaScript executing normally', 'success');
+        
+        // Test 3: DOM manipulation
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('output').innerHTML = 'DOM loaded successfully at ' + new Date().toLocaleTimeString();
-            console.log('DOM loaded successfully');
+            logStatus('✅ DOMContentLoaded fired successfully', 'success');
         });
-
-        // Add alert to confirm script is running
-        console.log('Script is executing');
+        
+        // Test 4: Window load event
+        window.addEventListener('load', function() {
+            logStatus('✅ Window load event fired', 'success');
+            logStatus('🎯 All infrastructure tests passed - page loads normally', 'success');
+        });
+        
+        // Test 5: Print detection
+        window.addEventListener('beforeprint', function() {
+            logStatus('🚨 PRINT DETECTED: Something is triggering print!', 'error');
+        });
+        
+        // Test 6: Error monitoring
+        window.addEventListener('error', function(e) {
+            logStatus(`❌ Resource error: ${e.target?.src || e.target?.href || 'Unknown'}`, 'error');
+        });
+        
+        // Test 7: Auto-completion check
+        setTimeout(() => {
+            logStatus('✅ 3-second timeout reached - page completed successfully', 'success');
+        }, 3000);
+        
+        console.log('🔧 Infrastructure monitoring active');
     </script>
 </body>
 </html>

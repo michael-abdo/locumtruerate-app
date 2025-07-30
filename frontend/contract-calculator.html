@@ -7,12 +7,17 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Contract Calculator - LocumTrueRate</title>
-    <!-- Centralized CSS Variables -->
-    <link rel="stylesheet" href="css/variables.css">
-    <!-- Common Utilities -->
-    <link rel="stylesheet" href="js/common-utils.css">
-    <script src="js/apiClient.js"></script>
-    <script src="js/common-utils.js"></script>
+    <!-- TEMPORARILY REMOVED EXTERNAL DEPENDENCIES FOR DEBUGGING -->
+    <!-- Dependencies causing potential blocking removed -->
+    <style>
+        /* Inline critical CSS variables */
+        :root {
+            --primary-color: #2563eb;
+            --text-primary: #1f2937;
+            --background-color: #ffffff;
+            --border-color: #d1d5db;
+        }
+    </style>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -2563,10 +2568,25 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
+        // INFRASTRUCTURE MONITORING
+        console.log('🔧 Infrastructure check starting...');
+        
+        // Check if page resources loaded
+        window.addEventListener('load', function() {
+            console.log('✅ Page fully loaded - all resources available');
+        });
+        
+        // Check for resource load errors
+        window.addEventListener('error', function(e) {
+            console.error('🚨 Resource load error:', e.target?.src || e.target?.href || 'Unknown resource');
+        });
+        
         // LIGHTWEIGHT PRINT DETECTION
         window.addEventListener('beforeprint', function() {
             console.error('🚨 PRINT DETECTED: beforeprint event fired');
         });
+        
+        console.log('✅ Infrastructure monitoring installed');
         
         // MINIMAL LOAD MONITORING
         console.log('🔍 Page loading - minimal monitoring active');
