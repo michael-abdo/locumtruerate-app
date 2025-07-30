@@ -851,6 +851,8 @@
                 console.log('📊 API Response structure:', {
                     hasJobs: !!data.jobs,
                     jobsLength: data.jobs ? data.jobs.length : 0,
+                    jobsType: typeof data.jobs,
+                    jobsIsArray: Array.isArray(data.jobs),
                     pagination: data.pagination,
                     timestamp: data.timestamp
                 });
@@ -897,6 +899,13 @@
                     }
                 } else {
                     console.warn('⚠️ No jobs found in API response, keeping existing jobsData:', jobsData.length);
+                }
+                
+                // Safeguard: Ensure we always have some jobs to display
+                if (!jobsData || jobsData.length === 0) {
+                    console.warn('⚠️ No jobs available after API call, loading sample data as fallback');
+                    loadSampleData();
+                    return; // loadSampleData will handle rendering
                 }
                 
                 // Update filtered jobs and re-render
@@ -1168,6 +1177,13 @@
                 currentPage: currentPage,
                 jobsPerPage: jobsPerPage
             });
+            
+            // Emergency safeguard: If we have no jobs to render, load sample data
+            if ((!jobsData || jobsData.length === 0) && (!filteredJobs || filteredJobs.length === 0)) {
+                console.error('❌ CRITICAL: renderJobs called with no data! Loading sample data...');
+                loadSampleData();
+                return;
+            }
             
             const grid = document.getElementById('jobsGrid');
             if (!grid) {
@@ -1943,7 +1959,9 @@
                 
                 // Initialize with sample data first to ensure jobs are visible
                 console.log('🚀 Loading initial sample data to ensure jobs are visible...');
+                console.log('📊 Initial state - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 loadSampleData();
+                console.log('📊 After loadSampleData - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 
                 // Then try to load from API in background
                 console.log('🌐 Attempting to load jobs from API...');
