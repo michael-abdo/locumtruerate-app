@@ -931,7 +931,9 @@
         // Load sample data as fallback
         function loadSampleData() {
             console.log('📝 Loading sample data as fallback...');
-            jobsData = [
+            
+            try {
+                jobsData = [
                 {
                     id: 1,
                     title: "Emergency Medicine Physician",
@@ -1011,6 +1013,22 @@
                 console.log('📊 Results count updated to:', jobsData.length);
             } else {
                 console.error('❌ Results count element not found!');
+            }
+            
+            } catch (error) {
+                console.error('❌ Error in loadSampleData:', error);
+                console.error('❌ Error stack:', error.stack);
+                
+                // Try ultra-simple fallback
+                console.log('🔄 Attempting ultra-simple fallback...');
+                try {
+                    const grid = document.getElementById('jobsGrid');
+                    if (grid) {
+                        grid.innerHTML = '<div style="padding: 20px; background: red; color: white;">FALLBACK: Sample data loading failed!</div>';
+                    }
+                } catch (fallbackError) {
+                    console.error('❌ Even fallback failed:', fallbackError);
+                }
             }
         }
         
@@ -1917,6 +1935,30 @@
                 
                 // IMPORTANT: Initialize with sample data immediately to ensure jobs are visible
                 console.log('🚀 Loading initial sample data to ensure jobs are visible...');
+                
+                // First, test basic DOM manipulation
+                console.log('🧪 Testing basic DOM access...');
+                const jobsGrid = document.getElementById('jobsGrid');
+                console.log('📍 jobsGrid element found:', !!jobsGrid);
+                if (jobsGrid) {
+                    console.log('🔍 jobsGrid element details:', {
+                        tagName: jobsGrid.tagName,
+                        className: jobsGrid.className,
+                        childrenCount: jobsGrid.children.length,
+                        innerHTML: jobsGrid.innerHTML
+                    });
+                    
+                    // Add a test div to see if DOM manipulation works at all
+                    const testDiv = document.createElement('div');
+                    testDiv.innerHTML = '🧪 TEST CARD - If you see this, DOM manipulation works!';
+                    testDiv.style.backgroundColor = 'yellow';
+                    testDiv.style.padding = '20px';
+                    testDiv.style.border = '2px solid red';
+                    testDiv.style.margin = '10px';
+                    jobsGrid.appendChild(testDiv);
+                    console.log('🧪 Test div added. Grid children count:', jobsGrid.children.length);
+                }
+                
                 loadSampleData();
                 
                 // Then try to load from API in background
