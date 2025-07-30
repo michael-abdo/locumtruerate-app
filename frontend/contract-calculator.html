@@ -1979,19 +1979,42 @@
             }, 1000);
         }
 
-        // Print Results function - COMPLETELY DISABLED FOR DEBUGGING
+        // Print Results function - SILENT MONITORING ONLY
         function printResults() {
-            console.log('🚨 PRINT FUNCTION CALLED - BUT COMPLETELY DISABLED FOR DEBUGGING');
+            console.log('🖨️ printResults() called at', new Date().toISOString());
             console.log('Event object:', event);
             console.log('Stack trace:', new Error().stack);
             
-            // ALWAYS block - no printing allowed during debugging
-            showNotification('🚨 PRINT COMPLETELY DISABLED - Debug mode active', 'error');
-            return;
+            // Block but don't show disruptive notifications
+            console.warn('⚠️ Print blocked - monitoring mode active');
+            return false;
             
-            // COMPLETELY DISABLED - NO PRINTING ALLOWED
-            console.log('🚨 ALL PRINT FUNCTIONALITY DISABLED');
-            return;
+            // Continue with normal validation but monitor everything
+            try {
+                console.log('🔍 Normal print function flow - monitoring for auto-execution');
+                
+                // Check if this is being auto-called (no event or untrusted event)
+                if (typeof event === 'undefined' || !event || event.isTrusted === false) {
+                    console.error('🚨 AUTO-PRINT ATTEMPT BLOCKED: No trusted user event');
+                    console.error('Event details:', event);
+                    return false;
+                }
+                
+                // Check if called by proper button click
+                if (!event.target || !event.target.closest || !event.target.closest('button')) {
+                    console.error('🚨 AUTO-PRINT ATTEMPT BLOCKED: Not from button click');
+                    console.error('Event target:', event.target);
+                    return false;
+                }
+                
+                console.log('✅ Valid user-initiated print request - would normally print here');
+                showNotification('Print function called but disabled for debugging', 'info');
+                return false;
+                
+            } catch (error) {
+                console.error('🚨 Error in print function:', error);
+                return false;
+            }
                 
                 // Check if pop-ups are blocked by trying to open a window
                 const testWindow = window.open('', '_blank', 'width=1,height=1');
@@ -2545,25 +2568,17 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // AGGRESSIVE PRINT DEBUGGING - Override window.print globally
-        console.log('🚨 INSTALLING PRINT BLOCKERS');
+        // SILENT PRINT MONITORING - No blocking alerts
+        console.log('🔍 Installing silent print monitor');
         const originalPrint = window.print;
         window.print = function() {
-            console.error('🚨 CRITICAL: window.print() was called!');
+            console.error('🚨 AUTO-PRINT DETECTED: window.print() called');
             console.error('Stack trace:', new Error().stack);
-            console.error('Arguments:', arguments);
-            alert('PRINT BLOCKED: Debug mode active. Check console for details.');
-            // Do NOT call original print function
+            console.error('Timestamp:', new Date().toISOString());
+            // Log but don't actually print or show alerts
+            return false;
         };
-        
-        // Also block any attempts to restore original print
-        Object.defineProperty(window, 'print', {
-            value: window.print,
-            writable: false,
-            configurable: false
-        });
-        
-        console.log('🚨 PRINT BLOCKERS INSTALLED');
+        console.log('✅ Silent print monitor installed');
         
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
