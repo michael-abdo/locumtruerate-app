@@ -684,6 +684,10 @@
                                 <option value="">All Specialties</option>
                                 <option value="emergency">Emergency Medicine</option>
                                 <option value="internal">Internal Medicine</option>
+                                <option value="family">Family Medicine</option>
+                                <option value="cardiology">Cardiology</option>  
+                                <option value="endocrinology">Endocrinology</option>
+                                <option value="pediatrics">Pediatrics</option>
                                 <option value="surgery">Surgery</option>
                                 <option value="radiology">Radiology</option>
                                 <option value="anesthesiology">Anesthesiology</option>
@@ -693,7 +697,9 @@
                                 <option value="california">California</option>
                                 <option value="texas">Texas</option>
                                 <option value="florida">Florida</option>
+                                <option value="massachusetts">Massachusetts</option>
                                 <option value="new-york">New York</option>
+                                <option value="colorado">Colorado</option>
                                 <option value="illinois">Illinois</option>
                             </select>
                             <select class="form-control form-select" id="salaryFilter">
@@ -871,6 +877,7 @@
                                 housing: 'Provided',
                                 specialty: job.specialty || 'general',
                                 state: (job.state || '').toLowerCase(),
+                                stateCode: job.state || '',
                                 description: job.description || 'Healthcare opportunity',
                                 requirements: ['Board Certification Required'],
                                 benefits: ['Competitive Package']
@@ -948,6 +955,7 @@
                 housing: 'Provided', // API doesn't have housing info yet
                 specialty: apiJob.specialty || 'general',
                 state: (apiJob.state || '').toLowerCase().replace(' ', '-'),
+                stateCode: apiJob.state || '',
                 description: apiJob.description || 'Great opportunity for healthcare professionals.',
                 requirements: Array.isArray(apiJob.requirements) ? apiJob.requirements : ['Board Certification Required'],
                 benefits: ['Competitive Package'], // API doesn't have benefits yet
@@ -1360,7 +1368,14 @@
                 const matchesSpecialty = !specialty || 
                     job.specialty.toLowerCase().includes(specialty.toLowerCase()) ||
                     job.specialty.toLowerCase().replace(/\s+/g, '') === specialty.toLowerCase();
-                const matchesLocation = !location || job.state === location;
+                // Map state codes to filter values for location matching
+                const stateMapping = {
+                    'CA': 'california', 'TX': 'texas', 'FL': 'florida', 'NY': 'new-york',
+                    'MA': 'massachusetts', 'IL': 'illinois', 'CO': 'colorado'
+                };
+                const matchesLocation = !location || 
+                    job.state === location || 
+                    (job.stateCode && stateMapping[job.stateCode.toUpperCase()] === location);
                 
                 let matchesSalary = true;
                 if (salary) {
