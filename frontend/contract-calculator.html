@@ -1979,31 +1979,19 @@
             }, 1000);
         }
 
-        // Print Results function with better fallback handling
+        // Print Results function - COMPLETELY DISABLED FOR DEBUGGING
         function printResults() {
-            console.log('🖨️ printResults() called');
+            console.log('🚨 PRINT FUNCTION CALLED - BUT COMPLETELY DISABLED FOR DEBUGGING');
+            console.log('Event object:', event);
+            console.log('Stack trace:', new Error().stack);
             
-            // Enhanced user interaction guard - ensure this was triggered by user action
-            if (typeof event === 'undefined' || !event || event.isTrusted === false) {
-                console.warn('⚠️ Print blocked: Not triggered by trusted user interaction', event);
-                showNotification('Print requires user interaction - please click the Print button', 'error');
-                return;
-            }
+            // ALWAYS block - no printing allowed during debugging
+            showNotification('🚨 PRINT COMPLETELY DISABLED - Debug mode active', 'error');
+            return;
             
-            // Additional check for automatic execution
-            if (!event.target || !event.target.closest || !event.target.closest('button')) {
-                console.warn('⚠️ Print blocked: Not triggered by button click');
-                showNotification('Print must be triggered by clicking the Print button', 'error');
-                return;
-            }
-            
-            try {
-                // Try to print current page first (fallback for blocked pop-ups)
-                const printPage = () => {
-                    console.log('🖨️ Opening print dialog');
-                    window.print();
-                    showNotification('📄 Print dialog opened', 'success');
-                };
+            // COMPLETELY DISABLED - NO PRINTING ALLOWED
+            console.log('🚨 ALL PRINT FUNCTIONALITY DISABLED');
+            return;
                 
                 // Check if pop-ups are blocked by trying to open a window
                 const testWindow = window.open('', '_blank', 'width=1,height=1');
@@ -2557,9 +2545,29 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
+        // AGGRESSIVE PRINT DEBUGGING - Override window.print globally
+        console.log('🚨 INSTALLING PRINT BLOCKERS');
+        const originalPrint = window.print;
+        window.print = function() {
+            console.error('🚨 CRITICAL: window.print() was called!');
+            console.error('Stack trace:', new Error().stack);
+            console.error('Arguments:', arguments);
+            alert('PRINT BLOCKED: Debug mode active. Check console for details.');
+            // Do NOT call original print function
+        };
+        
+        // Also block any attempts to restore original print
+        Object.defineProperty(window, 'print', {
+            value: window.print,
+            writable: false,
+            configurable: false
+        });
+        
+        console.log('🚨 PRINT BLOCKERS INSTALLED');
+        
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOMContentLoaded event fired');
+            console.log('📄 DOMContentLoaded event fired - Print blockers active');
             
             // Comprehensive element checking
             console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
