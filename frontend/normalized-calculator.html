@@ -2197,6 +2197,14 @@
         // Print Results function with better fallback handling
         function printResults() {
             console.log('🖨️ printResults() called');
+            
+            // User interaction guard - ensure this was triggered by user action
+            if (typeof event !== 'undefined' && event && event.isTrusted === false) {
+                console.warn('⚠️ Print blocked: Not triggered by trusted user interaction');
+                showNotification('Print requires user interaction', 'error');
+                return;
+            }
+            
             try {
                 // Try to print current page first (fallback for blocked pop-ups)
                 const printPage = () => {
@@ -2429,6 +2437,14 @@ From: LocumTrueRate Contract Calculator`;
         // Export CSV function with better error handling
         function exportCSV() {
             console.log('📊 exportCSV() called');
+            
+            // User interaction guard - ensure this was triggered by user action
+            if (typeof event !== 'undefined' && event && event.isTrusted === false) {
+                console.warn('⚠️ CSV export blocked: Not triggered by trusted user interaction');
+                showNotification('Export requires user interaction', 'error');
+                return;
+            }
+            
             try {
                 // Gather all data for CSV export
                 const data = [
@@ -2504,6 +2520,13 @@ From: LocumTrueRate Contract Calculator`;
         }
 
         function exportAnalysis() {
+            // User interaction guard - ensure this was triggered by user action
+            if (typeof event !== 'undefined' && event && event.isTrusted === false) {
+                console.warn('⚠️ PDF export blocked: Not triggered by trusted user interaction');
+                showNotification('Export requires user interaction', 'error');
+                return;
+            }
+            
             try {
                 // Generate comprehensive contract analysis for PDF export
                 const analysis = {
