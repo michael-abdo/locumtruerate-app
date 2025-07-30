@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DIRECT PRINT DEBUG</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+    <h1>🚨 DIRECT PRINT DEBUG</h1>
+    <p>This page should NOT print automatically.</p>
+    <p>If it does, something external is causing it.</p>
+    
+    <script>
+        console.log('🚨 PAGE LOADED - NO PRINT FUNCTIONS EXIST');
+        
+        // Override window.print
+        window.print = function() {
+            alert('PRINT CALLED! Something external triggered it!');
+            console.error('EXTERNAL TRIGGER:', new Error().stack);
+        };
+        
+        // Monitor beforeprint
+        window.addEventListener('beforeprint', function(e) {
+            alert('BEFOREPRINT EVENT! External trigger detected!');
+            console.error('BEFOREPRINT:', e);
+        });
+        
+        console.log('🚨 PRINT MONITORING ACTIVE');
+    </script>
+</body>
+</html>
