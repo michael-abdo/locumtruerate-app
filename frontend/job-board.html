@@ -806,7 +806,7 @@
         }
 
         let currentView = 'card';
-        let filteredJobs = [...jobsData];
+        let filteredJobs = [];
         let currentPage = 1;
         const jobsPerPage = 2; // Changed to 2 to show pagination with fewer jobs
         
@@ -1215,6 +1215,7 @@
             
             currentPage = 1; // Reset to first page when filtering
             sortJobs(); // Apply sorting after filtering
+            renderJobs(); // Always render after filtering
         }
         
         // Sort functionality
@@ -1796,7 +1797,13 @@
                 
                 // Load jobs from API first
                 console.log('🚀 Starting job loading process...');
-                loadJobsFromAPI();
+                loadJobsFromAPI().then(() => {
+                    console.log('✅ Initial job load complete, rendering...');
+                    renderJobs();
+                }).catch(error => {
+                    console.error('❌ Failed to load jobs:', error);
+                    loadSampleData();
+                });
                 
                 // Also ensure we have jobs loaded by checking after a delay
                 setTimeout(() => {
@@ -1856,6 +1863,12 @@
                 
                 // Set up event listeners after DOM is ready
                 document.getElementById('searchInput').addEventListener('input', filterJobs);
+                document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        filterJobs();
+                    }
+                });
                 document.getElementById('specialtyFilter').addEventListener('change', filterJobs);
                 document.getElementById('locationFilter').addEventListener('change', filterJobs);
                 document.getElementById('salaryFilter').addEventListener('change', filterJobs);
