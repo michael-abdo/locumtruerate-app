@@ -913,10 +913,9 @@
                 });
                 LocumUtils.showToast('Failed to load job listings. Using fallback data.', 'warning');
                 
-                // Set empty array if API fails
-                jobsData = [];
-                filteredJobs = [];
-                renderJobs();
+                // Load sample data as fallback when API fails
+                console.log('🔄 Loading fallback sample data...');
+                loadSampleData();
             }
         }
         
@@ -976,6 +975,114 @@
             return transformedJob;
         }
         
+        // Load sample data as fallback
+        function loadSampleData() {
+            console.log('📝 Loading sample data as fallback...');
+            
+            jobsData = [
+                {
+                    id: 1,
+                    title: "Emergency Medicine Physician",
+                    facility: "Metropolitan General Hospital",
+                    location: "Los Angeles, CA",
+                    salary: "$350/hr",
+                    duration: "13 weeks",
+                    hours: "48 hrs/week",
+                    housing: "$1,800/week",
+                    specialty: "emergency",
+                    state: "california",
+                    stateCode: "CA",
+                    description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
+                    requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                    benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
+                },
+                {
+                    id: 2,
+                    title: "Internal Medicine Hospitalist",
+                    facility: "Houston Medical Center",
+                    location: "Houston, TX",
+                    salary: "$285/hr",
+                    duration: "26 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,400/week",
+                    specialty: "internal",
+                    state: "texas",
+                    stateCode: "TX",
+                    description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
+                    requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                    benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
+                },
+                {
+                    id: 3,
+                    title: "Anesthesiologist",
+                    facility: "Chicago Surgical Center",
+                    location: "Chicago, IL",
+                    salary: "$400/hr",
+                    duration: "16 weeks",
+                    hours: "50 hrs/week", 
+                    housing: "$2,000/week",
+                    specialty: "anesthesiology",
+                    state: "illinois",
+                    stateCode: "IL",
+                    description: "Busy surgical center needs experienced anesthesiologists for diverse case mix including cardiac, neuro, and trauma cases.",
+                    requirements: ["Board Certified Anesthesia", "Cardiac Experience", "Available Immediately"],
+                    benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule", "CME Support"]
+                },
+                {
+                    id: 4,
+                    title: "Radiologist",
+                    facility: "Florida Imaging Associates",
+                    location: "Miami, FL",
+                    salary: "$320/hr",
+                    duration: "20 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,600/week",
+                    specialty: "radiology",
+                    state: "florida",
+                    stateCode: "FL",
+                    description: "High-volume radiology practice seeking diagnostic radiologist for general imaging with subspecialty opportunities.",
+                    requirements: ["Board Certified Radiology", "PACS Experience", "Florida License"],
+                    benefits: ["Competitive Salary", "Housing Provided", "Technology Bonus", "Continuing Education"]
+                },
+                {
+                    id: 5,
+                    title: "Family Medicine Physician",
+                    facility: "Denver Community Health",
+                    location: "Denver, CO",
+                    salary: "$275/hr",
+                    duration: "13 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,500/week",
+                    specialty: "family",
+                    state: "colorado",
+                    stateCode: "CO",
+                    description: "Community health center seeking family medicine physician for outpatient care with focus on underserved populations.",
+                    requirements: ["Board Certified FM", "Spanish Speaking Preferred", "Community Health Experience"],
+                    benefits: ["Loan Forgiveness Program", "Housing Stipend", "Flexible Schedule", "CME Allowance"]
+                },
+                {
+                    id: 6,
+                    title: "Cardiologist",
+                    facility: "Boston Heart Institute",
+                    location: "Boston, MA",
+                    salary: "$425/hr",
+                    duration: "26 weeks",
+                    hours: "45 hrs/week",
+                    housing: "$2,200/week",
+                    specialty: "cardiology",
+                    state: "massachusetts",
+                    stateCode: "MA",
+                    description: "Leading cardiac center seeking interventional cardiologist for cath lab coverage and inpatient consults.",
+                    requirements: ["Board Certified Cardiology", "Interventional Fellowship", "Active License"],
+                    benefits: ["Premium Compensation", "Relocation Assistance", "Research Opportunities", "Full Benefits"]
+                }
+            ];
+            
+            // Update filtered jobs and render
+            filteredJobs = [...jobsData];
+            console.log('✅ Sample data loaded. Jobs count:', jobsData.length);
+            renderJobs();
+        }
         
         // Reset all filters and show all jobs
         function resetFilters() {
@@ -986,9 +1093,13 @@
             document.getElementById('salaryFilter').value = '';
             document.getElementById('contractTypeFilter').value = '';
             
-            ensureSampleData();
-            filteredJobs = [...jobsData];
-            renderJobs();
+            // Ensure we have data to show
+            if (!jobsData || jobsData.length === 0) {
+                loadSampleData();
+            } else {
+                filteredJobs = [...jobsData];
+                renderJobs();
+            }
             console.log('✅ Filters reset, showing all jobs');
         }
         
@@ -1238,6 +1349,7 @@
             if (!search && !specialty && !location && !salary && !contractType) {
                 console.log('✅ No filters applied, showing all jobs');
                 filteredJobs = [...jobsData];
+                console.log('📊 After clearing filters - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 renderJobs();
                 return;
             }
@@ -1523,7 +1635,7 @@
         window.toggleView = toggleView;
         window.toggleSaveJob = toggleSaveJob;
         window.resetFilters = resetFilters;
-        window.ensureSampleData = ensureSampleData;
+        window.loadSampleData = loadSampleData;
         
         // Ensure toggleSaveJob is available immediately
         if (typeof window.toggleSaveJob !== 'function') {
@@ -1828,20 +1940,22 @@
                     };
                 }
                 
+                // Initialize with sample data first to ensure jobs are visible
+                console.log('🚀 Loading initial sample data to ensure jobs are visible...');
+                loadSampleData();
                 
-                // Then try to load from API
+                // Then try to load from API in background
                 console.log('🌐 Attempting to load jobs from API...');
                 loadJobsFromAPI().then(() => {
                     console.log('✅ API call completed. Current jobsData length:', jobsData.length);
+                    // Only update display if API returned actual jobs
                     if (jobsData.length > 0) {
-                        console.log('🎯 API data loaded successfully, keeping API jobs');
-                        filteredJobs = [...jobsData];
-                        renderJobs();
-                    } else {
-                        console.log('⚠️ No API data, keeping sample data displayed');
+                        console.log('🎯 API data loaded successfully');
+                        // API data already rendered by loadJobsFromAPI
                     }
                 }).catch(error => {
                     console.error('❌ API load failed, keeping sample data:', error);
+                    // Sample data already loaded, so jobs remain visible
                 });
                 
                 
