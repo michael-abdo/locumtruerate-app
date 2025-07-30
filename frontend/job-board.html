@@ -799,7 +799,7 @@
 
     <script>
         // Initialize with sample data to ensure jobs are always available
-        let jobsData = [
+        const sampleJobsData = [
             {
                 id: 1,
                 title: "Emergency Medicine Physician",
@@ -897,6 +897,10 @@
                 benefits: ["Premium Compensation", "Relocation Assistance", "Research Opportunities", "Full Benefits"]
             }
         ];
+        
+        // Keep a copy of sample data as fallback
+        let jobsData = [...sampleJobsData];
+        
         // Determine API URL based on current location
         let apiBaseUrl;
         if (window.location.hostname === 'localhost') {
@@ -989,13 +993,18 @@
                     
                     if (apiJobs.length > 0) {
                         jobsData = apiJobs;
-                        console.log('✅ Jobs data updated. Count:', jobsData.length);
+                        console.log('✅ Jobs data updated from API. Count:', jobsData.length);
                         console.log('🎯 First job:', jobsData[0]);
                     } else {
                         console.warn('⚠️ API returned jobs but none could be transformed, keeping existing data');
                     }
                 } else {
                     console.warn('⚠️ No jobs found in API response, keeping existing jobsData:', jobsData.length);
+                    // If API returns empty but we have no local data, restore sample data
+                    if (jobsData.length === 0) {
+                        console.log('🔄 Restoring sample data as fallback');
+                        jobsData = [...sampleJobsData];
+                    }
                 }
                 
                 // Safeguard: Ensure we always have some jobs to display
@@ -1084,18 +1093,18 @@
         
         // Load sample data as fallback
         function loadSampleData() {
-            // This function is now deprecated since jobsData is pre-initialized with sample data
-            // Keeping it for backward compatibility but it just ensures filteredJobs is synced
-            console.log('📝 loadSampleData called - jobs already pre-initialized:', jobsData.length);
+            console.log('📝 loadSampleData called - restoring sample data');
             
-            // Just ensure filteredJobs is synced with jobsData
-            if (jobsData && jobsData.length > 0) {
-                filteredJobs = [...jobsData];
-                renderJobs();
-                console.log('✅ filteredJobs synced with pre-initialized data. Jobs count:', filteredJobs.length);
-            } else {
-                console.error('❌ CRITICAL: jobsData is empty when it should be pre-initialized!');
+            // Restore sample data if needed
+            if (!jobsData || jobsData.length === 0) {
+                jobsData = [...sampleJobsData];
+                console.log('✅ Sample data restored. Jobs count:', jobsData.length);
             }
+            
+            // Sync filteredJobs with jobsData
+            filteredJobs = [...jobsData];
+            renderJobs();
+            console.log('✅ filteredJobs synced with data. Jobs count:', filteredJobs.length);
         }
         
         // Reset all filters and show all jobs
@@ -1359,10 +1368,12 @@
                 contractType: contractType
             });
             
-            // If no jobs available, try loading from API
+            // If no jobs available, restore sample data
             if (!jobsData || jobsData.length === 0) {
-                console.warn('⚠️ No jobsData to filter, attempting API load...');
-                loadJobsFromAPI();
+                console.warn('⚠️ No jobsData to filter, restoring sample data...');
+                jobsData = [...sampleJobsData];
+                filteredJobs = [...jobsData];
+                renderJobs();
                 return;
             }
             
