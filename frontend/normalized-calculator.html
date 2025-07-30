@@ -2728,9 +2728,44 @@ From: LocumTrueRate Contract Calculator`;
         };
         console.log('✅ Silent print monitor installed');
         
+        // Monitor for keyboard shortcuts that might trigger printing
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                console.log('🔍 Ctrl+P detected - user initiated print');
+            }
+        });
+        
+        // Monitor for beforeprint event
+        window.addEventListener('beforeprint', function(e) {
+            console.error('🚨 BEFOREPRINT EVENT FIRED - Something is trying to print!');
+            console.error('Event details:', e);
+            console.error('Stack trace:', new Error().stack);
+        });
+        
+        // Monitor for afterprint event
+        window.addEventListener('afterprint', function(e) {
+            console.log('📄 AFTERPRINT EVENT FIRED - Print dialog closed');
+        });
+        
+        // PAGE LOAD MONITORING
+        console.log('🔍 Page script starting - monitoring for auto-print triggers');
+        
+        // Monitor all function calls that might trigger printing
+        const monitoredFunctions = ['printResults', 'exportCSV', 'exportAnalysis'];
+        monitoredFunctions.forEach(funcName => {
+            if (typeof window[funcName] === 'function') {
+                const original = window[funcName];
+                window[funcName] = function() {
+                    console.log(`🔍 Function called: ${funcName} at`, new Date().toISOString());
+                    console.log('Call stack:', new Error().stack);
+                    return original.apply(this, arguments);
+                };
+            }
+        });
+        
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOMContentLoaded event fired - Print blockers active');
+            console.log('📄 DOMContentLoaded event fired - Print monitoring active');
             
             // Comprehensive element checking
             console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
