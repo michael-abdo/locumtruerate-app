@@ -961,20 +961,56 @@
                     description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
                     requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
                     benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
+                },
+                {
+                    id: 3,
+                    title: "Anesthesiologist",
+                    facility: "Chicago Surgical Center",
+                    location: "Chicago, IL",
+                    salary: "$400/hr",
+                    duration: "16 weeks",
+                    hours: "50 hrs/week", 
+                    housing: "$2,000/week",
+                    specialty: "anesthesiology",
+                    state: "illinois",
+                    description: "Busy surgical center needs experienced anesthesiologists for diverse case mix including cardiac, neuro, and trauma cases.",
+                    requirements: ["Board Certified Anesthesia", "Cardiac Experience", "Available Immediately"],
+                    benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule", "CME Support"]
+                },
+                {
+                    id: 4,
+                    title: "Radiologist",
+                    facility: "Florida Imaging Associates",
+                    location: "Miami, FL",
+                    salary: "$320/hr",
+                    duration: "20 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,600/week",
+                    specialty: "radiology",
+                    state: "florida",
+                    description: "High-volume radiology practice seeking diagnostic radiologist for general imaging with subspecialty opportunities.",
+                    requirements: ["Board Certified Radiology", "PACS Experience", "Florida License"],
+                    benefits: ["Competitive Salary", "Housing Provided", "Technology Bonus", "Continuing Education"]
                 }
             ];
+            
+            // Immediately set filteredJobs and render
             filteredJobs = [...jobsData];
             console.log('📊 Sample data created. Jobs count:', jobsData.length);
+            console.log('🎯 filteredJobs initialized with:', filteredJobs.length, 'jobs');
             
-            // Force immediate render
+            // Force immediate render - this is crucial
+            console.log('🎨 About to render jobs...');
             renderJobs();
             console.log('✅ Sample data loaded and rendered');
             
-            // Update results count
+            // Update results count immediately
             const resultsElement = document.getElementById('resultsCount');
             if (resultsElement) {
                 resultsElement.textContent = jobsData.length;
                 console.log('📊 Results count updated to:', jobsData.length);
+            } else {
+                console.error('❌ Results count element not found!');
             }
         }
         
@@ -1035,12 +1071,29 @@
 
         function renderJobs() {
             console.log('🎨 renderJobs called with filteredJobs:', filteredJobs.length);
+            console.log('📊 Current state:', {
+                jobsData: jobsData.length,
+                filteredJobs: filteredJobs.length, 
+                currentPage: currentPage,
+                jobsPerPage: jobsPerPage
+            });
+            
             const grid = document.getElementById('jobsGrid');
             if (!grid) {
                 console.error('❌ jobsGrid element not found!');
                 return;
             }
+            
+            // Clear existing content
             grid.innerHTML = '';
+            console.log('🧹 Grid cleared');
+            
+            // Ensure we have jobs to render
+            if (!filteredJobs || filteredJobs.length === 0) {
+                console.warn('⚠️ No filteredJobs to render');
+                grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No jobs found. Please check your filters or try again.</div>';
+                return;
+            }
             
             // Calculate pagination
             const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
@@ -1175,11 +1228,33 @@
         }
 
         function filterJobs() {
+            console.log('🔍 filterJobs called');
+            console.log('📊 Pre-filter state:', {
+                jobsData: jobsData.length,
+                filteredJobs: filteredJobs.length
+            });
+            
             const search = document.getElementById('searchInput').value.toLowerCase();
             const specialty = document.getElementById('specialtyFilter').value;
             const location = document.getElementById('locationFilter').value;
             const salary = document.getElementById('salaryFilter').value;
             const contractType = document.getElementById('contractTypeFilter').value;
+            
+            console.log('🎯 Filter criteria:', {
+                search: search,
+                specialty: specialty,
+                location: location,
+                salary: salary,
+                contractType: contractType
+            });
+            
+            // Ensure we have jobs to filter
+            if (!jobsData || jobsData.length === 0) {
+                console.warn('⚠️ No jobsData to filter');
+                filteredJobs = [];
+                renderJobs();
+                return;
+            }
             
             filteredJobs = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(search) || 
@@ -1210,7 +1285,21 @@
                     else if (contractType === 'ongoing') matchesContractType = duration.includes('ongoing');
                 }
                 
-                return matchesSearch && matchesSpecialty && matchesLocation && matchesSalary && matchesContractType;
+                const matches = matchesSearch && matchesSpecialty && matchesLocation && matchesSalary && matchesContractType;
+                
+                // Log first few jobs for debugging
+                if (job.id <= 2) {
+                    console.log(`🔍 Job ${job.id} (${job.title}):`, {
+                        matchesSearch, matchesSpecialty, matchesLocation, matchesSalary, matchesContractType, matches
+                    });
+                }
+                
+                return matches;
+            });
+            
+            console.log('✅ Filtering complete:', {
+                originalJobs: jobsData.length,
+                filteredJobs: filteredJobs.length
             });
             
             currentPage = 1; // Reset to first page when filtering
@@ -1795,25 +1884,22 @@
                     };
                 }
                 
-                // Load jobs from API first
-                console.log('🚀 Starting job loading process...');
-                loadJobsFromAPI().then(() => {
-                    console.log('✅ Initial job load complete, rendering...');
-                    renderJobs();
-                }).catch(error => {
-                    console.error('❌ Failed to load jobs:', error);
-                    loadSampleData();
-                });
+                // IMPORTANT: Initialize with sample data immediately to ensure jobs are visible
+                console.log('🚀 Loading initial sample data to ensure jobs are visible...');
+                loadSampleData();
                 
-                // Also ensure we have jobs loaded by checking after a delay
-                setTimeout(() => {
-                    if (jobsData.length === 0) {
-                        console.warn('⚠️ No jobs loaded after 2 seconds, forcing sample data...');
-                        loadSampleData();
-                    } else {
-                        console.log('✅ Jobs successfully loaded:', jobsData.length);
+                // Then try to load from API in background
+                console.log('🌐 Attempting to load jobs from API...');
+                loadJobsFromAPI().then(() => {
+                    console.log('✅ API data loaded successfully, refreshing display...');
+                    // Only update if we got real data
+                    if (jobsData.length > 0) {
+                        renderJobs();
                     }
-                }, 2000); // Reduced to 2 seconds for faster fallback
+                }).catch(error => {
+                    console.error('❌ API load failed, keeping sample data:', error);
+                    // Sample data is already loaded, so jobs are visible
+                });
                 
                 // Ensure sort dropdown is visible
                 const sortDropdown = document.getElementById('sortFilter');
