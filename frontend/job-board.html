@@ -926,6 +926,16 @@
             filteredJobs: filteredJobs.length
         });
         
+        // CRITICAL: Ensure we have data immediately
+        if (!jobsData || jobsData.length === 0) {
+            console.error('❌ CRITICAL: jobsData is empty at script load!');
+            // Force immediate initialization
+            if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                jobsData = [...sampleJobsData];
+                console.log('✅ Emergency restore: jobsData restored from sampleJobsData');
+            }
+        }
+        
         // Load jobs from API with comprehensive logging
         async function loadJobsFromAPI() {
             console.log('🔄 Starting to load jobs from API...');
@@ -1929,6 +1939,11 @@
         }
         window.goToPage = goToPage;
         window.toggleView = toggleView;
+        
+        // Ensure critical variables are globally accessible
+        window._jobsData = jobsData;
+        window._sampleJobsData = sampleJobsData;
+        window._filteredJobs = filteredJobs;
         
         // Debug function to check state
         window.debugJobBoard = function() {
