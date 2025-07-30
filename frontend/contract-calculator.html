@@ -2021,9 +2021,11 @@
             }, 1000);
         }
 
-        // Print Results function - MINIMAL LOGGING
+        // Print Results function - NUCLEAR BLOCK
         function printResults() {
-            console.log('🖨️ printResults() called - blocked for debugging');
+            console.error('🚨🚨🚨 printResults() CALLED - COMPLETELY BLOCKED!');
+            console.error('Call stack:', new Error().stack);
+            alert('printResults() was called! Check console.');
             return false;
             
             // Continue with normal validation but monitor everything
@@ -2605,25 +2607,55 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // INFRASTRUCTURE MONITORING
-        console.log('🔧 Infrastructure check starting...');
+        // NUCLEAR PRINT BLOCKER - OVERRIDE EVERYTHING
+        console.log('🚨 NUCLEAR PRINT BLOCKER ACTIVATED');
         
-        // Check if page resources loaded
-        window.addEventListener('load', function() {
-            console.log('✅ Page fully loaded - all resources available');
+        // Override window.print IMMEDIATELY
+        const originalPrint = window.print;
+        window.print = function() {
+            console.error('🚨🚨🚨 PRINT BLOCKED: Something tried to print!');
+            console.error('Stack trace:', new Error().stack);
+            alert('PRINT BLOCKED! Check console for details.');
+            return false;
+        };
+        
+        // Block beforeprint events
+        window.addEventListener('beforeprint', function(e) {
+            console.error('🚨🚨🚨 BEFOREPRINT EVENT BLOCKED!');
+            console.error('Event:', e);
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
         });
         
-        // Check for resource load errors
-        window.addEventListener('error', function(e) {
-            console.error('🚨 Resource load error:', e.target?.src || e.target?.href || 'Unknown resource');
-        });
+        // Override media query print detection
+        if (window.matchMedia) {
+            const printMedia = window.matchMedia('print');
+            printMedia.addListener(function(mq) {
+                if (mq.matches) {
+                    console.error('🚨🚨🚨 PRINT MEDIA QUERY DETECTED!');
+                }
+            });
+        }
         
-        // LIGHTWEIGHT PRINT DETECTION
-        window.addEventListener('beforeprint', function() {
-            console.error('🚨 PRINT DETECTED: beforeprint event fired');
-        });
+        console.log('🚨 NUCLEAR PRINT BLOCKER INSTALLED');
         
-        console.log('✅ Infrastructure monitoring installed');
+        // DISABLE ALL PRINT CSS - Add styles to override any print media queries
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @media print {
+                * { display: none !important; }
+                body::before {
+                    content: "PRINT DISABLED FOR DEBUGGING" !important;
+                    display: block !important;
+                    font-size: 24px !important;
+                    text-align: center !important;
+                    margin: 50px !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('🚨 PRINT CSS DISABLED');
         
         // MINIMAL LOAD MONITORING
         console.log('🔍 Page loading - minimal monitoring active');

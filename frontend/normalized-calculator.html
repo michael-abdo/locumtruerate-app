@@ -2197,9 +2197,11 @@
             }, 1000);
         }
 
-        // Print Results function - MINIMAL LOGGING
+        // Print Results function - NUCLEAR BLOCK
         function printResults() {
-            console.log('🖨️ printResults() called - blocked for debugging');
+            console.error('🚨🚨🚨 printResults() CALLED - COMPLETELY BLOCKED!');
+            console.error('Call stack:', new Error().stack);
+            alert('printResults() was called! Check console.');
             return false;
         }
         
@@ -2690,10 +2692,28 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // LIGHTWEIGHT PRINT DETECTION
-        window.addEventListener('beforeprint', function() {
-            console.error('🚨 PRINT DETECTED: beforeprint event fired');
+        // NUCLEAR PRINT BLOCKER - OVERRIDE EVERYTHING
+        console.log('🚨 NUCLEAR PRINT BLOCKER ACTIVATED');
+        
+        // Override window.print IMMEDIATELY
+        const originalPrint = window.print;
+        window.print = function() {
+            console.error('🚨🚨🚨 PRINT BLOCKED: Something tried to print!');
+            console.error('Stack trace:', new Error().stack);
+            alert('PRINT BLOCKED! Check console for details.');
+            return false;
+        };
+        
+        // Block beforeprint events
+        window.addEventListener('beforeprint', function(e) {
+            console.error('🚨🚨🚨 BEFOREPRINT EVENT BLOCKED!');
+            console.error('Event:', e);
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
         });
+        
+        console.log('🚨 NUCLEAR PRINT BLOCKER INSTALLED');
         
         // MINIMAL LOAD MONITORING
         console.log('🔍 Page loading - minimal monitoring active');
