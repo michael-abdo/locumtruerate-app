@@ -1998,6 +1998,44 @@
                 
                 // EMERGENCY DEBUG: Force immediate job display to diagnose issue
                 console.log('🚨 EMERGENCY DEBUG: Loading sample data first to ensure jobs display...');
+                
+                // DIRECT DOM TEST: Add a simple test job card immediately
+                const grid = document.getElementById('jobsGrid');
+                const resultsElement = document.getElementById('resultsCount');
+                if (grid) {
+                    console.log('🧪 DIRECT DOM TEST: Adding test job card immediately...');
+                    grid.innerHTML = `
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Emergency Medicine Physician</div>
+                                    <div class="job-facility">NYC Medical Center</div>
+                                    <div class="job-location">📍 New York, NY</div>
+                                </div>
+                                <div class="job-salary">
+                                    <div style="font-size: 1rem; font-weight: 600;">$200-300/hr</div>
+                                </div>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Duration</div>
+                                    <div class="job-detail-value">13 weeks</div>
+                                </div>
+                            </div>
+                            <div class="job-description">Urgent opening for board-certified EM physician.</div>
+                            <div class="job-actions">
+                                <button class="btn btn-primary">View Details</button>
+                            </div>
+                        </div>
+                    `;
+                    if (resultsElement) {
+                        resultsElement.textContent = '1';
+                    }
+                    console.log('✅ DIRECT DOM TEST: Test job card added');
+                } else {
+                    console.error('❌ DIRECT DOM TEST FAILED: jobsGrid element not found!');
+                }
+                
                 loadSampleData();
                 
                 // Then try to load from API
