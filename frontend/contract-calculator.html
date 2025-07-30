@@ -808,14 +808,14 @@
                     
                     <!-- Authentication buttons (shown when not logged in) -->
                     <li class="auth-buttons" data-auth-hidden>
-                        <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()">Login</button>
-                        <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                        <button class="btn btn-outline" id="loginButton">Login</button>
+                        <button class="btn btn-primary" id="registerButton">Sign Up</button>
                     </li>
                     
                     <!-- User menu (shown when logged in) -->
                     <li class="user-menu" data-auth-visible style="display: none;">
                         <span class="user-name"></span>
-                        <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+                        <button class="btn btn-outline" id="logoutButton">Logout</button>
                     </li>
                 </ul>
             </div>
@@ -1052,15 +1052,15 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
-                                <button class="btn-secondary" onclick="loadSavedContracts()" title="Load saved contract calculations">📂 Load Saved <span style="font-size: 0.8em;">(Login Required)</span></button>
-                                <button class="btn-secondary" onclick="window.open('calculation-history.html', '_blank')" title="View all calculation history">📋 View History</button>
-                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
-                                <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
-                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
-                                <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
-                                <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
-                                <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
+                                <button class="btn-primary" id="saveButton" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" id="loadButton" title="Load saved contract calculations">📂 Load Saved <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" id="historyButton" title="View all calculation history">📋 View History</button>
+                                <button class="btn-secondary" id="compareButton" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
+                                <button class="btn-accent" id="findJobsButton">🔍 Find Similar Jobs</button>
+                                <button id="printButton" class="btn-secondary">🖨️ Print Results</button>
+                                <button id="exportPdfButton" class="btn-secondary">📄 Export PDF</button>
+                                <button id="exportCsvButton" class="btn-secondary">📊 Export CSV</button>
+                                <button id="emailButton" class="btn-secondary">📧 Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -1186,6 +1186,43 @@
             };
         }
         
+        // CSP-COMPLIANT EVENT LISTENERS - No inline handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔗 Setting up CSP-compliant event listeners...');
+            
+            // Auth buttons
+            const loginBtn = document.getElementById('loginButton');
+            const registerBtn = document.getElementById('registerButton');
+            const logoutBtn = document.getElementById('logoutButton');
+            
+            if (loginBtn) loginBtn.addEventListener('click', () => LocumUtils.showLoginModal());
+            if (registerBtn) registerBtn.addEventListener('click', () => LocumUtils.showRegisterModal());
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            
+            // Action buttons
+            const saveBtn = document.getElementById('saveButton');
+            const loadBtn = document.getElementById('loadButton');
+            const historyBtn = document.getElementById('historyButton');
+            const compareBtn = document.getElementById('compareButton');
+            const findJobsBtn = document.getElementById('findJobsButton');
+            const printBtn = document.getElementById('printButton');
+            const exportPdfBtn = document.getElementById('exportPdfButton');
+            const exportCsvBtn = document.getElementById('exportCsvButton');
+            const emailBtn = document.getElementById('emailButton');
+            
+            if (saveBtn) saveBtn.addEventListener('click', saveContract);
+            if (loadBtn) loadBtn.addEventListener('click', loadSavedContracts);
+            if (historyBtn) historyBtn.addEventListener('click', () => window.open('calculation-history.html', '_blank'));
+            if (compareBtn) compareBtn.addEventListener('click', compareContracts);
+            if (findJobsBtn) findJobsBtn.addEventListener('click', findSimilarJobs);
+            if (printBtn) printBtn.addEventListener('click', printResults);
+            if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportAnalysis);
+            if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCSV);
+            if (emailBtn) emailBtn.addEventListener('click', emailResults);
+            
+            console.log('✅ CSP-compliant event listeners ready');
+        });
+        
         // Removed complex validation - using simple real-time calculations only
         
         // Check if all required fields are valid
@@ -1245,9 +1282,9 @@
             const hasCalculatedResults = parseFloat(document.getElementById('totalContractValue').textContent.replace(/[$,]/g, '')) > 0;
             
             // Save and Compare buttons require valid fields
-            const saveBtn = document.querySelector('.btn-primary[onclick="saveContract()"]');
-            const compareBtn = document.querySelector('.btn-secondary[onclick="compareContracts()"]');
-            const findJobsBtn = document.querySelector('.btn-accent[onclick="findSimilarJobs()"]');
+            const saveBtn = document.getElementById('saveButton');
+            const compareBtn = document.getElementById('compareButton');
+            const findJobsBtn = document.getElementById('findJobsButton');
             
             if (saveBtn) saveBtn.disabled = !isValid;
             if (compareBtn) compareBtn.disabled = !isValid;
@@ -1566,7 +1603,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2>Saved Contract Calculations</h2>
-                            <button type="button" class="modal-close" onclick="closeSavedContractsModal()">&times;</button>
+                            <button type="button" class="modal-close" id="closeContractsModal">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="saved-calculations-list">
