@@ -900,6 +900,7 @@
         
         // Keep a copy of sample data as fallback
         let jobsData = [...sampleJobsData];
+        console.log('📋 Initial jobsData loaded with', jobsData.length, 'jobs');
         
         // Determine API URL based on current location
         let apiBaseUrl;
@@ -917,6 +918,13 @@
         let filteredJobs = [];
         let currentPage = 1;
         const jobsPerPage = 2; // Changed to 2 to show pagination with fewer jobs
+        
+        // Log initial state
+        console.log('🚀 Job board script loaded. Initial state:', {
+            sampleJobsData: typeof sampleJobsData !== 'undefined' ? sampleJobsData.length : 'undefined',
+            jobsData: typeof jobsData !== 'undefined' ? jobsData.length : 'undefined',
+            filteredJobs: filteredJobs.length
+        });
         
         // Load jobs from API with comprehensive logging
         async function loadJobsFromAPI() {
@@ -1095,9 +1103,64 @@
         function loadSampleData() {
             console.log('📝 loadSampleData called - restoring sample data');
             
+            // Define fallback data inline if sampleJobsData is not available
+            const fallbackData = [
+                {
+                    id: 1,
+                    title: "Emergency Medicine Physician",
+                    facility: "Metropolitan General Hospital",
+                    location: "Los Angeles, CA",
+                    salary: "$350/hr",
+                    duration: "13 weeks",
+                    hours: "48 hrs/week",
+                    housing: "$1,800/week",
+                    specialty: "emergency",
+                    state: "california",
+                    stateCode: "CA",
+                    description: "Join our busy Level 1 trauma center serving the greater Los Angeles area.",
+                    requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                    benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance"]
+                },
+                {
+                    id: 2,
+                    title: "Internal Medicine Hospitalist",
+                    facility: "Houston Medical Center",
+                    location: "Houston, TX",
+                    salary: "$285/hr",
+                    duration: "26 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,400/week",
+                    specialty: "internal",
+                    state: "texas",
+                    stateCode: "TX",
+                    description: "Growing hospitalist program seeking internal medicine physicians.",
+                    requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                    benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance"]
+                },
+                {
+                    id: 3,
+                    title: "Anesthesiologist",
+                    facility: "Chicago Surgical Center",
+                    location: "Chicago, IL",
+                    salary: "$400/hr",
+                    duration: "16 weeks",
+                    hours: "50 hrs/week",
+                    housing: "$2,000/week",
+                    specialty: "anesthesiology",
+                    state: "illinois",
+                    stateCode: "IL",
+                    description: "Busy surgical center needs experienced anesthesiologists.",
+                    requirements: ["Board Certified Anesthesia", "Cardiac Experience"],
+                    benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule"]
+                }
+            ];
+            
             // Restore sample data if needed
             if (!jobsData || jobsData.length === 0) {
-                jobsData = [...sampleJobsData];
+                // Try to use sampleJobsData if available, otherwise use fallback
+                jobsData = (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) 
+                    ? [...sampleJobsData] 
+                    : [...fallbackData];
                 console.log('✅ Sample data restored. Jobs count:', jobsData.length);
             }
             
@@ -1974,9 +2037,17 @@
                 
                 // Initialize filteredJobs with pre-populated jobsData
                 console.log('🚀 Initializing job board with pre-populated data...');
-                console.log('📊 Initial state - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
-                filteredJobs = [...jobsData];
-                renderJobs();
+                console.log('📊 Initial state - jobsData:', jobsData ? jobsData.length : 'undefined', 'filteredJobs:', filteredJobs ? filteredJobs.length : 'undefined');
+                
+                // Ensure jobsData is initialized
+                if (!jobsData || jobsData.length === 0) {
+                    console.warn('⚠️ jobsData is empty at initialization, loading sample data...');
+                    loadSampleData();
+                } else {
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                }
+                
                 console.log('📊 After initialization - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 
                 // Then try to load from API in background
