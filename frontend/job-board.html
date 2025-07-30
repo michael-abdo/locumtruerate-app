@@ -848,9 +848,9 @@
                     timestamp: data.timestamp
                 });
                 
-                if (data.jobs && Array.isArray(data.jobs)) {
+                if (data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
                     // Transform API data to match frontend format
-                    jobsData = data.jobs.map((job, index) => {
+                    const apiJobs = data.jobs.map((job, index) => {
                         try {
                             const transformed = transformJobData(job);
                             console.log(`✅ Transformed job ${index + 1}:`, transformed);
@@ -860,13 +860,16 @@
                             return null;
                         }
                     }).filter(job => job !== null);
-                    console.log('✅ Jobs transformed successfully. Count:', jobsData.length);
-                    if (jobsData.length > 0) {
+                    
+                    if (apiJobs.length > 0) {
+                        jobsData = apiJobs;
+                        console.log('✅ Jobs transformed successfully. Count:', jobsData.length);
                         console.log('🎯 Sample job data:', jobsData[0]);
+                    } else {
+                        console.warn('⚠️ API returned jobs but none could be transformed, keeping existing data');
                     }
                 } else {
-                    console.warn('⚠️ No jobs array found in API response:', data);
-                    jobsData = [];
+                    console.warn('⚠️ No jobs found in API response, keeping existing jobsData:', jobsData.length);
                 }
                 
                 // Update filtered jobs and re-render
@@ -1941,14 +1944,17 @@
                 // Then try to load from API in background
                 console.log('🌐 Attempting to load jobs from API...');
                 loadJobsFromAPI().then(() => {
-                    console.log('✅ API data loaded successfully, refreshing display...');
-                    // Only update if we got real data
-                    if (jobsData.length > 0) {
-                        renderJobs();
-                    }
+                    console.log('✅ API call completed, ensuring jobs are displayed...');
+                    // Always ensure we have jobs visible
+                    ensureSampleData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
                 }).catch(error => {
-                    console.error('❌ API load failed, keeping sample data:', error);
-                    // Sample data is already loaded, so jobs are visible
+                    console.error('❌ API load failed, ensuring sample data is visible:', error);
+                    // Ensure sample data is loaded and displayed
+                    ensureSampleData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
                 });
                 
                 // Ensure sort dropdown is visible
