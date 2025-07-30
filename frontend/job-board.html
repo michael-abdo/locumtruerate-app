@@ -1904,6 +1904,42 @@
             return checks;
         };
         
+        // IMMEDIATE EXECUTION TEST - this should execute right away
+        console.log('🚨 IMMEDIATE EXECUTION TEST - Script is running!');
+        console.log('🚨 Document readyState:', document.readyState);
+        console.log('🚨 Current time:', new Date().toISOString());
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('🚨 JavaScript error detected:', e.error);
+            console.error('🚨 Error message:', e.message);
+            console.error('🚨 Error filename:', e.filename);
+            console.error('🚨 Error line:', e.lineno);
+            console.error('🚨 Error column:', e.colno);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('🚨 Unhandled promise rejection:', e.reason);
+        });
+        
+        // Try immediate DOM manipulation
+        setTimeout(function() {
+            console.log('🚨 Timeout executed, trying immediate DOM access...');
+            const jobsGrid = document.getElementById('jobsGrid');
+            console.log('🚨 jobsGrid found immediately:', !!jobsGrid);
+            if (jobsGrid) {
+                const immediateTest = document.createElement('div');
+                immediateTest.innerHTML = '🚨 IMMEDIATE TEST - This should be visible right away!';
+                immediateTest.style.backgroundColor = 'orange';
+                immediateTest.style.padding = '30px';
+                immediateTest.style.border = '5px solid purple';
+                immediateTest.style.fontSize = '20px';
+                immediateTest.style.textAlign = 'center';
+                jobsGrid.appendChild(immediateTest);
+                console.log('🚨 Immediate test div added');
+            }
+        }, 100);
+        
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing job board...');
