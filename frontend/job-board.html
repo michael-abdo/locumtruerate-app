@@ -978,8 +978,8 @@
         ];
         
         // Keep a copy of sample data as fallback
-        let jobsData = [...sampleJobsData];
-        console.log('📋 Initial jobsData loaded with', jobsData.length, 'jobs');
+        let jobsData = [];
+        console.log('📋 Initial jobsData initialized - will be populated by unified system');
         
         // Determine API URL based on current location
         let apiBaseUrl;
@@ -1132,10 +1132,12 @@
                     }
                 } else {
                     console.warn('⚠️ No jobs found in API response, keeping existing jobsData:', jobsData.length);
-                    // If API returns empty but we have no local data, restore sample data
+                    // If API returns empty but we have no local data, use unified system
                     if (jobsData.length === 0) {
-                        console.log('🔄 Restoring sample data as fallback');
-                        jobsData = [...sampleJobsData];
+                        console.log('🔄 Using unified system as fallback');
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
+                        }
                     }
                 }
                 
@@ -1289,10 +1291,8 @@
             
             // Restore sample data if needed
             if (!jobsData || jobsData.length === 0) {
-                // Try to use sampleJobsData if available, otherwise use fallback
-                jobsData = (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) 
-                    ? [...sampleJobsData] 
-                    : [...fallbackData];
+                // Use the unified system data
+                jobsData = [...fallbackData];
                 console.log('✅ Sample data restored. Jobs count:', jobsData.length);
             }
             
