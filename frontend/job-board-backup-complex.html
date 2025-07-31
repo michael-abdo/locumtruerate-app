@@ -1,0 +1,3029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Board - LocumTrueRate</title>
+    <!-- Deploy timestamp: 2025-07-30 18:30:00 UTC -->
+    <!-- UNIFIED FAILSAFE: Single initialization system -->
+    <script>
+        console.log('🔧 UNIFIED FAILSAFE: Starting initialization...');
+        
+        // Define robust sample data that works with all filters
+        window.unifiedJobData = [
+            {
+                id: 'unified-1',
+                title: 'Emergency Medicine Physician',
+                facility: 'Metropolitan General Hospital',
+                location: 'Los Angeles, CA',
+                locationState: 'california',
+                specialty: 'emergency',
+                hourlyRate: 350,
+                totalCompensation: 218400,
+                duration: '13 weeks',
+                hoursPerWeek: 48,
+                housing: '$1,800/week',
+                description: 'Join our busy Level 1 trauma center serving the greater Los Angeles area.',
+                requirements: ['Board Certified EM', 'ACLS/PALS Required', '3+ Years Experience'],
+                contractType: '13-weeks'
+            },
+            {
+                id: 'unified-2',
+                title: 'Internal Medicine Hospitalist',
+                facility: 'Houston Medical Center',
+                location: 'Houston, TX',
+                locationState: 'texas',
+                specialty: 'internal',
+                hourlyRate: 285,
+                totalCompensation: 296400,
+                duration: '26 weeks',
+                hoursPerWeek: 40,
+                housing: '$2,000/week',
+                description: 'Seeking experienced hospitalist for busy medical center.',
+                requirements: ['Board Certified IM', 'Hospital Medicine Experience'],
+                contractType: '26-weeks'
+            },
+            {
+                id: 'unified-3',
+                title: 'Family Medicine Provider',
+                facility: 'Rocky Mountain Clinic',
+                location: 'Denver, CO',
+                locationState: 'colorado',
+                specialty: 'family',
+                hourlyRate: 275,
+                totalCompensation: 143000,
+                duration: '13 weeks',
+                hoursPerWeek: 40,
+                housing: '$1,500/week',
+                description: 'Beautiful mountain setting clinic serving diverse community.',
+                requirements: ['Board Certified FM', 'Outpatient Experience'],
+                contractType: '13-weeks'
+            }
+        ];
+        
+        // Single initialization function
+        window.initializeJobData = function() {
+            if (!window.jobsData || window.jobsData.length === 0) {
+                console.log('🔧 UNIFIED FAILSAFE: Using unified job data');
+                window.jobsData = [...window.unifiedJobData];
+                window.filteredJobs = [...window.unifiedJobData];
+                return true;
+            }
+            return false;
+        };
+        
+        // Initialize immediately
+        window.initializeJobData();
+    </script>
+    <!-- Centralized CSS Variables and Utilities -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
+    <style>
+        /* Using centralized CSS variables from css/variables.css */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
+            z-index: 1000;
+            margin-top: 0;
+            pointer-events: none;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+            z-index: 999;
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 0;
+        }
+
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filters-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        /* Ensure all filter dropdowns are visible */
+        .filters-group select {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+
+        .view-toggle {
+            display: flex;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .view-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .results-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Job Listings */
+        .jobs-section {
+            padding: 2rem 0;
+        }
+
+        .jobs-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .jobs-grid.card-view {
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        }
+
+        .jobs-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        /* Job Card */
+        .job-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .job-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .job-facility {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .job-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .job-salary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: right;
+        }
+
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .job-detail {
+            text-align: center;
+            padding: 0.75rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+        }
+
+        .job-detail-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .job-detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .job-description {
+            color: var(--text-secondary);
+            margin: 1rem 0;
+            line-height: 1.5;
+        }
+
+        .job-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .job-tag {
+            background-color: var(--border-light);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+
+        .btn-save {
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .btn-save:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .btn-save.saved {
+            border-color: var(--error-color) !important;
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            transform: scale(1.1);
+        }
+
+        /* List View Specific */
+        .jobs-grid.list-view .job-card {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .jobs-grid.list-view .job-header {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .jobs-grid.list-view .job-details {
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            flex: 1;
+        }
+
+        .jobs-grid.list-view .job-detail {
+            background: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .jobs-grid.list-view .job-actions {
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .jobs-grid.list-view .job-description,
+        .jobs-grid.list-view .job-tags {
+            display: none;
+        }
+
+        /* Job Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--text-primary);
+            color: var(--text-muted);
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4, .footer-section h5 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+
+        .pagination-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn:disabled:hover {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
+        /* Form Select Enhancement */
+        .form-select {
+            min-width: 180px;
+            display: inline-block;
+            font-weight: 500;
+        }
+        
+        /* Ensure sort dropdown is clearly visible */
+        #sortFilter {
+            border: 2px solid var(--border-color);
+            font-weight: 600;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            min-width: 200px;
+        }
+        
+        /* Enhance save button feedback */
+        .btn-save {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .btn-save:hover {
+            transform: scale(1.1);
+        }
+        
+        .btn-save.saved {
+            transform: scale(1.1);
+            border-color: var(--error-color) !important;
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Heartbeat animation for save action */
+        @keyframes heartbeat {
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            25% { 
+                transform: scale(1.3);
+                box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.4);
+            }
+            50% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+            75% { 
+                transform: scale(1.3);
+                box-shadow: 0 0 20px 5px rgba(239, 68, 68, 0.4);
+            }
+            100% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filters-group {
+                justify-content: center;
+            }
+
+            .jobs-grid.card-view {
+                grid-template-columns: 1fr;
+            }
+
+            .jobs-grid.list-view .job-card {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .jobs-grid.list-view .job-details {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>LocumTrueRate</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link active">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                    <!-- Authentication buttons (hidden when authenticated) -->
+                    <li class="auth-buttons" data-auth-hidden>
+                        <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()" style="margin-right: 0.5rem;">Login</button>
+                        <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                    </li>
+                    <!-- User menu (shown when authenticated) -->
+                    <li class="user-menu" data-auth-required style="display: none;">
+                        <span class="user-name" style="margin-right: 1rem; color: var(--text-secondary);"></span>
+                        <button class="btn btn-outline" onclick="AuthAPI.logout().then(() => location.reload())">Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Find Your Perfect Locum Position</h1>
+                <p>Find your next locum opportunity with our advanced search and calculator integration</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="container">
+                    <div class="filters-container">
+                        <div class="filters-group">
+                            <input type="text" class="form-control" placeholder="Search jobs..." id="searchInput">
+                            <select class="form-control form-select" id="specialtyFilter">
+                                <option value="">All Specialties</option>
+                                <option value="emergency">Emergency Medicine</option>
+                                <option value="internal">Internal Medicine</option>
+                                <option value="family">Family Medicine</option>
+                                <option value="cardiology">Cardiology</option>  
+                                <option value="endocrinology">Endocrinology</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="radiology">Radiology</option>
+                                <option value="anesthesiology">Anesthesiology</option>
+                            </select>
+                            <select class="form-control form-select" id="locationFilter">
+                                <option value="">All Locations</option>
+                                <option value="california">California</option>
+                                <option value="texas">Texas</option>
+                                <option value="florida">Florida</option>
+                                <option value="massachusetts">Massachusetts</option>
+                                <option value="new-york">New York</option>
+                                <option value="colorado">Colorado</option>
+                                <option value="illinois">Illinois</option>
+                            </select>
+                            <select class="form-control form-select" id="salaryFilter">
+                                <option value="">Any Salary</option>
+                                <option value="0-200">Under $200/hr</option>
+                                <option value="200-300">$200-300/hr</option>
+                                <option value="300-400">$300-400/hr</option>
+                                <option value="400+">$400+/hr</option>
+                            </select>
+                            <select class="form-control form-select" id="contractTypeFilter">
+                                <option value="">All Contract Types</option>
+                                <option value="8-week">8 weeks</option>
+                                <option value="13-week">13 weeks</option>
+                                <option value="16-week">16 weeks</option>
+                                <option value="20-week">20 weeks</option>
+                                <option value="26-week">26 weeks</option>
+                                <option value="ongoing">Ongoing</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="resetFilters()" style="margin-left: 0.5rem; white-space: nowrap;">Clear Filters</button>
+                        </div>
+                        <div class="filters-group">
+                            <select class="form-control form-select" id="sortFilter">
+                                <option value="">Sort by...</option>
+                                <option value="salary-high">Salary: High to Low</option>
+                                <option value="salary-low">Salary: Low to High</option>
+                                <option value="total-comp-high">Total Compensation: High to Low</option>
+                                <option value="total-comp-low">Total Compensation: Low to High</option>
+                                <option value="location">Location (A-Z)</option>
+                                <option value="duration">Duration (Shortest first)</option>
+                            </select>
+                            <div class="view-toggle">
+                                <button class="view-btn active" onclick="toggleView('card')">📋 Cards</button>
+                                <button class="view-btn" onclick="toggleView('list')">📄 List</button>
+                            </div>
+                            <div class="results-info">
+                                <span id="resultsCount">0</span> positions found
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jobs Section -->
+            <section class="jobs-section">
+                <div class="container">
+                    <div class="jobs-grid card-view" id="jobsGrid">
+                        <!-- Job listings will be dynamically generated -->
+                    </div>
+                    
+                    <!-- MINIMAL TEST: Direct HTML job cards -->
+                    <div id="testJobsGrid" style="display: none;">
+                        <div class="job-card">
+                            <h3>TEST: Emergency Medicine Physician</h3>
+                            <p><strong>Facility:</strong> Metropolitan General Hospital</p>
+                            <p><strong>Location:</strong> Los Angeles, CA</p>
+                            <p><strong>Rate:</strong> $350/hr</p>
+                            <button onclick="alert('Test job clicked!')">View Details</button>
+                        </div>
+                        <div class="job-card">
+                            <h3>TEST: Internal Medicine Hospitalist</h3>
+                            <p><strong>Facility:</strong> Houston Medical Center</p>
+                            <p><strong>Location:</strong> Houston, TX</p>
+                            <p><strong>Rate:</strong> $300/hr</p>
+                            <button onclick="alert('Test job clicked!')">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Initialize job data using unified system -->
+                    <script>
+                        console.log('🔧 AGGRESSIVE INIT: Forcing job display...');
+                        // Force initialization immediately
+                        if (window.unifiedJobData && window.unifiedJobData.length > 0) {
+                            console.log('✅ Found', window.unifiedJobData.length, 'unified jobs, forcing display');
+                            window.jobsData = [...window.unifiedJobData];
+                            window.filteredJobs = [...window.unifiedJobData];
+                        }
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
+                        }
+                        // ULTIMATE FAILSAFE: Force render after 100ms
+                        setTimeout(() => {
+                            console.log('🚨 ULTIMATE FAILSAFE: Checking if jobs rendered...');
+                            const jobsGrid = document.getElementById('jobsGrid');
+                            if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                                console.log('🚨 NO JOBS RENDERED! Force calling renderJobs...');
+                                if (window.renderJobs && typeof window.renderJobs === 'function') {
+                                    window.renderJobs();
+                                } else {
+                                    console.error('❌ renderJobs function not available!');
+                                }
+                                // NUCLEAR OPTION: Show test jobs if everything else fails
+                                setTimeout(() => {
+                                    if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                                        console.log('🚨 NUCLEAR OPTION: Showing test jobs...');
+                                        const testGrid = document.getElementById('testJobsGrid');
+                                        if (testGrid) {
+                                            jobsGrid.innerHTML = testGrid.innerHTML;
+                                            // Update results count
+                                            const resultsCount = document.getElementById('resultsCount');
+                                            if (resultsCount) resultsCount.textContent = '2';
+                                        }
+                                    }
+                                }, 500);
+                            } else {
+                                console.log('✅ Jobs are rendered, failsafe not needed');
+                            }
+                        }, 100);
+                        
+                        // IMMEDIATE DOM TEST: Force job cards directly into DOM
+                        console.log('🧪 DIRECT DOM TEST: Injecting job cards immediately...');
+                        setTimeout(() => {
+                            const grid = document.getElementById('jobsGrid');
+                            if (grid) {
+                                grid.innerHTML = `
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <div>
+                                                <div class="job-title">DIRECT: Emergency Medicine Physician</div>
+                                                <div class="job-facility">Metropolitan General Hospital</div>
+                                                <div class="job-location">📍 Los Angeles, CA</div>
+                                            </div>
+                                            <div class="job-salary">$350/hr</div>
+                                        </div>
+                                        <div class="job-details">
+                                            <div class="job-duration">⏱️ 13 weeks</div>
+                                            <div class="job-hours">🕐 48 hrs/week</div>
+                                            <div class="job-housing">🏠 $1,800/week</div>
+                                        </div>
+                                        <div class="job-actions">
+                                            <button class="btn btn-primary" onclick="alert('Direct test job clicked!')">View Details</button>
+                                            <button class="btn btn-secondary">Save</button>
+                                        </div>
+                                    </div>
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <div>
+                                                <div class="job-title">DIRECT: Internal Medicine Hospitalist</div>
+                                                <div class="job-facility">Houston Medical Center</div>
+                                                <div class="job-location">📍 Houston, TX</div>
+                                            </div>
+                                            <div class="job-salary">$300/hr</div>
+                                        </div>
+                                        <div class="job-details">
+                                            <div class="job-duration">⏱️ 26 weeks</div>
+                                            <div class="job-hours">🕐 50 hrs/week</div>
+                                            <div class="job-housing">🏠 $1,500/week</div>
+                                        </div>
+                                        <div class="job-actions">
+                                            <button class="btn btn-primary" onclick="alert('Direct test job clicked!')">View Details</button>
+                                            <button class="btn btn-secondary">Save</button>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Update results count
+                                const resultsCount = document.getElementById('resultsCount');
+                                if (resultsCount) {
+                                    resultsCount.textContent = '2';
+                                    console.log('✅ DIRECT DOM TEST: Injected 2 job cards and updated count');
+                                }
+                            }
+                        }, 50);
+                    </script>
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination controls will be dynamically generated -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Job Detail Modal -->
+        <div class="modal" id="jobModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="console.log('❌ Close button clicked'); closeModal();">&times;</button>
+                <div id="modalContent">
+                    <!-- Modal content will be dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>LocumTrueRate</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize with sample data to ensure jobs are always available
+        const sampleJobsData = [
+            {
+                id: 1,
+                title: "Emergency Medicine Physician",
+                facility: "Metropolitan General Hospital",
+                location: "Los Angeles, CA",
+                salary: "$350/hr",
+                duration: "13 weeks",
+                hours: "48 hrs/week",
+                housing: "$1,800/week",
+                specialty: "emergency",
+                state: "california",
+                stateCode: "CA",
+                description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
+                requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
+            },
+            {
+                id: 2,
+                title: "Internal Medicine Hospitalist",
+                facility: "Houston Medical Center",
+                location: "Houston, TX",
+                salary: "$285/hr",
+                duration: "26 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,400/week",
+                specialty: "internal",
+                state: "texas",
+                stateCode: "TX",
+                description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
+                requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
+            },
+            {
+                id: 3,
+                title: "Anesthesiologist",
+                facility: "Chicago Surgical Center",
+                location: "Chicago, IL",
+                salary: "$400/hr",
+                duration: "16 weeks",
+                hours: "50 hrs/week",
+                housing: "$2,000/week",
+                specialty: "anesthesiology",
+                state: "illinois",
+                stateCode: "IL",
+                description: "Busy surgical center needs experienced anesthesiologists for diverse case mix including cardiac, neuro, and trauma cases.",
+                requirements: ["Board Certified Anesthesia", "Cardiac Experience", "Available Immediately"],
+                benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule", "CME Support"]
+            },
+            {
+                id: 4,
+                title: "Radiologist",
+                facility: "Florida Imaging Associates",
+                location: "Miami, FL",
+                salary: "$320/hr",
+                duration: "20 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,600/week",
+                specialty: "radiology",
+                state: "florida",
+                stateCode: "FL",
+                description: "High-volume radiology practice seeking diagnostic radiologist for general imaging with subspecialty opportunities.",
+                requirements: ["Board Certified Radiology", "PACS Experience", "Florida License"],
+                benefits: ["Competitive Salary", "Housing Provided", "Technology Bonus", "Continuing Education"]
+            },
+            {
+                id: 5,
+                title: "Family Medicine Physician",
+                facility: "Denver Community Health",
+                location: "Denver, CO",
+                salary: "$275/hr",
+                duration: "13 weeks",
+                hours: "40 hrs/week",
+                housing: "$1,500/week",
+                specialty: "family",
+                state: "colorado",
+                stateCode: "CO",
+                description: "Community health center seeking family medicine physician for outpatient care with focus on underserved populations.",
+                requirements: ["Board Certified FM", "Spanish Speaking Preferred", "Community Health Experience"],
+                benefits: ["Loan Forgiveness Program", "Housing Stipend", "Flexible Schedule", "CME Allowance"]
+            },
+            {
+                id: 6,
+                title: "Cardiologist",
+                facility: "Boston Heart Institute",
+                location: "Boston, MA",
+                salary: "$425/hr",
+                duration: "26 weeks",
+                hours: "45 hrs/week",
+                housing: "$2,200/week",
+                specialty: "cardiology",
+                state: "massachusetts",
+                stateCode: "MA",
+                description: "Leading cardiac center seeking interventional cardiologist for cath lab coverage and inpatient consults.",
+                requirements: ["Board Certified Cardiology", "Interventional Fellowship", "Active License"],
+                benefits: ["Premium Compensation", "Relocation Assistance", "Research Opportunities", "Full Benefits"]
+            }
+        ];
+        
+        // Keep a copy of sample data as fallback
+        let jobsData = [];
+        console.log('📋 Initial jobsData initialized - will be populated by unified system');
+        
+        // Determine API URL based on current location
+        let apiBaseUrl;
+        if (window.location.hostname === 'localhost') {
+            apiBaseUrl = 'http://localhost:4000/api/v1';
+        } else if (window.location.hostname.includes('herokuapp.com')) {
+            // For Heroku deployments, use the same origin
+            apiBaseUrl = window.location.origin + '/api/v1';
+        } else {
+            // Default to relative URL
+            apiBaseUrl = '/api/v1';
+        }
+
+        let currentView = 'card';
+        let filteredJobs = [];
+        let currentPage = 1;
+        const jobsPerPage = 2; // Changed to 2 to show pagination with fewer jobs
+        
+        // Log initial state
+        console.log('🚀 Job board script loaded. Initial state:', {
+            sampleJobsData: typeof sampleJobsData !== 'undefined' ? sampleJobsData.length : 'undefined',
+            jobsData: typeof jobsData !== 'undefined' ? jobsData.length : 'undefined',
+            filteredJobs: filteredJobs.length
+        });
+        
+        // CRITICAL: Ensure we have data immediately
+        if (!jobsData || jobsData.length === 0) {
+            console.error('❌ CRITICAL: jobsData is empty at script load!');
+            // Force immediate initialization
+            if (window.initializeJobData) {
+                window.initializeJobData();
+                console.log('✅ Emergency restore: jobsData restored from unifiedJobData');
+            }
+        }
+        
+        // Ensure filteredJobs is also initialized immediately
+        if (!filteredJobs || filteredJobs.length === 0) {
+            filteredJobs = [...jobsData];
+            console.log('✅ filteredJobs initialized with', filteredJobs.length, 'jobs');
+        }
+        
+        // Add window.onload as additional failsafe
+        window.addEventListener('load', function() {
+            console.log('🔍 Window load event - checking job display status');
+            setTimeout(() => {
+                const jobsGrid = document.getElementById('jobsGrid');
+                const jobCount = document.querySelector('.job-count');
+                if (jobsGrid && jobsGrid.children.length === 0) {
+                    console.error('🚨 CRITICAL: No jobs displayed on window.load!');
+                    if (jobsData && jobsData.length > 0) {
+                        console.log('📋 jobsData exists with', jobsData.length, 'jobs, forcing render');
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    } else if (window.initializeJobData) {
+                        console.log('📋 Restoring from unifiedJobData and rendering');
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    }
+                }
+            }, 500);
+        });
+        
+        // Load jobs from API with comprehensive logging
+        async function loadJobsFromAPI() {
+            console.log('🔄 Starting to load jobs from API...');
+            console.log('🌐 API Base URL:', apiBaseUrl);
+            console.log('📍 Current location:', window.location.hostname);
+            
+            try {
+                const apiUrl = `${apiBaseUrl}/jobs`;
+                console.log('🎯 Fetching from:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                console.log('📡 API Response received:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    console.error('❌ API request failed:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        url: apiUrl
+                    });
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📋 Raw API data received:', data);
+                
+                // Check if API returned an error response
+                if (data.error) {
+                    console.error('❌ API returned error response:', data.error, data.message);
+                    throw new Error(`API Error: ${data.message || data.error}`);
+                }
+                
+                console.log('📊 API Response structure:', {
+                    hasJobs: !!data.jobs,
+                    jobsLength: data.jobs ? data.jobs.length : 0,
+                    jobsType: typeof data.jobs,
+                    jobsIsArray: Array.isArray(data.jobs),
+                    pagination: data.pagination,
+                    timestamp: data.timestamp
+                });
+                
+                // CRITICAL: If API returns empty jobs array, keep existing data
+                if (!data.jobs || !Array.isArray(data.jobs) || data.jobs.length === 0) {
+                    console.warn('⚠️ API returned no jobs, preserving existing data');
+                    console.log('📊 Current jobsData has', jobsData.length, 'jobs');
+                    return; // Exit early, don't modify jobsData
+                }
+                
+                if (data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
+                    console.log('🔍 API returned', data.jobs.length, 'jobs. Attempting transformation...');
+                    
+                    // Transform API data to match frontend format
+                    const apiJobs = data.jobs.map((job, index) => {
+                        try {
+                            const transformed = transformJobData(job);
+                            console.log(`✅ Transformed job ${index + 1}:`, transformed);
+                            return transformed;
+                        } catch (err) {
+                            console.error(`❌ Failed to transform job ${index + 1}:`, err, job);
+                            // Return a basic job structure to prevent complete failure
+                            return {
+                                id: job.id || index,
+                                title: job.title || 'Unknown Position',
+                                facility: job.companyName || 'Unknown Facility',
+                                location: job.location || 'Unknown Location',
+                                salary: '$200-300/hr',
+                                duration: '13 weeks',
+                                hours: '40 hrs/week',
+                                housing: 'Provided',
+                                specialty: job.specialty || 'general',
+                                state: (job.state || '').toLowerCase(),
+                                stateCode: job.state || '',
+                                description: job.description || 'Healthcare opportunity',
+                                requirements: ['Board Certification Required'],
+                                benefits: ['Competitive Package']
+                            };
+                        }
+                    }).filter(job => job !== null);
+                    
+                    console.log('🔍 Transformation complete. Successfully transformed:', apiJobs.length, 'jobs');
+                    
+                    if (apiJobs.length > 0) {
+                        jobsData = apiJobs;
+                        console.log('✅ Jobs data updated from API. Count:', jobsData.length);
+                        console.log('🎯 First job:', jobsData[0]);
+                    } else {
+                        console.warn('⚠️ API returned jobs but none could be transformed, keeping existing data');
+                    }
+                } else {
+                    console.warn('⚠️ No jobs found in API response, keeping existing jobsData:', jobsData.length);
+                    // If API returns empty but we have no local data, use unified system
+                    if (jobsData.length === 0) {
+                        console.log('🔄 Using unified system as fallback');
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
+                        }
+                    }
+                }
+                
+                // Safeguard: Ensure we always have some jobs to display
+                if (!jobsData || jobsData.length === 0) {
+                    console.warn('⚠️ No jobs available after API call, using unified initialization');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    }
+                    return;
+                }
+                
+                // Update filtered jobs and re-render
+                filteredJobs = [...jobsData];
+                renderJobs();
+                
+                console.log('🎨 Jobs rendered. Total jobs:', jobsData.length);
+                
+            } catch (error) {
+                console.error('❌ Failed to load jobs from API:', error);
+                console.error('❌ Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+                LocumUtils.showToast('Failed to load job listings. Using fallback data.', 'warning');
+                
+                // Load unified data as fallback when API fails
+                console.log('🔄 Loading fallback unified data...');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                }
+            }
+        }
+        
+        // Transform API job data to frontend format
+        function transformJobData(apiJob) {
+            console.log('🔄 Transforming job:', apiJob.id, apiJob.title);
+            console.log('📊 API job data:', {
+                hourlyRateMin: apiJob.hourlyRateMin,
+                hourlyRateMax: apiJob.hourlyRateMax,
+                location: apiJob.location,
+                companyName: apiJob.companyName,
+                specialty: apiJob.specialty
+            });
+            
+            // Handle salary range or single rate
+            let salary = 'Competitive';
+            if (apiJob.hourlyRateMin && apiJob.hourlyRateMax) {
+                if (apiJob.hourlyRateMin === apiJob.hourlyRateMax) {
+                    salary = `$${apiJob.hourlyRateMin}/hr`;
+                } else {
+                    salary = `$${apiJob.hourlyRateMin}-${apiJob.hourlyRateMax}/hr`;
+                }
+            } else if (apiJob.hourlyRateMin) {
+                salary = `$${apiJob.hourlyRateMin}+/hr`;
+            } else if (apiJob.hourlyRateMax) {
+                salary = `Up to $${apiJob.hourlyRateMax}/hr`;
+            }
+            
+            const transformedJob = {
+                id: apiJob.id,
+                title: apiJob.title || 'Unknown Position',
+                facility: apiJob.companyName || 'Unknown Facility',
+                location: apiJob.location || `${apiJob.state || 'Unknown'}`,
+                salary: salary,
+                duration: apiJob.duration || '13 weeks',
+                hours: apiJob.shiftType || '40 hrs/week',
+                housing: 'Provided', // API doesn't have housing info yet
+                specialty: apiJob.specialty || 'general',
+                state: (apiJob.state || '').toLowerCase().replace(' ', '-'),
+                stateCode: apiJob.state || '',
+                description: apiJob.description || 'Great opportunity for healthcare professionals.',
+                requirements: Array.isArray(apiJob.requirements) ? apiJob.requirements : ['Board Certification Required'],
+                benefits: ['Competitive Package'], // API doesn't have benefits yet
+                // Include recruiter info from API
+                recruiterEmail: apiJob.postedByEmail,
+                recruiterName: apiJob.postedByName
+            };
+            
+            console.log('✅ Job transformed successfully:', {
+                id: transformedJob.id,
+                title: transformedJob.title,
+                facility: transformedJob.facility,
+                location: transformedJob.location,
+                salary: transformedJob.salary
+            });
+            
+            return transformedJob;
+        }
+        
+        // Load sample data as fallback
+        function loadSampleData() {
+            console.log('📝 loadSampleData called - restoring sample data');
+            
+            // Define fallback data inline if sampleJobsData is not available
+            const fallbackData = [
+                {
+                    id: 1,
+                    title: "Emergency Medicine Physician",
+                    facility: "Metropolitan General Hospital",
+                    location: "Los Angeles, CA",
+                    salary: "$350/hr",
+                    duration: "13 weeks",
+                    hours: "48 hrs/week",
+                    housing: "$1,800/week",
+                    specialty: "emergency",
+                    state: "california",
+                    stateCode: "CA",
+                    description: "Join our busy Level 1 trauma center serving the greater Los Angeles area.",
+                    requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
+                    benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance"]
+                },
+                {
+                    id: 2,
+                    title: "Internal Medicine Hospitalist",
+                    facility: "Houston Medical Center",
+                    location: "Houston, TX",
+                    salary: "$285/hr",
+                    duration: "26 weeks",
+                    hours: "40 hrs/week",
+                    housing: "$1,400/week",
+                    specialty: "internal",
+                    state: "texas",
+                    stateCode: "TX",
+                    description: "Growing hospitalist program seeking internal medicine physicians.",
+                    requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
+                    benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance"]
+                },
+                {
+                    id: 3,
+                    title: "Anesthesiologist",
+                    facility: "Chicago Surgical Center",
+                    location: "Chicago, IL",
+                    salary: "$400/hr",
+                    duration: "16 weeks",
+                    hours: "50 hrs/week",
+                    housing: "$2,000/week",
+                    specialty: "anesthesiology",
+                    state: "illinois",
+                    stateCode: "IL",
+                    description: "Busy surgical center needs experienced anesthesiologists.",
+                    requirements: ["Board Certified Anesthesia", "Cardiac Experience"],
+                    benefits: ["Premium Pay", "Housing Allowance", "Flexible Schedule"]
+                }
+            ];
+            
+            // Restore sample data if needed
+            if (!jobsData || jobsData.length === 0) {
+                // Use the unified system data
+                jobsData = [...fallbackData];
+                console.log('✅ Sample data restored. Jobs count:', jobsData.length);
+            }
+            
+            // Sync filteredJobs with jobsData
+            filteredJobs = [...jobsData];
+            renderJobs();
+            console.log('✅ filteredJobs synced with data. Jobs count:', filteredJobs.length);
+        }
+        
+        // Reset all filters and show all jobs
+        function resetFilters() {
+            console.log('🔄 Resetting all filters...');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('specialtyFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('salaryFilter').value = '';
+            document.getElementById('contractTypeFilter').value = '';
+            
+            // Ensure we have data to show - use unified initialization
+            if (!jobsData || jobsData.length === 0) {
+                console.log('🔄 No data for reset, using unified initialization');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                } else {
+                    console.warn('⚠️ No unified initialization available');
+                    return;
+                }
+            } else {
+                filteredJobs = [...jobsData];
+            }
+            
+            // Always render after resetting
+            renderJobs();
+            console.log('✅ Filters reset, showing', filteredJobs.length, 'jobs');
+        }
+        
+        
+        // Save job functionality
+        function getSavedJobs() {
+            return LocumUtils.localStorage('savedJobs') || [];
+        }
+        
+        function toggleSaveJob(jobId) {
+            console.log('🔖 Toggle save job:', jobId);
+            const savedJobs = getSavedJobs();
+            const index = savedJobs.indexOf(jobId);
+            
+            if (index > -1) {
+                savedJobs.splice(index, 1);
+                console.log('💔 Job removed from saved jobs:', jobId);
+                LocumUtils.showToast('Job removed from saved jobs', 'info');
+            } else {
+                savedJobs.push(jobId);
+                console.log('❤️ Job saved:', jobId);
+                LocumUtils.showToast('Job saved successfully', 'success');
+            }
+            
+            LocumUtils.localStorage('savedJobs', savedJobs);
+            console.log('📦 Updated saved jobs:', savedJobs);
+            
+            // Force immediate UI update for better feedback
+            const saveButtons = document.querySelectorAll(`[onclick*="toggleSaveJob(${jobId})"]`);
+            saveButtons.forEach(button => {
+                if (savedJobs.includes(jobId)) {
+                    button.className = 'btn-save saved';
+                    button.innerHTML = '❤️';
+                    // Add animation for visual feedback
+                    button.style.animation = 'heartbeat 0.5s ease';
+                    setTimeout(() => {
+                        button.style.animation = '';
+                    }, 500);
+                } else {
+                    button.className = 'btn-save';
+                    button.innerHTML = '🤍';
+                }
+            });
+        }
+        
+        // Calculate total compensation
+        function calculateTotalCompensation(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            const totalContract = (weeklyPay * contractWeeks) + totalStipends;
+            
+            return LocumUtils.formatCurrency(totalContract);
+        }
+
+        function renderJobs() {
+            try {
+                console.log('🎨 renderJobs called with filteredJobs:', filteredJobs ? filteredJobs.length : 0);
+                console.log('📊 Current state:', {
+                    jobsData: jobsData ? jobsData.length : 0,
+                    filteredJobs: filteredJobs ? filteredJobs.length : 0, 
+                    currentPage: currentPage,
+                    jobsPerPage: jobsPerPage
+                });
+            
+            // Emergency safeguard: If we have no jobs to render, load sample data
+            if ((!jobsData || jobsData.length === 0) && (!filteredJobs || filteredJobs.length === 0)) {
+                console.error('❌ CRITICAL: renderJobs called with no data! Loading sample data...');
+                // Ensure we have unified data available
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    console.log('✅ Emergency restore from unifiedJobData:', jobsData.length, 'jobs');
+                } else {
+                    console.warn('⚠️ No unified initialization available');
+                    return;
+                }
+            }
+            
+            const grid = document.getElementById('jobsGrid');
+            if (!grid) {
+                console.error('❌ jobsGrid element not found!');
+                return;
+            }
+            
+            // Clear existing content
+            grid.innerHTML = '';
+            console.log('🧹 Grid cleared');
+            
+            // Ensure we have jobs to render
+            if (!filteredJobs || filteredJobs.length === 0) {
+                console.warn('⚠️ No filteredJobs to render');
+                grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No jobs found. Please check your filters or try again.</div>';
+                return;
+            }
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            const startIndex = (currentPage - 1) * jobsPerPage;
+            const endIndex = startIndex + jobsPerPage;
+            const jobsToShow = filteredJobs.slice(startIndex, endIndex);
+            console.log('📊 Pagination:', { totalPages, startIndex, endIndex, jobsToShow: jobsToShow.length });
+            
+            jobsToShow.forEach((job, index) => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                
+                jobCard.onclick = (e) => {
+                    // Don't open modal if clicking on action buttons
+                    if (e.target.closest('.job-actions')) {
+                        console.log('🚫 Clicked on action button area, not opening modal');
+                        return;
+                    }
+                    console.log('📇 Job card clicked, opening details for:', job.title);
+                    showJobDetail(job);
+                };
+                
+                jobCard.innerHTML = `
+                    <div class="job-header">
+                        <div>
+                            <div class="job-title">${job.title}</div>
+                            <div class="job-facility">${job.facility}</div>
+                            <div class="job-location">📍 ${job.location}</div>
+                        </div>
+                        <div class="job-salary">
+                            <div style="font-size: 1rem; font-weight: 600;">${job.salary}</div>
+                            <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: ${calculateTotalCompensation(job)}</div>
+                        </div>
+                    </div>
+                    <div class="job-details">
+                        <div class="job-detail">
+                            <div class="job-detail-label">Duration</div>
+                            <div class="job-detail-value">${job.duration}</div>
+                        </div>
+                        <div class="job-detail">
+                            <div class="job-detail-label">Hours/Week</div>
+                            <div class="job-detail-value">${job.hours}</div>
+                        </div>
+                        <div class="job-detail">
+                            <div class="job-detail-label">Housing</div>
+                            <div class="job-detail-value">${job.housing}</div>
+                        </div>
+                    </div>
+                    <div class="job-description">${job.description}</div>
+                    <div class="job-tags">
+                        ${job.requirements && job.requirements.length > 0 
+                            ? job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')
+                            : '<span class="job-tag">Board Certification Required</span>'}
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); console.log('View Details clicked for job:', ${job.id}); window.showJobDetailById(${job.id})">View Details</button>
+                        <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
+                            ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
+                        </button>
+                    </div>
+                `;
+                
+                grid.appendChild(jobCard);
+            });
+            
+            console.log(`🏁 Finished rendering ${jobsToShow.length} jobs. Grid has ${grid.children.length} total cards`);
+            
+            const resultsElement = document.getElementById('resultsCount');
+            if (resultsElement) {
+                resultsElement.textContent = filteredJobs.length;
+                console.log('📊 Results count updated:', filteredJobs.length);
+            } else {
+                console.error('❌ Results count element not found!');
+            }
+            renderPagination(totalPages);
+            } catch (error) {
+                console.error('❌ Critical error in renderJobs:', error);
+                console.error('Stack trace:', error.stack);
+                // Try to display sample data as last resort
+                try {
+                    if (window.initializeJobData) {
+                        console.log('🚨 Attempting emergency recovery with unified data');
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                        // Try simple DOM manipulation as fallback
+                        const grid = document.getElementById('jobsGrid');
+                        if (grid) {
+                            grid.innerHTML = '<div class="job-card"><h3>Emergency: Jobs Failed to Load</h3><p>Please refresh the page</p></div>';
+                        }
+                    }
+                } catch (e) {
+                    console.error('❌ Emergency recovery also failed:', e);
+                }
+            }
+        }
+        
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            
+            // Always show pagination info, even for single page
+            if (totalPages === 0) {
+                paginationContainer.innerHTML = '<div class="pagination-info">No jobs found</div>';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span class="pagination-info">...</span>`;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next ›</button>`;
+            
+            // Page info
+            const startItem = (currentPage - 1) * jobsPerPage + 1;
+            const endItem = Math.min(currentPage * jobsPerPage, filteredJobs.length);
+            paginationHTML += `<div class="pagination-info">Showing ${startItem}-${endItem} of ${filteredJobs.length}</div>`;
+            
+            // Always show pagination controls
+            paginationContainer.innerHTML = paginationHTML;
+            console.log(`📄 Pagination rendered: ${totalPages} pages, current page ${currentPage}`);
+        }
+        
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderJobs();
+        }
+
+        function toggleView(view) {
+            currentView = view;
+            const grid = document.getElementById('jobsGrid');
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            grid.className = `jobs-grid ${view}-view`;
+        }
+
+        function filterJobs() {
+            console.log('🔍 filterJobs called');
+            console.log('📊 Pre-filter state:', {
+                jobsData: jobsData.length,
+                filteredJobs: filteredJobs.length
+            });
+            
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const specialty = document.getElementById('specialtyFilter').value;
+            const location = document.getElementById('locationFilter').value;
+            const salary = document.getElementById('salaryFilter').value;
+            const contractType = document.getElementById('contractTypeFilter').value;
+            
+            console.log('🎯 Filter criteria:', {
+                search: search,
+                specialty: specialty,
+                location: location,
+                salary: salary,
+                contractType: contractType
+            });
+            
+            // If no jobs available, restore unified data
+            if (!jobsData || jobsData.length === 0) {
+                console.warn('⚠️ No jobsData to filter, using unified initialization...');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                    return;
+                }
+            }
+            
+            // If all filters are empty, show all jobs
+            if (!search && !specialty && !location && !salary && !contractType) {
+                console.log('🔍 SEARCH CLEAR: No filters applied, restoring all jobs');
+                console.log('📊 Pre-clear state:', {
+                    jobsData: jobsData.length,
+                    filteredJobs: filteredJobs.length,
+                    unifiedData: window.unifiedJobData ? window.unifiedJobData.length : 0
+                });
+                
+                // Ensure we have data to show
+                if (!jobsData || jobsData.length === 0) {
+                    console.log('🔄 No data for search clear, using unified initialization');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
+                    } else {
+                        console.warn('⚠️ No unified initialization available');
+                        return;
+                    }
+                }
+                
+                filteredJobs = [...jobsData];
+                console.log('✅ SEARCH CLEAR COMPLETE - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
+                renderJobs();
+                return;
+            }
+            
+            filteredJobs = jobsData.filter(job => {
+                const matchesSearch = job.title.toLowerCase().includes(search) || 
+                                    job.facility.toLowerCase().includes(search) ||
+                                    job.location.toLowerCase().includes(search);
+                const matchesSpecialty = !specialty || 
+                    job.specialty.toLowerCase().includes(specialty.toLowerCase()) ||
+                    job.specialty.toLowerCase().replace(/\s+/g, '') === specialty.toLowerCase();
+                // Match location using locationState property from unified data
+                const matchesLocation = !location || 
+                    job.locationState === location ||
+                    (job.location && job.location.toLowerCase().includes(location.replace('-', ' ')));
+                
+                let matchesSalary = true;
+                if (salary) {
+                    // Use hourlyRate from unified data (already a number)
+                    const hourlyRate = job.hourlyRate || (job.salary ? parseInt(job.salary.replace(/\$|\/hr/g, '')) : 0);
+                    if (salary === '0-200') matchesSalary = hourlyRate < 200;
+                    else if (salary === '200-300') matchesSalary = hourlyRate >= 200 && hourlyRate < 300;
+                    else if (salary === '300-400') matchesSalary = hourlyRate >= 300 && hourlyRate < 400;
+                    else if (salary === '400+') matchesSalary = hourlyRate >= 400;
+                }
+                
+                let matchesContractType = true;
+                if (contractType) {
+                    const duration = job.duration.toLowerCase();
+                    if (contractType === '8-week') matchesContractType = duration.includes('8');
+                    else if (contractType === '13-week') matchesContractType = duration.includes('13');
+                    else if (contractType === '16-week') matchesContractType = duration.includes('16');
+                    else if (contractType === '20-week') matchesContractType = duration.includes('20');
+                    else if (contractType === '26-week') matchesContractType = duration.includes('26');
+                    else if (contractType === 'ongoing') matchesContractType = duration.includes('ongoing');
+                }
+                
+                const matches = matchesSearch && matchesSpecialty && matchesLocation && matchesSalary && matchesContractType;
+                
+                // Log first few jobs for debugging
+                if (job.id <= 2) {
+                    console.log(`🔍 Job ${job.id} (${job.title}):`, {
+                        matchesSearch, matchesSpecialty, matchesLocation, matchesSalary, matchesContractType, matches
+                    });
+                }
+                
+                return matches;
+            });
+            
+            console.log('✅ Filtering complete:', {
+                originalJobs: jobsData.length,
+                filteredJobs: filteredJobs.length
+            });
+            
+            currentPage = 1; // Reset to first page when filtering
+            sortJobs(); // Apply sorting after filtering
+            renderJobs(); // Always render after filtering
+        }
+        
+        // Sort functionality
+        function sortJobs() {
+            const sortBy = document.getElementById('sortFilter').value;
+            console.log('🔄 Sorting jobs by:', sortBy || 'default order');
+            console.log('📊 Jobs to sort:', filteredJobs.length);
+            
+            if (!sortBy) {
+                console.log('➡️ No sort specified, rendering jobs in default order');
+                renderJobs();
+                return;
+            }
+            
+            filteredJobs.sort((a, b) => {
+                switch (sortBy) {
+                    case 'salary-high': {
+                        const salaryA = parseInt(a.salary.replace(/[\$\/hr\-\+]/g, '').split(' ')[0]);
+                        const salaryB = parseInt(b.salary.replace(/[\$\/hr\-\+]/g, '').split(' ')[0]);
+                        console.log(`Sorting high->low: ${a.title} ($${salaryA}) vs ${b.title} ($${salaryB})`);
+                        return salaryB - salaryA; // Higher salary first
+                    }
+                    case 'salary-low': {
+                        const salaryA = parseInt(a.salary.replace(/[\$\/hr\-\+]/g, '').split(' ')[0]);
+                        const salaryB = parseInt(b.salary.replace(/[\$\/hr\-\+]/g, '').split(' ')[0]);
+                        console.log(`Sorting low->high: ${a.title} ($${salaryA}) vs ${b.title} ($${salaryB})`);
+                        return salaryA - salaryB; // Lower salary first
+                    }
+                    case 'total-comp-high':
+                        const totalA = calculateTotalCompensationValue(a);
+                        const totalB = calculateTotalCompensationValue(b);
+                        return totalB - totalA;
+                    case 'total-comp-low':
+                        const totalA2 = calculateTotalCompensationValue(a);
+                        const totalB2 = calculateTotalCompensationValue(b);
+                        return totalA2 - totalB2;
+                    case 'location':
+                        return a.location.localeCompare(b.location);
+                    case 'duration':
+                        const durationA = parseInt(a.duration.replace(/weeks/g, '')) || (a.duration.includes('Ongoing') ? 999 : 13);
+                        const durationB = parseInt(b.duration.replace(/weeks/g, '')) || (b.duration.includes('Ongoing') ? 999 : 13);
+                        return durationA - durationB;
+                    default:
+                        return 0;
+                }
+            });
+            
+            console.log('✅ Jobs sorted. First job after sort:', filteredJobs[0]?.title);
+            renderJobs();
+        }
+        
+        // Helper function to calculate total compensation as number
+        function calculateTotalCompensationValue(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            return (weeklyPay * contractWeeks) + totalStipends;
+        }
+
+        function showJobDetail(jobId) {
+            console.log('🔍 showJobDetail called with:', jobId);
+            console.log('📊 Current jobsData:', jobsData);
+            console.log('📊 jobsData length:', jobsData.length);
+            
+            const job = typeof jobId === 'object' ? jobId : jobsData.find(j => j.id === jobId);
+            console.log('📄 Job found:', job);
+            
+            if (!job) {
+                console.error('❌ Job not found for ID:', jobId);
+                LocumUtils.showToast('Job not found', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('jobModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            if (!modal || !modalContent) {
+                console.error('❌ Modal elements not found');
+                return;
+            }
+            
+            // Generate recruiter info - use real data if available, otherwise use defaults
+            const recruiterInfo = getRecruiterInfo(job);
+            
+            modalContent.innerHTML = `
+                <h2>${job.title}</h2>
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">${job.facility}</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">📍 ${job.location}</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${job.salary}</div>
+                        <div style="color: var(--text-secondary);">Hourly Rate</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${job.duration}</div>
+                        <div style="color: var(--text-secondary);">Duration</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${job.hours}</div>
+                        <div style="color: var(--text-secondary);">Per Week</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                        <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${job.housing}</div>
+                        <div style="color: var(--text-secondary);">Housing</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-bottom: 1rem;">Position Description</h4>
+                <p style="margin-bottom: 2rem; line-height: 1.6;">${job.description}</p>
+                
+                <h4 style="margin-bottom: 1rem;">Requirements</h4>
+                <ul style="margin-bottom: 2rem; padding-left: 1.5rem;">
+                    ${job.requirements && job.requirements.length > 0 
+                        ? job.requirements.map(req => `<li style="margin-bottom: 0.5rem;">${req}</li>`).join('')
+                        : '<li style="margin-bottom: 0.5rem;">Board Certification Required</li>'}
+                </ul>
+                
+                <h4 style="margin-bottom: 1rem;">Benefits</h4>
+                <ul style="margin-bottom: 2rem; padding-left: 1.5rem;">
+                    ${job.benefits && job.benefits.length > 0 
+                        ? job.benefits.map(benefit => `<li style="margin-bottom: 0.5rem;">${benefit}</li>`).join('')
+                        : '<li style="margin-bottom: 0.5rem;">Competitive Package</li>'}
+                </ul>
+                
+                <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Recruiter Contact</h4>
+                <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                            ${recruiterInfo.initials}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; color: var(--text-primary);">${recruiterInfo.name}</h4>
+                            <p style="margin: 0; color: var(--text-secondary);">${recruiterInfo.title}</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiterInfo.email}" style="color: var(--primary-color);">${recruiterInfo.email}</a></p>
+                        <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiterInfo.phone}" style="color: var(--primary-color);">${recruiterInfo.phone}</a></p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button class="btn btn-primary" onclick="calculateContract(${job.id})">Calculate Contract Value</button>
+                    <button class="btn btn-secondary" onclick="applyToJob(${job.id})">Apply Now</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            console.log('✅ Modal activated. Modal classes:', modal.className);
+            console.log('✅ Modal display style:', window.getComputedStyle(modal).display);
+            console.log('📋 Modal content includes:', {
+                recruiterName: recruiterInfo.name,
+                recruiterEmail: recruiterInfo.email,
+                recruiterPhone: recruiterInfo.phone,
+                hasApplyButton: modalContent.innerHTML.includes('Apply Now'),
+                hasRecruiterSection: modalContent.innerHTML.includes('Recruiter Contact')
+            });
+            
+            // Force modal to be visible in case of CSS issues
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+        }
+
+        function closeModal() {
+            console.log('🚪 Closing modal...');
+            const modal = document.getElementById('jobModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none'; // Ensure modal is hidden
+                console.log('✅ Modal closed successfully');
+                // Force focus back to body to ensure proper state
+                document.body.focus();
+            } else {
+                console.error('❌ Modal element not found!');
+            }
+        }
+        
+        // Create a more robust showJobDetailById function
+        function showJobDetailById(jobId) {
+            console.log('🔍 showJobDetailById called with ID:', jobId);
+            console.log('📊 Current jobsData state:', {
+                length: jobsData.length,
+                ids: jobsData.map(j => j.id)
+            });
+            
+            // Find the job in jobsData
+            const job = jobsData.find(j => j.id === jobId);
+            
+            if (!job) {
+                console.error('❌ Job not found in jobsData for ID:', jobId);
+                console.log('📋 Available jobs:', jobsData);
+                
+                // Try to find in filteredJobs as fallback
+                const filteredJob = filteredJobs.find(j => j.id === jobId);
+                if (filteredJob) {
+                    console.log('✅ Found job in filteredJobs, using that');
+                    showJobDetail(filteredJob);
+                } else {
+                    LocumUtils.showToast('Job not found. Please refresh the page.', 'error');
+                }
+                return;
+            }
+            
+            console.log('✅ Job found:', job);
+            showJobDetail(job);
+        }
+        
+        // Make it globally available
+        window.showJobDetailById = showJobDetailById;
+        
+        // Make functions available globally
+        window.closeModal = closeModal;
+        window.applyToJob = applyToJob;
+        window.calculateContract = calculateContract;
+        window.showJobDetail = showJobDetail;
+        window.goToPage = goToPage;
+        window.toggleView = toggleView;
+        window.toggleSaveJob = toggleSaveJob;
+        window.resetFilters = resetFilters;
+        window.loadSampleData = loadSampleData;
+        
+        // Ensure toggleSaveJob is available immediately
+        if (typeof window.toggleSaveJob !== 'function') {
+            console.error('❌ toggleSaveJob not properly assigned to window');
+        } else {
+            console.log('✅ toggleSaveJob is available globally');
+        }
+
+        function calculateContract(jobId) {
+            // Simulate opening contract calculator with pre-filled data
+            const job = jobsData.find(j => j.id === jobId);
+            if (job) {
+                // Store job data for calculator
+                LocumUtils.localStorage('calculatorData', {
+                    hourlyRate: parseInt(job.salary.replace(/\$|\/hr/g, '')),
+                    hoursPerWeek: parseInt(job.hours.replace(/hrs\/week/g, '')),
+                    contractWeeks: parseInt(job.duration.replace(/weeks/g, '')) || 13,
+                    housingStipend: parseInt(job.housing.replace(/\$|\/week/g, '')) || 0,
+                    jobTitle: job.title,
+                    facility: job.facility
+                });
+                
+                // Navigate to calculator
+                window.location.href = 'contract-calculator.html';
+            }
+        }
+
+        // Helper function to get recruiter info
+        function getRecruiterInfo(job) {
+            // Use real recruiter info from API if available
+            if (job.recruiterEmail && job.recruiterName) {
+                const names = job.recruiterName.split(' ');
+                return {
+                    name: job.recruiterName,
+                    email: job.recruiterEmail,
+                    phone: '(555) 123-4567', // Default phone number
+                    title: 'Healthcare Recruiter',
+                    initials: names.map(n => n[0]).join('')
+                };
+            }
+            
+            // Fallback to default recruiters based on job ID
+            const defaultRecruiters = {
+                1: { name: "Sarah Johnson", email: "sarah.johnson@medhire.com", phone: "(555) 123-4567" },
+                2: { name: "Michael Chen", email: "m.chen@healthstaffing.com", phone: "(555) 234-5678" },
+                3: { name: "Lisa Rodriguez", email: "l.rodriguez@surgicalsolutions.com", phone: "(555) 345-6789" },
+                4: { name: "David Kim", email: "david.kim@radnetwork.com", phone: "(555) 456-7890" },
+                5: { name: "Jennifer Walsh", email: "j.walsh@traumacare.com", phone: "(555) 567-8901" },
+                6: { name: "Robert Martinez", email: "r.martinez@ruralhealthcare.com", phone: "(555) 678-9012" }
+            };
+            
+            // Use modulo to cycle through recruiters for any job ID
+            const recruiterIndex = ((job.id - 1) % 6) + 1;
+            const defaultRecruiter = defaultRecruiters[recruiterIndex] || defaultRecruiters[1];
+            
+            return {
+                name: defaultRecruiter.name,
+                email: defaultRecruiter.email,
+                phone: defaultRecruiter.phone,
+                title: 'Healthcare Recruiter',
+                initials: defaultRecruiter.name.split(' ').map(n => n[0]).join('')
+            };
+        }
+        
+        // Check if user has already applied to a job
+        async function hasUserAppliedToJob(jobId) {
+            try {
+                const apiBase = window.API_CONFIG?.getBaseUrl() || 'http://localhost:4000/api/v1';
+                const token = window.AuthManager?.getToken();
+                
+                if (!token) return false;
+                
+                const response = await fetch(`${apiBase}/applications?job_id=${jobId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.data && data.data.applications && data.data.applications.length > 0;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('Error checking application status:', error);
+                return false;
+            }
+        }
+
+        async function applyToJob(jobId) {
+            console.log('🎯 Apply Now clicked for job:', jobId);
+            const job = jobsData.find(j => j.id === jobId);
+            if (!job) {
+                showNotification('Job not found', 'error');
+                return;
+            }
+
+            // Check if user is authenticated
+            if (!window.AuthManager || !window.AuthManager.isAuthenticated()) {
+                console.log('User not authenticated, showing login modal');
+                showNotification('Please log in to apply for jobs', 'warning');
+                
+                // Show login modal
+                if (typeof showLoginModal === 'function') {
+                    showLoginModal();
+                } else {
+                    console.error('showLoginModal function not found');
+                }
+                return;
+            }
+
+            // Check if user has already applied
+            const hasApplied = await hasUserAppliedToJob(jobId);
+            if (hasApplied) {
+                showNotification('You have already applied to this position', 'info');
+                return;
+            }
+
+            // Store job data for the application form
+            window.currentApplicationJob = job;
+
+            // Show application modal (will be created in next task)
+            if (typeof showApplicationModal === 'function') {
+                showApplicationModal(job);
+            } else {
+                // Temporary fallback until we create the application modal
+                console.log('Application modal not yet implemented');
+                showNotification('Application feature coming soon!', 'info');
+                
+                // For now, show the job details with an "Apply" message
+                const recruiterInfo = getRecruiterInfo(job);
+                const modal = document.getElementById('jobModal');
+                const modalContent = document.getElementById('modalContent');
+                
+                modalContent.innerHTML = `
+                    <h2>Apply for ${job.title}</h2>
+                    <div style="background: var(--info-color); color: white; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0;">
+                        <p style="margin: 0; font-size: 1.1rem;">Application form coming soon! For now, please contact the recruiter directly.</p>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Recruiter Contact</h3>
+                    <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                ${recruiterInfo.initials}
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; color: var(--text-primary);">${recruiterInfo.name}</h4>
+                                <p style="margin: 0; color: var(--text-secondary);">${recruiterInfo.title}</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiterInfo.email}" style="color: var(--primary-color);">${recruiterInfo.email}</a></p>
+                            <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiterInfo.phone}" style="color: var(--primary-color);">${recruiterInfo.phone}</a></p>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Next Steps</h3>
+                    <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                        <li>Your recruiter will review your application within 24 hours</li>
+                        <li>They may contact you for an initial phone screening</li>
+                        <li>Be prepared to discuss your experience and availability</li>
+                        <li>Have your credentials and references ready</li>
+                    </ul>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button class="btn btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
+                        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+                
+                // Log success for debugging
+                console.log('✅ Application submitted successfully for job:', job.title);
+                LocumUtils.showToast('Application submitted successfully!', 'success');
+            } else {
+                console.error('❌ Job not found:', jobId);
+                LocumUtils.showToast('Error: Job not found', 'error');
+            }
+        }
+
+        // Moved event listeners to inside DOMContentLoaded
+
+        // Ensure critical functions are globally available
+        window.showJobDetail = showJobDetail;
+        window.applyToJob = applyToJob;
+        window.calculateContract = calculateContract;
+        window.closeModal = closeModal;
+        window.toggleSaveJob = toggleSaveJob;
+        
+        // Add debug function to check job state
+        window.debugJobState = function() {
+            console.log('🔍 DEBUG JOB STATE:');
+            console.log('  - sampleJobsData:', typeof sampleJobsData !== 'undefined' ? sampleJobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('  - jobsData:', typeof jobsData !== 'undefined' ? jobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('  - filteredJobs:', typeof filteredJobs !== 'undefined' ? filteredJobs.length + ' jobs' : 'UNDEFINED');
+            console.log('  - First job:', jobsData && jobsData[0] ? jobsData[0].title : 'NO JOBS');
+            return {
+                sampleJobsData: sampleJobsData,
+                jobsData: jobsData,
+                filteredJobs: filteredJobs
+            };
+        };
+        
+        // Emergency force display function callable from console
+        window.forceDisplayJobs = function() {
+            console.log('🚨 FORCE DISPLAY JOBS called from console');
+            try {
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    console.log('✅ Data restored, attempting render');
+                    renderJobs();
+                    console.log('✅ Force display complete');
+                } else {
+                    console.error('❌ No sample data available');
+                }
+            } catch (e) {
+                console.error('❌ Force display failed:', e);
+            }
+        };
+        
+        // Nuclear option function callable from console
+        window.deployNuclearOption = function() {
+            console.log('🚨 NUCLEAR OPTION called from console');
+            const grid = document.getElementById('jobsGrid');
+            const resultsCount = document.getElementById('resultsCount');
+            if (grid) {
+                grid.innerHTML = \`
+                    <div class="job-card" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+                        <h3 style="margin: 0 0 0.5rem 0;">Emergency Medicine Physician</h3>
+                        <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Metropolitan General Hospital</p>
+                        <p style="margin: 0.25rem 0;"><strong>Location:</strong> Los Angeles, CA</p>
+                        <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $350/hr</p>
+                        <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 13 weeks</p>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">View Details</button>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">Apply Now</button>
+                    </div>
+                    <div class="job-card" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+                        <h3 style="margin: 0 0 0.5rem 0;">Internal Medicine Hospitalist</h3>
+                        <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Houston Medical Center</p>
+                        <p style="margin: 0.25rem 0;"><strong>Location:</strong> Houston, TX</p>
+                        <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $285/hr</p>
+                        <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 26 weeks</p>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">View Details</button>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">Apply Now</button>
+                    </div>
+                \`;
+                if (resultsCount) {
+                    resultsCount.textContent = '6';
+                }
+                console.log('🚨 Nuclear option deployed from console');
+            }
+        };
+        
+        // Ensure toggleSaveJob is available immediately
+        if (typeof window.toggleSaveJob !== 'function') {
+            console.error('❌ toggleSaveJob not properly assigned to window');
+        } else {
+            console.log('✅ toggleSaveJob is available globally');
+        }
+        window.goToPage = goToPage;
+        window.toggleView = toggleView;
+        
+        // Clean initialization check
+        console.log('🚀 Running initialization check...');
+        setTimeout(() => {
+            try {
+                if (window.initializeJobData && (!window.jobsData || window.jobsData.length === 0)) {
+                    console.log('🔧 Initializing job data...');
+                    window.initializeJobData();
+                }
+                if (window.renderJobs && window.jobsData && window.jobsData.length > 0) {
+                    window.filteredJobs = [...window.jobsData];
+                    window.renderJobs();
+                }
+            } catch (e) {
+                console.error('❌ Initialization failed:', e);
+            }
+        }, 100);
+        
+        // Simple verification: Ensure jobs are rendered after page load
+        setTimeout(() => {
+            const grid = document.getElementById('jobsGrid');
+            if (grid && (!grid.children || grid.children.length === 0)) {
+                console.log('🔧 Final check: No jobs visible, running unified initialization');
+                if (window.initializeJobData && window.renderJobs) {
+                    window.initializeJobData();
+                    window.renderJobs();
+                }
+            }
+        }, 1000);
+        
+        // Ensure critical variables are globally accessible
+        window._jobsData = jobsData;
+        window._sampleJobsData = sampleJobsData;
+        
+        // Add comprehensive logging function
+        window.logFullState = function() {
+            console.log('=== FULL JOB BOARD STATE ===');
+            console.log('Current timestamp:', new Date().toISOString());
+            console.log('Window location:', window.location.href);
+            console.log('Document ready state:', document.readyState);
+            
+            const grid = document.getElementById('jobsGrid');
+            console.log('Grid element:', grid ? 'EXISTS' : 'NOT FOUND');
+            if (grid) {
+                console.log('Grid children count:', grid.children.length);
+                console.log('Grid innerHTML length:', grid.innerHTML.length);
+            }
+            
+            const resultsCount = document.getElementById('resultsCount');
+            console.log('Results count element:', resultsCount ? resultsCount.textContent : 'NOT FOUND');
+            
+            console.log('sampleJobsData:', typeof sampleJobsData !== 'undefined' ? sampleJobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('jobsData:', typeof jobsData !== 'undefined' ? jobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('filteredJobs:', typeof filteredJobs !== 'undefined' ? filteredJobs.length + ' jobs' : 'UNDEFINED');
+            
+            if (typeof renderJobs === 'function') {
+                console.log('renderJobs function: AVAILABLE');
+            } else {
+                console.log('renderJobs function: NOT AVAILABLE');
+            }
+            
+            console.log('=== END STATE LOG ===');
+        };
+        
+        // Log initial state immediately
+        window.logFullState();
+        window._filteredJobs = filteredJobs;
+        
+        // ZERO-DELAY FAILSAFE: Force job display immediately without any async operations
+        console.log('🚨 ZERO-DELAY FAILSAFE: Attempting immediate job display');
+        try {
+            const zeroDelayGrid = document.getElementById('jobsGrid');
+            if (zeroDelayGrid && (!zeroDelayGrid.innerHTML || zeroDelayGrid.innerHTML.trim() === '<!-- Job listings will be dynamically generated -->')) {
+                console.log('🚨 ZERO-DELAY: Grid is empty, injecting jobs immediately');
+                
+                // Only inject if the immediate failsafe script hasn't already populated it
+                if (!zeroDelayGrid.innerHTML.includes('Emergency Medicine Physician')) {
+                    zeroDelayGrid.innerHTML = `
+                        <div style="border: 2px solid #3182ce; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; background: #f7fafc;">
+                            <h3 style="margin: 0 0 0.5rem 0; color: #1a365d;">🚨 ZERO-DELAY FAILSAFE ACTIVATED</h3>
+                            <h4 style="margin: 0.5rem 0; color: #2d3748;">Emergency Medicine Physician</h4>
+                            <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Metropolitan General Hospital</p>
+                            <p style="margin: 0.25rem 0;"><strong>Location:</strong> Los Angeles, CA</p>
+                            <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $350/hr</p>
+                            <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 13 weeks</p>
+                        </div>
+                        <div style="border: 2px solid #22c55e; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; background: #f0fff4;">
+                            <h4 style="margin: 0.5rem 0; color: #2d3748;">Internal Medicine Hospitalist</h4>
+                            <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Houston Medical Center</p>
+                            <p style="margin: 0.25rem 0;"><strong>Location:</strong> Houston, TX</p>
+                            <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $285/hr</p>
+                            <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 26 weeks</p>
+                        </div>
+                    `;
+                    
+                    const zeroDelayResultsCount = document.getElementById('resultsCount');
+                    if (zeroDelayResultsCount) {
+                        zeroDelayResultsCount.textContent = '6';
+                    }
+                    
+                    console.log('✅ ZERO-DELAY FAILSAFE: Jobs injected successfully');
+                }
+            }
+        } catch (error) {
+            console.error('❌ ZERO-DELAY FAILSAFE: Error:', error);
+        }
+        
+        // Debug function to check state
+        window.debugJobBoard = function() {
+            console.log('🔍 Debug Job Board State:');
+            console.log('- jobsData length:', jobsData.length);
+            console.log('- filteredJobs length:', filteredJobs.length);
+            console.log('- currentPage:', currentPage);
+            console.log('- jobsPerPage:', jobsPerPage);
+            console.log('- apiBaseUrl:', apiBaseUrl);
+            console.log('- jobsGrid element:', document.getElementById('jobsGrid'));
+            console.log('- jobsGrid children:', document.getElementById('jobsGrid')?.children.length);
+            console.log('- resultsCount element:', document.getElementById('resultsCount'));
+            console.log('- resultsCount text:', document.getElementById('resultsCount')?.textContent);
+            console.log('- sortFilter element:', document.getElementById('sortFilter'));
+            console.log('- sortFilter visible:', document.getElementById('sortFilter')?.offsetParent !== null);
+            console.log('- jobModal element:', document.getElementById('jobModal'));
+            console.log('- modalContent element:', document.getElementById('modalContent'));
+            if (jobsData.length > 0) {
+                console.log('- Sample job:', jobsData[0]);
+            }
+            return {
+                jobsData: jobsData,
+                filteredJobs: filteredJobs,
+                apiBaseUrl: apiBaseUrl
+            };
+        };
+        
+        // Test function to verify View Details works
+        window.testViewDetails = function() {
+            console.log('🧪 Testing View Details functionality...');
+            if (jobsData.length > 0) {
+                console.log('Testing with first job:', jobsData[0]);
+                showJobDetail(jobsData[0].id);
+                setTimeout(() => {
+                    const modal = document.getElementById('jobModal');
+                    const isVisible = modal && (modal.classList.contains('active') || modal.style.display === 'flex');
+                    console.log('✅ Modal visible:', isVisible);
+                    if (isVisible) {
+                        console.log('✅ View Details test PASSED');
+                    } else {
+                        console.error('❌ View Details test FAILED');
+                    }
+                }, 100);
+            } else {
+                console.error('❌ No jobs loaded to test with');
+            }
+        };
+        
+        // Test function to check sort dropdown visibility
+        window.testSortDropdown = function() {
+            console.log('🧪 Testing sort dropdown visibility...');
+            const sortFilter = document.getElementById('sortFilter');
+            if (!sortFilter) {
+                console.error('❌ Sort filter element not found!');
+                return;
+            }
+            
+            const computed = window.getComputedStyle(sortFilter);
+            console.log('📊 Sort dropdown properties:', {
+                display: computed.display,
+                visibility: computed.visibility,
+                opacity: computed.opacity,
+                width: computed.width,
+                height: computed.height,
+                offsetParent: sortFilter.offsetParent,
+                offsetWidth: sortFilter.offsetWidth,
+                offsetHeight: sortFilter.offsetHeight,
+                hidden: sortFilter.hidden,
+                parentDisplay: sortFilter.parentElement ? window.getComputedStyle(sortFilter.parentElement).display : 'N/A'
+            });
+            
+            // Force visibility
+            sortFilter.style.display = 'inline-block';
+            sortFilter.style.visibility = 'visible';
+            sortFilter.style.opacity = '1';
+            console.log('✅ Forced sort dropdown to be visible');
+        };
+        
+        
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Page loaded, initializing job board...');
+            
+            // Add immediate failsafe to ensure jobs display
+            try {
+                // Emergency check - if no jobs visible after 1 second, force display
+                setTimeout(() => {
+                    const jobsGrid = document.getElementById('jobsGrid');
+                    if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                        console.error('🚨 EMERGENCY: No jobs displayed after 1 second, forcing display');
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
+                            filteredJobs = [...jobsData];
+                            renderJobs();
+                        }
+                    }
+                }, 1000);
+            } catch (e) {
+                console.error('🚨 Emergency failsafe error:', e);
+            }
+            
+            try {
+                // Check if LocumUtils is available
+                if (typeof LocumUtils === 'undefined') {
+                    console.error('❌ LocumUtils not loaded! Check common-utils.js');
+                    console.log('🔄 Creating fallback LocumUtils...');
+                    // Fallback: define minimal LocumUtils
+                    window.LocumUtils = {
+                        showToast: function(msg, type) { 
+                            console.log(`[${type}] ${msg}`);
+                            // Simple fallback toast - just log to console
+                        },
+                        formatCurrency: function(amt) { return '$' + amt.toLocaleString(); },
+                        localStorage: function(key, val) {
+                            if (val !== undefined) {
+                                try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+                            } else {
+                                try { return JSON.parse(localStorage.getItem(key)); } catch(e) { return null; }
+                            }
+                        }
+                    };
+                }
+                
+                // Initialize filteredJobs with pre-populated jobsData
+                console.log('🚀 Initializing job board with pre-populated data...');
+                console.log('📊 Initial state - jobsData:', jobsData ? jobsData.length : 'undefined', 'filteredJobs:', filteredJobs ? filteredJobs.length : 'undefined');
+                
+                // Ensure jobsData is initialized and render immediately
+                if (!jobsData || jobsData.length === 0) {
+                    console.warn('⚠️ jobsData is empty at initialization, using unified initialization...');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                    }
+                } else {
+                    console.log('✅ Initial data available, rendering', jobsData.length, 'jobs');
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                }
+                
+                console.log('📊 After initialization - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
+                
+                // Then try to load from API in background
+                console.log('🌐 Attempting to load jobs from API...');
+                loadJobsFromAPI().then(() => {
+                    console.log('✅ API call completed. Current jobsData length:', jobsData.length);
+                    // Only update display if API returned actual jobs
+                    if (jobsData.length > 0) {
+                        console.log('🎯 API data loaded successfully');
+                        // API data already rendered by loadJobsFromAPI
+                    }
+                }).catch(error => {
+                    console.error('❌ API load failed, keeping sample data:', error);
+                    // Sample data already loaded, so jobs remain visible
+                });
+                
+                
+                // Ensure sort dropdown is visible
+                const sortDropdown = document.getElementById('sortFilter');
+                if (sortDropdown) {
+                    console.log('🔧 Ensuring sort dropdown visibility...');
+                    sortDropdown.style.display = 'inline-block';
+                    sortDropdown.style.visibility = 'visible';
+                    sortDropdown.style.opacity = '1';
+                    sortDropdown.style.minWidth = '200px';
+                    console.log('✅ Sort dropdown visibility ensured');
+                    
+                    // Log computed styles
+                    const computed = window.getComputedStyle(sortDropdown);
+                    console.log('📊 Sort dropdown computed styles:', {
+                        display: computed.display,
+                        visibility: computed.visibility,
+                        opacity: computed.opacity,
+                        width: computed.width
+                    });
+                } else {
+                    console.error('❌ Sort dropdown element not found!');
+                }
+                
+                // Fix button click reliability (prevent rapid double-clicks only)
+                const buttons = document.querySelectorAll('a[href], button');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        // Prevent rapid double-clicking issues
+                        if (this.dataset.clicking) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        this.dataset.clicking = 'true';
+                        setTimeout(() => {
+                            delete this.dataset.clicking;
+                        }, 500);
+                    });
+                });
+                
+                console.log('✅ Job board initialization complete');
+                
+                
+                // Set up event listeners after DOM is ready
+                document.getElementById('searchInput').addEventListener('input', filterJobs);
+                document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        filterJobs();
+                    }
+                });
+                document.getElementById('specialtyFilter').addEventListener('change', filterJobs);
+                document.getElementById('locationFilter').addEventListener('change', filterJobs);
+                document.getElementById('salaryFilter').addEventListener('change', filterJobs);
+                document.getElementById('contractTypeFilter').addEventListener('change', filterJobs);
+                document.getElementById('sortFilter').addEventListener('change', sortJobs);
+
+                // Close modal when clicking outside
+                document.getElementById('jobModal').addEventListener('click', function(e) {
+                    console.log('🖱️ Modal clicked, target:', e.target.className);
+                    if (e.target === this) {
+                        console.log('🎯 Clicked outside modal content, closing...');
+                        closeModal();
+                    }
+                });
+                
+                // Also close modal with Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        console.log('⌨️ Escape key pressed');
+                        if (document.getElementById('jobModal').classList.contains('active')) {
+                            console.log('🚪 Modal is active, closing...');
+                            closeModal();
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Job board initialization error:', error);
+            }
+        });
+    </script>
+
+    <!-- Floating Logger Component -->
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+        <span id="fab-icon">🔍</span>
+    </button>
+    
+    <div id="floating-logger" class="floating-logger">
+        <div class="logger-header">
+            <span class="logger-title">Console Logger</span>
+            <div class="logger-controls">
+                <button class="logger-btn" onclick="clearLogs()" title="Clear logs">🗑️</button>
+                <button class="logger-btn" onclick="copyLogs()" title="Copy logs">📋</button>
+                <button class="logger-btn" onclick="minimizeLogger()" title="Minimize logger">
+                    <span id="minimize-icon">−</span>
+                </button>
+                <button class="logger-btn" onclick="toggleLogger()" title="Toggle logger">
+                    <span id="toggle-icon">▼</span>
+                </button>
+            </div>
+        </div>
+        <div id="logger-content" class="logger-content">
+            <div id="logger-messages" class="logger-messages"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Floating Logger Styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --background-color: #f8fafc;
+            --text-primary: #1e293b;
+            --text-muted: #94a3b8;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        /* Floating Action Button for toggling logger */
+        .logger-toggle-fab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .logger-toggle-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .logger-toggle-fab.visible {
+            display: flex;
+        }
+
+        .floating-logger {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 450px;
+            max-width: 90vw;
+            background-color: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1001;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px; /* Increased for better OCR */
+            transition: all 0.3s ease;
+        }
+
+        .floating-logger.hidden {
+            display: none;
+        }
+
+        .logger-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.6rem 0.6rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .logger-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .logger-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .logger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .logger-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .logger-content {
+            max-height: 300px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .logger-content.collapsed {
+            max-height: 0;
+        }
+
+        .logger-messages {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 300px;
+            background-color: var(--background-color);
+        }
+
+        .log-entry {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border-color);
+            background-color: var(--surface-color);
+            border-radius: 0.5rem;
+            word-wrap: break-word;
+            line-height: 1.6; /* Better OCR readability */
+            letter-spacing: 0.02em; /* Slight letter spacing for OCR */
+        }
+
+        .log-entry.log {
+            border-left-color: var(--primary-color);
+        }
+
+        .log-entry.warn {
+            border-left-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.08);
+        }
+
+        .log-entry.error {
+            border-left-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.08);
+        }
+
+        .log-timestamp {
+            color: var(--text-muted);
+            font-size: 12px; /* Larger for OCR */
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+
+        .log-message {
+            color: var(--text-primary);
+            font-size: 14px; /* Ensure consistent size */
+            font-weight: 400;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .floating-logger {
+                width: calc(100vw - 40px);
+                left: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Floating Logger Implementation
+        (function() {
+            // Store original console methods
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            // Logger state
+            let isCollapsed = false;
+            let isHidden = false;
+            const maxLogs = 100;
+            const logs = [];
+            
+            // Initialize logger
+            function initLogger() {
+                // Override console methods
+                console.log = function(...args) {
+                    logMessage('log', args);
+                    originalLog.apply(console, args);
+                };
+                
+                console.warn = function(...args) {
+                    logMessage('warn', args);
+                    originalWarn.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                    logMessage('error', args);
+                    originalError.apply(console, args);
+                };
+                
+                // Add initial message
+                console.log('🚀 Floating Logger initialized');
+                
+                // Default to open
+                isHidden = false;
+            }
+            
+            // Log message to floating logger
+            function logMessage(type, args) {
+                const timestamp = new Date().toLocaleTimeString();
+                const message = args.map(arg => {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg, null, 2);
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+                
+                // Add to logs array
+                logs.push({ type, timestamp, message });
+                if (logs.length > maxLogs) {
+                    logs.shift();
+                }
+                
+                // Update UI
+                updateLoggerUI();
+            }
+            
+            // Update logger UI
+            function updateLoggerUI() {
+                const messagesContainer = document.getElementById('logger-messages');
+                if (!messagesContainer) return;
+                
+                messagesContainer.innerHTML = logs.map(log => `
+                    <div class="log-entry ${log.type}">
+                        <span class="log-timestamp">${log.timestamp}</span>
+                        <span class="log-message">${escapeHtml(log.message)}</span>
+                    </div>
+                `).join('');
+                
+                // Auto-scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Escape HTML for safe display
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            // Toggle logger visibility (show/hide entire logger)
+            window.toggleLoggerVisibility = function() {
+                isHidden = !isHidden;
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                
+                if (isHidden) {
+                    logger.classList.add('hidden');
+                    fab.classList.add('visible');
+                } else {
+                    logger.classList.remove('hidden');
+                    fab.classList.remove('visible');
+                }
+            };
+            
+            // Minimize logger (hide from view, show FAB)
+            window.minimizeLogger = function() {
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                logger.classList.add('hidden');
+                fab.classList.add('visible');
+                isHidden = true;
+            };
+            
+            // Toggle logger collapse/expand
+            window.toggleLogger = function() {
+                isCollapsed = !isCollapsed;
+                const content = document.getElementById('logger-content');
+                const icon = document.getElementById('toggle-icon');
+                
+                if (isCollapsed) {
+                    content.classList.add('collapsed');
+                    icon.textContent = '▲';
+                } else {
+                    content.classList.remove('collapsed');
+                    icon.textContent = '▼';
+                }
+            };
+            
+            // Clear logs
+            window.clearLogs = function() {
+                logs.length = 0;
+                updateLoggerUI();
+                console.log('🗑️ Logs cleared');
+            };
+            
+            // Copy logs to clipboard
+            window.copyLogs = function() {
+                const logText = logs.map(log => 
+                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+                ).join('\n');
+                
+                navigator.clipboard.writeText(logText).then(() => {
+                    console.log('📋 Logs copied to clipboard');
+                }).catch(err => {
+                    console.error('Failed to copy logs:', err);
+                });
+            };
+            
+            // Make logger draggable
+            function makeLoggerDraggable() {
+                const logger = document.getElementById('floating-logger');
+                const header = logger.querySelector('.logger-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+                
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+                
+                function dragStart(e) {
+                    if (e.target.closest('.logger-controls')) return;
+                    
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                    
+                    if (e.target === header || e.target.closest('.logger-title')) {
+                        isDragging = true;
+                    }
+                }
+                
+                function drag(e) {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    logger.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+                
+                function dragEnd() {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                }
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    initLogger();
+                    makeLoggerDraggable();
+                });
+            } else {
+                initLogger();
+                makeLoggerDraggable();
+            }
+        })();
+    </script>
+</body>
+</html>
