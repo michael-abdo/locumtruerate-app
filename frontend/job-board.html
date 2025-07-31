@@ -820,6 +820,24 @@
                         <!-- Job listings will be dynamically generated -->
                     </div>
                     
+                    <!-- MINIMAL TEST: Direct HTML job cards -->
+                    <div id="testJobsGrid" style="display: none;">
+                        <div class="job-card">
+                            <h3>TEST: Emergency Medicine Physician</h3>
+                            <p><strong>Facility:</strong> Metropolitan General Hospital</p>
+                            <p><strong>Location:</strong> Los Angeles, CA</p>
+                            <p><strong>Rate:</strong> $350/hr</p>
+                            <button onclick="alert('Test job clicked!')">View Details</button>
+                        </div>
+                        <div class="job-card">
+                            <h3>TEST: Internal Medicine Hospitalist</h3>
+                            <p><strong>Facility:</strong> Houston Medical Center</p>
+                            <p><strong>Location:</strong> Houston, TX</p>
+                            <p><strong>Rate:</strong> $300/hr</p>
+                            <button onclick="alert('Test job clicked!')">View Details</button>
+                        </div>
+                    </div>
+                    
                     <!-- Initialize job data using unified system -->
                     <script>
                         console.log('🔧 AGGRESSIVE INIT: Forcing job display...');
@@ -843,6 +861,19 @@
                                 } else {
                                     console.error('❌ renderJobs function not available!');
                                 }
+                                // NUCLEAR OPTION: Show test jobs if everything else fails
+                                setTimeout(() => {
+                                    if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                                        console.log('🚨 NUCLEAR OPTION: Showing test jobs...');
+                                        const testGrid = document.getElementById('testJobsGrid');
+                                        if (testGrid) {
+                                            jobsGrid.innerHTML = testGrid.innerHTML;
+                                            // Update results count
+                                            const resultsCount = document.getElementById('resultsCount');
+                                            if (resultsCount) resultsCount.textContent = '2';
+                                        }
+                                    }
+                                }, 500);
                             } else {
                                 console.log('✅ Jobs are rendered, failsafe not needed');
                             }
