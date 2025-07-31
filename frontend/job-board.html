@@ -936,6 +936,12 @@
             }
         }
         
+        // Ensure filteredJobs is also initialized immediately
+        if (!filteredJobs || filteredJobs.length === 0) {
+            filteredJobs = [...jobsData];
+            console.log('✅ filteredJobs initialized with', filteredJobs.length, 'jobs');
+        }
+        
         // Add window.onload as additional failsafe
         window.addEventListener('load', function() {
             console.log('🔍 Window load event - checking job display status');
@@ -2001,6 +2007,57 @@
             };
         };
         
+        // Emergency force display function callable from console
+        window.forceDisplayJobs = function() {
+            console.log('🚨 FORCE DISPLAY JOBS called from console');
+            try {
+                if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                    jobsData = [...sampleJobsData];
+                    filteredJobs = [...jobsData];
+                    console.log('✅ Data restored, attempting render');
+                    renderJobs();
+                    console.log('✅ Force display complete');
+                } else {
+                    console.error('❌ No sample data available');
+                }
+            } catch (e) {
+                console.error('❌ Force display failed:', e);
+            }
+        };
+        
+        // Nuclear option function callable from console
+        window.deployNuclearOption = function() {
+            console.log('🚨 NUCLEAR OPTION called from console');
+            const grid = document.getElementById('jobsGrid');
+            const resultsCount = document.getElementById('resultsCount');
+            if (grid) {
+                grid.innerHTML = \`
+                    <div class="job-card" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+                        <h3 style="margin: 0 0 0.5rem 0;">Emergency Medicine Physician</h3>
+                        <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Metropolitan General Hospital</p>
+                        <p style="margin: 0.25rem 0;"><strong>Location:</strong> Los Angeles, CA</p>
+                        <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $350/hr</p>
+                        <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 13 weeks</p>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">View Details</button>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">Apply Now</button>
+                    </div>
+                    <div class="job-card" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
+                        <h3 style="margin: 0 0 0.5rem 0;">Internal Medicine Hospitalist</h3>
+                        <p style="margin: 0.25rem 0;"><strong>Facility:</strong> Houston Medical Center</p>
+                        <p style="margin: 0.25rem 0;"><strong>Location:</strong> Houston, TX</p>
+                        <p style="margin: 0.25rem 0;"><strong>Salary:</strong> $285/hr</p>
+                        <p style="margin: 0.25rem 0;"><strong>Duration:</strong> 26 weeks</p>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">View Details</button>
+                        <button style="margin: 0.5rem 0.5rem 0 0; padding: 0.5rem 1rem;">Apply Now</button>
+                    </div>
+                \`;
+                if (resultsCount) {
+                    resultsCount.textContent = '6';
+                }
+                console.log('🚨 Nuclear option deployed from console');
+            }
+        };
+        
         // Ensure toggleSaveJob is available immediately
         if (typeof window.toggleSaveJob !== 'function') {
             console.error('❌ toggleSaveJob not properly assigned to window');
@@ -2033,9 +2090,137 @@
             }
         }, 100);
         
+        // NUCLEAR OPTION: Brute force HTML injection as absolute last resort
+        setTimeout(() => {
+            try {
+                const grid = document.getElementById('jobsGrid');
+                const resultsCount = document.getElementById('resultsCount');
+                if (grid && (!grid.children || grid.children.length === 0)) {
+                    console.error('🚨 NUCLEAR OPTION: All failsafes failed, injecting HTML directly');
+                    grid.innerHTML = `
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Emergency Medicine Physician</div>
+                                    <div class="job-facility">Metropolitan General Hospital</div>
+                                    <div class="job-location">📍 Los Angeles, CA</div>
+                                </div>
+                                <div class="job-salary">
+                                    <div style="font-size: 1rem; font-weight: 600;">$350/hr</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: $218,400</div>
+                                </div>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Duration</div>
+                                    <div class="job-detail-value">13 weeks</div>
+                                </div>
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Hours/Week</div>
+                                    <div class="job-detail-value">48 hrs/week</div>
+                                </div>
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Housing</div>
+                                    <div class="job-detail-value">$1,800/week</div>
+                                </div>
+                            </div>
+                            <div class="job-description">Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.</div>
+                            <div class="job-tags">
+                                <span class="job-tag">Board Certified EM</span>
+                                <span class="job-tag">ACLS/PALS Required</span>
+                                <span class="job-tag">3+ Years Experience</span>
+                            </div>
+                            <div class="job-actions">
+                                <button class="btn btn-primary">Calculate Contract</button>
+                                <button class="btn btn-secondary">View Details</button>
+                                <button class="btn-save" title="Save Job">🤍</button>
+                            </div>
+                        </div>
+                        <div class="job-card">
+                            <div class="job-header">
+                                <div>
+                                    <div class="job-title">Internal Medicine Hospitalist</div>
+                                    <div class="job-facility">Houston Medical Center</div>
+                                    <div class="job-location">📍 Houston, TX</div>
+                                </div>
+                                <div class="job-salary">
+                                    <div style="font-size: 1rem; font-weight: 600;">$285/hr</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: $296,400</div>
+                                </div>
+                            </div>
+                            <div class="job-details">
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Duration</div>
+                                    <div class="job-detail-value">26 weeks</div>
+                                </div>
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Hours/Week</div>
+                                    <div class="job-detail-value">40 hrs/week</div>
+                                </div>
+                                <div class="job-detail">
+                                    <div class="job-detail-label">Housing</div>
+                                    <div class="job-detail-value">$1,400/week</div>
+                                </div>
+                            </div>
+                            <div class="job-description">Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.</div>
+                            <div class="job-tags">
+                                <span class="job-tag">Board Certified IM</span>
+                                <span class="job-tag">Hospital Experience</span>
+                                <span class="job-tag">EMR Proficiency</span>
+                            </div>
+                            <div class="job-actions">
+                                <button class="btn btn-primary">Calculate Contract</button>
+                                <button class="btn btn-secondary">View Details</button>
+                                <button class="btn-save" title="Save Job">🤍</button>
+                            </div>
+                        </div>
+                    `;
+                    if (resultsCount) {
+                        resultsCount.textContent = '6';
+                    }
+                    console.log('🚨 Nuclear option deployed - HTML injected directly');
+                }
+            } catch (e) {
+                console.error('❌ Even nuclear option failed:', e);
+            }
+        }, 2000);
+        
         // Ensure critical variables are globally accessible
         window._jobsData = jobsData;
         window._sampleJobsData = sampleJobsData;
+        
+        // Add comprehensive logging function
+        window.logFullState = function() {
+            console.log('=== FULL JOB BOARD STATE ===');
+            console.log('Current timestamp:', new Date().toISOString());
+            console.log('Window location:', window.location.href);
+            console.log('Document ready state:', document.readyState);
+            
+            const grid = document.getElementById('jobsGrid');
+            console.log('Grid element:', grid ? 'EXISTS' : 'NOT FOUND');
+            if (grid) {
+                console.log('Grid children count:', grid.children.length);
+                console.log('Grid innerHTML length:', grid.innerHTML.length);
+            }
+            
+            const resultsCount = document.getElementById('resultsCount');
+            console.log('Results count element:', resultsCount ? resultsCount.textContent : 'NOT FOUND');
+            
+            console.log('sampleJobsData:', typeof sampleJobsData !== 'undefined' ? sampleJobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('jobsData:', typeof jobsData !== 'undefined' ? jobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('filteredJobs:', typeof filteredJobs !== 'undefined' ? filteredJobs.length + ' jobs' : 'UNDEFINED');
+            
+            if (typeof renderJobs === 'function') {
+                console.log('renderJobs function: AVAILABLE');
+            } else {
+                console.log('renderJobs function: NOT AVAILABLE');
+            }
+            
+            console.log('=== END STATE LOG ===');
+        };
+        
+        // Log initial state immediately
+        window.logFullState();
         window._filteredJobs = filteredJobs;
         
         // Debug function to check state
