@@ -7,7 +7,120 @@
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="js/common-utils.css">
+    <script src="js/apiClient.js"></script>
+    <script src="js/common-utils.js"></script>
     <style>
+        /* Using centralized CSS variables from css/variables.css */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        /* Layout */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Job Board Content */
+        .job-board-content {
+            padding: 3rem 0;
+        }
+
         /* Jobs Grid */
         .jobs-grid {
             display: grid;
@@ -178,9 +291,79 @@
         .modal-close:hover {
             color: var(--text-primary);
         }
+
+        /* Footer */
+        .footer {
+            background-color: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h4,
+        .footer-section h5 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .social-icon:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
             .jobs-grid {
                 grid-template-columns: 1fr;
             }
@@ -197,83 +380,138 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="nav-logo">LocumTrueRate</a>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="job-board.html" class="nav-link active">Job Board</a></li>
-                <li><a href="locum-dashboard.html" class="nav-link">Locum Dashboard</a></li>
-                <li><a href="recruiter-dashboard.html" class="nav-link">Recruiter Portal</a></li>
-                <li><a href="admin-dashboard.html" class="nav-link">Admin</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>LocumTrueRate</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link active">Job Board</a></li>
+                    <li><a href="locum-dashboard.html" class="nav-link">Locum Dashboard</a></li>
+                    <li><a href="recruiter-dashboard.html" class="nav-link">Recruiter Portal</a></li>
+                    <li><a href="admin-dashboard.html" class="nav-link">Admin</a></li>
+                </ul>
+            </div>
+        </nav>
 
-    <main class="main-content">
-        <div class="container">
-            <h1>Find Your Perfect Locum Position</h1>
-            
-            <!-- Filters -->
-            <div class="filters-section">
-                <div class="filters-grid">
-                    <input type="text" id="searchInput" placeholder="Search by title or location..." class="form-control">
-                    
-                    <select id="specialtyFilter" class="form-control">
-                        <option value="">All Specialties</option>
-                        <option value="emergency">Emergency Medicine</option>
-                        <option value="internal">Internal Medicine</option>
-                        <option value="family">Family Medicine</option>
-                        <option value="pediatrics">Pediatrics</option>
-                        <option value="surgery">Surgery</option>
-                    </select>
-                    
-                    <select id="locationFilter" class="form-control">
-                        <option value="">All Locations</option>
-                        <option value="CA">California</option>
-                        <option value="TX">Texas</option>
-                        <option value="FL">Florida</option>
-                        <option value="NY">New York</option>
-                        <option value="CO">Colorado</option>
-                    </select>
-                    
-                    <select id="sortFilter" class="form-control">
-                        <option value="">Sort By</option>
-                        <option value="salary-high">Salary: High to Low</option>
-                        <option value="salary-low">Salary: Low to High</option>
-                        <option value="date">Most Recent</option>
-                    </select>
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="container">
+                    <h1>Find Your Perfect Locum Position</h1>
+                    <p>Browse thousands of locum tenens opportunities tailored to your specialty and preferences</p>
                 </div>
-                
-                <div class="results-info">
-                    <span id="resultsCount">0</span> positions found
+            </section>
+
+            <!-- Job Board Content -->
+            <section class="job-board-content">
+                <div class="container">
+                    <!-- Filters -->
+                    <div class="filters-section">
+                        <div class="filters-grid">
+                            <input type="text" id="searchInput" placeholder="Search by title or location..." class="form-control">
+                            
+                            <select id="specialtyFilter" class="form-control">
+                                <option value="">All Specialties</option>
+                                <option value="emergency">Emergency Medicine</option>
+                                <option value="internal">Internal Medicine</option>
+                                <option value="family">Family Medicine</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="surgery">Surgery</option>
+                            </select>
+                            
+                            <select id="locationFilter" class="form-control">
+                                <option value="">All Locations</option>
+                                <option value="CA">California</option>
+                                <option value="TX">Texas</option>
+                                <option value="FL">Florida</option>
+                                <option value="NY">New York</option>
+                                <option value="CO">Colorado</option>
+                            </select>
+                            
+                            <select id="sortFilter" class="form-control">
+                                <option value="">Sort By</option>
+                                <option value="salary-high">Salary: High to Low</option>
+                                <option value="salary-low">Salary: Low to High</option>
+                                <option value="date">Most Recent</option>
+                            </select>
+                        </div>
+                        
+                        <div class="results-info">
+                            <span><span id="resultsCount">0</span> positions found</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Jobs Grid -->
+                    <div class="jobs-grid" id="jobsGrid">
+                        <!-- Jobs will be dynamically loaded here -->
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Jobs Grid -->
-            <div class="jobs-grid" id="jobsGrid">
-                <!-- Jobs will be dynamically loaded here -->
+            </section>
+        </main>
+        
+        <!-- Job Detail Modal -->
+        <div class="modal" id="jobModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="jobBoard.closeModal()">&times;</button>
+                <div id="modalContent">
+                    <!-- Job details will be loaded here -->
+                </div>
             </div>
         </div>
-    </main>
-    
-    <!-- Job Detail Modal -->
-    <div class="modal" id="jobModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="jobBoard.closeModal()">&times;</button>
-            <div id="modalContent">
-                <!-- Job details will be loaded here -->
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>LocumTrueRate</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Contact</h5>
+                        <div class="contact-info">
+                            <p><a href="mailto:support@locumtruerate.com">support@locumtruerate.com</a></p>
+                        </div>
+                        <div class="social-icons">
+                            <a href="https://linkedin.com/company/locumtruerate" class="social-icon" aria-label="LinkedIn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                </svg>
+                            </a>
+                            <a href="https://twitter.com/locumtruerate" class="social-icon" aria-label="Twitter">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
+                </div>
             </div>
-        </div>
+        </footer>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 LocumTrueRate. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script>
         // Simple, clean job board implementation
@@ -382,7 +620,7 @@
                 count.textContent = this.filteredJobs.length;
                 
                 if (this.filteredJobs.length === 0) {
-                    grid.innerHTML = '<p>No jobs found. Try adjusting your filters.</p>';
+                    grid.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No jobs found. Try adjusting your filters.</p>';
                     return;
                 }
                 
