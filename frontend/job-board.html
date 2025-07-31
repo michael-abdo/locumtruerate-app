@@ -976,6 +976,13 @@
                     timestamp: data.timestamp
                 });
                 
+                // CRITICAL: If API returns empty jobs array, keep existing data
+                if (!data.jobs || !Array.isArray(data.jobs) || data.jobs.length === 0) {
+                    console.warn('⚠️ API returned no jobs, preserving existing data');
+                    console.log('📊 Current jobsData has', jobsData.length, 'jobs');
+                    return; // Exit early, don't modify jobsData
+                }
+                
                 if (data.jobs && Array.isArray(data.jobs) && data.jobs.length > 0) {
                     console.log('🔍 API returned', data.jobs.length, 'jobs. Attempting transformation...');
                     
@@ -1267,8 +1274,15 @@
             // Emergency safeguard: If we have no jobs to render, load sample data
             if ((!jobsData || jobsData.length === 0) && (!filteredJobs || filteredJobs.length === 0)) {
                 console.error('❌ CRITICAL: renderJobs called with no data! Loading sample data...');
-                loadSampleData();
-                return;
+                // Ensure we have sample data available
+                if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                    jobsData = [...sampleJobsData];
+                    filteredJobs = [...jobsData];
+                    console.log('✅ Emergency restore from sampleJobsData:', jobsData.length, 'jobs');
+                } else {
+                    loadSampleData();
+                    return;
+                }
             }
             
             const grid = document.getElementById('jobsGrid');
@@ -1931,6 +1945,20 @@
         window.closeModal = closeModal;
         window.toggleSaveJob = toggleSaveJob;
         
+        // Add debug function to check job state
+        window.debugJobState = function() {
+            console.log('🔍 DEBUG JOB STATE:');
+            console.log('  - sampleJobsData:', typeof sampleJobsData !== 'undefined' ? sampleJobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('  - jobsData:', typeof jobsData !== 'undefined' ? jobsData.length + ' jobs' : 'UNDEFINED');
+            console.log('  - filteredJobs:', typeof filteredJobs !== 'undefined' ? filteredJobs.length + ' jobs' : 'UNDEFINED');
+            console.log('  - First job:', jobsData && jobsData[0] ? jobsData[0].title : 'NO JOBS');
+            return {
+                sampleJobsData: sampleJobsData,
+                jobsData: jobsData,
+                filteredJobs: filteredJobs
+            };
+        };
+        
         // Ensure toggleSaveJob is available immediately
         if (typeof window.toggleSaveJob !== 'function') {
             console.error('❌ toggleSaveJob not properly assigned to window');
@@ -2054,11 +2082,12 @@
                 console.log('🚀 Initializing job board with pre-populated data...');
                 console.log('📊 Initial state - jobsData:', jobsData ? jobsData.length : 'undefined', 'filteredJobs:', filteredJobs ? filteredJobs.length : 'undefined');
                 
-                // Ensure jobsData is initialized
+                // Ensure jobsData is initialized and render immediately
                 if (!jobsData || jobsData.length === 0) {
                     console.warn('⚠️ jobsData is empty at initialization, loading sample data...');
                     loadSampleData();
                 } else {
+                    console.log('✅ Initial data available, rendering', jobsData.length, 'jobs');
                     filteredJobs = [...jobsData];
                     renderJobs();
                 }
