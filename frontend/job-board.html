@@ -456,7 +456,7 @@
         <!-- Job Detail Modal -->
         <div class="modal" id="jobModal">
             <div class="modal-content">
-                <button class="modal-close" onclick="jobBoard.closeModal()">&times;</button>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
                 <div id="modalContent">
                     <!-- Job details will be loaded here -->
                 </div>
@@ -625,7 +625,7 @@
                 }
                 
                 grid.innerHTML = this.filteredJobs.map(job => `
-                    <div class="job-card" onclick="jobBoard.showJob(${job.id})">
+                    <div class="job-card" data-job-id="${job.id}">
                         <div class="job-header">
                             <div>
                                 <h3 class="job-title">${job.title}</h3>
@@ -643,6 +643,14 @@
                         </div>
                     </div>
                 `).join('');
+                
+                // Add click listeners to job cards
+                document.querySelectorAll('.job-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const jobId = parseInt(card.dataset.jobId);
+                        this.showJob(jobId);
+                    });
+                });
             },
             
             filter() {
@@ -698,10 +706,19 @@
                     <ul>
                         ${job.requirements.map(req => `<li>${req}</li>`).join('')}
                     </ul>
-                    <button class="btn btn-primary" onclick="alert('Application feature coming soon!')">Apply Now</button>
+                    <button class="btn btn-primary" id="applyBtn">Apply Now</button>
                 `;
                 
                 modal.classList.add('active');
+                
+                // Add event listener for Apply button
+                document.getElementById('applyBtn').addEventListener('click', () => {
+                    if (window.showToast) {
+                        showToast('Application feature coming soon!', 'info');
+                    } else {
+                        alert('Application feature coming soon!');
+                    }
+                });
             },
             
             closeModal() {
@@ -719,6 +736,11 @@
                     if (e.target.id === 'jobModal') {
                         this.closeModal();
                     }
+                });
+                
+                // Close modal on close button click
+                document.getElementById('modalCloseBtn').addEventListener('click', () => {
+                    this.closeModal();
                 });
             }
         };
