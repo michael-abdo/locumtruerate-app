@@ -936,6 +936,28 @@
             }
         }
         
+        // Add window.onload as additional failsafe
+        window.addEventListener('load', function() {
+            console.log('🔍 Window load event - checking job display status');
+            setTimeout(() => {
+                const jobsGrid = document.getElementById('jobsGrid');
+                const jobCount = document.querySelector('.job-count');
+                if (jobsGrid && jobsGrid.children.length === 0) {
+                    console.error('🚨 CRITICAL: No jobs displayed on window.load!');
+                    if (jobsData && jobsData.length > 0) {
+                        console.log('📋 jobsData exists with', jobsData.length, 'jobs, forcing render');
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    } else if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                        console.log('📋 Restoring from sampleJobsData and rendering');
+                        jobsData = [...sampleJobsData];
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    }
+                }
+            }, 500);
+        });
+        
         // Load jobs from API with comprehensive logging
         async function loadJobsFromAPI() {
             console.log('🔄 Starting to load jobs from API...');
@@ -1263,13 +1285,14 @@
         }
 
         function renderJobs() {
-            console.log('🎨 renderJobs called with filteredJobs:', filteredJobs.length);
-            console.log('📊 Current state:', {
-                jobsData: jobsData.length,
-                filteredJobs: filteredJobs.length, 
-                currentPage: currentPage,
-                jobsPerPage: jobsPerPage
-            });
+            try {
+                console.log('🎨 renderJobs called with filteredJobs:', filteredJobs ? filteredJobs.length : 0);
+                console.log('📊 Current state:', {
+                    jobsData: jobsData ? jobsData.length : 0,
+                    filteredJobs: filteredJobs ? filteredJobs.length : 0, 
+                    currentPage: currentPage,
+                    jobsPerPage: jobsPerPage
+                });
             
             // Emergency safeguard: If we have no jobs to render, load sample data
             if ((!jobsData || jobsData.length === 0) && (!filteredJobs || filteredJobs.length === 0)) {
@@ -1377,6 +1400,25 @@
                 console.error('❌ Results count element not found!');
             }
             renderPagination(totalPages);
+            } catch (error) {
+                console.error('❌ Critical error in renderJobs:', error);
+                console.error('Stack trace:', error.stack);
+                // Try to display sample data as last resort
+                try {
+                    if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                        console.log('🚨 Attempting emergency recovery with sample data');
+                        jobsData = [...sampleJobsData];
+                        filteredJobs = [...jobsData];
+                        // Try simple DOM manipulation as fallback
+                        const grid = document.getElementById('jobsGrid');
+                        if (grid) {
+                            grid.innerHTML = '<div class="job-card"><h3>Emergency: Jobs Failed to Load</h3><p>Please refresh the page</p></div>';
+                        }
+                    }
+                } catch (e) {
+                    console.error('❌ Emergency recovery also failed:', e);
+                }
+            }
         }
         
         function renderPagination(totalPages) {
@@ -1968,6 +2010,29 @@
         window.goToPage = goToPage;
         window.toggleView = toggleView;
         
+        // Ultra-aggressive failsafe: Try to render immediately after script loads
+        console.log('🚀 Running immediate initialization check...');
+        setTimeout(() => {
+            try {
+                const grid = document.getElementById('jobsGrid');
+                if (grid && (!grid.children || grid.children.length === 0)) {
+                    console.warn('⚠️ No jobs rendered yet, attempting immediate render');
+                    if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                        if (!jobsData || jobsData.length === 0) {
+                            jobsData = [...sampleJobsData];
+                        }
+                        if (!filteredJobs || filteredJobs.length === 0) {
+                            filteredJobs = [...jobsData];
+                        }
+                        console.log('🎯 Forcing immediate render with', filteredJobs.length, 'jobs');
+                        renderJobs();
+                    }
+                }
+            } catch (e) {
+                console.error('❌ Immediate initialization failed:', e);
+            }
+        }, 100);
+        
         // Ensure critical variables are globally accessible
         window._jobsData = jobsData;
         window._sampleJobsData = sampleJobsData;
@@ -2055,6 +2120,24 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Page loaded, initializing job board...');
+            
+            // Add immediate failsafe to ensure jobs display
+            try {
+                // Emergency check - if no jobs visible after 1 second, force display
+                setTimeout(() => {
+                    const jobsGrid = document.getElementById('jobsGrid');
+                    if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                        console.error('🚨 EMERGENCY: No jobs displayed after 1 second, forcing display');
+                        if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
+                            jobsData = [...sampleJobsData];
+                            filteredJobs = [...jobsData];
+                            renderJobs();
+                        }
+                    }
+                }, 1000);
+            } catch (e) {
+                console.error('🚨 Emergency failsafe error:', e);
+            }
             
             try {
                 // Check if LocumUtils is available
