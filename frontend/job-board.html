@@ -1590,13 +1590,15 @@
                 contractType: contractType
             });
             
-            // If no jobs available, restore sample data
+            // If no jobs available, restore unified data
             if (!jobsData || jobsData.length === 0) {
-                console.warn('⚠️ No jobsData to filter, restoring sample data...');
-                jobsData = [...sampleJobsData];
-                filteredJobs = [...jobsData];
-                renderJobs();
-                return;
+                console.warn('⚠️ No jobsData to filter, using unified initialization...');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                    return;
+                }
             }
             
             // If all filters are empty, show all jobs
@@ -1605,7 +1607,7 @@
                 console.log('📊 Pre-clear state:', {
                     jobsData: jobsData.length,
                     filteredJobs: filteredJobs.length,
-                    failsafeData: window.failsafeJobsData ? window.failsafeJobsData.length : 0
+                    unifiedData: window.unifiedJobData ? window.unifiedJobData.length : 0
                 });
                 
                 // Ensure we have data to show
@@ -1614,8 +1616,7 @@
                     if (window.initializeJobData) {
                         window.initializeJobData();
                     } else {
-                        console.warn('⚠️ No data available for search clear - loading sample data');
-                        loadSampleData();
+                        console.warn('⚠️ No unified initialization available');
                         return;
                     }
                 }
@@ -1633,18 +1634,15 @@
                 const matchesSpecialty = !specialty || 
                     job.specialty.toLowerCase().includes(specialty.toLowerCase()) ||
                     job.specialty.toLowerCase().replace(/\s+/g, '') === specialty.toLowerCase();
-                // Map state codes to filter values for location matching
-                const stateMapping = {
-                    'CA': 'california', 'TX': 'texas', 'FL': 'florida', 'NY': 'new-york',
-                    'MA': 'massachusetts', 'IL': 'illinois', 'CO': 'colorado'
-                };
+                // Match location using locationState property from unified data
                 const matchesLocation = !location || 
-                    job.state === location || 
-                    (job.stateCode && stateMapping[job.stateCode.toUpperCase()] === location);
+                    job.locationState === location ||
+                    (job.location && job.location.toLowerCase().includes(location.replace('-', ' ')));
                 
                 let matchesSalary = true;
                 if (salary) {
-                    const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+                    // Use hourlyRate from unified data (already a number)
+                    const hourlyRate = job.hourlyRate || (job.salary ? parseInt(job.salary.replace(/\$|\/hr/g, '')) : 0);
                     if (salary === '0-200') matchesSalary = hourlyRate < 200;
                     else if (salary === '200-300') matchesSalary = hourlyRate >= 200 && hourlyRate < 300;
                     else if (salary === '300-400') matchesSalary = hourlyRate >= 300 && hourlyRate < 400;
