@@ -2294,9 +2294,10 @@
                 printWindow.document.write(printContent);
                 printWindow.document.close();
                 
-                // Wait for content to load, then print
+                // PRINT DISABLED - Wait for content to load, but DO NOT print
                 printWindow.onload = function() {
-                    printWindow.print();
+                    console.warn('🚫 Print dialog blocked in print window');
+                    // printWindow.print(); // DISABLED
                 };
                 
                 showNotification('🖨️ Print dialog opened', 'success');
@@ -2575,12 +2576,12 @@ From: LocumTrueRate Contract Calculator`;
                     printWindow.document.close();
                     printWindow.focus();
                     
-                    // Wait for content to load then trigger print dialog manually
+                    // PRINT DISABLED - Wait for content to load but DO NOT trigger print
                     setTimeout(() => {
-                        printWindow.print();
-                        printWindow.onafterprint = function() {
-                            printWindow.close();
-                        };
+                        console.warn('🚫 Print dialog blocked in setTimeout print window');
+                        // printWindow.print(); // DISABLED
+                        // Auto-close the window since we're not printing
+                        printWindow.close();
                     }, 500);
                     
                     showNotification('✅ PDF export opened - use Print dialog to save as PDF', 'success');
@@ -2693,29 +2694,62 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // NUCLEAR PRINT BLOCKER - OVERRIDE EVERYTHING
-        console.log('🚨 NUCLEAR PRINT BLOCKER ACTIVATED');
+        // ULTIMATE PRINT BLOCKER - COMPLETELY DISABLE ALL PRINT FUNCTIONALITY
+        console.log('🚨 ULTIMATE PRINT BLOCKER ACTIVATED - ALL PRINT DISABLED');
         
-        // Override window.print IMMEDIATELY - NO BLOCKING ALERTS
+        // Store original print function
         const originalPrint = window.print;
+        
+        // Completely override window.print to do nothing
         window.print = function() {
-            console.error('🚨🚨🚨 PRINT BLOCKED: Something tried to print!');
-            console.error('Stack trace:', new Error().stack);
-            console.error('Timestamp:', new Date().toISOString());
-            // NO ALERT - would block automated tools
+            console.warn('🚫 Print functionality has been disabled on this page');
             return false;
         };
         
-        // Block beforeprint events
-        window.addEventListener('beforeprint', function(e) {
-            console.error('🚨🚨🚨 BEFOREPRINT EVENT BLOCKED!');
-            console.error('Event:', e);
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
+        // Block all print-related events with capture=true for immediate blocking
+        const printEvents = ['beforeprint', 'afterprint'];
+        printEvents.forEach(eventType => {
+            window.addEventListener(eventType, function(e) {
+                console.warn('🚫 Print event blocked:', eventType);
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }, true);
         });
         
-        console.log('🚨 NUCLEAR PRINT BLOCKER INSTALLED');
+        // Override any potential print methods on document
+        if (document.print) {
+            document.print = function() {
+                console.warn('🚫 Document print blocked');
+                return false;
+            };
+        }
+        
+        // Block keyboard shortcuts for print (Ctrl+P)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                console.warn('🚫 Print keyboard shortcut blocked');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, true);
+        
+        // Also block print window creation if it's being triggered automatically
+        const originalWindowOpen = window.open;
+        window.open = function(url, target, features) {
+            // If this looks like a print window call, block it
+            if (features && features.includes('width=900,height=700') || 
+                features && features.includes('print') ||
+                target === '_blank' && arguments.length === 3) {
+                console.warn('🚫 Potential print window creation blocked');
+                return null;
+            }
+            // Allow normal window.open calls
+            return originalWindowOpen.apply(window, arguments);
+        };
+        
+        console.log('🚨 ULTIMATE PRINT BLOCKER INSTALLED - NO PRINT POSSIBLE');
         
         // MINIMAL LOAD MONITORING
         console.log('🔍 Page loading - minimal monitoring active');
