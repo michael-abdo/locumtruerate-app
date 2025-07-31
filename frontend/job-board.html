@@ -878,6 +878,61 @@
                                 console.log('✅ Jobs are rendered, failsafe not needed');
                             }
                         }, 100);
+                        
+                        // IMMEDIATE DOM TEST: Force job cards directly into DOM
+                        console.log('🧪 DIRECT DOM TEST: Injecting job cards immediately...');
+                        setTimeout(() => {
+                            const grid = document.getElementById('jobsGrid');
+                            if (grid) {
+                                grid.innerHTML = `
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <div>
+                                                <div class="job-title">DIRECT: Emergency Medicine Physician</div>
+                                                <div class="job-facility">Metropolitan General Hospital</div>
+                                                <div class="job-location">📍 Los Angeles, CA</div>
+                                            </div>
+                                            <div class="job-salary">$350/hr</div>
+                                        </div>
+                                        <div class="job-details">
+                                            <div class="job-duration">⏱️ 13 weeks</div>
+                                            <div class="job-hours">🕐 48 hrs/week</div>
+                                            <div class="job-housing">🏠 $1,800/week</div>
+                                        </div>
+                                        <div class="job-actions">
+                                            <button class="btn btn-primary" onclick="alert('Direct test job clicked!')">View Details</button>
+                                            <button class="btn btn-secondary">Save</button>
+                                        </div>
+                                    </div>
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <div>
+                                                <div class="job-title">DIRECT: Internal Medicine Hospitalist</div>
+                                                <div class="job-facility">Houston Medical Center</div>
+                                                <div class="job-location">📍 Houston, TX</div>
+                                            </div>
+                                            <div class="job-salary">$300/hr</div>
+                                        </div>
+                                        <div class="job-details">
+                                            <div class="job-duration">⏱️ 26 weeks</div>
+                                            <div class="job-hours">🕐 50 hrs/week</div>
+                                            <div class="job-housing">🏠 $1,500/week</div>
+                                        </div>
+                                        <div class="job-actions">
+                                            <button class="btn btn-primary" onclick="alert('Direct test job clicked!')">View Details</button>
+                                            <button class="btn btn-secondary">Save</button>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Update results count
+                                const resultsCount = document.getElementById('resultsCount');
+                                if (resultsCount) {
+                                    resultsCount.textContent = '2';
+                                    console.log('✅ DIRECT DOM TEST: Injected 2 job cards and updated count');
+                                }
+                            }
+                        }, 50);
                     </script>
                     <div class="pagination" id="pagination">
                         <!-- Pagination controls will be dynamically generated -->
