@@ -5,26 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Board - LocumTrueRate</title>
     <!-- Deploy timestamp: 2025-07-30 18:30:00 UTC -->
-    <!-- INTELLIGENT FAILSAFE: Only refresh if no jobs are available and filters are clear -->
+    <!-- UNIFIED FAILSAFE: Single initialization system -->
     <script>
-        setTimeout(function() {
-            const grid = document.getElementById('jobsGrid');
-            const resultsCount = document.getElementById('resultsCount');
-            const searchInput = document.getElementById('searchInput');
-            
-            // Only refresh if truly broken (no jobs AND no active filters)
-            if (grid && (!grid.innerHTML || grid.innerHTML.trim() === '<!-- Job listings will be dynamically generated -->')) {
-                const hasActiveFilters = searchInput && searchInput.value.trim() !== '';
-                const hasNoResults = !resultsCount || resultsCount.textContent === '0' || resultsCount.textContent === '';
-                
-                if (hasNoResults && !hasActiveFilters) {
-                    console.log('🚨 INTELLIGENT FAILSAFE: No jobs detected with no filters, refreshing page');
-                    window.location.reload();
-                } else {
-                    console.log('🔍 INTELLIGENT FAILSAFE: Has filters or results, not refreshing');
-                }
+        console.log('🔧 UNIFIED FAILSAFE: Starting initialization...');
+        
+        // Define robust sample data that works with all filters
+        window.unifiedJobData = [
+            {
+                id: 'unified-1',
+                title: 'Emergency Medicine Physician',
+                facility: 'Metropolitan General Hospital',
+                location: 'Los Angeles, CA',
+                locationState: 'california',
+                specialty: 'emergency',
+                hourlyRate: 350,
+                totalCompensation: 218400,
+                duration: '13 weeks',
+                hoursPerWeek: 48,
+                housing: '$1,800/week',
+                description: 'Join our busy Level 1 trauma center serving the greater Los Angeles area.',
+                requirements: ['Board Certified EM', 'ACLS/PALS Required', '3+ Years Experience'],
+                contractType: '13-weeks'
+            },
+            {
+                id: 'unified-2',
+                title: 'Internal Medicine Hospitalist',
+                facility: 'Houston Medical Center',
+                location: 'Houston, TX',
+                locationState: 'texas',
+                specialty: 'internal',
+                hourlyRate: 285,
+                totalCompensation: 296400,
+                duration: '26 weeks',
+                hoursPerWeek: 40,
+                housing: '$2,000/week',
+                description: 'Seeking experienced hospitalist for busy medical center.',
+                requirements: ['Board Certified IM', 'Hospital Medicine Experience'],
+                contractType: '26-weeks'
+            },
+            {
+                id: 'unified-3',
+                title: 'Family Medicine Provider',
+                facility: 'Rocky Mountain Clinic',
+                location: 'Denver, CO',
+                locationState: 'colorado',
+                specialty: 'family',
+                hourlyRate: 275,
+                totalCompensation: 143000,
+                duration: '13 weeks',
+                hoursPerWeek: 40,
+                housing: '$1,500/week',
+                description: 'Beautiful mountain setting clinic serving diverse community.',
+                requirements: ['Board Certified FM', 'Outpatient Experience'],
+                contractType: '13-weeks'
             }
-        }, 8000); // Longer delay to allow proper initialization
+        ];
+        
+        // Single initialization function
+        window.initializeJobData = function() {
+            if (!window.jobsData || window.jobsData.length === 0) {
+                console.log('🔧 UNIFIED FAILSAFE: Using unified job data');
+                window.jobsData = [...window.unifiedJobData];
+                window.filteredJobs = [...window.unifiedJobData];
+                return true;
+            }
+            return false;
+        };
+        
+        // Initialize immediately
+        window.initializeJobData();
     </script>
     <!-- Centralized CSS Variables and Utilities -->
     <link rel="stylesheet" href="css/variables.css">
@@ -771,102 +820,11 @@
                         <!-- Job listings will be dynamically generated -->
                     </div>
                     
-                    <!-- SMART FAILSAFE: Provide fallback data that integrates with filtering system -->
+                    <!-- Initialize job data using unified system -->
                     <script>
-                        console.log('🚨 SMART FAILSAFE: Initializing filterable fallback data');
-                        try {
-                            // Set up global failsafe data that can be filtered
-                            window.failsafeJobsData = [
-                                {
-                                    id: 'failsafe-1',
-                                    title: 'Emergency Medicine Physician',
-                                    facility: 'Metropolitan General Hospital',
-                                    location: 'Los Angeles, CA',
-                                    locationState: 'california',
-                                    specialty: 'emergency',
-                                    hourlyRate: 350,
-                                    totalCompensation: 218400,
-                                    duration: '13 weeks',
-                                    hoursPerWeek: 48,
-                                    housing: '$1,800/week',
-                                    description: 'Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.',
-                                    requirements: ['Board Certified EM', 'ACLS/PALS Required', '3+ Years Experience'],
-                                    contractType: '13-weeks'
-                                },
-                                {
-                                    id: 'failsafe-2',
-                                    title: 'Internal Medicine Hospitalist',
-                                    facility: 'Houston Medical Center',
-                                    location: 'Houston, TX',
-                                    locationState: 'texas',
-                                    specialty: 'internal',
-                                    hourlyRate: 285,
-                                    totalCompensation: 296400,
-                                    duration: '26 weeks',
-                                    hoursPerWeek: 40,
-                                    housing: '$2,000/week',
-                                    description: 'Seeking experienced hospitalist for busy medical center. Day/night rotation available.',
-                                    requirements: ['Board Certified IM', 'Hospital Medicine Experience', 'EMR Proficiency'],
-                                    contractType: '26-weeks'
-                                },
-                                {
-                                    id: 'failsafe-3',
-                                    title: 'Family Medicine Provider',
-                                    facility: 'Rocky Mountain Clinic',
-                                    location: 'Denver, CO',
-                                    locationState: 'colorado',
-                                    specialty: 'family',
-                                    hourlyRate: 275,
-                                    totalCompensation: 143000,
-                                    duration: '13 weeks',
-                                    hoursPerWeek: 40,
-                                    housing: '$1,500/week',
-                                    description: 'Beautiful mountain setting. Outpatient clinic serving diverse community.',
-                                    requirements: ['Board Certified FM', 'Outpatient Experience', 'Spanish Preferred'],
-                                    contractType: '13-weeks'
-                                }
-                            ];
-                            
-                            const immediateGrid = document.getElementById('jobsGrid');
-                            const immediateResultsCount = document.getElementById('resultsCount');
-                            
-                            if (immediateGrid) {
-                                // Only inject if no data is already present
-                                const hasExistingData = window.jobsData && window.jobsData.length > 0;
-                                if (!hasExistingData) {
-                                    console.log('🔄 SMART FAILSAFE: Using failsafe data as initial dataset');
-                                    window.jobsData = [...window.failsafeJobsData];
-                                    window.filteredJobs = [...window.failsafeJobsData];
-                                }
-                                
-                                console.log('✅ SMART FAILSAFE: Failsafe data prepared for filtering system');
-                                
-                                // If jobs are visible immediately, use normal rendering
-                                if (window.renderJobs && typeof window.renderJobs === 'function') {
-                                    console.log('🎯 SMART FAILSAFE: Triggering normal render with failsafe data');
-                                    window.renderJobs();
-                                } else {
-                                    // Schedule render for when system is ready
-                                    setTimeout(() => {
-                                        if (window.renderJobs && typeof window.renderJobs === 'function') {
-                                            console.log('🎯 SMART FAILSAFE: Delayed render with failsafe data');
-                                            window.renderJobs();
-                                        } else {
-                                            // Final fallback: simple text message
-                                            immediateGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading jobs...</div>';
-                                        }
-                                    }, 100);
-                                }
-                                
-                                if (immediateResultsCount && window.filteredJobs) {
-                                    immediateResultsCount.textContent = window.filteredJobs.length.toString();
-                                }
-                                
-                            } else {
-                                console.error('❌ SMART FAILSAFE: jobsGrid not found');
-                            }
-                        } catch (error) {
-                            console.error('❌ SMART FAILSAFE: Error setting up failsafe data:', error);
+                        console.log('🔧 Calling unified initialization...');
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
                         }
                     </script>
                     <div class="pagination" id="pagination">
@@ -1345,12 +1303,11 @@
             document.getElementById('salaryFilter').value = '';
             document.getElementById('contractTypeFilter').value = '';
             
-            // Ensure we have data to show - use failsafe data if needed
+            // Ensure we have data to show - use unified initialization
             if (!jobsData || jobsData.length === 0) {
-                if (window.failsafeJobsData && window.failsafeJobsData.length > 0) {
-                    console.log('🔄 Using failsafe data for reset');
-                    jobsData = [...window.failsafeJobsData];
-                    filteredJobs = [...window.failsafeJobsData];
+                console.log('🔄 No data for reset, using unified initialization');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
                 } else {
                     loadSampleData();
                     return;
@@ -1653,9 +1610,9 @@
                 
                 // Ensure we have data to show
                 if (!jobsData || jobsData.length === 0) {
-                    if (window.failsafeJobsData && window.failsafeJobsData.length > 0) {
-                        console.log('🔄 Using failsafe data after search clear');
-                        jobsData = [...window.failsafeJobsData];
+                    console.log('🔄 No data for search clear, using unified initialization');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
                     } else {
                         console.warn('⚠️ No data available for search clear - loading sample data');
                         loadSampleData();
@@ -2215,123 +2172,34 @@
         window.goToPage = goToPage;
         window.toggleView = toggleView;
         
-        // Ultra-aggressive failsafe: Try to render immediately after script loads
-        console.log('🚀 Running immediate initialization check...');
+        // Clean initialization check
+        console.log('🚀 Running initialization check...');
         setTimeout(() => {
             try {
-                const grid = document.getElementById('jobsGrid');
-                if (grid && (!grid.children || grid.children.length === 0)) {
-                    console.warn('⚠️ No jobs rendered yet, attempting immediate render');
-                    if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                        if (!jobsData || jobsData.length === 0) {
-                            jobsData = [...sampleJobsData];
-                        }
-                        if (!filteredJobs || filteredJobs.length === 0) {
-                            filteredJobs = [...jobsData];
-                        }
-                        console.log('🎯 Forcing immediate render with', filteredJobs.length, 'jobs');
-                        renderJobs();
-                    }
+                if (window.initializeJobData && (!window.jobsData || window.jobsData.length === 0)) {
+                    console.log('🔧 Initializing job data...');
+                    window.initializeJobData();
+                }
+                if (window.renderJobs && window.jobsData && window.jobsData.length > 0) {
+                    window.filteredJobs = [...window.jobsData];
+                    window.renderJobs();
                 }
             } catch (e) {
-                console.error('❌ Immediate initialization failed:', e);
+                console.error('❌ Initialization failed:', e);
             }
         }, 100);
         
-        // NUCLEAR OPTION: Brute force HTML injection as absolute last resort
+        // Simple verification: Ensure jobs are rendered after page load
         setTimeout(() => {
-            try {
-                const grid = document.getElementById('jobsGrid');
-                const resultsCount = document.getElementById('resultsCount');
-                if (grid && (!grid.children || grid.children.length === 0)) {
-                    console.error('🚨 NUCLEAR OPTION: All failsafes failed, injecting HTML directly');
-                    grid.innerHTML = `
-                        <div class="job-card">
-                            <div class="job-header">
-                                <div>
-                                    <div class="job-title">Emergency Medicine Physician</div>
-                                    <div class="job-facility">Metropolitan General Hospital</div>
-                                    <div class="job-location">📍 Los Angeles, CA</div>
-                                </div>
-                                <div class="job-salary">
-                                    <div style="font-size: 1rem; font-weight: 600;">$350/hr</div>
-                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: $218,400</div>
-                                </div>
-                            </div>
-                            <div class="job-details">
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Duration</div>
-                                    <div class="job-detail-value">13 weeks</div>
-                                </div>
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Hours/Week</div>
-                                    <div class="job-detail-value">48 hrs/week</div>
-                                </div>
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Housing</div>
-                                    <div class="job-detail-value">$1,800/week</div>
-                                </div>
-                            </div>
-                            <div class="job-description">Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.</div>
-                            <div class="job-tags">
-                                <span class="job-tag">Board Certified EM</span>
-                                <span class="job-tag">ACLS/PALS Required</span>
-                                <span class="job-tag">3+ Years Experience</span>
-                            </div>
-                            <div class="job-actions">
-                                <button class="btn btn-primary">Calculate Contract</button>
-                                <button class="btn btn-secondary">View Details</button>
-                                <button class="btn-save" title="Save Job">🤍</button>
-                            </div>
-                        </div>
-                        <div class="job-card">
-                            <div class="job-header">
-                                <div>
-                                    <div class="job-title">Internal Medicine Hospitalist</div>
-                                    <div class="job-facility">Houston Medical Center</div>
-                                    <div class="job-location">📍 Houston, TX</div>
-                                </div>
-                                <div class="job-salary">
-                                    <div style="font-size: 1rem; font-weight: 600;">$285/hr</div>
-                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: $296,400</div>
-                                </div>
-                            </div>
-                            <div class="job-details">
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Duration</div>
-                                    <div class="job-detail-value">26 weeks</div>
-                                </div>
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Hours/Week</div>
-                                    <div class="job-detail-value">40 hrs/week</div>
-                                </div>
-                                <div class="job-detail">
-                                    <div class="job-detail-label">Housing</div>
-                                    <div class="job-detail-value">$1,400/week</div>
-                                </div>
-                            </div>
-                            <div class="job-description">Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.</div>
-                            <div class="job-tags">
-                                <span class="job-tag">Board Certified IM</span>
-                                <span class="job-tag">Hospital Experience</span>
-                                <span class="job-tag">EMR Proficiency</span>
-                            </div>
-                            <div class="job-actions">
-                                <button class="btn btn-primary">Calculate Contract</button>
-                                <button class="btn btn-secondary">View Details</button>
-                                <button class="btn-save" title="Save Job">🤍</button>
-                            </div>
-                        </div>
-                    `;
-                    if (resultsCount) {
-                        resultsCount.textContent = '6';
-                    }
-                    console.log('🚨 Nuclear option deployed - HTML injected directly');
+            const grid = document.getElementById('jobsGrid');
+            if (grid && (!grid.children || grid.children.length === 0)) {
+                console.log('🔧 Final check: No jobs visible, running unified initialization');
+                if (window.initializeJobData && window.renderJobs) {
+                    window.initializeJobData();
+                    window.renderJobs();
                 }
-            } catch (e) {
-                console.error('❌ Even nuclear option failed:', e);
             }
-        }, 2000);
+        }, 1000);
         
         // Ensure critical variables are globally accessible
         window._jobsData = jobsData;
