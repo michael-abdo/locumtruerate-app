@@ -14,6 +14,55 @@
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/apiClient.js"></script>
     <script src="js/common-utils.js"></script>
+    
+    <!-- EMERGENCY PRINT BLOCKER - MUST RUN FIRST -->
+    <script>
+        // IMMEDIATE PRINT BLOCKER - BLOCK ALL PRINT BEFORE ANYTHING ELSE
+        console.log('🚨 EMERGENCY PRINT BLOCKER ACTIVATED - BLOCKING ALL PRINT IMMEDIATELY');
+        
+        // Store original functions immediately
+        const originalPrint = window.print;
+        const originalWindowOpen = window.open;
+        
+        // Override window.print IMMEDIATELY
+        window.print = function() {
+            console.warn('🚫 EMERGENCY: Print functionality disabled');
+            return false;
+        };
+        
+        // Override window.open for print windows IMMEDIATELY  
+        window.open = function(url, target, features) {
+            if (features && (features.includes('width=900,height=700') || features.includes('print')) ||
+                target === '_blank' && arguments.length === 3) {
+                console.warn('🚫 EMERGENCY: Print window creation blocked');
+                return null;
+            }
+            return originalWindowOpen.apply(window, arguments);
+        };
+        
+        // Block all print events IMMEDIATELY
+        ['beforeprint', 'afterprint'].forEach(eventType => {
+            window.addEventListener(eventType, function(e) {
+                console.warn('🚫 EMERGENCY: Print event blocked:', eventType);
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }, true);
+        });
+        
+        // Block print keyboard shortcuts IMMEDIATELY
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                console.warn('🚫 EMERGENCY: Print shortcut blocked');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }, true);
+        
+        console.log('🚨 EMERGENCY PRINT BLOCKER INSTALLED - NO PRINT POSSIBLE FROM START');
+    </script>
+    
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
