@@ -8,51 +8,92 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <style>
+        /* Jobs Grid */
         .jobs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
         
+        /* Job Card */
         .job-card {
-            background: white;
-            border-radius: 12px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .job-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
         }
         
         .job-title {
             font-size: 1.25rem;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
+        }
+        
+        .job-facility {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .job-location {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
         
         .job-details {
             color: var(--text-secondary);
             margin: 0.5rem 0;
+            font-size: 0.95rem;
         }
         
         .job-salary {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--success);
-            margin: 1rem 0;
+            color: var(--success-color);
+            margin: 0;
         }
         
+        .job-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .job-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Filters Section */
         .filters-section {
-            background: white;
+            background-color: var(--surface-color);
             padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 0.75rem;
             margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .filters-grid {
@@ -62,11 +103,37 @@
             margin-bottom: 1rem;
         }
         
-        #resultsCount {
-            font-weight: 600;
-            color: var(--primary);
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
         }
         
+        #resultsCount {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        /* Form Controls */
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+        
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -78,6 +145,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
         
         .modal.active {
@@ -85,13 +153,14 @@
         }
         
         .modal-content {
-            background: white;
-            border-radius: 12px;
+            background: var(--surface-color);
+            border-radius: 1rem;
             padding: 2rem;
             max-width: 600px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         .modal-close {
@@ -100,6 +169,30 @@
             cursor: pointer;
             border: none;
             background: none;
+            color: var(--text-secondary);
+            line-height: 1;
+            padding: 0;
+            transition: color 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .job-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -295,12 +388,21 @@
                 
                 grid.innerHTML = this.filteredJobs.map(job => `
                     <div class="job-card" onclick="jobBoard.showJob(${job.id})">
-                        <h3 class="job-title">${job.title}</h3>
-                        <p class="job-details">${job.facility}</p>
-                        <p class="job-details">📍 ${job.location}</p>
-                        <p class="job-salary">${job.salary}</p>
-                        <p class="job-details">${job.duration} • ${job.hours}</p>
-                        <p class="job-details">${job.housing}</p>
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">${job.title}</h3>
+                                <p class="job-facility">${job.facility}</p>
+                                <p class="job-location">📍 ${job.location}</p>
+                            </div>
+                            <div>
+                                <p class="job-salary">${job.salary}</p>
+                            </div>
+                        </div>
+                        <div class="job-meta">
+                            <div class="job-meta-item">⏱️ ${job.duration}</div>
+                            <div class="job-meta-item">🕐 ${job.hours}</div>
+                            <div class="job-meta-item">🏠 ${job.housing}</div>
+                        </div>
                     </div>
                 `).join('');
             },
