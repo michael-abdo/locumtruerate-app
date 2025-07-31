@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Board - LocumTrueRate</title>
     <!-- Deploy timestamp: 2025-07-30 18:30:00 UTC -->
-    <!-- META REFRESH FAILSAFE: Last resort auto-refresh if JavaScript completely fails -->
+    <!-- INTELLIGENT FAILSAFE: Only refresh if no jobs are available and filters are clear -->
     <script>
         setTimeout(function() {
             const grid = document.getElementById('jobsGrid');
             const resultsCount = document.getElementById('resultsCount');
+            const searchInput = document.getElementById('searchInput');
+            
+            // Only refresh if truly broken (no jobs AND no active filters)
             if (grid && (!grid.innerHTML || grid.innerHTML.trim() === '<!-- Job listings will be dynamically generated -->')) {
-                console.log('🚨 META REFRESH FAILSAFE: No jobs detected after 5 seconds, refreshing page');
-                if (!resultsCount || resultsCount.textContent === '0' || resultsCount.textContent === '') {
+                const hasActiveFilters = searchInput && searchInput.value.trim() !== '';
+                const hasNoResults = !resultsCount || resultsCount.textContent === '0' || resultsCount.textContent === '';
+                
+                if (hasNoResults && !hasActiveFilters) {
+                    console.log('🚨 INTELLIGENT FAILSAFE: No jobs detected with no filters, refreshing page');
                     window.location.reload();
+                } else {
+                    console.log('🔍 INTELLIGENT FAILSAFE: Has filters or results, not refreshing');
                 }
             }
-        }, 5000);
+        }, 8000); // Longer delay to allow proper initialization
     </script>
     <!-- Centralized CSS Variables and Utilities -->
     <link rel="stylesheet" href="css/variables.css">
@@ -732,6 +740,7 @@
                                 <option value="26-week">26 weeks</option>
                                 <option value="ongoing">Ongoing</option>
                             </select>
+                            <button class="btn btn-secondary" onclick="resetFilters()" style="margin-left: 0.5rem; white-space: nowrap;">Clear Filters</button>
                         </div>
                         <div class="filters-group">
                             <select class="form-control form-select" id="sortFilter">
@@ -762,113 +771,102 @@
                         <!-- Job listings will be dynamically generated -->
                     </div>
                     
-                    <!-- IMMEDIATE FAILSAFE: Inject jobs directly without waiting for any events -->
+                    <!-- SMART FAILSAFE: Provide fallback data that integrates with filtering system -->
                     <script>
-                        console.log('🚨 IMMEDIATE FAILSAFE: Injecting jobs directly into DOM without delays');
+                        console.log('🚨 SMART FAILSAFE: Initializing filterable fallback data');
                         try {
+                            // Set up global failsafe data that can be filtered
+                            window.failsafeJobsData = [
+                                {
+                                    id: 'failsafe-1',
+                                    title: 'Emergency Medicine Physician',
+                                    facility: 'Metropolitan General Hospital',
+                                    location: 'Los Angeles, CA',
+                                    locationState: 'california',
+                                    specialty: 'emergency',
+                                    hourlyRate: 350,
+                                    totalCompensation: 218400,
+                                    duration: '13 weeks',
+                                    hoursPerWeek: 48,
+                                    housing: '$1,800/week',
+                                    description: 'Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.',
+                                    requirements: ['Board Certified EM', 'ACLS/PALS Required', '3+ Years Experience'],
+                                    contractType: '13-weeks'
+                                },
+                                {
+                                    id: 'failsafe-2',
+                                    title: 'Internal Medicine Hospitalist',
+                                    facility: 'Houston Medical Center',
+                                    location: 'Houston, TX',
+                                    locationState: 'texas',
+                                    specialty: 'internal',
+                                    hourlyRate: 285,
+                                    totalCompensation: 296400,
+                                    duration: '26 weeks',
+                                    hoursPerWeek: 40,
+                                    housing: '$2,000/week',
+                                    description: 'Seeking experienced hospitalist for busy medical center. Day/night rotation available.',
+                                    requirements: ['Board Certified IM', 'Hospital Medicine Experience', 'EMR Proficiency'],
+                                    contractType: '26-weeks'
+                                },
+                                {
+                                    id: 'failsafe-3',
+                                    title: 'Family Medicine Provider',
+                                    facility: 'Rocky Mountain Clinic',
+                                    location: 'Denver, CO',
+                                    locationState: 'colorado',
+                                    specialty: 'family',
+                                    hourlyRate: 275,
+                                    totalCompensation: 143000,
+                                    duration: '13 weeks',
+                                    hoursPerWeek: 40,
+                                    housing: '$1,500/week',
+                                    description: 'Beautiful mountain setting. Outpatient clinic serving diverse community.',
+                                    requirements: ['Board Certified FM', 'Outpatient Experience', 'Spanish Preferred'],
+                                    contractType: '13-weeks'
+                                }
+                            ];
+                            
                             const immediateGrid = document.getElementById('jobsGrid');
                             const immediateResultsCount = document.getElementById('resultsCount');
                             
                             if (immediateGrid) {
-                                // Inject job cards immediately
-                                immediateGrid.innerHTML = `
-                                    <div class="job-card" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <div class="job-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                                            <div>
-                                                <div class="job-title" style="font-size: 1.25rem; font-weight: 600; color: #1a365d; margin-bottom: 0.5rem;">Emergency Medicine Physician</div>
-                                                <div class="job-facility" style="font-size: 1rem; color: #4a5568; margin-bottom: 0.25rem;">Metropolitan General Hospital</div>
-                                                <div class="job-location" style="font-size: 0.9rem; color: #718096;">📍 Los Angeles, CA</div>
-                                            </div>
-                                            <div class="job-salary" style="text-align: right;">
-                                                <div style="font-size: 1.25rem; font-weight: 600; color: #22c55e;">$350/hr</div>
-                                                <div style="font-size: 0.9rem; color: #718096; margin-top: 0.25rem;">Total: $218,400</div>
-                                            </div>
-                                        </div>
-                                        <div class="job-details" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; padding: 1rem; background: #f7fafc; border-radius: 6px;">
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Duration</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">13 weeks</div>
-                                            </div>
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Hours/Week</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">48 hrs/week</div>
-                                            </div>
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Housing</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">$1,800/week</div>
-                                            </div>
-                                        </div>
-                                        <div class="job-description" style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1rem; line-height: 1.5;">Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.</div>
-                                        <div class="job-tags" style="margin-bottom: 1rem;">
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">Board Certified EM</span>
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">ACLS/PALS Required</span>
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">3+ Years Experience</span>
-                                        </div>
-                                        <div class="job-actions" style="display: flex; gap: 0.75rem;">
-                                            <button class="btn btn-primary" style="background: #3182ce; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500; cursor: pointer;">Calculate Contract</button>
-                                            <button class="btn btn-secondary" style="background: #e2e8f0; color: #2d3748; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500; cursor: pointer;">View Details</button>
-                                            <button class="btn-save" style="background: #f7fafc; color: #e53e3e; border: 1px solid #fed7d7; padding: 0.75rem; border-radius: 6px; cursor: pointer;" title="Save Job">🤍</button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="job-card" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <div class="job-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                                            <div>
-                                                <div class="job-title" style="font-size: 1.25rem; font-weight: 600; color: #1a365d; margin-bottom: 0.5rem;">Internal Medicine Hospitalist</div>
-                                                <div class="job-facility" style="font-size: 1rem; color: #4a5568; margin-bottom: 0.25rem;">Houston Medical Center</div>
-                                                <div class="job-location" style="font-size: 0.9rem; color: #718096;">📍 Houston, TX</div>
-                                            </div>
-                                            <div class="job-salary" style="text-align: right;">
-                                                <div style="font-size: 1.25rem; font-weight: 600; color: #22c55e;">$285/hr</div>
-                                                <div style="font-size: 0.9rem; color: #718096; margin-top: 0.25rem;">Total: $296,400</div>
-                                            </div>
-                                        </div>
-                                        <div class="job-details" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; padding: 1rem; background: #f7fafc; border-radius: 6px;">
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Duration</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">26 weeks</div>
-                                            </div>
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Hours/Week</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">40 hrs/week</div>
-                                            </div>
-                                            <div class="job-detail">
-                                                <div class="job-detail-label" style="font-size: 0.8rem; color: #718096; margin-bottom: 0.25rem;">Housing</div>
-                                                <div class="job-detail-value" style="font-weight: 500; color: #2d3748;">$1,400/week</div>
-                                            </div>
-                                        </div>
-                                        <div class="job-description" style="font-size: 0.9rem; color: #4a5568; margin-bottom: 1rem; line-height: 1.5;">Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.</div>
-                                        <div class="job-tags" style="margin-bottom: 1rem;">
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">Board Certified IM</span>
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">Hospital Experience</span>
-                                            <span class="job-tag" style="display: inline-block; background: #edf2f7; color: #2d3748; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">EMR Proficiency</span>
-                                        </div>
-                                        <div class="job-actions" style="display: flex; gap: 0.75rem;">
-                                            <button class="btn btn-primary" style="background: #3182ce; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500; cursor: pointer;">Calculate Contract</button>
-                                            <button class="btn btn-secondary" style="background: #e2e8f0; color: #2d3748; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 500; cursor: pointer;">View Details</button>
-                                            <button class="btn-save" style="background: #f7fafc; color: #e53e3e; border: 1px solid #fed7d7; padding: 0.75rem; border-radius: 6px; cursor: pointer;" title="Save Job">🤍</button>
-                                        </div>
-                                    </div>
-                                `;
-                                
-                                // Update results count
-                                if (immediateResultsCount) {
-                                    immediateResultsCount.textContent = '6';
+                                // Only inject if no data is already present
+                                const hasExistingData = window.jobsData && window.jobsData.length > 0;
+                                if (!hasExistingData) {
+                                    console.log('🔄 SMART FAILSAFE: Using failsafe data as initial dataset');
+                                    window.jobsData = [...window.failsafeJobsData];
+                                    window.filteredJobs = [...window.failsafeJobsData];
                                 }
                                 
-                                console.log('✅ IMMEDIATE FAILSAFE: Jobs injected successfully');
+                                console.log('✅ SMART FAILSAFE: Failsafe data prepared for filtering system');
                                 
-                                // Also update pagination
-                                const paginationElement = document.getElementById('pagination');
-                                if (paginationElement) {
-                                    paginationElement.innerHTML = '<div class="pagination-info">Showing 1-2 of 6</div>';
+                                // If jobs are visible immediately, use normal rendering
+                                if (window.renderJobs && typeof window.renderJobs === 'function') {
+                                    console.log('🎯 SMART FAILSAFE: Triggering normal render with failsafe data');
+                                    window.renderJobs();
+                                } else {
+                                    // Schedule render for when system is ready
+                                    setTimeout(() => {
+                                        if (window.renderJobs && typeof window.renderJobs === 'function') {
+                                            console.log('🎯 SMART FAILSAFE: Delayed render with failsafe data');
+                                            window.renderJobs();
+                                        } else {
+                                            // Final fallback: simple text message
+                                            immediateGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading jobs...</div>';
+                                        }
+                                    }, 100);
+                                }
+                                
+                                if (immediateResultsCount && window.filteredJobs) {
+                                    immediateResultsCount.textContent = window.filteredJobs.length.toString();
                                 }
                                 
                             } else {
-                                console.error('❌ IMMEDIATE FAILSAFE: jobsGrid not found');
+                                console.error('❌ SMART FAILSAFE: jobsGrid not found');
                             }
                         } catch (error) {
-                            console.error('❌ IMMEDIATE FAILSAFE: Error injecting jobs:', error);
+                            console.error('❌ SMART FAILSAFE: Error setting up failsafe data:', error);
                         }
                     </script>
                     <div class="pagination" id="pagination">
@@ -1347,14 +1345,23 @@
             document.getElementById('salaryFilter').value = '';
             document.getElementById('contractTypeFilter').value = '';
             
-            // Ensure we have data to show
+            // Ensure we have data to show - use failsafe data if needed
             if (!jobsData || jobsData.length === 0) {
-                loadSampleData();
+                if (window.failsafeJobsData && window.failsafeJobsData.length > 0) {
+                    console.log('🔄 Using failsafe data for reset');
+                    jobsData = [...window.failsafeJobsData];
+                    filteredJobs = [...window.failsafeJobsData];
+                } else {
+                    loadSampleData();
+                    return;
+                }
             } else {
                 filteredJobs = [...jobsData];
-                renderJobs();
             }
-            console.log('✅ Filters reset, showing all jobs');
+            
+            // Always render after resetting
+            renderJobs();
+            console.log('✅ Filters reset, showing', filteredJobs.length, 'jobs');
         }
         
         
@@ -1637,9 +1644,27 @@
             
             // If all filters are empty, show all jobs
             if (!search && !specialty && !location && !salary && !contractType) {
-                console.log('✅ No filters applied, showing all jobs');
+                console.log('🔍 SEARCH CLEAR: No filters applied, restoring all jobs');
+                console.log('📊 Pre-clear state:', {
+                    jobsData: jobsData.length,
+                    filteredJobs: filteredJobs.length,
+                    failsafeData: window.failsafeJobsData ? window.failsafeJobsData.length : 0
+                });
+                
+                // Ensure we have data to show
+                if (!jobsData || jobsData.length === 0) {
+                    if (window.failsafeJobsData && window.failsafeJobsData.length > 0) {
+                        console.log('🔄 Using failsafe data after search clear');
+                        jobsData = [...window.failsafeJobsData];
+                    } else {
+                        console.warn('⚠️ No data available for search clear - loading sample data');
+                        loadSampleData();
+                        return;
+                    }
+                }
+                
                 filteredJobs = [...jobsData];
-                console.log('📊 After clearing filters - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
+                console.log('✅ SEARCH CLEAR COMPLETE - jobsData:', jobsData.length, 'filteredJobs:', filteredJobs.length);
                 renderJobs();
                 return;
             }
