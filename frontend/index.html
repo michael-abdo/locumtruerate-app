@@ -496,13 +496,13 @@
                     </li>
                     <!-- Authentication buttons (hidden when authenticated) -->
                     <li class="auth-buttons" data-auth-hidden>
-                        <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()" style="margin-right: 0.5rem;">Login</button>
-                        <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                        <button class="btn btn-outline" id="loginBtn" style="margin-right: 0.5rem;">Login</button>
+                        <button class="btn btn-primary" id="signupBtn">Sign Up</button>
                     </li>
                     <!-- User menu (shown when authenticated) -->
                     <li class="user-menu" data-auth-required style="display: none;">
                         <span class="user-name" style="margin-right: 1rem; color: var(--text-secondary);"></span>
-                        <button class="btn btn-outline" onclick="AuthAPI.logout().then(() => location.reload())">Logout</button>
+                        <button class="btn btn-outline" id="logoutBtn">Logout</button>
                     </li>
                 </ul>
             </div>
@@ -579,8 +579,8 @@
                     <h2>Interactive Calculator Preview</h2>
                     <div class="calculator-demo">
                         <div class="calc-tabs">
-                            <button class="calc-tab active" onclick="showCalcTab('contract')">Contract Calculator</button>
-                            <button class="calc-tab" onclick="showCalcTab('paycheck')">Paycheck Calculator</button>
+                            <button class="calc-tab active" id="contractTab" data-tab="contract">Contract Calculator</button>
+                            <button class="calc-tab" id="paycheckTab" data-tab="paycheck">Paycheck Calculator</button>
                         </div>
                         
                         <div id="contract-calc" class="calc-content">
@@ -850,12 +850,100 @@
             // Check if we should open signup modal
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('action') === 'signup') {
+                // Clean up the URL immediately
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
                 // Wait a bit for LocumUtils to load
                 setTimeout(() => {
                     if (window.LocumUtils && typeof window.LocumUtils.showRegisterModal === 'function') {
                         window.LocumUtils.showRegisterModal();
                     }
                 }, 500);
+            }
+            
+            // Add event listeners for all buttons
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const contractTab = document.getElementById('contractTab');
+            const paycheckTab = document.getElementById('paycheckTab');
+            const loggerToggleFab = document.getElementById('logger-toggle-fab');
+            const clearLogsBtn = document.getElementById('clearLogsBtn');
+            const copyLogsBtn = document.getElementById('copyLogsBtn');
+            const minimizeLoggerBtn = document.getElementById('minimizeLoggerBtn');
+            const toggleLoggerBtn = document.getElementById('toggleLoggerBtn');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    if (window.LocumUtils && typeof window.LocumUtils.showLoginModal === 'function') {
+                        window.LocumUtils.showLoginModal();
+                    }
+                });
+            }
+            
+            if (signupBtn) {
+                signupBtn.addEventListener('click', () => {
+                    if (window.LocumUtils && typeof window.LocumUtils.showRegisterModal === 'function') {
+                        window.LocumUtils.showRegisterModal();
+                    }
+                });
+            }
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (window.AuthAPI && typeof window.AuthAPI.logout === 'function') {
+                        window.AuthAPI.logout().then(() => location.reload());
+                    }
+                });
+            }
+            
+            if (contractTab) {
+                contractTab.addEventListener('click', () => showCalcTab('contract'));
+            }
+            
+            if (paycheckTab) {
+                paycheckTab.addEventListener('click', () => showCalcTab('paycheck'));
+            }
+            
+            if (loggerToggleFab) {
+                loggerToggleFab.addEventListener('click', () => {
+                    if (typeof toggleLoggerVisibility === 'function') {
+                        toggleLoggerVisibility();
+                    }
+                });
+            }
+            
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', (e) => {
+                    if (typeof clearLogs === 'function') {
+                        clearLogs(e);
+                    }
+                });
+            }
+            
+            if (copyLogsBtn) {
+                copyLogsBtn.addEventListener('click', (e) => {
+                    if (typeof copyLogs === 'function') {
+                        copyLogs(e);
+                    }
+                });
+            }
+            
+            if (minimizeLoggerBtn) {
+                minimizeLoggerBtn.addEventListener('click', (e) => {
+                    if (typeof minimizeLogger === 'function') {
+                        minimizeLogger(e);
+                    }
+                });
+            }
+            
+            if (toggleLoggerBtn) {
+                toggleLoggerBtn.addEventListener('click', (e) => {
+                    if (typeof toggleLogger === 'function') {
+                        toggleLogger(e);
+                    }
+                });
             }
             
             // Fix input field usability issues
@@ -901,7 +989,7 @@
     </script>
 
     <!-- Floating Logger Component -->
-    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+    <button id="logger-toggle-fab" class="logger-toggle-fab" title="Toggle Console Logger">
         <span id="fab-icon">🔍</span>
     </button>
     
@@ -909,12 +997,12 @@
         <div class="logger-header">
             <span class="logger-title">Console Logger</span>
             <div class="logger-controls">
-                <button class="logger-btn" onclick="clearLogs(event)" title="Clear logs">🗑️</button>
-                <button class="logger-btn" onclick="copyLogs(event)" title="Copy logs">📋</button>
-                <button class="logger-btn" onclick="minimizeLogger(event)" title="Minimize logger">
+                <button class="logger-btn" id="clearLogsBtn" title="Clear logs">🗑️</button>
+                <button class="logger-btn" id="copyLogsBtn" title="Copy logs">📋</button>
+                <button class="logger-btn" id="minimizeLoggerBtn" title="Minimize logger">
                     <span id="minimize-icon">−</span>
                 </button>
-                <button class="logger-btn" onclick="toggleLogger(event)" title="Toggle logger">
+                <button class="logger-btn" id="toggleLoggerBtn" title="Toggle logger">
                     <span id="toggle-icon">▼</span>
                 </button>
             </div>
