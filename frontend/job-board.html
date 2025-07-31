@@ -822,10 +822,31 @@
                     
                     <!-- Initialize job data using unified system -->
                     <script>
-                        console.log('🔧 Calling unified initialization...');
+                        console.log('🔧 AGGRESSIVE INIT: Forcing job display...');
+                        // Force initialization immediately
+                        if (window.unifiedJobData && window.unifiedJobData.length > 0) {
+                            console.log('✅ Found', window.unifiedJobData.length, 'unified jobs, forcing display');
+                            window.jobsData = [...window.unifiedJobData];
+                            window.filteredJobs = [...window.unifiedJobData];
+                        }
                         if (window.initializeJobData) {
                             window.initializeJobData();
                         }
+                        // ULTIMATE FAILSAFE: Force render after 100ms
+                        setTimeout(() => {
+                            console.log('🚨 ULTIMATE FAILSAFE: Checking if jobs rendered...');
+                            const jobsGrid = document.getElementById('jobsGrid');
+                            if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
+                                console.log('🚨 NO JOBS RENDERED! Force calling renderJobs...');
+                                if (window.renderJobs && typeof window.renderJobs === 'function') {
+                                    window.renderJobs();
+                                } else {
+                                    console.error('❌ renderJobs function not available!');
+                                }
+                            } else {
+                                console.log('✅ Jobs are rendered, failsafe not needed');
+                            }
+                        }, 100);
                     </script>
                     <div class="pagination" id="pagination">
                         <!-- Pagination controls will be dynamically generated -->
