@@ -449,7 +449,7 @@
         </main>
         
         <!-- Job Detail Modal -->
-        <div id="jobModal" class="modal-backdrop" style="display: none;" role="dialog" aria-labelledby="jobModalTitle" aria-modal="true" aria-hidden="true">
+        <div id="jobModal" class="modal-backdrop" style="display: none;" role="dialog" aria-labelledby="jobModalTitle" aria-modal="true">
             <div class="modal" role="document">
                 <div class="modal-header">
                     <h2 id="jobModalTitle" class="modal-title">Job Details</h2>
@@ -735,19 +735,8 @@
                 
                 // Add event listener for Apply button
                 document.getElementById('applyBtn').addEventListener('click', () => {
-                    // Close the job modal first
-                    this.closeModal();
-                    
-                    // Show the register modal
-                    if (window.LocumUtils && typeof window.LocumUtils.showRegisterModal === 'function') {
-                        window.LocumUtils.showRegisterModal();
-                    } else {
-                        // Fallback if LocumUtils not loaded
-                        console.error('LocumUtils.showRegisterModal not available');
-                        if (window.showToast) {
-                            showToast('Please sign up to apply for positions', 'info');
-                        }
-                    }
+                    // Redirect to index page with signup parameter
+                    window.location.href = 'index.html?action=signup';
                 });
             },
             

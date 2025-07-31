@@ -847,6 +847,17 @@
             calculateContract();
             calculatePaycheck();
             
+            // Check if we should open signup modal
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'signup') {
+                // Wait a bit for LocumUtils to load
+                setTimeout(() => {
+                    if (window.LocumUtils && typeof window.LocumUtils.showRegisterModal === 'function') {
+                        window.LocumUtils.showRegisterModal();
+                    }
+                }, 500);
+            }
+            
             // Fix input field usability issues
             const numberInputs = document.querySelectorAll('input[type="number"]');
             numberInputs.forEach(input => {
