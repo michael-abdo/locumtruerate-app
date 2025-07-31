@@ -735,6 +735,9 @@
                 
                 // Add event listener for Apply button
                 document.getElementById('applyBtn').addEventListener('click', () => {
+                    // Reset body overflow before navigation to prevent page darkening
+                    document.body.style.overflow = '';
+                    
                     // Redirect to index page with signup parameter
                     window.location.href = 'index.html?action=signup';
                 });
