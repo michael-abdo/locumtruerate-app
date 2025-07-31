@@ -1009,9 +1009,9 @@
         if (!jobsData || jobsData.length === 0) {
             console.error('❌ CRITICAL: jobsData is empty at script load!');
             // Force immediate initialization
-            if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                jobsData = [...sampleJobsData];
-                console.log('✅ Emergency restore: jobsData restored from sampleJobsData');
+            if (window.initializeJobData) {
+                window.initializeJobData();
+                console.log('✅ Emergency restore: jobsData restored from unifiedJobData');
             }
         }
         
@@ -1033,9 +1033,9 @@
                         console.log('📋 jobsData exists with', jobsData.length, 'jobs, forcing render');
                         filteredJobs = [...jobsData];
                         renderJobs();
-                    } else if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                        console.log('📋 Restoring from sampleJobsData and rendering');
-                        jobsData = [...sampleJobsData];
+                    } else if (window.initializeJobData) {
+                        console.log('📋 Restoring from unifiedJobData and rendering');
+                        window.initializeJobData();
                         filteredJobs = [...jobsData];
                         renderJobs();
                     }
@@ -1141,9 +1141,13 @@
                 
                 // Safeguard: Ensure we always have some jobs to display
                 if (!jobsData || jobsData.length === 0) {
-                    console.warn('⚠️ No jobs available after API call, loading sample data as fallback');
-                    loadSampleData();
-                    return; // loadSampleData will handle rendering
+                    console.warn('⚠️ No jobs available after API call, using unified initialization');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                        renderJobs();
+                    }
+                    return;
                 }
                 
                 // Update filtered jobs and re-render
@@ -1161,9 +1165,13 @@
                 });
                 LocumUtils.showToast('Failed to load job listings. Using fallback data.', 'warning');
                 
-                // Load sample data as fallback when API fails
-                console.log('🔄 Loading fallback sample data...');
-                loadSampleData();
+                // Load unified data as fallback when API fails
+                console.log('🔄 Loading fallback unified data...');
+                if (window.initializeJobData) {
+                    window.initializeJobData();
+                    filteredJobs = [...jobsData];
+                    renderJobs();
+                }
             }
         }
         
@@ -1309,7 +1317,7 @@
                 if (window.initializeJobData) {
                     window.initializeJobData();
                 } else {
-                    loadSampleData();
+                    console.warn('⚠️ No unified initialization available');
                     return;
                 }
             } else {
@@ -1390,13 +1398,13 @@
             // Emergency safeguard: If we have no jobs to render, load sample data
             if ((!jobsData || jobsData.length === 0) && (!filteredJobs || filteredJobs.length === 0)) {
                 console.error('❌ CRITICAL: renderJobs called with no data! Loading sample data...');
-                // Ensure we have sample data available
-                if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                    jobsData = [...sampleJobsData];
+                // Ensure we have unified data available
+                if (window.initializeJobData) {
+                    window.initializeJobData();
                     filteredJobs = [...jobsData];
-                    console.log('✅ Emergency restore from sampleJobsData:', jobsData.length, 'jobs');
+                    console.log('✅ Emergency restore from unifiedJobData:', jobsData.length, 'jobs');
                 } else {
-                    loadSampleData();
+                    console.warn('⚠️ No unified initialization available');
                     return;
                 }
             }
@@ -1498,9 +1506,9 @@
                 console.error('Stack trace:', error.stack);
                 // Try to display sample data as last resort
                 try {
-                    if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                        console.log('🚨 Attempting emergency recovery with sample data');
-                        jobsData = [...sampleJobsData];
+                    if (window.initializeJobData) {
+                        console.log('🚨 Attempting emergency recovery with unified data');
+                        window.initializeJobData();
                         filteredJobs = [...jobsData];
                         // Try simple DOM manipulation as fallback
                         const grid = document.getElementById('jobsGrid');
@@ -2114,8 +2122,8 @@
         window.forceDisplayJobs = function() {
             console.log('🚨 FORCE DISPLAY JOBS called from console');
             try {
-                if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                    jobsData = [...sampleJobsData];
+                if (window.initializeJobData) {
+                    window.initializeJobData();
                     filteredJobs = [...jobsData];
                     console.log('✅ Data restored, attempting render');
                     renderJobs();
@@ -2366,8 +2374,8 @@
                     const jobsGrid = document.getElementById('jobsGrid');
                     if (jobsGrid && (!jobsGrid.innerHTML || jobsGrid.innerHTML.trim() === '')) {
                         console.error('🚨 EMERGENCY: No jobs displayed after 1 second, forcing display');
-                        if (typeof sampleJobsData !== 'undefined' && sampleJobsData.length > 0) {
-                            jobsData = [...sampleJobsData];
+                        if (window.initializeJobData) {
+                            window.initializeJobData();
                             filteredJobs = [...jobsData];
                             renderJobs();
                         }
@@ -2405,8 +2413,11 @@
                 
                 // Ensure jobsData is initialized and render immediately
                 if (!jobsData || jobsData.length === 0) {
-                    console.warn('⚠️ jobsData is empty at initialization, loading sample data...');
-                    loadSampleData();
+                    console.warn('⚠️ jobsData is empty at initialization, using unified initialization...');
+                    if (window.initializeJobData) {
+                        window.initializeJobData();
+                        filteredJobs = [...jobsData];
+                    }
                 } else {
                     console.log('✅ Initial data available, rendering', jobsData.length, 'jobs');
                     filteredJobs = [...jobsData];
