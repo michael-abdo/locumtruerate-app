@@ -246,50 +246,45 @@
             box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
         }
         
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
+        /* Job Details Modal Styles */
+        .job-details h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
         }
         
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--surface-color);
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        .modal-close {
-            float: right;
-            font-size: 2rem;
-            cursor: pointer;
-            border: none;
-            background: none;
+        .job-details .job-location {
             color: var(--text-secondary);
-            line-height: 1;
-            padding: 0;
-            transition: color 0.2s;
+            margin-bottom: 1.5rem;
         }
         
-        .modal-close:hover {
+        .job-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+        }
+        
+        .job-info-item {
+            font-size: 0.95rem;
+        }
+        
+        .job-details h4 {
             color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .job-details ul {
+            margin-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .job-details ul li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
         }
 
         /* Footer */
@@ -454,10 +449,15 @@
         </main>
         
         <!-- Job Detail Modal -->
-        <div class="modal" id="jobModal">
-            <div class="modal-content">
-                <button class="modal-close" id="modalCloseBtn">&times;</button>
-                <div id="modalContent">
+        <div id="jobModal" class="modal-backdrop" style="display: none;" role="dialog" aria-labelledby="jobModalTitle" aria-modal="true" aria-hidden="true">
+            <div class="modal" role="document">
+                <div class="modal-header">
+                    <h2 id="jobModalTitle" class="modal-title">Job Details</h2>
+                    <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Close modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalContent">
                     <!-- Job details will be loaded here -->
                 </div>
             </div>
@@ -690,26 +690,48 @@
                 if (!job) return;
                 
                 const modal = document.getElementById('jobModal');
+                const title = document.getElementById('jobModalTitle');
                 const content = document.getElementById('modalContent');
                 
+                // Update modal title
+                title.textContent = job.title;
+                
                 content.innerHTML = `
-                    <h2>${job.title}</h2>
-                    <h3>${job.facility}</h3>
-                    <p><strong>Location:</strong> ${job.location}</p>
-                    <p><strong>Salary:</strong> ${job.salary}</p>
-                    <p><strong>Duration:</strong> ${job.duration}</p>
-                    <p><strong>Hours:</strong> ${job.hours}</p>
-                    <p><strong>Housing:</strong> ${job.housing}</p>
-                    <h4>Description</h4>
-                    <p>${job.description}</p>
-                    <h4>Requirements</h4>
-                    <ul>
-                        ${job.requirements.map(req => `<li>${req}</li>`).join('')}
-                    </ul>
-                    <button class="btn btn-primary" id="applyBtn">Apply Now</button>
+                    <div class="job-details">
+                        <h3>${job.facility}</h3>
+                        <p class="job-location">📍 ${job.location}</p>
+                        
+                        <div class="job-info-grid">
+                            <div class="job-info-item">
+                                <strong>Salary:</strong> ${job.salary}
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Duration:</strong> ${job.duration}
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Hours:</strong> ${job.hours}
+                            </div>
+                            <div class="job-info-item">
+                                <strong>Housing:</strong> ${job.housing}
+                            </div>
+                        </div>
+                        
+                        <h4>Description</h4>
+                        <p>${job.description}</p>
+                        
+                        <h4>Requirements</h4>
+                        <ul>
+                            ${job.requirements.map(req => `<li>${req}</li>`).join('')}
+                        </ul>
+                        
+                        <button class="btn btn-primary" id="applyBtn">Apply Now</button>
+                    </div>
                 `;
                 
-                modal.classList.add('active');
+                // Show modal
+                modal.style.display = 'flex';
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
                 
                 // Add event listener for Apply button
                 document.getElementById('applyBtn').addEventListener('click', () => {
@@ -722,7 +744,10 @@
             },
             
             closeModal() {
-                document.getElementById('jobModal').classList.remove('active');
+                const modal = document.getElementById('jobModal');
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
             },
             
             attachListeners() {
@@ -731,9 +756,9 @@
                 document.getElementById('locationFilter').addEventListener('change', () => this.filter());
                 document.getElementById('sortFilter').addEventListener('change', () => this.filter());
                 
-                // Close modal on background click
+                // Close modal on backdrop click
                 document.getElementById('jobModal').addEventListener('click', (e) => {
-                    if (e.target.id === 'jobModal') {
+                    if (e.target.id === 'jobModal' || e.target.classList.contains('modal-backdrop')) {
                         this.closeModal();
                     }
                 });
@@ -741,6 +766,13 @@
                 // Close modal on close button click
                 document.getElementById('modalCloseBtn').addEventListener('click', () => {
                     this.closeModal();
+                });
+                
+                // Close modal on ESC key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && document.getElementById('jobModal').style.display !== 'none') {
+                        this.closeModal();
+                    }
                 });
             }
         };
