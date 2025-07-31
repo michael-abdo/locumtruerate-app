@@ -735,10 +735,18 @@
                 
                 // Add event listener for Apply button
                 document.getElementById('applyBtn').addEventListener('click', () => {
-                    if (window.showToast) {
-                        showToast('Application feature coming soon!', 'info');
+                    // Close the job modal first
+                    this.closeModal();
+                    
+                    // Show the register modal
+                    if (window.LocumUtils && typeof window.LocumUtils.showRegisterModal === 'function') {
+                        window.LocumUtils.showRegisterModal();
                     } else {
-                        alert('Application feature coming soon!');
+                        // Fallback if LocumUtils not loaded
+                        console.error('LocumUtils.showRegisterModal not available');
+                        if (window.showToast) {
+                            showToast('Please sign up to apply for positions', 'info');
+                        }
                     }
                 });
             },
