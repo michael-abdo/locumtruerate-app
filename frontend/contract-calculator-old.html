@@ -6,63 +6,20 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Normalized Contract Calculator - LocumTrueRate</title>
-    <!-- Force deployment refresh -->
-    <!-- Centralized CSS Variables -->
-    <link rel="stylesheet" href="css/variables.css">
-    <!-- Common Utilities -->
-    <link rel="stylesheet" href="js/common-utils.css">
-    <script src="js/apiClient.js"></script>
-    <script src="js/common-utils.js"></script>
-    
-    <!-- EMERGENCY PRINT BLOCKER - MUST RUN FIRST -->
-    <script>
-        // IMMEDIATE PRINT BLOCKER - BLOCK ALL PRINT BEFORE ANYTHING ELSE
-        console.log('🚨 EMERGENCY PRINT BLOCKER ACTIVATED - BLOCKING ALL PRINT IMMEDIATELY');
-        
-        // Store original functions immediately
-        const originalPrint = window.print;
-        const originalWindowOpen = window.open;
-        
-        // Override window.print IMMEDIATELY
-        window.print = function() {
-            console.warn('🚫 EMERGENCY: Print functionality disabled');
-            return false;
-        };
-        
-        // Override window.open for print windows IMMEDIATELY  
-        window.open = function(url, target, features) {
-            if (features && (features.includes('width=900,height=700') || features.includes('print')) ||
-                target === '_blank' && arguments.length === 3) {
-                console.warn('🚫 EMERGENCY: Print window creation blocked');
-                return null;
-            }
-            return originalWindowOpen.apply(window, arguments);
-        };
-        
-        // Block all print events IMMEDIATELY
-        ['beforeprint', 'afterprint'].forEach(eventType => {
-            window.addEventListener(eventType, function(e) {
-                console.warn('🚫 EMERGENCY: Print event blocked:', eventType);
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            }, true);
-        });
-        
-        // Block print keyboard shortcuts IMMEDIATELY
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                console.warn('🚫 EMERGENCY: Print shortcut blocked');
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            }
-        }, true);
-        
-        console.log('🚨 EMERGENCY PRINT BLOCKER INSTALLED - NO PRINT POSSIBLE FROM START');
-    </script>
-    
+    <!-- CACHE BUST: 2025-07-30-03:52 -->
+    <meta name="cache-bust" content="2025-07-30-03-52-FIXED">
+    <title>Contract Calculator - LocumTrueRate - CACHE FIXED</title>
+    <!-- TEMPORARILY REMOVED EXTERNAL DEPENDENCIES FOR DEBUGGING -->
+    <!-- Dependencies causing potential blocking removed -->
+    <style>
+        /* Inline critical CSS variables */
+        :root {
+            --primary-color: #2563eb;
+            --text-primary: #1f2937;
+            --background-color: #ffffff;
+            --border-color: #d1d5db;
+        }
+    </style>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -840,8 +797,7 @@
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="job-board.html" class="nav-link">Job Board</a></li>
                     <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
-                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
-                    <li><a href="normalized-calculator.html" class="nav-link active">Normalized Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link active">Contract Calculator</a></li>
                     <li><a href="calculation-history.html" class="nav-link">History</a></li>
                     <li class="nav-dropdown">
                         <a href="#" class="nav-link">Dashboards</a>
@@ -854,14 +810,14 @@
                     
                     <!-- Authentication buttons (shown when not logged in) -->
                     <li class="auth-buttons" data-auth-hidden>
-                        <button class="btn btn-outline" onclick="LocumUtils.showLoginModal()">Login</button>
-                        <button class="btn btn-primary" onclick="LocumUtils.showRegisterModal()">Sign Up</button>
+                        <button class="btn btn-outline" id="loginButton">Login</button>
+                        <button class="btn btn-primary" id="registerButton">Sign Up</button>
                     </li>
                     
                     <!-- User menu (shown when logged in) -->
                     <li class="user-menu" data-auth-visible style="display: none;">
                         <span class="user-name"></span>
-                        <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+                        <button class="btn btn-outline" id="logoutButton">Logout</button>
                     </li>
                 </ul>
             </div>
@@ -870,8 +826,8 @@
         <!-- Page Header -->
         <section class="page-header">
             <div class="container">
-                <h1>Normalized Contract Calculator</h1>
-                <p>Calculate comprehensive true hourly rates including all compensation types and benefits</p>
+                <h1>Contract Calculator</h1>
+                <p>Calculate true hourly rates and total contract value with detailed compensation breakdown</p>
             </div>
         </section>
 
@@ -894,7 +850,7 @@
                             <div class="form-group">
                                 <label class="form-label">Job Title</label>
                                 <div class="tooltip-wrapper">
-                                    <select class="form-input form-select" id="jobTitle" onchange="calculateContract()">
+                                    <select class="form-input form-select" id="jobTitle">
                                         <option value="MD">MD (Medical Doctor)</option>
                                         <option value="CRNA">CRNA (Certified Registered Nurse Anesthetist)</option>
                                         <option value="NP">NP (Nurse Practitioner)</option>
@@ -912,40 +868,10 @@
                             <div class="form-group">
                                 <label class="form-label">Hourly Rate ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hourly rate" required>
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" placeholder="Enter hourly rate" required>
                                     <div class="tooltip">Enter your base hourly rate before overtime. This is the standard rate you'll be paid for regular hours worked. Does not include overtime premiums or stipends.</div>
                                 </div>
                                 <div class="form-help">Base hourly rate</div>
-                            </div>
-
-                            <!-- Overtime Rate -->
-                            <div class="form-group">
-                                <label class="form-label">Overtime Rate ($)</label>
-                                <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="overtimeRate" value="0" min="0" step="0.01" placeholder="Enter overtime rate">
-                                    <div class="tooltip">Enter your overtime hourly rate (typically 1.5x base rate). Leave as 0 if no overtime is expected. This rate applies to hours worked beyond your regular schedule.</div>
-                                </div>
-                                <div class="form-help">Overtime hourly rate</div>
-                            </div>
-
-                            <!-- Beeper Call Rate -->
-                            <div class="form-group">
-                                <label class="form-label">Hourly Beeper Call Rate ($)</label>
-                                <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="beeperRate" value="0" min="0" step="0.01" placeholder="Enter beeper call rate">
-                                    <div class="tooltip">Enter your hourly rate when on beeper/call duty. This is compensation for being available to respond to calls, typically a fraction of your base rate.</div>
-                                </div>
-                                <div class="form-help">Rate while on call</div>
-                            </div>
-
-                            <!-- Beeper Call Hours -->
-                            <div class="form-group">
-                                <label class="form-label">Beeper Call Hours per Week</label>
-                                <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="beeperHours" value="0" min="0" max="168" step="1" placeholder="Enter weekly call hours">
-                                    <div class="tooltip">Enter the number of hours per week you'll be on beeper/call duty. This is time you must be available but not actively working.</div>
-                                </div>
-                                <div class="form-help">Weekly on-call hours</div>
                             </div>
 
                             <!-- Schedule -->
@@ -953,32 +879,16 @@
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hours per week" required>
+                                        <input type="number" class="form-input" id="hoursPerWeek" value="40" min="0.01" max="168" step="0.5" placeholder="Enter hours per week" required>
                                         <div class="tooltip">Enter the total number of hours you'll work per week at the standard hourly rate. This typically ranges from 36-48 hours for most locum positions. Maximum allowed is 168 hours (24 hours × 7 days).</div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Shifts per Week</label>
-                                    <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="shiftsPerWeek" value="5" min="0" max="7" step="0.5" placeholder="Enter shifts per week">
-                                        <div class="tooltip">Enter the number of shifts you'll work per week. This helps calculate daily rates and mileage costs. Typical schedules are 3-5 shifts per week for locum positions.</div>
-                                    </div>
-                                    <div class="form-help">Number of working days</div>
-                                </div>
-                                <div class="form-group">
                                     <label class="form-label">Contract Length (weeks)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter contract length" required>
+                                        <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" step="1" placeholder="Enter contract length" required>
                                         <div class="tooltip">Enter the total duration of your contract in weeks. Common lengths are 8-13 weeks for locum tenens assignments, with some extending to 26 or 52 weeks. This determines your total earning potential.</div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Weeks Off</label>
-                                    <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="weeksOff" value="0" min="0" max="52" step="1" placeholder="Enter weeks off">
-                                        <div class="tooltip">Enter the number of weeks you'll take off during the contract period (vacation, holidays, etc.). This will be subtracted from total contract weeks to calculate actual working weeks.</div>
-                                    </div>
-                                    <div class="form-help">Non-working weeks</div>
                                 </div>
                             </div>
 
@@ -986,27 +896,17 @@
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($ per week)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculateContract()">
+                                    <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01">
                                     <div class="tooltip">Enter the weekly housing allowance provided by your employer. This can range from $800-2000+ per week depending on location and housing type. May be provided as furnished housing or cash allowance.</div>
                                 </div>
                                 <div class="form-help">Weekly housing allowance</div>
-                            </div>
-
-                            <!-- Daily Food Stipend -->
-                            <div class="form-group">
-                                <label class="form-label">Daily Food Stipend ($)</label>
-                                <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="foodStipend" value="0" min="0" step="0.01" placeholder="Enter daily food stipend">
-                                    <div class="tooltip">Enter your daily meal/food allowance. This is typically $50-150 per day for meals and incidentals. Will be calculated for all working days in your contract.</div>
-                                </div>
-                                <div class="form-help">Daily meal allowance</div>
                             </div>
 
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Travel Reimbursement ($)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01" oninput="calculateContract()">
+                                        <input type="number" class="form-input" id="travelReimbursement" value="1000" min="0" step="0.01">
                                         <div class="tooltip">Enter the total travel reimbursement amount provided. This covers transportation costs to/from your assignment location and is typically a one-time payment ranging from $500-2000+ depending on distance.</div>
                                     </div>
                                     <div class="form-help">One-time travel allowance</div>
@@ -1014,30 +914,10 @@
                                 <div class="form-group">
                                     <label class="form-label">Other Stipends ($)</label>
                                     <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="otherStipends" value="2000" min="0" step="0.01" oninput="calculateContract()">
+                                        <input type="number" class="form-input" id="otherStipends" value="2000" min="0" step="0.01">
                                         <div class="tooltip">Enter total amount for additional benefits like meal stipends, CME allowances, license reimbursement, malpractice insurance, or completion bonuses. This varies widely by employer and contract type.</div>
                                     </div>
                                     <div class="form-help">Total other benefits</div>
-                                </div>
-                            </div>
-
-                            <!-- Additional Compensation -->
-                            <div class="input-group">
-                                <div class="form-group">
-                                    <label class="form-label">Daily Round Trip Miles</label>
-                                    <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="dailyMiles" value="0" min="0" step="0.1" placeholder="Enter daily miles">
-                                        <div class="tooltip">Enter your daily round trip commute distance in miles. This will be used to calculate mileage reimbursement at the current IRS rate ($0.67/mile for 2024).</div>
-                                    </div>
-                                    <div class="form-help">Round trip commute</div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Completion Bonus ($)</label>
-                                    <div class="tooltip-wrapper">
-                                        <input type="number" class="form-input" id="completionBonus" value="0" min="0" step="0.01" placeholder="Enter completion bonus">
-                                        <div class="tooltip">Enter any bonus paid upon successful completion of the contract. This is typically paid as a lump sum at the end of your assignment.</div>
-                                    </div>
-                                    <div class="form-help">End-of-contract bonus</div>
                                 </div>
                             </div>
 
@@ -1048,7 +928,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Contract Type</label>
                                     <div class="tooltip-wrapper">
-                                        <select class="form-input form-select" id="contractType" onchange="calculateContract()">
+                                        <select class="form-input form-select" id="contractType">
                                             <option value="locum">Locum Tenens</option>
                                             <option value="permanent">Permanent Placement</option>
                                             <option value="per-diem">Per Diem</option>
@@ -1059,7 +939,7 @@
                                 <div class="form-group">
                                     <label class="form-label">Contract State</label>
                                     <div class="tooltip-wrapper">
-                                        <select class="form-input form-select" id="workState" onchange="calculateContract()">
+                                        <select class="form-input form-select" id="workState">
                                         <option value="">Select State</option>
                                         <option value="AL">Alabama</option>
                                         <option value="AK">Alaska</option>
@@ -1171,53 +1051,18 @@
                                     </div>
                                     <span class="result-value" id="otherStipendsResult">$0</span>
                                 </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Overtime Compensation</span>
-                                        <div class="result-subtext">Premium for overtime hours</div>
-                                    </div>
-                                    <span class="result-value" id="overtimeCompensationResult">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Beeper Call Pay</span>
-                                        <div class="result-subtext">On-call compensation</div>
-                                    </div>
-                                    <span class="result-value" id="beeperCompensationResult">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Food Stipend</span>
-                                        <div class="result-subtext">Daily meal allowance total</div>
-                                    </div>
-                                    <span class="result-value" id="foodStipendResult">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Mileage Reimbursement</span>
-                                        <div class="result-subtext">IRS rate mileage</div>
-                                    </div>
-                                    <span class="result-value" id="mileageReimbursementResult">$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <div>
-                                        <span class="result-label">Completion Bonus</span>
-                                        <div class="result-subtext">End-of-contract bonus</div>
-                                    </div>
-                                    <span class="result-value" id="completionBonusResult">$0</span>
-                                </div>
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
-                                <button class="btn-secondary" onclick="loadSavedContracts()" title="Load saved contract calculations">📂 Load Saved <span style="font-size: 0.8em;">(Login Required)</span></button>
-                                <button class="btn-secondary" onclick="window.open('calculation-history.html', '_blank')" title="View all calculation history">📋 View History</button>
-                                <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
-                                <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
-                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
-                                <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
-                                <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
-                                <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
+                                <button class="btn-primary" id="saveButton" title="Save for later comparison">📁 Save Analysis <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" id="loadButton" title="Load saved contract calculations">📂 Load Saved <span style="font-size: 0.8em;">(Login Required)</span></button>
+                                <button class="btn-secondary" id="historyButton" title="View all calculation history">📋 View History</button>
+                                <button class="btn-secondary" id="compareButton" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
+                                <button class="btn-accent" id="findJobsButton">🔍 Find Similar Jobs</button>
+                                <button id="printButton" class="btn-secondary">🖨️ Print Results</button>
+                                <button id="exportPdfButton" class="btn-secondary">📄 Export PDF</button>
+                                <button id="exportCsvButton" class="btn-secondary">📊 Export CSV</button>
+                                <button id="emailButton" class="btn-secondary">📧 Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -1267,7 +1112,6 @@
                         <ul>
                             <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
                             <li><a href="contract-calculator.html">Contract Calculator</a></li>
-                            <li><a href="normalized-calculator.html">Normalized Calculator</a></li>
                             <li><a href="job-board.html">Job Board</a></li>
                         </ul>
                     </div>
@@ -1344,6 +1188,43 @@
             };
         }
         
+        // CSP-COMPLIANT EVENT LISTENERS - No inline handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔗 Setting up CSP-compliant event listeners...');
+            
+            // Auth buttons
+            const loginBtn = document.getElementById('loginButton');
+            const registerBtn = document.getElementById('registerButton');
+            const logoutBtn = document.getElementById('logoutButton');
+            
+            if (loginBtn) loginBtn.addEventListener('click', () => LocumUtils.showLoginModal());
+            if (registerBtn) registerBtn.addEventListener('click', () => LocumUtils.showRegisterModal());
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            
+            // Action buttons
+            const saveBtn = document.getElementById('saveButton');
+            const loadBtn = document.getElementById('loadButton');
+            const historyBtn = document.getElementById('historyButton');
+            const compareBtn = document.getElementById('compareButton');
+            const findJobsBtn = document.getElementById('findJobsButton');
+            const printBtn = document.getElementById('printButton');
+            const exportPdfBtn = document.getElementById('exportPdfButton');
+            const exportCsvBtn = document.getElementById('exportCsvButton');
+            const emailBtn = document.getElementById('emailButton');
+            
+            if (saveBtn) saveBtn.addEventListener('click', saveContract);
+            if (loadBtn) loadBtn.addEventListener('click', loadSavedContracts);
+            if (historyBtn) historyBtn.addEventListener('click', () => window.open('calculation-history.html', '_blank'));
+            if (compareBtn) compareBtn.addEventListener('click', compareContracts);
+            if (findJobsBtn) findJobsBtn.addEventListener('click', findSimilarJobs);
+            if (printBtn) printBtn.addEventListener('click', printResults);
+            if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportAnalysis);
+            if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCSV);
+            if (emailBtn) emailBtn.addEventListener('click', emailResults);
+            
+            console.log('✅ CSP-compliant event listeners ready');
+        });
+        
         // Removed complex validation - using simple real-time calculations only
         
         // Check if all required fields are valid
@@ -1385,20 +1266,14 @@
             const resultElements = [
                 'regularPay', 'weeklyGrossPay', 
                 'grossTaxableIncome', 'totalHousingStipend', 'travelReimbursementResult', 'otherStipendsResult', 
-                'netTakeHome', 'totalContractValue', 'totalContractValueBreakdown',
-                'trueHourlyRate', 'yourContractRate', 'annualEquivalent',
-                // New compensation result fields
-                'overtimeCompensationResult', 'beeperCompensationResult', 'foodStipendResult', 
-                'mileageReimbursementResult', 'completionBonusResult'
+                'netTakeHome', 'totalContractValue', 
+                'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
             ];
             
             resultElements.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.textContent = '$0';
-                    console.log(`🧹 Cleared result field: ${id}`);
-                } else {
-                    console.warn(`⚠️ Result element not found for clearing: ${id}`);
                 }
             });
         }
@@ -1409,9 +1284,9 @@
             const hasCalculatedResults = parseFloat(document.getElementById('totalContractValue').textContent.replace(/[$,]/g, '')) > 0;
             
             // Save and Compare buttons require valid fields
-            const saveBtn = document.querySelector('.btn-primary[onclick="saveContract()"]');
-            const compareBtn = document.querySelector('.btn-secondary[onclick="compareContracts()"]');
-            const findJobsBtn = document.querySelector('.btn-accent[onclick="findSimilarJobs()"]');
+            const saveBtn = document.getElementById('saveButton');
+            const compareBtn = document.getElementById('compareButton');
+            const findJobsBtn = document.getElementById('findJobsButton');
             
             if (saveBtn) saveBtn.disabled = !isValid;
             if (compareBtn) compareBtn.disabled = !isValid;
@@ -1432,9 +1307,6 @@
         function calculateContract() {
             console.log('🔄 calculateContract() called');
             console.log('🔍 Checking if DOM is ready...');
-            
-            // DEBUG: Simple test to verify function is running
-            console.log('🚨 DEBUG: Function started successfully');
             
             // Check if elements exist
             const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
@@ -1470,161 +1342,69 @@
             const travelReimbursement = getInputValue('travelReimbursement');
             const otherStipends = getInputValue('otherStipends');
             
-            // New fields for normalized calculator
-            const overtimeRate = getInputValue('overtimeRate');
-            const beeperRate = getInputValue('beeperRate');
-            const beeperHours = getInputValue('beeperHours');
-            const foodStipend = getInputValue('foodStipend');
-            const weeksOff = getInputValue('weeksOff');
-            const shiftsPerWeek = getInputValue('shiftsPerWeek', 5);
-            const dailyMiles = getInputValue('dailyMiles');
-            const completionBonus = getInputValue('completionBonus');
+            // Log input values for debugging
+            console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
+            console.log(`💰 Stipends: Housing: $${housingStipend}/week, Travel: $${travelReimbursement}, Other: $${otherStipends}`);
             
-            // Log all input values for debugging
-            console.log(`📊 Core Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
-            console.log(`💰 Legacy Stipends: Housing: $${housingStipend}/week, Travel: $${travelReimbursement}, Other: $${otherStipends}`);
-            console.log(`📈 New Fields: Overtime: $${overtimeRate}/hr, Beeper: $${beeperRate}/hr for ${beeperHours}hrs/week, Food: $${foodStipend}/day`);
-            console.log(`⏰ Schedule: ${weeksOff} weeks off, ${shiftsPerWeek} shifts/week, ${dailyMiles} miles/day, Bonus: $${completionBonus}`);
+            // Validation with visible error messages
+            let hasErrors = false;
+            const validationErrors = [];
             
-            // Simple validation - only stop for critical errors
             if (hourlyRate <= 0) {
-                console.error('❌ Critical: Hourly rate must be greater than $0');
-                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast('Hourly rate must be greater than $0', 'error');
-                } else {
-                    showNotification('Hourly rate must be greater than $0', 'error');
-                }
-                clearResults();
-                updateButtonStates();
-                return;
+                validationErrors.push('Hourly rate must be greater than $0');
+                hasErrors = true;
             }
-            if (hoursPerWeek <= 0 || hoursPerWeek > 168) {
-                console.error('❌ Critical: Hours per week must be between 1 and 168');
-                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast('Hours per week must be between 1 and 168', 'error');
-                } else {
-                    showNotification('Hours per week must be between 1 and 168', 'error');
-                }
-                clearResults();
-                updateButtonStates();
-                return;
+            if (hoursPerWeek <= 0) {
+                validationErrors.push('Hours per week must be greater than 0');
+                hasErrors = true;
+            }
+            if (hoursPerWeek > 168) {
+                validationErrors.push('Hours per week cannot exceed 168');
+                hasErrors = true;
             }
             if (contractWeeks <= 0) {
-                console.error('❌ Critical: Contract length must be at least 1 week');
-                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast('Contract length must be at least 1 week', 'error');
-                } else {
-                    showNotification('Contract length must be at least 1 week', 'error');
-                }
-                clearResults();
-                updateButtonStates();
-                return;
+                validationErrors.push('Contract length must be at least 1 week');
+                hasErrors = true;
+            }
+            if (contractWeeks > 52) {
+                console.warn('⚠️ Contract length over 1 year');
+            }
+            if (travelReimbursement < 0 || otherStipends < 0 || housingStipend < 0) {
+                validationErrors.push('Values cannot be negative');
+                hasErrors = true;
             }
             
-            // Clean negative values for calculations (no UI changes)
-            const cleanOvertimeRate = Math.max(0, overtimeRate);
-            const cleanBeeperRate = Math.max(0, beeperRate);
-            const cleanBeeperHours = Math.max(0, beeperHours);
-            const cleanFoodStipend = Math.max(0, foodStipend);
-            const cleanWeeksOff = Math.max(0, Math.min(weeksOff, contractWeeks)); // Allow weeks off up to contract length
-            const cleanShiftsPerWeek = Math.max(0, Math.min(shiftsPerWeek, 7));
-            const cleanDailyMiles = Math.max(0, dailyMiles);
-            const cleanCompletionBonus = Math.max(0, completionBonus);
-            
-            console.log('🧹 Clean Values calculated successfully');
-            
-            // Handle negative values: show warnings and reset fields to 0
-            const negativeFields = [
-                {original: overtimeRate, id: 'overtimeRate', name: 'Overtime rate'},
-                {original: beeperRate, id: 'beeperRate', name: 'Beeper rate'},
-                {original: beeperHours, id: 'beeperHours', name: 'Beeper hours'},
-                {original: foodStipend, id: 'foodStipend', name: 'Food stipend'},
-                {original: weeksOff, id: 'weeksOff', name: 'Weeks off'},
-                {original: dailyMiles, id: 'dailyMiles', name: 'Daily miles'},
-                {original: completionBonus, id: 'completionBonus', name: 'Completion bonus'}
-            ];
-            
-            let hasNegativeValues = false;
-            negativeFields.forEach(field => {
-                if (field.original < 0) {
-                    hasNegativeValues = true;
-                    console.warn(`⚠️ Negative value detected: ${field.name} = ${field.original}, resetting to 0`);
-                    const element = document.getElementById(field.id);
-                    if (element) {
-                        element.value = '0';
-                        console.log(`🔧 Reset ${field.id} to 0 in UI`);
+            // Show validation errors
+            if (hasErrors) {
+                console.error('❌ Validation errors:', validationErrors);
+                // Show first error as toast notification (visible to user)
+                if (validationErrors.length > 0) {
+                    if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
+                        LocumUtils.showToast(validationErrors[0], 'error');
+                    } else {
+                        showNotification(validationErrors[0], 'error');
                     }
                 }
-            });
-            
-            if (hasNegativeValues) {
-                const warningMessage = 'Negative values not allowed - fields reset to zero';
-                console.warn('⚠️ ' + warningMessage);
-                if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                    LocumUtils.showToast(warningMessage, 'warning');
-                } else {
-                    showNotification(warningMessage, 'warning');
-                }
-                console.log('🚨 DEBUG: Negative validation triggered and fields reset');
             }
             
-            console.log('✅ Validation passed, proceeding with calculations...');
-            
-            // Calculate working weeks (accounting for time off)
-            const workingWeeks = Math.max(0, contractWeeks - cleanWeeksOff); // Allow 0 working weeks for edge cases
-            console.log('⏰ Working weeks: ' + contractWeeks + ' - ' + cleanWeeksOff + ' = ' + workingWeeks);
-            
-            // Basic calculations
+            // Simple gross calculations only
             const weeklyGrossPay = hourlyRate * hoursPerWeek;
-            const totalGrossPay = weeklyGrossPay * workingWeeks; // Use working weeks for pay
-            const totalHousingStipend = housingStipend * workingWeeks; // Housing uses working weeks like other weekly calculations
+            const totalGrossPay = weeklyGrossPay * contractWeeks;
+            const totalHousingStipend = housingStipend * contractWeeks;
+            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
             
-            console.log('💰 Base calculations: weeklyGrossPay=' + weeklyGrossPay + ', totalGrossPay=' + totalGrossPay);
-            
-            // New compensation calculations
-            const overtimeHours = Math.max(0, hoursPerWeek - 40);
-            const overtimeCompensation = cleanOvertimeRate > hourlyRate ? 
-                (cleanOvertimeRate - hourlyRate) * overtimeHours * workingWeeks : 0;
-            
-            const beeperCompensation = cleanBeeperRate * cleanBeeperHours * workingWeeks;
-            const foodStipendTotal = cleanFoodStipend * 7 * workingWeeks;
-            
-            const irsRate = 0.67;
-            const totalMiles = cleanDailyMiles * cleanShiftsPerWeek * workingWeeks;
-            const mileageReimbursement = totalMiles * irsRate;
-            
-            console.log('🔥 New compensation: overtime=' + overtimeCompensation + ', beeper=' + beeperCompensation + ', food=' + foodStipendTotal + ', mileage=' + mileageReimbursement);
-            
-            // Total contract value including all compensation
-            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
-                                     otherStipends + overtimeCompensation + beeperCompensation + 
-                                     foodStipendTotal + mileageReimbursement + cleanCompletionBonus;
-            console.log('💰 Total Contract Value: $' + totalContractValue);
-            
-            // True hourly rate calculation - use working weeks not contract weeks
-            const totalHours = hoursPerWeek * workingWeeks;
+            // True hourly rate calculation
+            const totalHours = hoursPerWeek * contractWeeks;
             const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
             
             // Annual equivalent (52 weeks)
             const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
-            
-            // DEBUG: Check if calculations produced values
-            console.log(`🚨 DEBUG: totalGrossPay=${totalGrossPay}, beeperCompensation=${beeperCompensation}, totalContractValue=${totalContractValue}`);
 
             // Update display elements - only update elements that exist
             const elements = {
                 'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalContractValueBreakdown': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'travelReimbursementResult': '$' + travelReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'otherStipendsResult': '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'overtimeCompensationResult': '$' + overtimeCompensation.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'beeperCompensationResult': '$' + beeperCompensation.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'foodStipendResult': '$' + foodStipendTotal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'mileageReimbursementResult': '$' + mileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'completionBonusResult': '$' + cleanCompletionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
                 'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
@@ -1656,9 +1436,6 @@
             
             // Update button states after calculation
             updateButtonStates();
-            
-            // DEBUG: Function completed successfully
-            console.log('🚨 DEBUG: Function completed successfully');
         }
 
         async function saveContract() {
@@ -1828,7 +1605,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2>Saved Contract Calculations</h2>
-                            <button type="button" class="modal-close" onclick="closeSavedContractsModal()">&times;</button>
+                            <button type="button" class="modal-close" id="closeContractsModal">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="saved-calculations-list">
@@ -2246,116 +2023,75 @@
             }, 1000);
         }
 
-        // Print Results function - NON-BLOCKING MONITOR
+        // Print Results function - FIXED: No auto-print on page load
         function printResults() {
-            console.error('🚨🚨🚨 printResults() CALLED - BLOCKED!');
-            console.error('Call stack:', new Error().stack);
-            console.error('Timestamp:', new Date().toISOString());
-            // Block but don't use alert() - would timeout automated tools
-            return false;
-        }
-        
-        // Print Results function (DUPLICATE - COMMENTED OUT)
-        // function printResults() {
             try {
-                // Create a print-friendly version of the results
-                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                // Check if results are available
+                const trueHourlyRate = document.getElementById('trueHourlyRate');
+                const weeklyGrossPay = document.getElementById('weeklyGrossPay');
+                const totalContractValue = document.getElementById('totalContractValue');
                 
+                if (!trueHourlyRate || !weeklyGrossPay || !totalContractValue || 
+                    !trueHourlyRate.textContent || !weeklyGrossPay.textContent || !totalContractValue.textContent) {
+                    showNotification('No calculation results to print', 'warning');
+                    return;
+                }
+                
+                // Create a clean print version
                 const printContent = `
                     <!DOCTYPE html>
                     <html>
                     <head>
-                        <title>Contract Analysis - ${document.getElementById('jobTitle').value}</title>
+                        <meta charset="UTF-8">
+                        <title>Contract Analysis Results</title>
                         <style>
                             body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-                            .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
-                            .contract-details { margin-bottom: 20px; }
-                            .results-section { margin-bottom: 20px; }
-                            .result-item { margin: 5px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
-                            .result-label { font-weight: bold; color: #2563eb; }
-                            .result-value { float: right; font-weight: bold; }
-                            .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
-                            @media print { 
-                                body { margin: 0; }
-                                .no-print { display: none; }
-                            }
+                            h1 { color: #2563eb; text-align: center; margin-bottom: 20px; }
+                            .summary { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+                            .results { display: grid; gap: 10px; }
+                            .result-row { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
+                            .total { font-weight: bold; font-size: 1.1em; }
+                            @media print { body { margin: 0; } }
                         </style>
                     </head>
                     <body>
-                        <div class="header">
-                            <h1>Contract Analysis Report</h1>
-                            <p>Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                        <h1>Contract Analysis Report</h1>
+                        <div class="summary">
+                            <p><strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
                         </div>
-                        
-                        <div class="contract-details">
-                            <h2>Contract Details</h2>
-                            <div class="result-item">
-                                <span class="result-label">Position:</span>
-                                <span class="result-value">${document.getElementById('jobTitle').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Hourly Rate:</span>
-                                <span class="result-value">$${document.getElementById('hourlyRate').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Hours per Week:</span>
-                                <span class="result-value">${document.getElementById('hoursPerWeek').value}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Contract Length:</span>
-                                <span class="result-value">${document.getElementById('contractWeeks').value} weeks</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Housing Stipend:</span>
-                                <span class="result-value">$${document.getElementById('housingStipend').value}/week</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Travel Reimbursement:</span>
-                                <span class="result-value">$${document.getElementById('travelReimbursement').value}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="results-section">
-                            <h2>Financial Analysis</h2>
-                            <div class="result-item">
-                                <span class="result-label">Weekly Gross Pay:</span>
-                                <span class="result-value">${document.getElementById('weeklyGrossPay').textContent}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">Total Contract Value:</span>
-                                <span class="result-value">${document.getElementById('totalContractValue').textContent}</span>
-                            </div>
-                            <div class="result-item">
-                                <span class="result-label">True Hourly Rate:</span>
-                                <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
-                            </div>
-                            
-                        </div>
-                        
-                        <div class="footer">
-                            <p>This analysis was generated using LocumTrueRate Contract Calculator</p>
-                            <p>Visit <strong>locumtruerate.com</strong> for more tools and job opportunities</p>
+                        <div class="results">
+                            <div class="result-row total"><span>Total Contract Value:</span><span>${totalContractValue.textContent}</span></div>
+                            <div class="result-row total"><span>True Hourly Rate:</span><span>${trueHourlyRate.textContent}</span></div>
+                            <div class="result-row"><span>Weekly Gross Pay:</span><span>${weeklyGrossPay.textContent}</span></div>
                         </div>
                     </body>
                     </html>
                 `;
                 
-                printWindow.document.write(printContent);
-                printWindow.document.close();
-                
-                // PRINT DISABLED - Wait for content to load, but DO NOT print
-                printWindow.onload = function() {
-                    console.warn('🚫 Print dialog blocked in print window');
-                    // printWindow.print(); // DISABLED
-                };
-                
-                showNotification('🖨️ Print dialog opened', 'success');
-                
+                // Open print dialog in new window
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                if (printWindow) {
+                    printWindow.document.write(printContent);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    
+                    // Wait for content to load then trigger print dialog
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.onafterprint = function() {
+                            printWindow.close();
+                        };
+                    }, 500);
+                    
+                    showNotification('Print dialog opened', 'success');
+                } else {
+                    showNotification('Pop-ups blocked. Please use Ctrl+P to print', 'warning');
+                }
             } catch (error) {
                 console.error('Print error:', error);
-                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
+                showNotification('Print failed. Please use Ctrl+P to print manually.', 'error');
             }
-        // } // END OF DUPLICATE FUNCTION
+        }
         
         // Email Results function with better fallback handling
         function emailResults() {
@@ -2625,12 +2361,12 @@ From: LocumTrueRate Contract Calculator`;
                     printWindow.document.close();
                     printWindow.focus();
                     
-                    // PRINT DISABLED - Wait for content to load but DO NOT trigger print
+                    // Wait for content to load then trigger print dialog manually
                     setTimeout(() => {
-                        console.warn('🚫 Print dialog blocked in setTimeout print window');
-                        // printWindow.print(); // DISABLED
-                        // Auto-close the window since we're not printing
-                        printWindow.close();
+                        printWindow.print();
+                        printWindow.onafterprint = function() {
+                            printWindow.close();
+                        };
                     }, 500);
                     
                     showNotification('✅ PDF export opened - use Print dialog to save as PDF', 'success');
@@ -2743,100 +2479,20 @@ From: LocumTrueRate Contract Calculator`;
             }
         }
 
-        // ULTIMATE PRINT BLOCKER - COMPLETELY DISABLE ALL PRINT FUNCTIONALITY
-        console.log('🚨 ULTIMATE PRINT BLOCKER ACTIVATED - ALL PRINT DISABLED');
-        
-        // Store original print function
-        const originalPrint = window.print;
-        
-        // Completely override window.print to do nothing
-        window.print = function() {
-            console.warn('🚫 Print functionality has been disabled on this page');
-            return false;
-        };
-        
-        // Block all print-related events with capture=true for immediate blocking
-        const printEvents = ['beforeprint', 'afterprint'];
-        printEvents.forEach(eventType => {
-            window.addEventListener(eventType, function(e) {
-                console.warn('🚫 Print event blocked:', eventType);
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            }, true);
-        });
-        
-        // Override any potential print methods on document
-        if (document.print) {
-            document.print = function() {
-                console.warn('🚫 Document print blocked');
-                return false;
-            };
-        }
-        
-        // Block keyboard shortcuts for print (Ctrl+P)
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-                console.warn('🚫 Print keyboard shortcut blocked');
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            }
-        }, true);
-        
-        // Also block print window creation if it's being triggered automatically
-        const originalWindowOpen = window.open;
-        window.open = function(url, target, features) {
-            // If this looks like a print window call, block it
-            if (features && features.includes('width=900,height=700') || 
-                features && features.includes('print') ||
-                target === '_blank' && arguments.length === 3) {
-                console.warn('🚫 Potential print window creation blocked');
-                return null;
-            }
-            // Allow normal window.open calls
-            return originalWindowOpen.apply(window, arguments);
-        };
-        
-        console.log('🚨 ULTIMATE PRINT BLOCKER INSTALLED - NO PRINT POSSIBLE');
-        
-        // MINIMAL LOAD MONITORING
-        console.log('🔍 Page loading - minimal monitoring active');
         
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOMContentLoaded event fired - minimal monitoring');
             
-            // Comprehensive element checking
-            console.log('🔍 COMPREHENSIVE ELEMENT CHECK STARTING...');
+            // Initialize the calculator
+            try {
+                checkPrefilledData();
+                updateButtonStates();
+                calculateContract();
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
             
-            // Check all input elements
-            const inputElements = {
-                'jobTitle': 'Job Title dropdown',
-                'hourlyRate': 'Hourly Rate input',
-                'hoursPerWeek': 'Hours per Week input',
-                'contractWeeks': 'Contract Weeks input',
-                'housingStipend': 'Housing Stipend input',
-                'travelReimbursement': 'Travel Reimbursement input',
-                'otherStipends': 'Other Stipends input',
-                'contractType': 'Contract Type dropdown',
-                'workState': 'Work State dropdown'
-            };
-            
-            console.log('🔍 Checking input elements...');
-            const missingInputs = [];
-            Object.entries(inputElements).forEach(([id, name]) => {
-                const elem = document.getElementById(id);
-                if (!elem) {
-                    missingInputs.push(`${name} (#${id})`);
-                    console.error(`❌ MISSING INPUT: ${name} (#${id})`);
-                } else {
-                    console.log(`✅ Found: ${name} (#${id})`);
-                }
-            });
-            
-            // Check all result display elements
-            console.log('🔍 Checking result display elements...');
+            // Setup event listeners for input fields
             const resultElements = {
                 'weeklyGrossPay': 'Weekly Gross Pay',
                 'totalContractValue': 'Total Contract Value',
@@ -2974,33 +2630,30 @@ From: LocumTrueRate Contract Calculator`;
             });
             
             // Add event listeners for all input fields to trigger automatic recalculation
-            const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends', 'overtimeRate', 'beeperRate', 'beeperHours', 'foodStipend', 'weeksOff', 'shiftsPerWeek', 'dailyMiles', 'completionBonus'];
+            console.log('🔄 Setting up real-time calculation event listeners...');
+            
+            const inputFields = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            let attachedInputs = 0;
             inputFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
+                    // Remove any existing listeners to prevent duplicates
+                    element.removeEventListener('input', calculateContract);
+                    element.removeEventListener('change', calculateContract);
+                    element.removeEventListener('keyup', calculateContract);
+                    
+                    // Add new listeners
                     element.addEventListener('input', function() {
                         console.log(`📝 Input changed: ${fieldId} = ${this.value}`);
-                        
-                        // Validate input value
-                        const value = parseFloat(this.value);
-                        if (this.value !== '' && (isNaN(value) || value < 0)) {
-                            console.warn(`⚠️ Invalid input for ${fieldId}: ${this.value}`);
-                            this.classList.add('error');
-                            
-                            // Show validation error toast
-                            const fieldLabel = this.previousElementSibling?.textContent || fieldId;
-                            if (typeof LocumUtils !== 'undefined' && LocumUtils.showToast) {
-                                LocumUtils.showToast(`${fieldLabel} cannot be negative`, 'error');
-                            } else if (typeof showNotification !== 'undefined') {
-                                showNotification(`${fieldLabel} cannot be negative`, 'error');
-                            }
-                            return; // Don't recalculate with invalid values
-                        } else {
-                            this.classList.remove('error');
-                        }
-                        
                         calculateContract();
                     });
+                    element.addEventListener('change', function() {
+                        console.log(`📝 Input changed (change event): ${fieldId} = ${this.value}`);
+                        calculateContract();
+                    });
+                    
+                    attachedInputs++;
+                    console.log(`✅ Event listeners attached to ${fieldId}`);
                 } else {
                     console.error(`❌ Could not find input field: ${fieldId}`);
                 }
@@ -3012,16 +2665,20 @@ From: LocumTrueRate Contract Calculator`;
             dropdownFields.forEach(fieldId => {
                 const element = document.getElementById(fieldId);
                 if (element) {
+                    // Remove any existing listeners to prevent duplicates
+                    element.removeEventListener('change', calculateContract);
+                    
                     element.addEventListener('change', function() {
                         console.log(`📝 Dropdown changed: ${fieldId} = ${this.value}`);
                         calculateContract();
                     });
+                    
                     attachedDropdowns++;
                     console.log(`✅ Event listeners attached to dropdown ${fieldId}`);
                 }
             });
             
-            console.log(`✅ Event listeners setup complete: ${inputFields.length} inputs, ${attachedDropdowns}/${dropdownFields.length} dropdowns`);
+            console.log(`✅ Event listeners setup complete: ${attachedInputs}/${inputFields.length} inputs, ${attachedDropdowns}/${dropdownFields.length} dropdowns`);
 
             // Perform initial calculation with default values
             console.log('🔄 Performing initial calculation with default values...');
