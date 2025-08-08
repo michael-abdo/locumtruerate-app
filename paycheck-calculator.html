@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paycheck Calculator - LocumTrueRate</title>
     <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,9 +31,10 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
             line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
+            color: var(--text-primary);
+            background-color: var(--background-color);
         }
 
         .container {
@@ -25,16 +44,19 @@
         }
 
         .navbar {
-            background-color: #fff;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
             padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -42,8 +64,8 @@
 
         .logo {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #2563eb;
+            font-weight: 700;
+            color: var(--primary-color);
             text-decoration: none;
         }
 
@@ -51,23 +73,32 @@
             display: flex;
             gap: 2rem;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: #333;
+            color: var(--text-primary);
             font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
         }
 
         .calculator-container {
-            background-color: #fff;
+            background-color: var(--surface-color);
             border-radius: 8px;
             padding: 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 2rem;
         }
 
         h1 {
-            color: #2563eb;
+            color: var(--primary-color);
             margin-bottom: 2rem;
             text-align: center;
         }
@@ -79,16 +110,17 @@
         }
 
         .input-section, .results-section {
-            background-color: #f8f9fa;
+            background-color: var(--background-color);
             padding: 1.5rem;
             border-radius: 8px;
+            border: 1px solid var(--border-light);
         }
 
         .section-title {
             font-size: 1.25rem;
             font-weight: bold;
             margin-bottom: 1rem;
-            color: #2563eb;
+            color: var(--primary-color);
         }
 
         .form-group {
@@ -99,16 +131,26 @@
             display: block;
             margin-bottom: 0.25rem;
             font-weight: 500;
-            color: #555;
+            color: var(--text-secondary);
         }
 
         input[type="number"],
         select {
             width: 100%;
             padding: 0.5rem;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 1rem;
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .period-tabs {
@@ -120,44 +162,51 @@
         .period-tab {
             flex: 1;
             padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            background-color: #fff;
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
             cursor: pointer;
             border-radius: 4px;
             transition: all 0.3s;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .period-tab:hover {
+            background-color: var(--background-color);
+            border-color: var(--primary-color);
         }
 
         .period-tab.active {
-            background-color: #2563eb;
+            background-color: var(--primary-color);
             color: white;
-            border-color: #2563eb;
+            border-color: var(--primary-color);
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
             padding: 0.5rem 0;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .result-label {
-            color: #555;
+            color: var(--text-secondary);
         }
 
         .result-value {
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .result-total {
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 2px solid #2563eb;
+            border-top: 2px solid var(--primary-color);
             font-size: 1.25rem;
         }
 
         .result-total .result-value {
-            color: #2563eb;
+            color: var(--primary-color);
         }
 
         .button-group {
@@ -178,25 +227,27 @@
         }
 
         .btn-primary {
-            background-color: #2563eb;
+            background-color: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #1d4ed8;
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background-color: #6c757d;
+            background-color: var(--secondary-color);
             color: white;
         }
 
         .btn-secondary:hover {
-            background-color: #5a6268;
+            background-color: var(--text-primary);
+            transform: translateY(-1px);
         }
 
         .error-message {
-            color: #dc3545;
+            color: var(--error-color);
             font-size: 0.875rem;
             margin-top: 0.25rem;
             display: none;
@@ -219,16 +270,16 @@
         }
 
         .toast.success {
-            background-color: #28a745;
+            background-color: var(--success-color);
         }
 
         .toast.error {
-            background-color: #dc3545;
+            background-color: var(--error-color);
         }
 
         .toast.warning {
-            background-color: #ffc107;
-            color: #333;
+            background-color: var(--warning-color);
+            color: var(--text-primary);
         }
 
         @keyframes slideIn {
@@ -264,7 +315,7 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #333;
+            background-color: var(--text-primary);
             color: white;
             padding: 0.75rem;
             border-radius: 0.5rem;
@@ -290,7 +341,7 @@
             left: 50%;
             transform: translateX(-50%);
             border: 6px solid transparent;
-            border-top-color: #333;
+            border-top-color: var(--text-primary);
         }
 
         .tooltip-wrapper:hover .tooltip {

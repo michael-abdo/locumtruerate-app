@@ -1327,7 +1327,7 @@
             }
             if (overtimePaySubtext && overtimePayItem) {
                 if (overtimeHours > 0) {
-                    overtimePaySubtext.textContent = `${overtimeHours} hrs/week × $${overtimeRate.toFixed(2)}/hr`;
+                    overtimePaySubtext.textContent = `${overtimeHours.toFixed(2)} hrs/week × $${overtimeRate.toFixed(2)}/hr`;
                     overtimePayItem.style.display = 'flex';
                 } else {
                     overtimePayItem.style.display = 'none';
