@@ -1001,7 +1001,13 @@ Generated: ${new Date().toLocaleDateString()}`;
             // Run initial calculation
             setTimeout(function() {
                 console.log('Running initial calculation...');
-                calculatePaycheck();
+                try {
+                    calculatePaycheck();
+                    console.log('Initial calculation completed successfully');
+                } catch (error) {
+                    console.error('Error in calculatePaycheck:', error);
+                    console.error('Stack trace:', error.stack);
+                }
             }, 100);
             
             console.log('Calculator initialized successfully!');
