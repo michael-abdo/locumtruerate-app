@@ -968,8 +968,13 @@ Generated: ${new Date().toLocaleDateString()}`;
             
             // Add event listeners to all inputs
             const inputs = document.querySelectorAll('input[type="number"], select');
+            console.log('Found', inputs.length, 'inputs to attach listeners to');
             inputs.forEach(input => {
-                input.addEventListener('input', calculatePaycheck);
+                console.log('Attaching listener to:', input.id);
+                input.addEventListener('input', function(e) {
+                    console.log('Input event fired for:', e.target.id);
+                    calculatePaycheck();
+                });
                 input.addEventListener('change', calculatePaycheck);
             });
 
