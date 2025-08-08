@@ -391,19 +391,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="callHours">Call Hours</label>
+                        <label for="callHours">Beeper Call Hours</label>
                         <div class="tooltip-wrapper">
                             <input type="number" id="callHours" value="0" min="0" step="0.01">
-                            <div class="tooltip">Enter hours spent on-call (available but not actively working). This is typically paid at a lower rate than regular hours and may include nights, weekends, or holidays.</div>
+                            <div class="tooltip">Enter hours spent on beeper call (available but not actively working). This is typically paid at a lower rate than regular hours and may include nights, weekends, or holidays.</div>
                         </div>
                         <div class="error-message" id="callHours-error"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="callRate">Call Rate ($/hr)</label>
+                        <label for="callRate">Beeper Call Rate ($/hr)</label>
                         <div class="tooltip-wrapper">
                             <input type="number" id="callRate" value="25.00" min="0" step="0.01">
-                            <div class="tooltip">Enter the hourly rate paid for on-call time. This is usually significantly lower than your regular rate, typically ranging from $15-50 per hour depending on specialty.</div>
+                            <div class="tooltip">Enter the hourly rate paid for beeper call time. This is usually significantly lower than your regular rate, typically ranging from $15-50 per hour depending on specialty.</div>
                         </div>
                         <div class="error-message" id="callRate-error"></div>
                     </div>
@@ -542,17 +542,17 @@
                     
                     <div class="result-item">
                         <span class="result-label">Federal Tax:</span>
-                        <span class="result-value" id="federalTax">$0.00</span>
+                        <span class="result-value" id="federalTax">$0.00 (Not Calculated)</span>
                     </div>
                     
                     <div class="result-item">
                         <span class="result-label">State Tax:</span>
-                        <span class="result-value" id="stateTax">$0.00</span>
+                        <span class="result-value" id="stateTax">$0.00 (Not Calculated)</span>
                     </div>
                     
                     <div class="result-item">
                         <span class="result-label">FICA (7.65%):</span>
-                        <span class="result-value" id="ficaTax">$0.00</span>
+                        <span class="result-value" id="ficaTax">$0.00 (Not Calculated)</span>
                     </div>
                     
                     <div class="result-item result-total">
@@ -746,15 +746,13 @@
             // Calculate stipends (already in period amounts)
             const totalStipends = housingStipend + mealStipend + mileageReimbursement;
 
-            // Calculate taxes
-            const ficaTax = totalGrossPay * 0.0765;
-            const federalTax = calculateFederalTax(totalGrossPay);
-            const selectedState = document.getElementById('taxState').value;
-            const stateTaxRate = stateTaxRates[selectedState];
-            const stateTax = totalGrossPay * stateTaxRate;
+            // Tax calculations removed per requirements
+            const ficaTax = 0;
+            const federalTax = 0;
+            const stateTax = 0;
 
-            const totalDeductions = federalTax + stateTax + ficaTax;
-            const netPay = totalGrossPay - totalDeductions + totalStipends;
+            const totalDeductions = 0; // No tax deductions
+            const netPay = totalGrossPay + totalStipends; // Net pay equals gross pay plus stipends
 
             console.log('Final values:', {
                 grossTaxable: totalGrossPay,
@@ -779,9 +777,9 @@
             document.getElementById('mileageDisplay').textContent = formatCurrency(mileageReimbursement);
             document.getElementById('totalStipends').textContent = formatCurrency(totalStipends);
             
-            document.getElementById('federalTax').textContent = formatCurrency(federalTax);
-            document.getElementById('stateTax').textContent = formatCurrency(stateTax);
-            document.getElementById('ficaTax').textContent = formatCurrency(ficaTax);
+            document.getElementById('federalTax').textContent = '$0.00 (Not Calculated)';
+            document.getElementById('stateTax').textContent = '$0.00 (Not Calculated)';
+            document.getElementById('ficaTax').textContent = '$0.00 (Not Calculated)';
             document.getElementById('netPay').textContent = formatCurrency(netPay);
             console.log('Updated both netPay displays:', formatCurrency(netPay));
             console.log('Display updated successfully');

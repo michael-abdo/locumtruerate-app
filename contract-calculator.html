@@ -765,7 +765,7 @@
                             <div class="form-group">
                                 <label class="form-label">Hourly Rate ($)</label>
                                 <div class="tooltip-wrapper">
-                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="calculateContract()" onkeyup="calculateContract()" onchange="calculateContract()" placeholder="Enter hourly rate" required>
+                                    <input type="number" class="form-input" id="hourlyRate" value="85" min="0.01" step="0.01" oninput="validateOvertimeRate(); calculateContract()" onkeyup="validateOvertimeRate(); calculateContract()" onchange="validateOvertimeRate(); calculateContract()" placeholder="Enter hourly rate" required>
                                     <div class="tooltip">Enter your base hourly rate before overtime. This is the standard rate you'll be paid for regular hours worked. Does not include overtime premiums or stipends.</div>
                                 </div>
                                 <div class="form-help">Base hourly rate</div>
@@ -893,6 +893,50 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Overtime and Call Rates -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Overtime Rate ($/hr)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="overtimeRate" value="127.50" min="0.01" step="0.01" oninput="validateOvertimeRate(); calculateContract()">
+                                        <div class="tooltip">Enter your overtime hourly rate. This is typically 1.5x your regular rate for hours worked over 40 per week. Some contracts may offer different overtime multipliers.</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Beeper Call Rate ($/hr)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="beeperCallRate" value="25" min="0" step="0.01" oninput="calculateContract()">
+                                        <div class="tooltip">Enter the hourly rate for beeper call hours when you're on-call but not actively working. This is usually lower than your regular rate, typically $15-50 per hour.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Beeper Call Hours/Month</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="beeperCallHours" value="40" min="0" step="0.01" oninput="calculateContract()">
+                                        <div class="tooltip">Enter the average number of beeper call hours per month. This includes nights and weekends when you're available but not actively working.</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Daily Food Stipend ($)</label>
+                                    <div class="tooltip-wrapper">
+                                        <input type="number" class="form-input" id="dailyFoodStipend" value="50" min="0" step="0.01" oninput="calculateContract()">
+                                        <div class="tooltip">Enter the daily meal or food allowance provided. This typically ranges from $30-75 per day to cover meals during your assignment.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Miles Driven Per Day</label>
+                                <div class="tooltip-wrapper">
+                                    <input type="number" class="form-input" id="milesPerDay" value="30" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="tooltip">Enter the average miles you'll drive per day for work. This will be used to calculate mileage reimbursement based on the current IRS mileage rate.</div>
+                                </div>
+                                <div class="form-help">IRS Rate: $0.67/mile (2024)</div>
+                            </div>
                         </div>
 
                         <!-- Results -->
@@ -909,9 +953,16 @@
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Regular Pay</span>
-                                        <div class="result-subtext">40 hrs/week × $350/hr</div>
+                                        <div class="result-subtext" id="regularPaySubtext">40 hrs/week × $85/hr</div>
                                     </div>
                                     <span class="result-value" id="regularPay">$0</span>
+                                </div>
+                                <div class="result-item" id="overtimePayItem" style="display: none;">
+                                    <div>
+                                        <span class="result-label">Overtime Pay</span>
+                                        <div class="result-subtext" id="overtimePaySubtext">0 hrs/week × $127.50/hr</div>
+                                    </div>
+                                    <span class="result-value" id="overtimePay">$0</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
@@ -947,6 +998,27 @@
                                         <div class="result-subtext">Meals, misc allowances</div>
                                     </div>
                                     <span class="result-value" id="otherStipendsDisplay">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Beeper Call Pay</span>
+                                        <div class="result-subtext">On-call compensation</div>
+                                    </div>
+                                    <span class="result-value" id="beeperCallPay">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Food Stipend</span>
+                                        <div class="result-subtext">Daily meal allowance</div>
+                                    </div>
+                                    <span class="result-value" id="foodStipend">$0</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Mileage Reimbursement</span>
+                                        <div class="result-subtext">IRS rate: $0.67/mile</div>
+                                    </div>
+                                    <span class="result-value" id="mileageReimbursement">$0</span>
                                 </div>
                             </div>
 
@@ -1107,12 +1179,28 @@
             if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
+        // Validate overtime rate against hourly rate
+        function validateOvertimeRate() {
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
+            const overtimeInput = document.getElementById('overtimeRate');
+            
+            if (overtimeRate > 0 && overtimeRate < hourlyRate) {
+                overtimeInput.style.borderColor = '#ef4444';
+                overtimeInput.title = `Overtime rate ($${overtimeRate.toFixed(2)}) should be greater than regular rate ($${hourlyRate.toFixed(2)})`;
+                showToast(`Overtime rate should be ≥ $${hourlyRate.toFixed(2)}/hr`, 'warning');
+            } else {
+                overtimeInput.style.borderColor = '';
+                overtimeInput.title = '';
+            }
+        }
+        
         function calculateContract() {
             console.log('🔄 calculateContract() called');
             console.log('🔍 Checking if DOM is ready...');
             
             // Check if elements exist
-            const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends'];
+            const inputElementIds = ['hourlyRate', 'hoursPerWeek', 'contractWeeks', 'housingStipend', 'travelReimbursement', 'otherStipends', 'overtimeRate', 'beeperCallRate', 'beeperCallHours', 'dailyFoodStipend', 'milesPerDay'];
             for (const id of inputElementIds) {
                 const elem = document.getElementById(id);
                 if (!elem) {
@@ -1144,11 +1232,21 @@
             const housingStipend = getInputValue('housingStipend');
             const travelReimbursement = getInputValue('travelReimbursement');
             const otherStipends = getInputValue('otherStipends');
+            const overtimeRate = getInputValue('overtimeRate', hourlyRate * 1.5);
+            const beeperCallRate = getInputValue('beeperCallRate', 25);
+            const beeperCallHours = getInputValue('beeperCallHours', 0);
+            const dailyFoodStipend = getInputValue('dailyFoodStipend', 0);
+            const milesPerDay = getInputValue('milesPerDay', 0);
             
             // Log input values for debugging
             console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
             
             // Validation with visible error messages
+            // Ensure overtime rate is not less than regular rate
+            if (overtimeRate > 0 && overtimeRate < hourlyRate) {
+                validationErrors.push('Overtime rate must be greater than or equal to regular hourly rate');
+                hasErrors = true;
+            }
             let hasErrors = false;
             const validationErrors = [];
             
@@ -1185,11 +1283,31 @@
                 }
             }
             
-            // Simple gross calculations only
-            const weeklyGrossPay = hourlyRate * hoursPerWeek;
+            // Calculate regular and overtime hours
+            const regularHours = Math.min(hoursPerWeek, 40);
+            const overtimeHours = Math.max(0, hoursPerWeek - 40);
+            
+            // Calculate pay components
+            const regularPay = regularHours * hourlyRate;
+            const overtimePay = overtimeHours * Math.max(overtimeRate, hourlyRate); // Ensure overtime rate is not less than regular
+            const weeklyGrossPay = regularPay + overtimePay;
             const totalGrossPay = weeklyGrossPay * contractWeeks;
             const totalHousingStipend = housingStipend * contractWeeks;
-            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
+            
+            // Calculate beeper call compensation (monthly hours converted to total contract period)
+            const beeperCallWeeks = contractWeeks / 4.33; // Convert weeks to months
+            const totalBeeperCallPay = beeperCallHours * beeperCallRate * beeperCallWeeks;
+            
+            // Calculate food stipend (daily rate * 7 days/week * contract weeks)
+            const totalFoodStipend = dailyFoodStipend * 7 * contractWeeks;
+            
+            // Calculate mileage reimbursement using IRS rate ($0.67 per mile for 2024)
+            const irsRate = 0.67;
+            const weeklyMileage = milesPerDay * 5; // Assuming 5 work days per week
+            const totalMileageReimbursement = weeklyMileage * contractWeeks * irsRate;
+            
+            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + 
+                                     otherStipends + totalBeeperCallPay + totalFoodStipend + totalMileageReimbursement;
             
             // True hourly rate calculation
             const totalHours = hoursPerWeek * contractWeeks;
@@ -1199,8 +1317,26 @@
             const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
 
             // Update display elements - only update elements that exist
+            // Update display subtexts
+            const regularPaySubtext = document.getElementById('regularPaySubtext');
+            const overtimePaySubtext = document.getElementById('overtimePaySubtext');
+            const overtimePayItem = document.getElementById('overtimePayItem');
+            
+            if (regularPaySubtext) {
+                regularPaySubtext.textContent = `${regularHours} hrs/week × $${hourlyRate.toFixed(2)}/hr`;
+            }
+            if (overtimePaySubtext && overtimePayItem) {
+                if (overtimeHours > 0) {
+                    overtimePaySubtext.textContent = `${overtimeHours} hrs/week × $${overtimeRate.toFixed(2)}/hr`;
+                    overtimePayItem.style.display = 'flex';
+                } else {
+                    overtimePayItem.style.display = 'none';
+                }
+            }
+            
             const elements = {
-                'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'regularPay': '$' + (regularPay * contractWeeks).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'overtimePay': '$' + (overtimePay * contractWeeks).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalGrossContract': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
@@ -1208,6 +1344,9 @@
                 'travelReimbursementDisplay': '$' + travelReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'otherStipendsDisplay': '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'beeperCallPay': '$' + totalBeeperCallPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'foodStipend': '$' + totalFoodStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'mileageReimbursement': '$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'netTakeHome': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
                 'yourContractRate': '$' + trueHourlyRate.toFixed(2),
