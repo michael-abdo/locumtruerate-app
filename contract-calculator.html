@@ -477,6 +477,45 @@
             text-align: center;
         }
 
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+            color: var(--text-primary);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .calculator-container {
@@ -920,25 +959,30 @@
             document.getElementById('mileageSubtext').textContent = `${milesPerWeek} miles/week × $${irsMileageRate}/mile`;
         }
 
-        async function saveCalculation() {
-            const contractData = {
-                timestamp: new Date().toISOString(),
+        function saveCalculation() {
+            const data = {
                 jobTitle: document.getElementById('jobTitle').value,
                 facility: document.getElementById('facility').value,
                 hourlyRate: document.getElementById('hourlyRate').value,
+                overtimeRate: document.getElementById('overtimeRate').value,
                 hoursPerWeek: document.getElementById('hoursPerWeek').value,
                 contractWeeks: document.getElementById('contractWeeks').value,
-                totalValue: document.getElementById('totalContractValue').textContent,
-                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
-                netTakeHome: document.getElementById('netTakeHome').textContent
+                housingStipend: document.getElementById('housingStipend').value,
+                mealStipend: document.getElementById('mealStipend').value,
+                dailyFoodStipend: document.getElementById('dailyFoodStipend').value,
+                milesPerDay: document.getElementById('milesPerDay').value,
+                travelReimbursement: document.getElementById('travelReimbursement').value,
+                callHours: document.getElementById('callHours').value,
+                callRate: document.getElementById('callRate').value,
+                beeperHoursPerMonth: document.getElementById('beeperHoursPerMonth').value,
+                beeperCallRate: document.getElementById('beeperCallRate').value,
+                cmeAllowance: document.getElementById('cmeAllowance').value,
+                licenseReimbursement: document.getElementById('licenseReimbursement').value,
+                timestamp: new Date().toISOString()
             };
-
-            let savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
-            savedContracts.unshift(contractData);
-            savedContracts = savedContracts.slice(0, 10); // Keep only last 10
-            localStorage.setItem('savedContracts', JSON.stringify(savedContracts));
             
-            showNotification('Contract analysis saved successfully!', 'success');
+            localStorage.setItem('contractCalculation', JSON.stringify(data));
+            showToast('Calculation saved successfully!', 'success');
         }
 
         async function compareContracts() {
@@ -969,32 +1013,60 @@
             }, 1000);
         }
 
-        async function exportToPDF() {
-            const analysis = {
-                jobTitle: document.getElementById('jobTitle').value,
-                facility: document.getElementById('facility').value,
-                totalValue: document.getElementById('totalContractValue').textContent,
-                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
-                netTakeHome: document.getElementById('netTakeHome').textContent,
-                timestamp: new Date().toLocaleDateString()
-            };
-            
-            showNotification('Contract analysis PDF exported successfully!', 'success');
-            await showAlert(`Contract Analysis PDF exported:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`, 'PDF Export Complete');
+        function exportToPDF() {
+            window.print();
+            showToast('Opening print dialog for PDF export', 'success');
         }
 
-        async function emailResults() {
-            const analysis = {
-                jobTitle: document.getElementById('jobTitle').value,
-                facility: document.getElementById('facility').value,
-                totalValue: document.getElementById('totalContractValue').textContent,
-                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
-                netTakeHome: document.getElementById('netTakeHome').textContent,
-                timestamp: new Date().toLocaleDateString()
-            };
+        function emailResults() {
+            const subject = `Contract Analysis - ${document.getElementById('jobTitle').value}`;
+            const body = `Contract Analysis Summary:
+
+JOB DETAILS:
+Title: ${document.getElementById('jobTitle').value}
+Facility: ${document.getElementById('facility').value}
+Contract Length: ${document.getElementById('contractWeeks').value} weeks
+Hours per Week: ${document.getElementById('hoursPerWeek').value}
+
+COMPENSATION:
+Regular Pay: ${document.getElementById('regularPay').textContent}
+Overtime Pay: ${document.getElementById('overtimePay').textContent}
+Call Pay: ${document.getElementById('callPay').textContent}
+Beeper Call Pay: ${document.getElementById('beeperCallPayDisplay').textContent}
+Total Gross Pay: ${document.getElementById('grossTaxableIncome').textContent}
+
+BENEFITS & STIPENDS:
+Housing Stipend: ${document.getElementById('totalHousingStipend').textContent}
+Mileage Reimbursement: ${document.getElementById('mileageReimbursementDisplay').textContent}
+Other Stipends: ${document.getElementById('otherStipends').textContent}
+
+TOTALS:
+Total Contract Value: ${document.getElementById('totalContractValue').textContent}
+True Hourly Rate: ${document.getElementById('trueHourlyRate').textContent}
+Net Take-Home: ${document.getElementById('netTakeHome').textContent}
+
+Generated: ${new Date().toLocaleDateString()}`;
             
-            showNotification('Email functionality coming soon!', 'info');
-            await showAlert(`Email Results:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`, 'Email Preview');
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            showToast('Opening email client...', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            // Remove any existing toasts
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         // Auto-calculate overtime rate based on regular rate
