@@ -1898,49 +1898,13 @@
                         printWindow.document.close();
                         printWindow.focus();
                         
-                        // Auto-trigger print dialog with better error handling
-                        setTimeout(() => {
-                            try {
-                                printWindow.print();
-                                console.log('🖨️ Print dialog triggered');
-                                
-                                // Handle print completion
-                                printWindow.onafterprint = function() {
-                                    console.log('🖨️ Print completed, closing window');
-                                    try {
-                                        printWindow.close();
-                                    } catch (closeErr) {
-                                        console.log('🖨️ Window close failed (may already be closed)');
-                                    }
-                                };
-                                
-                                // Fallback to close window after 30 seconds
-                                setTimeout(() => {
-                                    if (printWindow && !printWindow.closed) {
-                                        try {
-                                            printWindow.close();
-                                            console.log('🖨️ Print window closed after timeout');
-                                        } catch (timeoutCloseErr) {
-                                            console.log('🖨️ Timeout close failed');
-                                        }
-                                    }
-                                }, 30000);
-                                
-                            } catch (printErr) {
-                                console.error('🖨️ Print dialog failed:', printErr);
-                                if (printWindow && !printWindow.closed) {
-                                    printWindow.close();
-                                }
-                                printCurrentPage();
-                            }
-                        }, 750);
+                        console.log('🖨️ Print window prepared - user must manually trigger print (Ctrl+P)');
                         
                         showNotification('🖨️ Print dialog opened in new window', 'success');
                         
                     } else {
                         console.log('🖨️ Print window blocked or failed to open');
-                        showNotification('⚠️ Pop-ups blocked. Using current page print...', 'info');
-                        setTimeout(printCurrentPage, 500);
+                        showNotification('⚠️ Pop-ups blocked. Use Ctrl+P to print manually.', 'warning');
                     }
                     
                 } catch (contentError) {
