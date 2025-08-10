@@ -1,0 +1,531 @@
+/**
+ * Shared Notification Styles
+ * Styles for toast notifications and modal dialogs
+ * Includes mobile responsiveness and accessibility features
+ */
+
+/* ========================================
+   Toast Notifications
+   ======================================== */
+
+.toast {
+    position: fixed;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 400px;
+    min-width: 280px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.toast.toast-show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.toast-hide {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.toast-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toast-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-message {
+    flex: 1;
+    word-wrap: break-word;
+}
+
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0;
+    margin: -0.5rem -0.75rem -0.5rem 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    border-radius: 4px;
+}
+
+.toast-close:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.toast-cancel {
+    margin-left: auto;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Toast Types */
+.toast-success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.toast-success .toast-icon {
+    color: #16a34a;
+}
+
+.toast-success .toast-cancel {
+    color: #16a34a;
+}
+
+.toast-success .toast-cancel:hover {
+    background: #16a34a;
+    color: white;
+}
+
+.toast-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.toast-error .toast-icon {
+    color: #dc2626;
+}
+
+.toast-error .toast-cancel {
+    color: #dc2626;
+}
+
+.toast-error .toast-cancel:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.toast-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.toast-warning .toast-icon {
+    color: #f59e0b;
+}
+
+.toast-warning .toast-cancel {
+    color: #d97706;
+}
+
+.toast-warning .toast-cancel:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.toast-info {
+    background: #eff6ff;
+    color: #1e3a8a;
+    border: 1px solid #bfdbfe;
+}
+
+.toast-info .toast-icon {
+    color: #3b82f6;
+}
+
+.toast-info .toast-cancel {
+    color: #2563eb;
+}
+
+.toast-info .toast-cancel:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+/* ========================================
+   Modal Dialogs
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.modal.modal-show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.modal.modal-hide {
+    opacity: 0;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    transition: background 0.3s;
+}
+
+.modal-overlay-blur {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+    transform: scale(0.95);
+    transition: transform 0.3s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal.modal-show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1.5rem 1rem;
+    text-align: center;
+}
+
+.modal-icon {
+    margin-bottom: 1rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-icon-error {
+    color: #ef4444;
+}
+
+.modal-icon-warning {
+    color: #f59e0b;
+}
+
+.modal-icon-info {
+    color: #3b82f6;
+}
+
+.modal-icon-success {
+    color: #10b981;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.25;
+}
+
+.modal-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.modal-message {
+    margin: 0 0 0.75rem 0;
+    color: #374151;
+    text-align: center;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+.modal-description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1.5;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #d1d5db;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+/* ========================================
+   Mobile Responsiveness
+   ======================================== */
+
+@media (max-width: 640px) {
+    .toast {
+        max-width: calc(100vw - 2rem);
+        min-width: auto;
+        right: 1rem !important;
+        left: 1rem !important;
+        font-size: 0.875rem;
+    }
+    
+    .toast-content {
+        gap: 0.5rem;
+    }
+    
+    .toast-cancel {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+    }
+    
+    .modal-header {
+        padding: 1.25rem 1.25rem 0.75rem;
+    }
+    
+    .modal-title {
+        font-size: 1.25rem;
+    }
+    
+    .modal-body {
+        padding: 0 1.25rem 1.25rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem 1.25rem 1.25rem;
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ========================================
+   Accessibility Enhancements
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .toast,
+    .modal,
+    .modal-content,
+    .modal-overlay,
+    .btn {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .toast {
+        border-width: 2px;
+    }
+    
+    .modal-content {
+        border: 2px solid currentColor;
+    }
+    
+    .btn:focus {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+        box-shadow: none;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .toast {
+        background: #1f2937;
+        color: #f3f4f6;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    
+    .toast-success {
+        background: #064e3b;
+        color: #d1fae5;
+        border-color: #065f46;
+    }
+    
+    .toast-error {
+        background: #7f1d1d;
+        color: #fee2e2;
+        border-color: #991b1b;
+    }
+    
+    .toast-warning {
+        background: #78350f;
+        color: #fef3c7;
+        border-color: #92400e;
+    }
+    
+    .toast-info {
+        background: #1e3a8a;
+        color: #dbeafe;
+        border-color: #2563eb;
+    }
+    
+    .modal-content {
+        background: #1f2937;
+        color: #f3f4f6;
+    }
+    
+    .modal-title {
+        color: #f9fafb;
+    }
+    
+    .modal-message {
+        color: #e5e7eb;
+    }
+    
+    .modal-description {
+        color: #9ca3af;
+    }
+    
+    .btn-secondary {
+        background: #374151;
+        color: #f3f4f6;
+    }
+    
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+}

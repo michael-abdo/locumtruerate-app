@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Paycheck Calculator Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .test-input { margin: 10px 0; }
+        .test-input input { padding: 5px; margin: 5px; }
+        .test-result { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        .log-output { background: #1e1e1e; color: #00ff00; padding: 10px; font-family: monospace; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Test Paycheck Calculator Fix</h1>
+    
+    <div class="test-section">
+        <h2>Test Input Fields</h2>
+        <div class="test-input">
+            <label>Regular Hours:</label>
+            <input type="number" id="regularHours" value="40" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Regular Rate:</label>
+            <input type="number" id="regularRate" value="85.00" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Overtime Hours:</label>
+            <input type="number" id="overtimeHours" value="8" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Overtime Rate:</label>
+            <input type="number" id="overtimeRate" value="127.50" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Call Hours:</label>
+            <input type="number" id="callHours" value="0" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Call Rate:</label>
+            <input type="number" id="callRate" value="25.00" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Callback Hours:</label>
+            <input type="number" id="callbackHours" value="0" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Callback Rate:</label>
+            <input type="number" id="callbackRate" value="127.50" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Housing Stipend:</label>
+            <input type="number" id="housingStipend" value="1200" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Meal Stipend:</label>
+            <input type="number" id="mealStipend" value="300" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Mileage Reimbursement:</label>
+            <input type="number" id="mileageReimbursement" value="150" oninput="validateAndCalculate(this)">
+        </div>
+        <div class="test-input">
+            <label>Tax State:</label>
+            <select id="taxState" onchange="validateAndCalculate(this)">
+                <option value="no-tax">No State Tax</option>
+                <option value="low-tax">Low Tax State (4%)</option>
+                <option value="medium-tax">Medium Tax State (7%)</option>
+                <option value="high-tax">High Tax State (11%)</option>
+                <option value="california">California (13.3%)</option>
+            </select>
+        </div>
+        <div class="test-input">
+            <label>Filing Status:</label>
+            <select id="filingStatus" onchange="validateAndCalculate(this)">
+                <option value="single">Single</option>
+                <option value="married">Married Filing Jointly</option>
+                <option value="head">Head of Household</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div class="test-result">
+            <strong>Net Pay:</strong> <span id="netPay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Regular Pay:</strong> <span id="regularPay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Overtime Pay:</strong> <span id="overtimePay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Total Gross Pay:</strong> <span id="totalGrossPay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Federal Tax:</strong> <span id="federalTax">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>State Tax:</strong> <span id="stateTax">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>FICA Tax:</strong> <span id="ficaTax">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Housing Stipend Display:</strong> <span id="housingStipendDisplay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Meal Stipend Display:</strong> <span id="mealStipendDisplay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Mileage Display:</strong> <span id="mileageDisplay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Net Pay Display:</strong> <span id="netPayDisplay">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Weekly Stipends:</strong> <span id="weeklyStipends">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Gross Taxable:</strong> <span id="grossTaxable">$0.00</span>
+        </div>
+        <div class="test-result">
+            <strong>Period Label:</strong> <span id="periodLabel">Weekly Net Pay</span>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Buttons</h2>
+        <button onclick="manualCalculateTest()">Manual Calculate Test</button>
+        <button onclick="manualValidateTest()">Manual Validate Test</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Log Output</h2>
+        <div id="console-log" class="log-output"></div>
+    </div>
+    
+    <script>
+        // Capture console logs for display
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logOutput = document.getElementById('console-log');
+        
+        function addLogEntry(message, type = 'log') {
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${type.toUpperCase()}: ${message}`;
+            entry.style.color = type === 'error' ? '#ff4444' : '#00ff00';
+            logOutput.appendChild(entry);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            addLogEntry(args.join(' '), 'log');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            addLogEntry(args.join(' '), 'error');
+            originalError.apply(console, args);
+        };
+        
+        // Clear logs function
+        function clearLogs() {
+            logOutput.innerHTML = '';
+        }
+        
+        // Test the exact same functions as in the paycheck calculator
+        let currentPeriod = 'weekly';
+        const periodMultipliers = {
+            'weekly': 1,
+            'biweekly': 2,
+            'monthly': 4.33
+        };
+        
+        // Helper function to get validated numeric value
+        function getValidatedValue(fieldId) {
+            console.log('🔍 getValidatedValue called for:', fieldId);
+            console.log('DOM state:', document.readyState);
+            
+            const input = document.getElementById(fieldId);
+            if (!input) {
+                console.error('❌ Input element not found for ID:', fieldId);
+                console.log('Available IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id).slice(0, 10));
+                return 0;
+            }
+            console.log('✅ Found input element:', input.tagName, input.type, input.value);
+            
+            const value = input.value.trim();
+            console.log('Raw input value:', value);
+            
+            // If field is empty, return 0
+            if (value === '') {
+                console.log('❌ Field is empty, returning 0');
+                return 0;
+            }
+            
+            const numValue = parseFloat(value);
+            console.log('Parsed numeric value:', numValue);
+            
+            // Block invalid values
+            if (isNaN(numValue) || numValue < 0) {
+                console.log('❌ Invalid value (NaN or negative), returning 0');
+                return 0;
+            }
+            
+            // Hours > 168 should return 168 (handled in validation)
+            if (fieldId.includes('Hours') && numValue > 168) {
+                console.log('⚠️ Hours capped at 168');
+                return 168;
+            }
+            
+            console.log('✅ Returning valid value:', numValue);
+            return numValue;
+        }
+        
+        // Helper function to format currency with cents
+        function formatCurrency(amount) {
+            // Handle negative zero and very small negative values
+            if (amount === 0 || amount === -0 || (amount < 0 && amount > -0.01)) {
+                return '$0.00';
+            }
+            
+            return '$' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Core calculation function
+        function calculatePaycheck() {
+            console.log('🧮 calculatePaycheck called at', new Date().toISOString());
+            console.log('Current period:', currentPeriod);
+            console.log('Period multipliers:', periodMultipliers);
+            
+            try {
+                const multiplier = periodMultipliers[currentPeriod];
+                console.log('Using multiplier:', multiplier);
+                
+                // Get input values with validation
+                console.log('=== GETTING INPUT VALUES ===');
+                const regularHours = getValidatedValue('regularHours');
+                console.log('regularHours:', regularHours);
+                const regularRate = getValidatedValue('regularRate');
+                console.log('regularRate:', regularRate);
+                const overtimeHours = getValidatedValue('overtimeHours');
+                console.log('overtimeHours:', overtimeHours);
+                const overtimeRate = getValidatedValue('overtimeRate');
+                console.log('overtimeRate:', overtimeRate);
+                const callHours = getValidatedValue('callHours');
+                console.log('callHours:', callHours);
+                const callRate = getValidatedValue('callRate');
+                console.log('callRate:', callRate);
+                const callbackHours = getValidatedValue('callbackHours');
+                console.log('callbackHours:', callbackHours);
+                const callbackRate = getValidatedValue('callbackRate');
+                console.log('callbackRate:', callbackRate);
+                const housingStipend = getValidatedValue('housingStipend');
+                console.log('housingStipend:', housingStipend);
+                const mealStipend = getValidatedValue('mealStipend');
+                console.log('mealStipend:', mealStipend);
+                const mileageReimbursement = getValidatedValue('mileageReimbursement');
+                console.log('mileageReimbursement:', mileageReimbursement);
+                const taxState = document.getElementById('taxState').value;
+                console.log('taxState:', taxState);
+                const filingStatus = document.getElementById('filingStatus').value;
+                console.log('filingStatus:', filingStatus);
+                
+                // Calculate pay components
+                console.log('=== CALCULATING PAY COMPONENTS ===');
+                const regularPay = Math.round((regularHours * regularRate * multiplier) * 100) / 100;
+                console.log('regularPay:', regularPay);
+                const overtimePay = Math.round((overtimeHours * overtimeRate * multiplier) * 100) / 100;
+                console.log('overtimePay:', overtimePay);
+                const callPay = Math.round((callHours * callRate * multiplier) * 100) / 100;
+                console.log('callPay:', callPay);
+                const callbackPay = Math.round((callbackHours * callbackRate * multiplier) * 100) / 100;
+                console.log('callbackPay:', callbackPay);
+                
+                // Taxable income
+                const grossTaxable = Math.round((regularPay + overtimePay + callPay + callbackPay) * 100) / 100;
+                console.log('grossTaxable:', grossTaxable);
+                
+                // Tax calculations
+                const federalTaxRate = 0.22;
+                const federalTax = grossTaxable > 0 ? Math.round((grossTaxable * federalTaxRate) * 100) / 100 : 0;
+                console.log('federalTax:', federalTax);
+                
+                // State tax
+                let stateTaxRate = 0;
+                switch(taxState) {
+                    case 'low-tax': stateTaxRate = 0.04; break;
+                    case 'medium-tax': stateTaxRate = 0.07; break;
+                    case 'high-tax': stateTaxRate = 0.11; break;
+                    case 'california': stateTaxRate = 0.133; break;
+                    default: stateTaxRate = 0;
+                }
+                const stateTax = grossTaxable > 0 ? Math.round((grossTaxable * stateTaxRate) * 100) / 100 : 0;
+                console.log('stateTax:', stateTax);
+                
+                const ficaRate = 0.0765;
+                const ficaTax = grossTaxable > 0 ? Math.round((grossTaxable * ficaRate) * 100) / 100 : 0;
+                console.log('ficaTax:', ficaTax);
+                
+                // Tax-free stipends
+                const totalStipends = Math.round(((housingStipend + mealStipend + mileageReimbursement) * multiplier) * 100) / 100;
+                console.log('totalStipends:', totalStipends);
+                
+                // Net pay
+                const netPay = Math.round((grossTaxable - federalTax - stateTax - ficaTax + totalStipends) * 100) / 100;
+                console.log('netPay:', netPay);
+                
+                // Update display
+                console.log('=== UPDATING DISPLAY ===');
+                document.getElementById('regularPay').textContent = formatCurrency(regularPay);
+                document.getElementById('overtimePay').textContent = formatCurrency(overtimePay);
+                
+                const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+                document.getElementById('totalGrossPay').textContent = formatCurrency(totalGrossPay);
+                
+                document.getElementById('federalTax').textContent = federalTax > 0 ? '-' + formatCurrency(federalTax) : '$0.00';
+                document.getElementById('stateTax').textContent = stateTax > 0 ? '-' + formatCurrency(stateTax) : '$0.00';
+                document.getElementById('ficaTax').textContent = ficaTax > 0 ? '-' + formatCurrency(ficaTax) : '$0.00';
+                
+                document.getElementById('housingStipendDisplay').textContent = '+' + formatCurrency(housingStipend * multiplier);
+                document.getElementById('mealStipendDisplay').textContent = '+' + formatCurrency(mealStipend * multiplier);
+                document.getElementById('mileageDisplay').textContent = '+' + formatCurrency(mileageReimbursement * multiplier);
+                document.getElementById('weeklyStipends').textContent = '+' + formatCurrency(totalStipends);
+                document.getElementById('grossTaxable').textContent = formatCurrency(grossTaxable);
+                
+                const netPayFormatted = formatCurrency(netPay);
+                document.getElementById('netPayDisplay').textContent = netPayFormatted;
+                document.getElementById('netPay').textContent = netPayFormatted;
+                
+                console.log('✅ Display updated successfully');
+                
+            } catch (error) {
+                console.error('❌ Error in calculatePaycheck:', error);
+            }
+        }
+        
+        // Validation function
+        window.validateAndCalculate = function(input) {
+            console.log('🎯 validateAndCalculate called');
+            calculatePaycheck();
+        };
+        
+        // Manual test functions
+        function manualCalculateTest() {
+            console.log('=== MANUAL CALCULATE TEST ===');
+            calculatePaycheck();
+        }
+        
+        function manualValidateTest() {
+            console.log('=== MANUAL VALIDATE TEST ===');
+            const testField = document.getElementById('regularHours');
+            validateAndCalculate(testField);
+        }
+        
+        // Initialize when DOM is ready
+        function initializeCalculator() {
+            console.log('🚀 initializeCalculator called');
+            console.log('document.readyState:', document.readyState);
+            
+            try {
+                console.log('✅ Running initial calculation');
+                calculatePaycheck();
+            } catch (error) {
+                console.error('❌ Error in initializeCalculator:', error);
+            }
+        }
+        
+        // DOM ready logic
+        if (document.readyState === 'loading') {
+            console.log('⏳ DOM is loading, adding event listener');
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('✅ DOM loaded, initializing calculator');
+                initializeCalculator();
+            });
+        } else {
+            console.log('✅ DOM already ready, initializing calculator');
+            initializeCalculator();
+        }
+    </script>
+</body>
+</html>

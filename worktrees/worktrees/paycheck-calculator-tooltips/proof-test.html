@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proof of Core Issue</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { margin: 5px 0; padding: 5px; background: #f0f0f0; }
+        .error { background: #ffcccc; }
+        .success { background: #ccffcc; }
+    </style>
+</head>
+<body>
+    <h1>Testing the Core Issue</h1>
+    <input type="number" id="testInput" value="100" oninput="validateAndCalculate(this)">
+    <div id="logs"></div>
+    
+    <script>
+        // Simulate the EXACT paycheck calculator structure
+        function addLog(msg, type = 'log') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            document.getElementById('logs').appendChild(div);
+        }
+        
+        // Override console to see everything
+        const origLog = console.log;
+        const origError = console.error;
+        console.log = (...args) => { addLog('LOG: ' + args.join(' ')); origLog(...args); };
+        console.error = (...args) => { addLog('ERROR: ' + args.join(' '), 'error'); origError(...args); };
+        
+        // Catch all errors
+        window.addEventListener('error', (e) => {
+            addLog(`GLOBAL ERROR: ${e.message} at line ${e.lineno}`, 'error');
+        });
+        
+        // 1. Define calculatePaycheck (like in the real file)
+        function calculatePaycheck() {
+            console.log('🧮 calculatePaycheck called');
+            return 'Calculation done';
+        }
+        
+        // 2. Define validateAndCalculate that calls showNotification (like real file)
+        window.validateAndCalculate = function(input) {
+            console.log('🎯 validateAndCalculate called');
+            // This line will cause an error if showNotification isn't defined yet
+            showNotification('Test notification', 'info');
+            calculatePaycheck();
+        };
+        
+        // 3. Initialize function that triggers input event (like real file)
+        function initializeCalculator() {
+            console.log('🚀 initializeCalculator called');
+            
+            try {
+                const input = document.getElementById('testInput');
+                console.log('Setting up event listener');
+                
+                // This simulates the line 1529 that dispatches input event
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === '5') {
+                        this.value = '5';
+                        console.log('Dispatching input event...');
+                        this.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                
+                console.log('About to call calculatePaycheck...');
+                calculatePaycheck();
+                console.log('✅ Initialization complete');
+                
+            } catch (error) {
+                console.error('❌ Error in initializeCalculator:', error.message);
+            }
+        }
+        
+        // 4. DOM ready check (like real file)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM loaded, initializing...');
+                initializeCalculator();
+            });
+        } else {
+            console.log('DOM ready, initializing...');
+            initializeCalculator();
+        }
+        
+        // 5. Define showNotification AFTER initialization (like real file)
+        function showNotification(message, type = 'success') {
+            console.log(`NOTIFICATION: ${message} (${type})`);
+        }
+        
+        // Test: Try to trigger the error
+        setTimeout(() => {
+            addLog('=== MANUAL TEST: Changing input value ===', 'success');
+            document.getElementById('testInput').value = '200';
+            document.getElementById('testInput').dispatchEvent(new Event('input'));
+        }, 1000);
+        
+        // Test: Simulate keypress
+        setTimeout(() => {
+            addLog('=== MANUAL TEST: Simulating key press "5" ===', 'success');
+            const event = new KeyboardEvent('keydown', { key: '5' });
+            document.getElementById('testInput').dispatchEvent(event);
+        }, 2000);
+    </script>
+</body>
+</html>

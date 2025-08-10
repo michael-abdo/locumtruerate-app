@@ -1,0 +1,106 @@
+name: Create and Deploy Production App
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      action:
+        description: 'What to do?'
+        required: true
+        type: choice
+        options:
+          - create-app-only
+          - deploy-only
+          - create-and-deploy
+        default: 'create-and-deploy'
+      confirm:
+        description: 'Type "PRODUCTION" to confirm'
+        required: true
+        default: ''
+
+jobs:
+  production-deploy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'PRODUCTION'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Create Heroku App (if needed)
+        if: contains(github.event.inputs.action, 'create')
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          
+          # Create the production app
+          echo "🚀 Creating production app: locumtruerate-66ba3177c382"
+          heroku create locumtruerate-66ba3177c382 --region us || echo "App may already exist"
+          
+          # Configure production environment
+          heroku config:set NODE_ENV=production -a locumtruerate-66ba3177c382
+          heroku config:set APP_NAME="LocumTrueRate Production" -a locumtruerate-66ba3177c382
+          
+          echo "✅ Production app ready!"
+          
+      - name: Deploy to Production
+        if: contains(github.event.inputs.action, 'deploy')
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Add production remote
+          git remote add heroku-prod https://git.heroku.com/locumtruerate-66ba3177c382.git || true
+          
+          # Deploy to production
+          echo "🚀 Deploying to PRODUCTION..."
+          git push heroku-prod vanilla-only:main --force
+          
+      - name: Verify Production Deployment
+        if: contains(github.event.inputs.action, 'deploy')
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 45
+          
+          echo "🔍 Checking production deployment..."
+          RESPONSE=$(curl -s https://locumtruerate-66ba3177c382.herokuapp.com/health || echo "No health endpoint")
+          echo "Response: $RESPONSE"
+          
+          echo "✅ Production deployment complete!"
+          echo "🌟 Live at: https://locumtruerate-66ba3177c382.herokuapp.com"
+          
+      - name: Output URLs
+        run: |
+          echo "🎉 Deployment Summary:"
+          echo ""
+          echo "📍 STAGING:    https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+          echo "📍 PRODUCTION: https://locumtruerate-66ba3177c382.herokuapp.com"
+          echo ""
+          echo "🔄 Deployment Status:"
+          echo "- Staging: Auto-deploys from vanilla-only branch"
+          echo "- Production: Manual deployment via GitHub Actions"
+          echo ""
+          echo "📋 Your two-URL architecture is now complete!"

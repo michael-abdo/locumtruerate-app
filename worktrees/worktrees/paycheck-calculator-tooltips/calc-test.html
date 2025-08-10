@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Test</title>
+</head>
+<body>
+    <h1>Calculator Initialization Test</h1>
+    <div id="test-output"></div>
+    
+    <script>
+        // Test the exact pattern from paycheck calculator
+        console.log('🔧 Starting calculator test');
+        
+        // Define variables like in the original
+        let currentPeriod = 'weekly';
+        const periodMultipliers = {
+            'weekly': 1,
+            'biweekly': 2,
+            'monthly': 4.33
+        };
+        
+        // Test function definition
+        function calculatePaycheck() {
+            console.log('🧮 calculatePaycheck called at', new Date().toISOString());
+            console.log('Current period:', currentPeriod);
+            console.log('Period multipliers:', periodMultipliers);
+            return 'Calculation complete';
+        }
+        
+        // Test window function assignment
+        window.validateAndCalculate = function(input) {
+            console.log('🎯 validateAndCalculate called');
+            calculatePaycheck();
+        };
+        
+        // Test initialization function
+        function initializeCalculator() {
+            console.log('🚀 initializeCalculator called');
+            console.log('document.readyState:', document.readyState);
+            
+            try {
+                console.log('✅ Running initial calculation');
+                calculatePaycheck();
+            } catch (error) {
+                console.error('❌ Error in initializeCalculator:', error);
+            }
+        }
+        
+        // Test DOM ready logic (exactly like the original)
+        if (document.readyState === 'loading') {
+            console.log('⏳ DOM is loading, adding event listener');
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('✅ DOM loaded, initializing calculator');
+                initializeCalculator();
+            });
+        } else {
+            console.log('✅ DOM already ready, initializing calculator');
+            initializeCalculator();
+        }
+        
+        console.log('🔧 Calculator test script completed');
+    </script>
+    
+    <script>
+        // Test floating logger pattern
+        console.log('🚀 Floating Logger initialized');
+        
+        // Test if we can access the calculator functions
+        setTimeout(() => {
+            console.log('🔧 Testing function access from second script');
+            
+            if (typeof calculatePaycheck === 'function') {
+                console.log('✅ Can access calculatePaycheck');
+                calculatePaycheck();
+            } else {
+                console.log('❌ Cannot access calculatePaycheck');
+            }
+            
+            if (typeof window.validateAndCalculate === 'function') {
+                console.log('✅ Can access window.validateAndCalculate');
+                window.validateAndCalculate();
+            } else {
+                console.log('❌ Cannot access window.validateAndCalculate');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

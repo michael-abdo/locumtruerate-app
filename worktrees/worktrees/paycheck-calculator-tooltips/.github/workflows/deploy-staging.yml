@@ -1,0 +1,96 @@
+name: Deploy to Heroku Staging
+
+on:
+  push:
+    branches:
+      - vanilla-only
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to which environment?'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: 'staging'
+      confirm:
+        description: 'Type DEPLOY to confirm (required for production)'
+        required: false
+        default: ''
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.environment == 'staging' || (github.event.inputs.environment == 'production' && github.event.inputs.confirm == 'DEPLOY')))
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for git authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Determine target environment
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            APP_NAME="locumtruerate-demo-2e641e257df4"
+            TARGET_URL="https://git.heroku.com/locumtruerate-demo-2e641e257df4.git"
+            echo "🚀 Deploying to PRODUCTION..."
+            
+            # Install Heroku CLI for app creation
+            curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+            
+            # Create production app if it doesn't exist
+            echo "Using existing production app - will override with vanilla demos"
+            heroku config:set NODE_ENV=production -a locumtruerate-demo-2e641e257df4 || true
+          else
+            APP_NAME="locumtruerate-staging"
+            TARGET_URL="https://git.heroku.com/locumtruerate-staging.git"
+            echo "🚀 Deploying to STAGING..."
+          fi
+          
+          # Add Heroku remote
+          git remote add heroku $TARGET_URL || true
+          
+          # Push to Heroku
+          git push heroku vanilla-only:main --force
+          
+      - name: Verify deployment
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 45
+          
+          # Determine target URL for verification
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            TARGET_URL="https://locumtruerate-demo-2e641e257df4.herokuapp.com"
+            ENV_NAME="PRODUCTION"
+          else
+            TARGET_URL="https://locumtruerate-staging-66ba3177c382.herokuapp.com"
+            ENV_NAME="STAGING"
+          fi
+          
+          echo "🔍 Checking $ENV_NAME deployment..."
+          RESPONSE=$(curl -s $TARGET_URL/health || echo "No health endpoint yet")
+          echo "Response: $RESPONSE"
+          
+          # Check if it's v4.2.4
+          if echo "$RESPONSE" | grep -q '"version":"4.2.4"'; then
+            echo "✅ SUCCESS! $ENV_NAME deployment works!"
+            echo "🎉 Version 4.2.4 is now live at $TARGET_URL"
+          else
+            echo "⚠️ Deployment may still be in progress..."
+            echo "🌟 Check: $TARGET_URL"
+          fi

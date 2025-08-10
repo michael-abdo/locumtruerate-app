@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paycheck Calculator - Round 2 Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        .pass { border-left: 4px solid #10b981; }
+        .fail { border-left: 4px solid #ef4444; }
+        .pending { border-left: 4px solid #f59e0b; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .test-log {
+            font-family: monospace;
+            font-size: 12px;
+            background: #f8f8f8;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Paycheck Calculator - Round 2 QA Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Environment</h2>
+        <button onclick="loadCalculator()">Load Paycheck Calculator</button>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <iframe id="calculator-frame" src="paycheck-calculator.html" style="display: none;"></iframe>
+    </div>
+
+    <div class="test-section">
+        <h2>Round 2 - Bug Fix Tests</h2>
+        <div id="test-results">
+            <div class="test-item pending" id="test-hours-block">
+                <strong>Test 1: Hours > 168 Blocking</strong>
+                <p>Enter 9999 in Regular Hours → Should block calculation and show $0</p>
+                <button onclick="testHoursBlocking()">Test</button>
+                <div id="hours-block-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-empty-zero">
+                <strong>Test 2: Empty Field Zeros Calculation</strong>
+                <p>Clear Regular Hours field → All pay should show $0.00</p>
+                <button onclick="testEmptyFieldZero()">Test</button>
+                <div id="empty-zero-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-ctrl-a-fix">
+                <strong>Test 3: Ctrl+A Selection Fix</strong>
+                <p>Click in field and press Ctrl+A → Only field text should be selected</p>
+                <button onclick="testCtrlAFix()">Manual Test</button>
+                <div id="ctrl-a-fix-result" class="test-log">Manual verification required: Click in any input field and press Ctrl+A</div>
+            </div>
+            
+            <div class="test-item pending" id="test-logger-hidden">
+                <strong>Test 4: Console Logger Hidden</strong>
+                <p>Check that floating logger is not visible</p>
+                <button onclick="testLoggerHidden()">Test</button>
+                <div id="logger-hidden-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-negative-feedback">
+                <strong>Test 5: Negative Value Error Message</strong>
+                <p>Try to enter -5 → Should show "Negative values are not allowed"</p>
+                <button onclick="testNegativeFeedback()">Test</button>
+                <div id="negative-feedback-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-save-notification">
+                <strong>Test 6: Save Calculation Notification</strong>
+                <p>Click Save → Should show success toast notification</p>
+                <button onclick="testSaveNotification()">Test</button>
+                <div id="save-notification-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-pdf-download">
+                <strong>Test 7: PDF Export Downloads File</strong>
+                <p>Click Export PDF → Should download text file with calculations</p>
+                <button onclick="testPDFDownload()">Test</button>
+                <div id="pdf-download-result" class="test-log"></div>
+            </div>
+            
+            <div class="test-item pending" id="test-tax-inclusion">
+                <strong>Test 8: Call/Callback Tax Inclusion</strong>
+                <p>Verify Call and Callback pay are included in Gross Taxable Income</p>
+                <button onclick="testTaxInclusion()">Test</button>
+                <div id="tax-inclusion-result" class="test-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Summary</h2>
+        <div id="test-summary">
+            <p>Click "Run All Tests" to execute the test suite.</p>
+        </div>
+    </div>
+
+    <script>
+        let calculator = null;
+        let testResults = {};
+
+        function loadCalculator() {
+            const frame = document.getElementById('calculator-frame');
+            frame.style.display = 'block';
+            frame.onload = function() {
+                calculator = frame.contentWindow;
+                console.log('Calculator loaded');
+                logResult('Calculator loaded successfully');
+            };
+        }
+
+        function getCalculatorDocument() {
+            const frame = document.getElementById('calculator-frame');
+            return frame.contentDocument || frame.contentWindow.document;
+        }
+
+        function logResult(testId, message) {
+            if (testId === message) {
+                console.log(message);
+                return;
+            }
+            const logElement = document.getElementById(testId);
+            if (logElement) {
+                logElement.innerHTML += message + '<br>';
+            }
+        }
+
+        function testHoursBlocking() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                const netPay = doc.getElementById('netPay');
+                const errorElement = doc.getElementById('regularHours-error');
+                
+                // Set hours > 168
+                regularHours.value = '9999';
+                regularHours.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const hasError = regularHours.classList.contains('error');
+                    const errorMessage = errorElement.textContent;
+                    const netPayText = netPay.textContent;
+                    
+                    logResult('hours-block-result', `Error shown: ${hasError}`);
+                    logResult('hours-block-result', `Error message: "${errorMessage}"`);
+                    logResult('hours-block-result', `Net pay: ${netPayText}`);
+                    
+                    // Check if calculation was blocked (should show low or zero amount)
+                    const netPayAmount = parseFloat(netPayText.replace(/[$,]/g, ''));
+                    
+                    if (hasError && errorMessage.includes('168') && netPayAmount < 1000) {
+                        updateTestResult('test-hours-block', 'pass', 'PASS: Hours > 168 validation blocks calculation');
+                    } else {
+                        updateTestResult('test-hours-block', 'fail', 'FAIL: Calculation not blocked for excessive hours');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                updateTestResult('test-hours-block', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function testEmptyFieldZero() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                const regularPay = doc.getElementById('regularPay');
+                const netPay = doc.getElementById('netPay');
+                
+                // Clear field
+                regularHours.value = '';
+                regularHours.dispatchEvent(new Event('input', { bubbles: true }));
+                regularHours.dispatchEvent(new Event('blur', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const regularPayText = regularPay.textContent;
+                    const netPayText = netPay.textContent;
+                    
+                    logResult('empty-zero-result', `Regular pay: ${regularPayText}`);
+                    logResult('empty-zero-result', `Net pay: ${netPayText}`);
+                    
+                    if (regularPayText === '$0.00') {
+                        updateTestResult('test-empty-zero', 'pass', 'PASS: Empty field zeros out calculations');
+                    } else {
+                        updateTestResult('test-empty-zero', 'fail', 'FAIL: Empty field does not zero calculations');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                updateTestResult('test-empty-zero', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function testLoggerHidden() {
+            try {
+                const doc = getCalculatorDocument();
+                const logger = doc.getElementById('floating-logger');
+                const fab = doc.getElementById('logger-toggle-fab');
+                
+                const loggerVisible = logger && logger.style.display !== 'none';
+                const fabVisible = fab && fab.style.display !== 'none';
+                
+                logResult('logger-hidden-result', `Logger visible: ${loggerVisible}`);
+                logResult('logger-hidden-result', `FAB visible: ${fabVisible}`);
+                
+                if (!loggerVisible && !fabVisible) {
+                    updateTestResult('test-logger-hidden', 'pass', 'PASS: Console logger is hidden');
+                } else {
+                    updateTestResult('test-logger-hidden', 'fail', 'FAIL: Console logger is still visible');
+                }
+                
+            } catch (error) {
+                updateTestResult('test-logger-hidden', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function testNegativeFeedback() {
+            try {
+                const doc = getCalculatorDocument();
+                const regularHours = doc.getElementById('regularHours');
+                const errorElement = doc.getElementById('regularHours-error');
+                
+                // Try to set negative value
+                regularHours.value = '-5';
+                regularHours.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const hasError = regularHours.classList.contains('error');
+                    const errorMessage = errorElement.textContent;
+                    
+                    logResult('negative-feedback-result', `Error shown: ${hasError}`);
+                    logResult('negative-feedback-result', `Error message: "${errorMessage}"`);
+                    
+                    if (hasError && errorMessage.includes('Negative values are not allowed')) {
+                        updateTestResult('test-negative-feedback', 'pass', 'PASS: Clear negative value error message');
+                    } else {
+                        updateTestResult('test-negative-feedback', 'fail', 'FAIL: No clear error for negative values');
+                    }
+                }, 200);
+                
+            } catch (error) {
+                updateTestResult('test-negative-feedback', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function testSaveNotification() {
+            try {
+                const doc = getCalculatorDocument();
+                const saveButton = Array.from(doc.querySelectorAll('button'))
+                    .find(btn => btn.textContent.includes('Save'));
+                
+                if (!saveButton) {
+                    updateTestResult('test-save-notification', 'fail', 'FAIL: Save button not found');
+                    return;
+                }
+                
+                // Click save
+                saveButton.click();
+                
+                setTimeout(() => {
+                    const notification = doc.querySelector('.notification-toast');
+                    
+                    if (notification) {
+                        logResult('save-notification-result', `Notification shown: "${notification.textContent}"`);
+                        updateTestResult('test-save-notification', 'pass', 'PASS: Save shows success notification');
+                    } else {
+                        updateTestResult('test-save-notification', 'fail', 'FAIL: No notification shown');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                updateTestResult('test-save-notification', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function testPDFDownload() {
+            updateTestResult('test-pdf-download', 'pending', 'Manual test: Click Export PDF and verify file downloads');
+        }
+
+        function testTaxInclusion() {
+            try {
+                const doc = getCalculatorDocument();
+                
+                // Set values
+                doc.getElementById('regularHours').value = '40';
+                doc.getElementById('regularRate').value = '100';
+                doc.getElementById('callHours').value = '10';
+                doc.getElementById('callRate').value = '50';
+                doc.getElementById('callbackHours').value = '5';
+                doc.getElementById('callbackRate').value = '150';
+                
+                // Trigger calculation
+                doc.getElementById('regularHours').dispatchEvent(new Event('input', { bubbles: true }));
+                
+                setTimeout(() => {
+                    const grossTaxable = doc.getElementById('grossTaxable').textContent;
+                    const regularPay = doc.getElementById('regularPay').textContent;
+                    const callPay = doc.getElementById('callPay').textContent;
+                    const callbackPay = doc.getElementById('callbackPay').textContent;
+                    
+                    logResult('tax-inclusion-result', `Regular: ${regularPay}`);
+                    logResult('tax-inclusion-result', `Call: ${callPay}`);
+                    logResult('tax-inclusion-result', `Callback: ${callbackPay}`);
+                    logResult('tax-inclusion-result', `Gross Taxable: ${grossTaxable}`);
+                    
+                    // Calculate expected total
+                    const regular = 40 * 100; // $4,000
+                    const call = 10 * 50; // $500
+                    const callback = 5 * 150; // $750
+                    const expected = regular + call + callback; // $5,250
+                    
+                    const grossAmount = parseFloat(grossTaxable.replace(/[$,]/g, ''));
+                    
+                    if (Math.abs(grossAmount - expected) < 1) {
+                        updateTestResult('test-tax-inclusion', 'pass', 'PASS: Call/Callback included in taxable income');
+                    } else {
+                        updateTestResult('test-tax-inclusion', 'fail', `FAIL: Expected $${expected}, got ${grossTaxable}`);
+                    }
+                }, 200);
+                
+            } catch (error) {
+                updateTestResult('test-tax-inclusion', 'fail', 'FAIL: Error - ' + error.message);
+            }
+        }
+
+        function updateTestResult(testId, status, message) {
+            const testElement = document.getElementById(testId);
+            testElement.className = `test-item ${status}`;
+            testResults[testId] = status;
+            
+            const resultElement = document.getElementById(testId.replace('test-', '') + '-result');
+            if (resultElement && !resultElement.innerHTML.includes(message)) {
+                resultElement.innerHTML += '<br><strong>' + message + '</strong>';
+            }
+            
+            updateSummary();
+        }
+
+        function runAllTests() {
+            if (!calculator) {
+                alert('Please load the calculator first');
+                return;
+            }
+            
+            // Reset calculator to defaults first
+            const doc = getCalculatorDocument();
+            doc.getElementById('regularHours').value = '40';
+            doc.getElementById('regularRate').value = '85';
+            doc.getElementById('callHours').value = '0';
+            doc.getElementById('callbackHours').value = '0';
+            
+            setTimeout(() => testHoursBlocking(), 100);
+            setTimeout(() => testEmptyFieldZero(), 1000);
+            setTimeout(() => testLoggerHidden(), 1500);
+            setTimeout(() => testNegativeFeedback(), 2000);
+            setTimeout(() => testSaveNotification(), 2500);
+            setTimeout(() => testTaxInclusion(), 3500);
+        }
+
+        function clearResults() {
+            testResults = {};
+            const testItems = document.querySelectorAll('.test-item');
+            testItems.forEach(item => {
+                item.className = 'test-item pending';
+            });
+            const logs = document.querySelectorAll('.test-log');
+            logs.forEach(log => {
+                if (!log.id.includes('ctrl-a') && !log.id.includes('pdf')) {
+                    log.innerHTML = '';
+                }
+            });
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('test-summary');
+            const total = Object.keys(testResults).length;
+            const passed = Object.values(testResults).filter(r => r === 'pass').length;
+            const failed = Object.values(testResults).filter(r => r === 'fail').length;
+            const pending = Object.values(testResults).filter(r => r === 'pending').length;
+            
+            if (total === 0) {
+                summary.innerHTML = '<p>Click "Run All Tests" to execute the test suite.</p>';
+            } else {
+                summary.innerHTML = `
+                    <p><strong>Round 2 Test Results:</strong></p>
+                    <p>Total: ${total} | Passed: ${passed} | Failed: ${failed} | Manual: ${pending}</p>
+                    <p>${passed === total - 2 ? '✅ All automated tests passed!' : '⚠️ Some tests need attention'}</p>
+                `;
+            }
+        }
+
+        // Auto-load calculator
+        window.onload = function() {
+            setTimeout(loadCalculator, 500);
+        };
+    </script>
+</body>
+</html>

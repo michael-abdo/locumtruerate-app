@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Function Call Test</title>
+</head>
+<body>
+    <h1>Simple Test</h1>
+    <div id="output"></div>
+    
+    <script>
+        // First script tag - main calculator logic
+        function output(msg) {
+            document.getElementById('output').innerHTML += `<div>${msg}</div>`;
+        }
+        
+        output('Script 1: Starting');
+        
+        function calculatePaycheck() {
+            output('calculatePaycheck called!');
+            // Call a function that doesn't exist yet
+            return true;
+        }
+        
+        function initializeCalculator() {
+            output('initializeCalculator called');
+            try {
+                output('About to call calculatePaycheck...');
+                calculatePaycheck();
+                output('calculatePaycheck completed');
+            } catch (e) {
+                output(`ERROR in init: ${e.message}`);
+            }
+        }
+        
+        // Initialize
+        output('About to initialize...');
+        initializeCalculator();
+        output('Script 1: Complete');
+    </script>
+    
+    <script>
+        // Second script tag - floating logger
+        output('Script 2: Floating logger initialized');
+    </script>
+</body>
+</html>
