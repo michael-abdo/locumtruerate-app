@@ -2042,11 +2042,6 @@
                 printWindow.document.write(printContent);
                 printWindow.document.close();
                 
-                // Wait for content to load, then print
-                printWindow.onload = function() {
-                    printWindow.print();
-                };
-                
                 showNotification('🖨️ Print dialog opened', 'success');
                 
             } catch (error) {
