@@ -760,10 +760,9 @@
                             </div>
 
                             <div class="action-buttons">
-                                <button class="btn-primary" onclick="saveContract()">Save Analysis</button>
-                                <button class="btn-secondary" onclick="compareContracts()">Compare</button>
-                                <button class="btn-accent" onclick="findSimilarJobs()">Find Similar Jobs</button>
-                                <button class="btn-secondary" onclick="exportAnalysis()">Export PDF</button>
+                                <button class="btn btn-primary" onclick="saveCalculation()">Save Calculation</button>
+                                <button class="btn btn-secondary" onclick="exportToPDF()">Export PDF</button>
+                                <button class="btn btn-secondary" onclick="emailResults()">Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -921,7 +920,7 @@
             document.getElementById('mileageSubtext').textContent = `${milesPerWeek} miles/week × $${irsMileageRate}/mile`;
         }
 
-        async function saveContract() {
+        async function saveCalculation() {
             const contractData = {
                 timestamp: new Date().toISOString(),
                 jobTitle: document.getElementById('jobTitle').value,
@@ -970,7 +969,7 @@
             }, 1000);
         }
 
-        async function exportAnalysis() {
+        async function exportToPDF() {
             const analysis = {
                 jobTitle: document.getElementById('jobTitle').value,
                 facility: document.getElementById('facility').value,
@@ -982,6 +981,20 @@
             
             showNotification('Contract analysis PDF exported successfully!', 'success');
             await showAlert(`Contract Analysis PDF exported:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`, 'PDF Export Complete');
+        }
+
+        async function emailResults() {
+            const analysis = {
+                jobTitle: document.getElementById('jobTitle').value,
+                facility: document.getElementById('facility').value,
+                totalValue: document.getElementById('totalContractValue').textContent,
+                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
+                netTakeHome: document.getElementById('netTakeHome').textContent,
+                timestamp: new Date().toLocaleDateString()
+            };
+            
+            showNotification('Email functionality coming soon!', 'info');
+            await showAlert(`Email Results:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`, 'Email Preview');
         }
 
         // Auto-calculate overtime rate based on regular rate
