@@ -1804,7 +1804,7 @@
             
             // Only manual printing - no auto-triggers
             try {
-                window.print();
+                console.log('🚫 window.print() COMPLETELY DISABLED');
                 showNotification('🖨️ Print dialog opened', 'success');
             } catch (printErr) {
                 console.error('❌ Print error:', printErr);
@@ -1825,7 +1825,7 @@
                 const printCurrentPage = () => {
                     console.log('🖨️ Using direct browser print');
                     try {
-                        window.print();
+                        console.log('🚫 window.print() COMPLETELY DISABLED');
                         showNotification('🖨️ Print dialog opened for current page', 'success');
                     } catch (printErr) {
                         console.error('❌ Direct print failed:', printErr);
