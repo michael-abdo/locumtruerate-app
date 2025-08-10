@@ -1895,7 +1895,7 @@
                     // Try to open print window
                     let printWindow = null;
                     try {
-                        printWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes');
+                        console.log('🚫 window.open() for print DISABLED'); printWindow = null;
                     } catch (popupError) {
                         console.log('🖨️ Popup blocked, using direct print fallback');
                         printCurrentPage();
@@ -1905,8 +1905,8 @@
                     if (printWindow && !printWindow.closed) {
                         console.log('🖨️ Print window opened successfully');
                         
-                        printWindow.document.write(printContent);
-                        printWindow.document.close();
+                        console.log('🚫 printWindow.document.write() DISABLED');
+                        console.log('🚫 printWindow.document.close() DISABLED');
                         printWindow.focus();
                         
                         console.log('🖨️ Print window prepared - user must manually trigger print (Ctrl+P)');
@@ -1933,7 +1933,7 @@
         // function printResults() {
             try {
                 // Create a print-friendly version of the results
-                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                console.log('🚫 window.open() for print DISABLED'); const printWindow = null;
                 
                 const printContent = `
                     <!DOCTYPE html>
@@ -2014,8 +2014,8 @@
                     </html>
                 `;
                 
-                printWindow.document.write(printContent);
-                printWindow.document.close();
+                console.log('🚫 printWindow.document.write() DISABLED');
+                console.log('🚫 printWindow.document.close() DISABLED');
                 
                 showNotification('🖨️ Print dialog opened', 'success');
                 
