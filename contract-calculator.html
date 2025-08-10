@@ -1028,7 +1028,7 @@
                                 <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
                                 <button class="btn-secondary" onclick="viewHistory()" title="View saved contract history">📋 View History <span style="font-size: 0.8em;">(Login Required)</span></button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
-                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
+                                <button id="printButton" class="btn-secondary" onclick="alert('PRINT DISABLED FOR DEBUG')">🚫 Print DISABLED</button>
                                 <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
                                 <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
                                 <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
@@ -1798,9 +1798,11 @@
             }, 1000);
         }
 
-        // Print Results function with better fallback handling
+        // Print Results function - DISABLED FOR DEBUGGING
         function printResults() {
-            console.log('🖨️ printResults() called');
+            console.log('🖨️ printResults() called - DISABLED TO STOP AUTO-TRIGGER');
+            alert('PRINT FUNCTION DISABLED - If you see this, the print button was clicked manually');
+            return false;
             try {
                 // Safe get value function
                 const safeGetValue = (id) => {
@@ -1816,7 +1818,7 @@
                 const printCurrentPage = () => {
                     console.log('🖨️ Using direct browser print');
                     try {
-                        window.print();
+                        console.log('🚫 window.print() DISABLED FOR DEBUG');
                         showNotification('🖨️ Print dialog opened for current page', 'success');
                     } catch (printErr) {
                         console.error('❌ Direct print failed:', printErr);
