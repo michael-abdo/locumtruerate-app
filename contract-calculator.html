@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- CACHE BUSTER: 2025-08-10-05:25 - ALL AUTO-PRINT REMOVED -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1027,6 +1028,7 @@
                                 <button class="btn-secondary" onclick="compareContracts()" title="Compare with saved contracts">📊 Compare <span style="font-size: 0.8em;">(Requires Saved)</span></button>
                                 <button class="btn-secondary" onclick="viewHistory()" title="View saved contract history">📋 View History <span style="font-size: 0.8em;">(Login Required)</span></button>
                                 <button class="btn-accent" onclick="findSimilarJobs()">🔍 Find Similar Jobs</button>
+                                <button id="printButton" class="btn-secondary" onclick="printResults()">🖨️ Print Results</button>
                                 <button id="exportPdfButton" class="btn-secondary" onclick="exportAnalysis()">📄 Export PDF</button>
                                 <button id="exportCsvButton" class="btn-secondary" onclick="exportCSV()">📊 Export CSV</button>
                                 <button id="emailButton" class="btn-secondary" onclick="emailResults()">📧 Email Results</button>
@@ -1166,12 +1168,15 @@
             if (compareBtn) compareBtn.disabled = !isValid;
             if (findJobsBtn) findJobsBtn.disabled = !isValid;
             
+            // Export, Print, Email buttons enabled if we have calculated results
             const exportBtn = document.getElementById('exportPdfButton');
             const exportCSVBtn = document.getElementById('exportCsvButton');
+            const printBtn = document.getElementById('printButton');
             const emailBtn = document.getElementById('emailButton');
             
             if (exportBtn) exportBtn.disabled = !hasCalculatedResults;
             if (exportCSVBtn) exportCSVBtn.disabled = !hasCalculatedResults;
+            if (printBtn) printBtn.disabled = !hasCalculatedResults;
             if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
@@ -1793,25 +1798,47 @@
             }, 1000);
         }
 
+        // Print Results function - FIXED (no auto-triggers)
+        function printResults() {
+            console.log('🖨️ printResults() called - MANUAL TRIGGER ONLY');
             
+            // Only manual printing - no auto-triggers
             try {
+                window.print();
+                showNotification('🖨️ Print dialog opened', 'success');
+            } catch (printErr) {
+                console.error('❌ Print error:', printErr);
+                showNotification('⚠️ Print failed. Please try again.', 'error');
             }
             try {
                 // Safe get value function
                 const safeGetValue = (id) => {
                     const element = document.getElementById(id);
                     if (!element) {
+                        console.error(`❌ Print: Missing element: ${id}`);
                         return 'N/A';
                     }
                     return element.value || element.textContent || 'N/A';
                 };
                 
+                // Direct print function (most reliable fallback)
+                const printCurrentPage = () => {
+                    console.log('🖨️ Using direct browser print');
                     try {
+                        window.print();
+                        showNotification('🖨️ Print dialog opened for current page', 'success');
+                    } catch (printErr) {
+                        console.error('❌ Direct print failed:', printErr);
+                        showNotification('⚠️ Print failed. Use Ctrl+P (Cmd+P on Mac) manually.', 'error');
                     }
                 };
                 
+                // Try to create a proper print version
                 try {
+                    console.log('🖨️ Creating print content');
                     
+                    // Create enhanced print content
+                    const printContent = `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -1826,6 +1853,8 @@
         table { width: 100%; border-collapse: collapse; margin: 10px 0; }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #f3f4f6; font-weight: 600; }
+        @media print { 
+            body { margin: 0; -webkit-print-color-adjust: exact; color-adjust: exact; }
             .summary { background: #f8fafc !important; }
             .total { background-color: #e0f2fe !important; }
         }
@@ -1860,28 +1889,52 @@
 </body>
 </html>`;
                     
+                    console.log('🖨️ Print content prepared');
                     
+                    // Try to open print window
+                    let printWindow = null;
                     try {
+                        printWindow = window.open('', '_blank', 'width=900,height=700,scrollbars=yes');
                     } catch (popupError) {
+                        console.log('🖨️ Popup blocked, using direct print fallback');
+                        printCurrentPage();
                         return;
                     }
                     
+                    if (printWindow && !printWindow.closed) {
+                        console.log('🖨️ Print window opened successfully');
                         
+                        printWindow.document.write(printContent);
+                        printWindow.document.close();
+                        printWindow.focus();
                         
+                        console.log('🖨️ Print window prepared - user must manually trigger print (Ctrl+P)');
                         
+                        showNotification('🖨️ Print dialog opened in new window', 'success');
                         
                     } else {
+                        console.log('🖨️ Print window blocked or failed to open');
+                        showNotification('⚠️ Pop-ups blocked. Use Ctrl+P to print manually.', 'warning');
                     }
                     
                 } catch (contentError) {
+                    console.error('🖨️ Error creating print content:', contentError);
+                    printCurrentPage();
                 }
                 
             } catch (error) {
+                console.error('❌ Print error:', error);
+                showNotification('⚠️ Print failed: ' + error.message + '. Use Ctrl+P manually.', 'error');
             }
         }
         
+        // Print Results function (DUPLICATE - COMMENTED OUT)
+        // function printResults() {
             try {
+                // Create a print-friendly version of the results
+                const printWindow = window.open('', '_blank', 'width=800,height=600');
                 
+                const printContent = `
                     <!DOCTYPE html>
                     <html>
                     <head>
@@ -1895,7 +1948,9 @@
                             .result-label { font-weight: bold; color: #2563eb; }
                             .result-value { float: right; font-weight: bold; }
                             .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
+                            @media print { 
                                 body { margin: 0; }
+                                .no-print { display: none; }
                             }
                         </style>
                     </head>
@@ -1958,9 +2013,14 @@
                     </html>
                 `;
                 
+                printWindow.document.write(printContent);
+                printWindow.document.close();
                 
+                showNotification('🖨️ Print dialog opened', 'success');
                 
             } catch (error) {
+                console.error('Print error:', error);
+                showNotification('⚠️ Print failed. Please use Ctrl+P to print manually.', 'error');
             }
         // } // END OF DUPLICATE FUNCTION
         
@@ -2241,6 +2301,7 @@ ${body}`;
         th { background: #f3f4f6; font-weight: 600; }
         .total-row { font-weight: bold; border-top: 2px solid #1e293b; }
         .footer { margin-top: 40px; text-align: center; color: #6b7280; font-size: 12px; }
+        @media print { 
             body { margin: 20px; }
             .summary-grid { grid-template-columns: 1fr; }
         }
@@ -2344,6 +2405,7 @@ ${body}`;
                     console.log('📄 PDF URL cleaned up');
                 }, 1000);
                 
+                showNotification('📄 PDF report downloaded as HTML file: ' + filename + '. Use browser Print -> Save as PDF', 'success');
                 
             } catch (error) {
                 console.error('❌ PDF export error:', error);
@@ -2502,6 +2564,7 @@ ${body}`;
             const actionButtons = {
                 'saveButton': 'Save Button',
                 'compareButton': 'Compare Button',
+                'printButton': 'Print Button',
                 'exportPdfButton': 'Export PDF Button',
                 'exportCsvButton': 'Export CSV Button',
                 'shareButton': 'Share Button'
