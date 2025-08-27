@@ -546,9 +546,9 @@
                                     <div class="form-help">Meal allowance</div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Mileage Reimbursement ($)</label>
-                                    <input type="number" class="form-input" id="mileageReimbursement" value="150" min="0" step="0.01">
-                                    <div class="form-help">Travel reimbursement</div>
+                                    <label class="form-label">Total Miles Driven (weekly)</label>
+                                    <input type="number" class="form-input" id="totalMilesWeekly" value="250" min="0" step="0.1">
+                                    <div class="form-help">Total miles driven per week</div>
                                 </div>
                             </div>
                         </div>
@@ -616,7 +616,7 @@
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Mileage Reimbursement</span>
-                                        <div class="result-subtext">Tax-free reimbursement</div>
+                                        <div class="result-subtext" id="mileageSubtext">0 miles @ $0.67/mile</div>
                                     </div>
                                     <span class="result-value" id="mileageDisplay">$0</span>
                                 </div>
@@ -680,6 +680,9 @@
             'biweekly': 2,
             'monthly': 4.33
         };
+        
+        // IRS standard mileage rate for 2025
+        const IRS_MILEAGE_RATE = 0.67;
 
         // Toast notification function
         function showToast(message, type = 'success') {
@@ -741,7 +744,7 @@
             const callbackRate = parseFloat(document.getElementById('callbackRate').value) || 0;
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
-            const mileageReimbursement = parseFloat(document.getElementById('mileageReimbursement').value) || 0;
+            const totalMilesWeekly = parseFloat(document.getElementById('totalMilesWeekly').value) || 0;
 
             // Get multiplier for period
             const multiplier = periodMultipliers[currentPeriod];
@@ -753,6 +756,9 @@
             const callbackPay = callbackHours * callbackRate * multiplier;
             const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
 
+            // Calculate mileage reimbursement (miles * IRS rate * multiplier for period)
+            const mileageReimbursement = totalMilesWeekly * IRS_MILEAGE_RATE * multiplier;
+            
             // Stipends are already for the period
             const totalStipends = housingStipend + mealStipend + mileageReimbursement;
             const totalPay = totalGrossPay + totalStipends;
@@ -781,6 +787,7 @@
             document.getElementById('overtimePaySubtext').textContent = `${(overtimeHours * multiplier).toFixed(1)} hrs @ $${overtimeRate.toFixed(2)}/hr`;
             document.getElementById('callPaySubtext').textContent = `${(callHours * multiplier).toFixed(1)} hrs @ $${callRate.toFixed(2)}/hr`;
             document.getElementById('callbackPaySubtext').textContent = `${(callbackHours * multiplier).toFixed(1)} hrs @ $${callbackRate.toFixed(2)}/hr`;
+            document.getElementById('mileageSubtext').textContent = `${(totalMilesWeekly * multiplier).toFixed(0)} miles @ $${IRS_MILEAGE_RATE}/mile`;
             
             console.log('Calculation completed successfully');
         }

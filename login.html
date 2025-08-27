@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LocumTrueRate</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .demo-note {
+            background-color: var(--warning-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="demo-note">
+            🎭 Demo Mode: Click "Log In" to simulate authentication
+        </div>
+        
+        <div class="login-header">
+            <h1>LocumTrueRate</h1>
+            <p>Sign in to post job opportunities</p>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="email" placeholder="demo@example.com" value="demo@example.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="password" placeholder="••••••••" value="demo123">
+            </div>
+
+            <button type="submit" class="btn-primary">Log In</button>
+        </form>
+
+        <div class="back-link">
+            <a href="job-board.html">← Back to Job Board</a>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            // Demo authentication - always succeeds
+            localStorage.setItem('userAuthenticated', 'true');
+            localStorage.setItem('userEmail', document.getElementById('email').value);
+            
+            showToast('Login successful! Redirecting...', 'success');
+            
+            // Check for redirect URL
+            const redirectUrl = localStorage.getItem('redirectAfterLogin');
+            localStorage.removeItem('redirectAfterLogin');
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = 'job-board.html';
+                }
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

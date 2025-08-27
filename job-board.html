@@ -708,6 +708,7 @@
                                 <button class="view-btn active" onclick="toggleView('card')">📋 Cards</button>
                                 <button class="view-btn" onclick="toggleView('list')">📄 List</button>
                             </div>
+                            <button class="btn-primary" onclick="postJob()" style="margin-left: auto;">Post a Job</button>
                             <div class="results-info">
                                 <span id="resultsCount">24</span> positions found
                             </div>
@@ -736,6 +737,59 @@
                 <div id="modalContent">
                     <!-- Modal content will be dynamically populated -->
                 </div>
+            </div>
+        </div>
+
+        <!-- Job Posting Modal -->
+        <div class="modal" id="postJobModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closePostJobModal()">&times;</button>
+                <h2>Post a New Job</h2>
+                <form id="postJobForm" onsubmit="event.preventDefault(); submitJobPosting();">
+                    <div style="display: grid; gap: 1rem; margin-top: 2rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Job Title *</label>
+                            <input type="text" id="jobTitle" class="form-input" required placeholder="e.g., Emergency Medicine Physician" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Specialty *</label>
+                            <select id="jobSpecialty" class="form-input form-select" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                                <option value="">Select a specialty</option>
+                                <option value="emergency">Emergency Medicine</option>
+                                <option value="internal">Internal Medicine</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="radiology">Radiology</option>
+                                <option value="anesthesiology">Anesthesiology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Location *</label>
+                            <input type="text" id="jobLocation" class="form-input" required placeholder="e.g., Los Angeles, CA" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Hourly Rate *</label>
+                                <input type="text" id="jobSalary" class="form-input" required placeholder="e.g., $350/hr" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Duration *</label>
+                                <input type="text" id="jobDuration" class="form-input" required placeholder="e.g., 13 weeks" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Description *</label>
+                            <textarea id="jobDescription" class="form-input" required rows="4" placeholder="Describe the position, requirements, and facility..." style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem; resize: vertical;"></textarea>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Contact Information *</label>
+                            <input type="text" id="jobContact" class="form-input" required placeholder="Your email or phone number" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="submit" class="btn-primary" style="flex: 1;">Post Job</button>
+                            <button type="button" class="btn-secondary" onclick="closePostJobModal()" style="flex: 1;">Cancel</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -1285,9 +1339,117 @@
                 closeModal();
             }
         });
+        
+        // Close post job modal when clicking outside
+        document.getElementById('postJobModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePostJobModal();
+            }
+        });
+        
+        // Check for redirect after login
+        const redirectHash = window.location.hash;
+        if (redirectHash === '#post-job' && checkAuthentication()) {
+            setTimeout(() => postJob(), 100);
+        }
 
         // Initialize page
+        // Authentication functions
+        function checkAuthentication() {
+            // Check if user is authenticated (using localStorage for demo)
+            const user = localStorage.getItem('userAuthenticated');
+            return user === 'true';
+        }
+        
+        function postJob() {
+            if (checkAuthentication()) {
+                // Open job posting modal
+                document.getElementById('postJobModal').classList.add('active');
+            } else {
+                // Save current page for redirect after login
+                localStorage.setItem('redirectAfterLogin', 'job-board.html#post-job');
+                // Redirect to login
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function closePostJobModal() {
+            document.getElementById('postJobModal').classList.remove('active');
+            document.getElementById('postJobForm').reset();
+        }
+        
+        function submitJobPosting() {
+            // Get form values
+            const newJob = {
+                id: Date.now(), // Generate unique ID
+                title: document.getElementById('jobTitle').value,
+                facility: 'User Posted Job',
+                location: document.getElementById('jobLocation').value,
+                salary: document.getElementById('jobSalary').value,
+                duration: document.getElementById('jobDuration').value,
+                hours: '40 hrs/week', // Default value
+                housing: 'Negotiable', // Default value
+                specialty: document.getElementById('jobSpecialty').value,
+                state: document.getElementById('jobLocation').value.split(',')[1]?.trim().toLowerCase() || 'other',
+                description: document.getElementById('jobDescription').value,
+                requirements: ['Posted by User', 'Contact for Details'],
+                benefits: ['Competitive Pay', 'Flexible Terms'],
+                contact: document.getElementById('jobContact').value,
+                isUserPosted: true
+            };
+            
+            // Save to localStorage (in real app, would send to server)
+            const existingJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
+            existingJobs.unshift(newJob);
+            localStorage.setItem('userPostedJobs', JSON.stringify(existingJobs));
+            
+            // Add to current job list
+            jobsData.unshift(newJob);
+            filteredJobs = [...jobsData];
+            
+            // Show success message
+            showSuccessMessage('Job posted successfully!');
+            
+            // Close modal and refresh display
+            closePostJobModal();
+            renderJobs();
+        }
+        
+        function showSuccessMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background-color: var(--success-color);
+                color: white;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Load user-posted jobs on startup
+        function loadUserPostedJobs() {
+            const userJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
+            // Add user jobs to the beginning of jobsData
+            jobsData.unshift(...userJobs);
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
+            // Load user-posted jobs first
+            loadUserPostedJobs();
             console.log('🚀 DOM Content Loaded - Initializing Job Board');
             console.log('📊 Sample job data count:', jobsData.length);
             console.log('🎯 Jobs grid element:', document.getElementById('jobsGrid'));
