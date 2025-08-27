@@ -61,7 +61,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 
 7. Test monthly period calculation
    - Select "Monthly" tab
-   - Mileage Reimbursement should update to "$291.11"
+   - Mileage Reimbursement should update to "$290.11"
    - Subtext should show "433 miles @ $0.67/mile"
    - ✅ Pass | ❌ Fail + reason
 
