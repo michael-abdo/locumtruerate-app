@@ -1398,9 +1398,20 @@
         });
         
         // Check for redirect after login
-        const redirectHash = window.location.hash;
-        if (redirectHash === '#post-job' && checkAuthentication()) {
-            setTimeout(() => postJob(), 100);
+        function handleLoginRedirect() {
+            const redirectHash = window.location.hash;
+            const redirectKey = localStorage.getItem('locum_redirect_key');
+            
+            if ((redirectHash === '#post-job' || redirectKey === window.location.pathname + '#post-job') && checkAuthentication()) {
+                // Clear the redirect key
+                localStorage.removeItem('locum_redirect_key');
+                // Remove hash from URL
+                if (window.location.hash === '#post-job') {
+                    history.replaceState(null, null, window.location.pathname + window.location.search);
+                }
+                // Trigger post job modal
+                setTimeout(() => postJob(), 500);
+            }
         }
 
         // Initialize page
@@ -1415,16 +1426,55 @@
                 // Check if user has permission to post jobs (recruiters and admins can post)
                 const userRole = getUserRole();
                 if (userRole === 'locum') {
-                    showToast('Only recruiters and admins can post job opportunities.', 'warning');
+                    showJobBoardToast('Only recruiters and admins can post job opportunities.', 'warning');
                     return;
                 }
                 
                 // Open job posting modal
                 document.getElementById('postJobModal').classList.add('active');
             } else {
-                // Redirect to login with return URL
-                redirectToLogin('job-board.html#post-job');
+                // Store current location for return after login
+                localStorage.setItem('locum_redirect_key', window.location.pathname + '#post-job');
+                // Redirect to login
+                showJobBoardToast('Please log in to post a job.', 'info');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
             }
+        }
+
+        // Toast notification function for job board
+        function showJobBoardToast(message, type = 'info') {
+            // Try to use auth.js showToast if available
+            if (typeof showToast === 'function') {
+                showToast(message, type);
+                return;
+            }
+            
+            // Fallback implementation
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 300px;
+                word-wrap: break-word;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                background-color: ${type === 'warning' ? '#ffc107' : type === 'info' ? '#17a2b8' : '#28a745'};
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
         }
         
         function closePostJobModal() {
@@ -1504,6 +1554,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize navigation with auth state
             updateNavigationAuth();
+            
+            // Handle login redirect for post job
+            handleLoginRedirect();
             
             // Load user-posted jobs first
             loadUserPostedJobs();
