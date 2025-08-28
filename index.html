@@ -1055,5 +1055,68 @@
             }
         })();
     </script>
+
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        // Update navigation based on authentication state
+        function updateNavigationAuth() {
+            const isAuth = isAuthenticated();
+            const user = getUserInfo();
+            
+            // Find navigation container
+            const navMenu = document.querySelector('.nav-menu');
+            if (!navMenu) return;
+            
+            // Remove existing auth-related items
+            const existingAuthItems = navMenu.querySelectorAll('.auth-item');
+            existingAuthItems.forEach(item => item.remove());
+            
+            if (isAuth && user) {
+                // Add user info and logout
+                const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+                const roleDisplay = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                
+                // Create user info dropdown
+                const userDropdown = document.createElement('li');
+                userDropdown.className = 'nav-dropdown auth-item';
+                userDropdown.innerHTML = `
+                    <a href="#" class="nav-link" role="button" aria-haspopup="true" aria-expanded="false">
+                        👤 ${displayName}
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><div style="padding: 8px 16px; font-size: 0.9rem; color: var(--text-secondary);">Role: ${roleDisplay}</div></li>
+                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
+                        ${user.role === 'admin' ? '<li><a href="admin-dashboard.html">Admin Dashboard</a></li>' : ''}
+                        ${user.role === 'admin' || user.role === 'recruiter' ? '<li><a href="recruiter-dashboard.html">Recruiter Dashboard</a></li>' : ''}
+                        <li><a href="locum-dashboard.html">My Dashboard</a></li>
+                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
+                        <li><a href="#" onclick="logout(); return false;" style="color: var(--error-color);">Logout</a></li>
+                    </ul>
+                `;
+                
+                navMenu.appendChild(userDropdown);
+                
+            } else {
+                // Add login button
+                const loginItem = document.createElement('li');
+                loginItem.className = 'auth-item';
+                loginItem.innerHTML = '<a href="login.html" class="nav-link">Login</a>';
+                navMenu.appendChild(loginItem);
+            }
+        }
+        
+        // Initialize navigation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigationAuth();
+            
+            // Refresh navigation after login events
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'locum_auth_token' || e.key === 'locum_user_data') {
+                    setTimeout(updateNavigationAuth, 100);
+                }
+            });
+        });
+    </script>
 </body>
 </html>

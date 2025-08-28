@@ -126,10 +126,8 @@ function setupLogoutHandlers() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Confirm logout (optional)
-            if (confirm('Are you sure you want to log out?')) {
-                logout();
-            }
+            // Direct logout without confirmation (per project guidelines)
+            logout();
         });
     });
 }

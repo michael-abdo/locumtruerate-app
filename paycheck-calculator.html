@@ -878,6 +878,49 @@ Generated: ${new Date().toLocaleDateString()}`;
             
             console.log('Calculator initialized successfully!');
         });
+
+        // Authentication navigation update function
+        function updateNavigationAuth() {
+            const isAuth = isAuthenticated();
+            const user = getUserInfo();
+            
+            const navMenu = document.querySelector('.nav-menu');
+            if (!navMenu) return;
+            
+            // Remove existing auth items
+            const existingAuthItems = navMenu.querySelectorAll('.auth-item');
+            existingAuthItems.forEach(item => item.remove());
+            
+            if (isAuth && user) {
+                const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+                
+                // Add user info
+                const userInfo = document.createElement('li');
+                userInfo.className = 'auth-item';
+                userInfo.innerHTML = `<span class="nav-link" style="cursor: default;">👤 ${displayName}</span>`;
+                navMenu.appendChild(userInfo);
+                
+                // Add logout
+                const logoutItem = document.createElement('li');
+                logoutItem.className = 'auth-item';
+                logoutItem.innerHTML = '<a href="#" onclick="logout(); return false;" class="nav-link">Logout</a>';
+                navMenu.appendChild(logoutItem);
+            } else {
+                const loginItem = document.createElement('li');
+                loginItem.className = 'auth-item';
+                loginItem.innerHTML = '<a href="login.html" class="nav-link">Login</a>';
+                navMenu.appendChild(loginItem);
+            }
+        }
+    </script>
+
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        // Initialize navigation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNavigationAuth();
+        });
     </script>
 </body>
 </html>
