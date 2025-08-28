@@ -155,6 +155,18 @@
             background-color: var(--success-color);
         }
 
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        .toast.info {
+            background-color: var(--primary-color);
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -170,7 +182,7 @@
 <body>
     <div class="login-container">
         <div class="demo-note">
-            🎭 Demo Mode: Click "Log In" to simulate authentication
+            🔐 Authentication: Use your account credentials to log in
         </div>
         
         <div class="login-header">
@@ -186,7 +198,7 @@
 
             <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" id="password" placeholder="••••••••" value="demo123">
+                <input type="password" class="form-input" id="password" placeholder="••••••••" value="admin123">
             </div>
 
             <button type="submit" class="btn-primary">Log In</button>
@@ -197,7 +209,11 @@
         </div>
     </div>
 
+    <!-- Authentication script -->
+    <script src="js/auth.js"></script>
+
     <script>
+        // Toast notification function (enhanced version in auth.js will override this)
         function showToast(message, type = 'success') {
             const existingToast = document.querySelector('.toast');
             if (existingToast) {
@@ -215,28 +231,54 @@
             }, 2000);
         }
 
-        function handleLogin(event) {
+        // Make showToast globally available for auth.js
+        window.showToast = showToast;
+
+        async function handleLogin(event) {
             event.preventDefault();
             
-            // Demo authentication - always succeeds
-            localStorage.setItem('userAuthenticated', 'true');
-            localStorage.setItem('userEmail', document.getElementById('email').value);
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            showToast('Login successful! Redirecting...', 'success');
+            // Disable form during login
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
             
-            // Check for redirect URL
-            const redirectUrl = localStorage.getItem('redirectAfterLogin');
-            localStorage.removeItem('redirectAfterLogin');
-            
-            // Redirect after short delay
-            setTimeout(() => {
-                if (redirectUrl) {
-                    window.location.href = redirectUrl;
+            try {
+                // Use real JWT authentication
+                const result = await login(email, password);
+                
+                if (result.success) {
+                    showToast('Login successful! Redirecting...', 'success');
+                    
+                    // Handle post-login redirect
+                    setTimeout(() => {
+                        handlePostLoginRedirect();
+                    }, 1500);
                 } else {
-                    window.location.href = 'job-board.html';
+                    // Error already shown by login function
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
                 }
-            }, 1500);
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('An unexpected error occurred. Please try again.', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
         }
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isAuthenticated()) {
+                showToast('You are already logged in. Redirecting...', 'info');
+                setTimeout(() => {
+                    handlePostLoginRedirect();
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
