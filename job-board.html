@@ -825,7 +825,14 @@
         </footer>
     </div>
 
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/auth-guard.js"></script>
+
     <script>
+        // Skip auto auth guard for job board (it's a public page)
+        window.skipAutoAuthGuard = true;
+        
         // Sample job data
         const jobsData = [
             {
@@ -1356,20 +1363,24 @@
         // Initialize page
         // Authentication functions
         function checkAuthentication() {
-            // Check if user is authenticated (using localStorage for demo)
-            const user = localStorage.getItem('userAuthenticated');
-            return user === 'true';
+            // Use JWT authentication instead of localStorage
+            return isAuthenticated();
         }
         
         function postJob() {
             if (checkAuthentication()) {
+                // Check if user has permission to post jobs (recruiters and admins can post)
+                const userRole = getUserRole();
+                if (userRole === 'locum') {
+                    showToast('Only recruiters and admins can post job opportunities.', 'warning');
+                    return;
+                }
+                
                 // Open job posting modal
                 document.getElementById('postJobModal').classList.add('active');
             } else {
-                // Save current page for redirect after login
-                localStorage.setItem('redirectAfterLogin', 'job-board.html#post-job');
-                // Redirect to login
-                window.location.href = 'login.html';
+                // Redirect to login with return URL
+                redirectToLogin('job-board.html#post-job');
             }
         }
         
