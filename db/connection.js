@@ -1,12 +1,15 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-// Parse DATABASE_URL if provided (for Heroku ClearDB)
+// Parse JAWSDB_URL or DATABASE_URL if provided (for Heroku MySQL)
 let config;
 
-if (process.env.DATABASE_URL) {
-    // Parse Heroku ClearDB URL format: mysql://user:password@host:port/database
-    const url = new URL(process.env.DATABASE_URL);
+// Check JAWSDB_URL first (JawsDB MySQL addon), then fall back to DATABASE_URL
+const databaseURL = process.env.JAWSDB_URL || process.env.DATABASE_URL;
+
+if (databaseURL && databaseURL.startsWith('mysql://')) {
+    // Parse Heroku MySQL URL format: mysql://user:password@host:port/database
+    const url = new URL(databaseURL);
     config = {
         host: url.hostname,
         user: url.username,
