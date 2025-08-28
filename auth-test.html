@@ -242,9 +242,41 @@
             </form>
             <div id="verifyResponse"></div>
         </div>
+
+        <!-- Frontend Integration Test Section -->
+        <div class="section">
+            <h2>
+                <span class="icon">🔗</span>
+                4. Test Frontend Integration
+            </h2>
+            <p style="margin-bottom: 20px;">Test the frontend authentication JavaScript modules:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <button onclick="testIsAuthenticated()" class="btn" style="width: 100%; background: #17a2b8; margin: 0;">Test isAuthenticated()</button>
+                <button onclick="testGetUserInfo()" class="btn" style="width: 100%; background: #28a745; margin: 0;">Test getUserInfo()</button>
+                <button onclick="testGetUserRole()" class="btn" style="width: 100%; background: #ffc107; margin: 0;">Test getUserRole()</button>
+                <button onclick="testHasPermission()" class="btn" style="width: 100%; background: #6f42c1; margin: 0;">Test hasPermission()</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <button onclick="testProtectedPage('locum-dashboard.html')" class="btn" style="width: 100%; background: #fd7e14; margin: 0;">Test Locum Dashboard</button>
+                <button onclick="testProtectedPage('recruiter-dashboard.html')" class="btn" style="width: 100%; background: #e83e8c; margin: 0;">Test Recruiter Dashboard</button>
+                <button onclick="testProtectedPage('admin-dashboard.html')" class="btn" style="width: 100%; background: #dc3545; margin: 0;">Test Admin Dashboard</button>
+                <button onclick="testLogout()" class="btn" style="width: 100%; background: #6c757d; margin: 0;">Test Logout</button>
+            </div>
+            
+            <div id="integrationTestResponse"></div>
+        </div>
     </div>
 
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/auth-guard.js"></script>
+
     <script>
+        // Skip auto auth guard for test page
+        window.skipAutoAuthGuard = true;
+        
         const API_BASE = window.location.origin;
 
         // Utility function to make API requests
@@ -361,6 +393,82 @@
         window.addEventListener('load', () => {
             generateTestUser();
         });
+
+        // Frontend Integration Test Functions
+        function showIntegrationResult(message, success = true) {
+            const element = document.getElementById('integrationTestResponse');
+            const className = success ? 'response success' : 'response error';
+            element.className = className;
+            element.textContent = message;
+        }
+
+        function testIsAuthenticated() {
+            try {
+                const result = isAuthenticated();
+                showIntegrationResult(`isAuthenticated(): ${result}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testGetUserInfo() {
+            try {
+                const userInfo = getUserInfo();
+                if (userInfo) {
+                    showIntegrationResult(`User Info: ${JSON.stringify(userInfo, null, 2)}`);
+                } else {
+                    showIntegrationResult('No user info found (not logged in)');
+                }
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testGetUserRole() {
+            try {
+                const role = getUserRole();
+                showIntegrationResult(`User Role: ${role || 'No role (not logged in)'}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testHasPermission() {
+            try {
+                const roles = ['locum', 'recruiter', 'admin'];
+                const results = roles.map(role => `${role}: ${hasPermission(role)}`);
+                showIntegrationResult(`Permissions:\n${results.join('\n')}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testProtectedPage(pageName) {
+            if (!isAuthenticated()) {
+                showIntegrationResult(`Cannot test ${pageName} - please log in first`, false);
+                return;
+            }
+
+            showIntegrationResult(`Opening ${pageName} in new tab...`);
+            
+            // Open in new tab to test
+            setTimeout(() => {
+                window.open(pageName, '_blank');
+            }, 1000);
+        }
+
+        function testLogout() {
+            try {
+                if (isAuthenticated()) {
+                    logout();
+                    showIntegrationResult('Logout initiated - page will redirect soon');
+                } else {
+                    showIntegrationResult('No user is currently logged in');
+                }
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
     </script>
 </body>
 </html>
