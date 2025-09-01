@@ -713,6 +713,19 @@
                                 <div class="form-help">2025 IRS standard mileage rate</div>
                             </div>
 
+                            <!-- Beeper Call -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Beeper Call Hours per Week</label>
+                                    <input type="number" class="form-input" id="beeperCallHours" value="0" min="0" max="168" step="0.5" oninput="calculateContract()">
+                                    <div class="form-help">Hours on call per week</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Beeper Call Rate ($ per hour)</label>
+                                    <input type="number" class="form-input" id="beeperCallRate" value="25" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="form-help">Hourly rate while on call</div>
+                                </div>
+                            </div>
 
 
 
@@ -742,6 +755,13 @@
                                         <div class="result-subtext">8 hrs/week × $525/hr</div>
                                     </div>
                                     <span class="result-value" id="overtimePay">$54,600</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Beeper Call Pay</span>
+                                        <div class="result-subtext" id="beeperCallSubtext">0 hrs/week × $25/hr</div>
+                                    </div>
+                                    <span class="result-value" id="beeperCallPayDisplay">$0</span>
                                 </div>
                                 <div class="result-item highlight">
                                     <div>
@@ -865,6 +885,8 @@
             const dailyFoodStipend = parseFloat(document.getElementById('dailyFoodStipend').value) || 0;
             const milesPerDay = parseFloat(document.getElementById('milesPerDay').value) || 0;
             const irsMileageRate = parseFloat(document.getElementById('irsMileageRate').value) || 0;
+            const beeperCallHours = parseFloat(document.getElementById('beeperCallHours').value) || 0;
+            const beeperCallRate = parseFloat(document.getElementById('beeperCallRate').value) || 0;
 
             // Calculate regular and overtime hours
             const regularHours = Math.min(hoursPerWeek, 40);
@@ -873,7 +895,7 @@
             // Calculate pay components
             const regularPay = regularHours * hourlyRate * contractWeeks;
             const overtimePay = overtimeHours * overtimeRate * contractWeeks;
-            
+            const beeperCallPay = beeperCallHours * beeperCallRate * contractWeeks;
             
             // Calculate mileage reimbursement
             const milesPerWeek = milesPerDay * 5; // Assuming 5 work days
@@ -886,7 +908,7 @@
             const otherStipends = totalDailyFoodStipend + totalMileageReimbursement;
             
             // Taxable income
-            const grossTaxableIncome = regularPay + overtimePay;
+            const grossTaxableIncome = regularPay + overtimePay + beeperCallPay;
             
             // Total contract value and net take-home
             const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends;
@@ -902,6 +924,7 @@
             // Update display
             document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('beeperCallPayDisplay').textContent = '$' + beeperCallPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('grossTaxableIncome').textContent = '$' + grossTaxableIncome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('totalHousingStipend').textContent = '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('mileageReimbursementDisplay').textContent = '$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -915,6 +938,7 @@
             // Update subtexts
             document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
             document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
+            document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/week × $${beeperCallRate}/hr`;
             document.getElementById('mileageSubtext').textContent = `${milesPerWeek} miles/week × $${irsMileageRate}/mile`;
         }
 
@@ -929,6 +953,8 @@
                 housingStipend: document.getElementById('housingStipend').value,
                 dailyFoodStipend: document.getElementById('dailyFoodStipend').value,
                 milesPerDay: document.getElementById('milesPerDay').value,
+                beeperCallHours: document.getElementById('beeperCallHours').value,
+                beeperCallRate: document.getElementById('beeperCallRate').value,
                 timestamp: new Date().toISOString()
             };
             
@@ -982,6 +1008,7 @@ Hours per Week: ${document.getElementById('hoursPerWeek').value}
 COMPENSATION:
 Regular Pay: ${document.getElementById('regularPay').textContent}
 Overtime Pay: ${document.getElementById('overtimePay').textContent}
+Beeper Call Pay: ${document.getElementById('beeperCallPayDisplay').textContent}
 Total Gross Pay: ${document.getElementById('grossTaxableIncome').textContent}
 
 BENEFITS & STIPENDS:
