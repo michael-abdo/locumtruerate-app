@@ -694,16 +694,16 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Daily Food Stipend ($)</label>
-                                <input type="number" class="form-input" id="dailyFoodStipend" value="50" min="0" step="0.01" oninput="calculateContract()">
-                                <div class="form-help">Daily food allowance</div>
+                                <label class="form-label">Weekly Meal Stipend ($)</label>
+                                <input type="number" class="form-input" id="weeklyMealStipend" value="250" min="0" step="0.01" oninput="calculateContract()">
+                                <div class="form-help">Weekly meal allowance</div>
                             </div>
 
                             <!-- Travel & Mileage -->
                             <div class="form-group">
-                                <label class="form-label">Miles Driven per Day</label>
-                                <input type="number" class="form-input" id="milesPerDay" value="30" min="0" step="0.1" oninput="calculateContract()">
-                                <div class="form-help">Daily commute miles</div>
+                                <label class="form-label">Miles Driven per Week</label>
+                                <input type="number" class="form-input" id="milesPerWeek" value="150" min="0" step="0.1" oninput="calculateContract()">
+                                <div class="form-help">Weekly commute miles</div>
                             </div>
 
                             <!-- IRS Mileage Rate Display -->
@@ -725,6 +725,13 @@
                                     <input type="number" class="form-input" id="beeperCallRate" value="25" min="0" step="0.01" oninput="calculateContract()">
                                     <div class="form-help">Hourly rate while on call</div>
                                 </div>
+                            </div>
+
+                            <!-- Completion Bonus -->
+                            <div class="form-group">
+                                <label class="form-label">Completion Bonus ($)</label>
+                                <input type="number" class="form-input" id="completionBonus" value="5000" min="0" step="0.01" oninput="calculateContract()">
+                                <div class="form-help">Bonus paid upon contract completion</div>
                             </div>
 
 
@@ -787,9 +794,16 @@
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Other Stipends</span>
-                                        <div class="result-subtext">Daily food stipend and mileage</div>
+                                        <div class="result-subtext">Weekly meal stipend and mileage</div>
                                     </div>
                                     <span class="result-value" id="otherStipends">$30,600</span>
+                                </div>
+                                <div class="result-item">
+                                    <div>
+                                        <span class="result-label">Completion Bonus</span>
+                                        <div class="result-subtext">Paid upon contract completion</div>
+                                    </div>
+                                    <span class="result-value" id="completionBonusDisplay">$5,000</span>
                                 </div>
                                 <div class="result-item highlight">
                                     <div>
@@ -882,11 +896,12 @@
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             
             // New fields
-            const dailyFoodStipend = parseFloat(document.getElementById('dailyFoodStipend').value) || 0;
-            const milesPerDay = parseFloat(document.getElementById('milesPerDay').value) || 0;
+            const weeklyMealStipend = parseFloat(document.getElementById('weeklyMealStipend').value) || 0;
+            const milesPerWeek = parseFloat(document.getElementById('milesPerWeek').value) || 0;
             const irsMileageRate = parseFloat(document.getElementById('irsMileageRate').value) || 0;
             const beeperCallHours = parseFloat(document.getElementById('beeperCallHours').value) || 0;
             const beeperCallRate = parseFloat(document.getElementById('beeperCallRate').value) || 0;
+            const completionBonus = parseFloat(document.getElementById('completionBonus').value) || 0;
 
             // Calculate regular and overtime hours
             const regularHours = Math.min(hoursPerWeek, 40);
@@ -898,20 +913,19 @@
             const beeperCallPay = beeperCallHours * beeperCallRate * contractWeeks;
             
             // Calculate mileage reimbursement
-            const milesPerWeek = milesPerDay * 5; // Assuming 5 work days
             const weeklyMileageReimbursement = milesPerWeek * irsMileageRate;
             const totalMileageReimbursement = weeklyMileageReimbursement * contractWeeks;
             
             // Tax-free benefits
             const totalHousingStipend = housingStipend * contractWeeks;
-            const totalDailyFoodStipend = dailyFoodStipend * 5 * contractWeeks; // 5 days per week
-            const otherStipends = totalDailyFoodStipend + totalMileageReimbursement;
+            const totalMealStipend = weeklyMealStipend * contractWeeks;
+            const otherStipends = totalMealStipend + totalMileageReimbursement;
             
             // Taxable income
             const grossTaxableIncome = regularPay + overtimePay + beeperCallPay;
             
             // Total contract value and net take-home
-            const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends;
+            const totalContractValue = grossTaxableIncome + totalHousingStipend + otherStipends + completionBonus;
             const netTakeHome = totalContractValue; // No taxes subtracted
             
             // True hourly rate calculation
@@ -929,6 +943,7 @@
             document.getElementById('totalHousingStipend').textContent = '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('mileageReimbursementDisplay').textContent = '$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('otherStipends').textContent = '$' + otherStipends.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('completionBonusDisplay').textContent = '$' + completionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('netTakeHome').textContent = '$' + netTakeHome.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('totalContractValue').textContent = '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toFixed(2);
@@ -951,10 +966,11 @@
                 hoursPerWeek: document.getElementById('hoursPerWeek').value,
                 contractWeeks: document.getElementById('contractWeeks').value,
                 housingStipend: document.getElementById('housingStipend').value,
-                dailyFoodStipend: document.getElementById('dailyFoodStipend').value,
-                milesPerDay: document.getElementById('milesPerDay').value,
+                weeklyMealStipend: document.getElementById('weeklyMealStipend').value,
+                milesPerWeek: document.getElementById('milesPerWeek').value,
                 beeperCallHours: document.getElementById('beeperCallHours').value,
                 beeperCallRate: document.getElementById('beeperCallRate').value,
+                completionBonus: document.getElementById('completionBonus').value,
                 timestamp: new Date().toISOString()
             };
             
@@ -1015,6 +1031,7 @@ BENEFITS & STIPENDS:
 Housing Stipend: ${document.getElementById('totalHousingStipend').textContent}
 Mileage Reimbursement: ${document.getElementById('mileageReimbursementDisplay').textContent}
 Other Stipends: ${document.getElementById('otherStipends').textContent}
+Completion Bonus: ${document.getElementById('completionBonusDisplay').textContent}
 
 TOTALS:
 Total Contract Value: ${document.getElementById('totalContractValue').textContent}
