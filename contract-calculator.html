@@ -681,9 +681,14 @@
                                     <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0" max="80" oninput="calculateContract()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Contract Length (weeks)</label>
-                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
+                                    <label class="form-label">Days Worked per Week</label>
+                                    <input type="number" class="form-input" id="daysPerWeek" value="5" min="1" max="7" step="0.5" oninput="calculateContract()">
                                 </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Contract Length (weeks)</label>
+                                <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
                             </div>
 
                             <!-- Stipends -->
@@ -694,15 +699,15 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Weekly Meal Stipend ($)</label>
-                                <input type="number" class="form-input" id="weeklyMealStipend" value="250" min="0" step="0.01" oninput="calculateContract()">
-                                <div class="form-help">Weekly meal allowance</div>
+                                <label class="form-label">Meal Stipend ($ per day worked)</label>
+                                <input type="number" class="form-input" id="dailyMealStipend" value="75" min="0" step="0.01" oninput="calculateContract()">
+                                <div class="form-help">Daily meal allowance when working</div>
                             </div>
 
                             <!-- Travel & Mileage -->
                             <div class="form-group">
                                 <label class="form-label">Miles Driven per Week</label>
-                                <input type="number" class="form-input" id="milesPerWeek" value="150" min="0" step="0.1" oninput="calculateContract()">
+                                <input type="number" class="form-input" id="milesPerWeek" value="544.8" min="0" step="0.1" oninput="calculateContract()">
                                 <div class="form-help">Weekly commute miles</div>
                             </div>
 
@@ -794,7 +799,7 @@
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Other Stipends</span>
-                                        <div class="result-subtext">Weekly meal stipend and mileage</div>
+                                        <div class="result-subtext" id="otherStipendsSubtext">Meal stipend and mileage</div>
                                     </div>
                                     <span class="result-value" id="otherStipends">$30,600</span>
                                 </div>
@@ -896,7 +901,8 @@
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             
             // New fields
-            const weeklyMealStipend = parseFloat(document.getElementById('weeklyMealStipend').value) || 0;
+            const dailyMealStipend = parseFloat(document.getElementById('dailyMealStipend').value) || 0;
+            const daysPerWeek = parseFloat(document.getElementById('daysPerWeek').value) || 0;
             const milesPerWeek = parseFloat(document.getElementById('milesPerWeek').value) || 0;
             const irsMileageRate = parseFloat(document.getElementById('irsMileageRate').value) || 0;
             const beeperCallHours = parseFloat(document.getElementById('beeperCallHours').value) || 0;
@@ -918,6 +924,7 @@
             
             // Tax-free benefits
             const totalHousingStipend = housingStipend * contractWeeks;
+            const weeklyMealStipend = dailyMealStipend * daysPerWeek;
             const totalMealStipend = weeklyMealStipend * contractWeeks;
             const otherStipends = totalMealStipend + totalMileageReimbursement;
             
@@ -955,6 +962,7 @@
             document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
             document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/week × $${beeperCallRate}/hr`;
             document.getElementById('mileageSubtext').textContent = `${milesPerWeek} miles/week × $${irsMileageRate}/mile`;
+            document.getElementById('otherStipendsSubtext').textContent = `Meals: $${dailyMealStipend}/day × ${daysPerWeek} days + Mileage`;
         }
 
         function saveCalculation() {
@@ -964,9 +972,10 @@
                 hourlyRate: document.getElementById('hourlyRate').value,
                 overtimeRate: document.getElementById('overtimeRate').value,
                 hoursPerWeek: document.getElementById('hoursPerWeek').value,
+                daysPerWeek: document.getElementById('daysPerWeek').value,
                 contractWeeks: document.getElementById('contractWeeks').value,
                 housingStipend: document.getElementById('housingStipend').value,
-                weeklyMealStipend: document.getElementById('weeklyMealStipend').value,
+                dailyMealStipend: document.getElementById('dailyMealStipend').value,
                 milesPerWeek: document.getElementById('milesPerWeek').value,
                 beeperCallHours: document.getElementById('beeperCallHours').value,
                 beeperCallRate: document.getElementById('beeperCallRate').value,
@@ -1020,6 +1029,7 @@ Clinician Type: ${document.getElementById('clinicianType').value}
 State: ${document.getElementById('state').value}
 Contract Length: ${document.getElementById('contractWeeks').value} weeks
 Hours per Week: ${document.getElementById('hoursPerWeek').value}
+Days per Week: ${document.getElementById('daysPerWeek').value}
 
 COMPENSATION:
 Regular Pay: ${document.getElementById('regularPay').textContent}
