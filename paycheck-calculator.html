@@ -933,7 +933,6 @@
 
         // Calculate paycheck
         function calculatePaycheck() {
-            console.log('calculatePaycheck called at', new Date().toISOString());
             
             // Get values
             const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
@@ -991,7 +990,6 @@
             document.getElementById('callbackPaySubtext').textContent = `${(callbackHours * multiplier).toFixed(1)} hrs @ $${callbackRate.toFixed(2)}/hr`;
             document.getElementById('mileageSubtext').textContent = `${(totalMilesWeekly * multiplier).toFixed(0)} miles @ $${IRS_MILEAGE_RATE}/mile`;
             
-            console.log('Calculation completed successfully');
         }
 
         // Save calculation
@@ -1044,16 +1042,12 @@ Generated: ${new Date().toLocaleDateString()}`;
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Initializing paycheck calculator...');
             
             // Add event listeners to all inputs
             const inputs = document.querySelectorAll('input[type="number"]');
-            console.log('Found', inputs.length, 'inputs to attach listeners to');
             
             inputs.forEach(input => {
-                console.log('Attaching listener to:', input.id);
                 input.addEventListener('input', function(e) {
-                    console.log('Input event fired for:', e.target.id);
                     calculatePaycheck();
                 });
                 input.addEventListener('change', calculatePaycheck);
@@ -1068,17 +1062,14 @@ Generated: ${new Date().toLocaleDateString()}`;
 
             // Run initial calculation
             setTimeout(function() {
-                console.log('Running initial calculation...');
                 try {
                     calculatePaycheck();
-                    console.log('Initial calculation completed successfully');
                 } catch (error) {
                     console.error('Error in calculatePaycheck:', error);
                     console.error('Stack trace:', error.stack);
                 }
             }, 100);
             
-            console.log('Calculator initialized successfully!');
         });
     </script>
     <script src="js/mobile-nav.js"></script>

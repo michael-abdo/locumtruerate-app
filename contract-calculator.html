@@ -619,25 +619,27 @@
 
             .action-buttons {
                 grid-template-columns: 1fr;
-                position: fixed;
+                gap: 0.75rem;
+                position: sticky;
                 bottom: 0;
-                left: 0;
-                right: 0;
-                background: white;
-                padding: 1rem;
-                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-                z-index: 50;
-                gap: 0.5rem;
+                background: linear-gradient(to top, 
+                    var(--surface-color) 0%, 
+                    var(--surface-color) 85%, 
+                    transparent 100%);
+                padding: 1.5rem 0 1rem;
+                margin: 1rem -1.5rem -1.5rem;
             }
             
-            .action-buttons .btn-primary,
-            .action-buttons .btn-secondary {
-                min-height: 48px;
-                font-size: 1rem;
+            .btn {
+                width: 100%;
+                min-height: var(--touch-target-min);
+                font-size: 0.95rem;
+                padding: 0.875rem 1.5rem;
+                border-radius: 0.5rem;
             }
 
             .comparison-section {
-                margin-bottom: 80px; /* Space for fixed buttons */
+                margin-bottom: 2rem;
             }
             
             .comparison-grid {
@@ -684,9 +686,9 @@
                 margin: 0;
             }
             
-            /* Adjust container for fixed elements */
+            /* Adjust container for sticky elements */
             .calculator-section {
-                padding-bottom: 140px;
+                padding: 2rem 0;
             }
         }
         
