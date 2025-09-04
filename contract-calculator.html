@@ -370,10 +370,17 @@
 
         /* Action Buttons */
         .action-buttons {
-            display: grid;
+            display: none; /* Initially hidden */
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
             margin-top: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .action-buttons.visible {
+            display: grid;
+            opacity: 1;
         }
 
         .btn-primary {
@@ -618,6 +625,7 @@
             }
 
             .action-buttons {
+                display: none; /* Initially hidden on mobile too */
                 grid-template-columns: 1fr;
                 gap: 0.75rem;
                 position: sticky;
@@ -628,6 +636,10 @@
                     transparent 100%);
                 padding: 1.5rem 0 1rem;
                 margin: 1rem -1.5rem -1.5rem;
+            }
+            
+            .action-buttons.visible {
+                display: grid;
             }
             
             .btn {
@@ -1248,10 +1260,50 @@ Generated: ${new Date().toLocaleDateString()}`;
             }
         }
 
+        // Scroll detection for action buttons visibility
+        function setupActionButtonsVisibility() {
+            const actionButtons = document.querySelector('.action-buttons');
+            const lastInputGroup = document.querySelector('.calculator-form .input-group:last-of-type');
+            
+            if (!actionButtons || !lastInputGroup) return;
+            
+            // Create an intersection observer to watch when the last input group is scrolled past
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // When the last input group is no longer visible (scrolled past)
+                    if (entry.boundingClientRect.bottom < 0) {
+                        actionButtons.classList.add('visible');
+                    } else {
+                        actionButtons.classList.remove('visible');
+                    }
+                });
+            }, {
+                rootMargin: '0px',
+                threshold: 0
+            });
+            
+            // Observe the last input group
+            observer.observe(lastInputGroup);
+            
+            // Also add a scroll listener as a fallback
+            window.addEventListener('scroll', () => {
+                const rect = lastInputGroup.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+                
+                // Show action buttons when last input group is scrolled past
+                if (rect.bottom < 0) {
+                    actionButtons.classList.add('visible');
+                } else {
+                    actionButtons.classList.remove('visible');
+                }
+            });
+        }
+
         // Initialize calculator
         document.addEventListener('DOMContentLoaded', function() {
             checkPrefilledData();
             calculateContract();
+            setupActionButtonsVisibility();
         });
     </script>
     <script src="js/mobile-nav.js"></script>
