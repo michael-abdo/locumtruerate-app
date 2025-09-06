@@ -835,7 +835,23 @@
                                 </select>
                             </div>
 
-                            <!-- Hourly Rates -->
+                            <!-- Work Schedule -->
+                            <h3 class="section-title" style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem;">Work Schedule</h3>
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Contract Length (weeks)</label>
+                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
+                                    <div class="form-help">Duration of contract assignment</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Hours per Week</label>
+                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0" max="80" oninput="calculateContract()">
+                                    <div class="form-help">Expected weekly work hours</div>
+                                </div>
+                            </div>
+
+                            <!-- Primary Compensation -->
+                            <h3 class="section-title" style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem;">Primary Compensation</h3>
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Regular Hourly Rate ($)</label>
@@ -849,19 +865,23 @@
                                 </div>
                             </div>
 
-                            <!-- Schedule -->
+                            <!-- Additional Compensation -->
+                            <h3 class="section-title" style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem;">Additional Compensation</h3>
                             <div class="input-group">
                                 <div class="form-group">
-                                    <label class="form-label">Hours per Week</label>
-                                    <input type="number" class="form-input" id="hoursPerWeek" value="48" min="0" max="80" oninput="calculateContract()">
+                                    <label class="form-label">Beeper Call Hours per Month</label>
+                                    <input type="number" class="form-input" id="beeperHoursPerMonth" value="40" min="0" oninput="calculateContract()">
+                                    <div class="form-help">Total beeper call hours per month</div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Contract Length (weeks)</label>
-                                    <input type="number" class="form-input" id="contractWeeks" value="13" min="1" max="52" oninput="calculateContract()">
+                                    <label class="form-label">Hourly Beeper Call Rate ($)</label>
+                                    <input type="number" class="form-input" id="beeperCallRate" value="15" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="form-help">Rate for beeper call hours</div>
                                 </div>
                             </div>
 
-                            <!-- Stipends -->
+                            <!-- Benefits & Stipends -->
+                            <h3 class="section-title" style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem;">Benefits & Stipends</h3>
                             <div class="form-group">
                                 <label class="form-label">Housing Stipend ($ per week)</label>
                                 <input type="number" class="form-input" id="housingStipend" value="1800" min="0" step="0.01" oninput="calculateContract()">
@@ -875,31 +895,16 @@
                             </div>
 
                             <!-- Travel & Mileage -->
-                            <div class="form-group">
-                                <label class="form-label">Miles Driven per Day</label>
-                                <input type="number" class="form-input" id="milesPerDay" value="30" min="0" step="0.1" oninput="calculateContract()">
-                                <div class="form-help">Daily commute miles</div>
-                            </div>
-
-                            <!-- IRS Mileage Rate Display -->
-                            <div class="form-group">
-                                <label class="form-label">IRS Mileage Rate ($ per mile)</label>
-                                <input type="number" class="form-input" id="irsMileageRate" value="0.67" min="0" step="0.01" readonly style="background-color: var(--background-color);">
-                                <div class="form-help">2025 IRS standard mileage rate</div>
-                            </div>
-
-
-                            <!-- Beeper Call Pay -->
                             <div class="input-group">
                                 <div class="form-group">
-                                    <label class="form-label">Beeper Call Hours per Month</label>
-                                    <input type="number" class="form-input" id="beeperHoursPerMonth" value="40" min="0" oninput="calculateContract()">
-                                    <div class="form-help">Total beeper call hours per month</div>
+                                    <label class="form-label">Miles Driven per Day</label>
+                                    <input type="number" class="form-input" id="milesPerDay" value="30" min="0" step="0.1" oninput="calculateContract()">
+                                    <div class="form-help">Daily commute miles</div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Hourly Beeper Call Rate ($)</label>
-                                    <input type="number" class="form-input" id="beeperCallRate" value="15" min="0" step="0.01" oninput="calculateContract()">
-                                    <div class="form-help">Rate for beeper call hours</div>
+                                    <label class="form-label">IRS Mileage Rate ($ per mile)</label>
+                                    <input type="number" class="form-input" id="irsMileageRate" value="0.67" min="0" step="0.01" readonly style="background-color: var(--background-color);">
+                                    <div class="form-help">2025 IRS standard mileage rate</div>
                                 </div>
                             </div>
 
