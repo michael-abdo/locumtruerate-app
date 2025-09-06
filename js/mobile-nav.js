@@ -77,7 +77,6 @@ class MobileNav {
                         <span class="hamburger-line" aria-hidden="true"></span>
                         <span class="hamburger-line" aria-hidden="true"></span>
                         <span class="hamburger-line" aria-hidden="true"></span>
-                        <span class="sr-only">Menu</span>
                     </button>
                 </div>
             </nav>
