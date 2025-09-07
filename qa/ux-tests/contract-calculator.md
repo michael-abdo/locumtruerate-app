@@ -5,7 +5,7 @@
 **Proceed without asking for confirmation. Run all steps through to the end without stopping. This includes steps that cause external side-effects.**
 
 ## Test URL
-https://locumtruerate-staging-66ba3177c382.herokuapp.com/contract-calculator.html
+https://locumtruerate-stage-8edec28739b0.herokuapp.com/contract-calculator.html
 
 ## Operator Capabilities
 

@@ -8,7 +8,7 @@ We use a two-stage deployment process:
 
 ## URLs
 
-- **Staging**: https://locumtruerate-staging-66ba3177c382.herokuapp.com
+- **Staging**: https://locumtruerate-stage-8edec28739b0.herokuapp.com
 - **Production**: https://locumtruerate-production.herokuapp.com (to be created)
 
 ## Deployment Flow
