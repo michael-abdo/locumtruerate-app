@@ -984,7 +984,7 @@
                                         <span class="result-label">Other Stipends</span>
                                         <div class="result-subtext">Meals, travel</div>
                                     </div>
-                                    <span class="result-value" id="otherStipends">$0</span>
+                                    <span class="result-value" id="otherStipendsDisplay">$0</span>
                                 </div>
                             </div>
 
@@ -1107,7 +1107,7 @@
         function clearResults() {
             const resultElements = [
                 'regularPay', 'overtimePay', 'weeklyGrossPay', 
-                'grossTaxableIncome', 'totalHousingStipend', 'otherStipends', 
+                'grossTaxableIncome', 'totalHousingStipend', 'otherStipendsDisplay', 
                 'netTakeHome', 'totalContractValue', 
                 'trueHourlyRate', 'yourContractRate', 'annualEquivalent'
             ];
@@ -1261,7 +1261,7 @@
                 'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'otherStipends': '$' + (totalMealStipend + totalMileage + travelReimbursement).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                'otherStipendsDisplay': '$' + (totalMealStipend + totalMileage + travelReimbursement).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'netTakeHome': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
                 'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
