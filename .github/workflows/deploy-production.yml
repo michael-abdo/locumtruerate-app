@@ -1,0 +1,52 @@
+name: Deploy to Heroku Production
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      confirm:
+        description: 'Type "deploy" to confirm production deployment'
+        required: true
+        default: ''
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'deploy'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Deploy to Heroku Production
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Create .netrc file for git authentication
+          cat > ~/.netrc <<EOF
+          machine api.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          machine git.heroku.com
+            login zenex3298@gmail.com
+            password $HEROKU_API_KEY
+          EOF
+          chmod 600 ~/.netrc
+          
+          # Add Heroku remote
+          git remote add heroku-prod https://git.heroku.com/locumtruerate-production.git || true
+          
+          # Push to Heroku
+          echo "🚀 Deploying to PRODUCTION..."
+          git push heroku-prod main:main --force
+          
+      - name: Verify deployment
+        run: |
+          echo "⏳ Waiting for deployment to complete..."
+          sleep 45
+          
+          echo "🔍 Checking production deployment..."
+          RESPONSE=$(curl -s https://locumtruerate-production.herokuapp.com/health)
+          echo "Response: $RESPONSE"
+          
+          echo "✅ Production deployment complete!"

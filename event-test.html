@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Dispatch Test</title>
+</head>
+<body>
+    <h1>Testing Event Dispatch</h1>
+    <input type="number" id="test" value="100" oninput="handleInput(this)">
+    <div id="log"></div>
+    
+    <script>
+        function log(msg) {
+            document.getElementById('log').innerHTML += `<div>${msg}</div>`;
+        }
+        
+        window.handleInput = function(input) {
+            log(`handleInput called with value: ${input.value}`);
+            // This will cause error if notDefined is not defined
+            notDefined();
+        }
+        
+        // Test if dispatching 'input' event triggers oninput handler
+        log('Starting test...');
+        
+        try {
+            const input = document.getElementById('test');
+            log('Got input element');
+            
+            // This is what line 1529 does
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            log('Dispatched input event');
+            
+        } catch (e) {
+            log(`ERROR: ${e.message}`);
+        }
+        
+        log('Test complete');
+    </script>
+</body>
+</html>

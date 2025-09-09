@@ -1,0 +1,76 @@
+- Replace Window Alerts with Modern UI Components
+  - Prototype Files
+    - LocumDashboard.html
+      - Job Management Features
+        - Replace job application confirmation alert
+        - Replace saved job removal alert
+      - Rating System Features
+        - Replace rating validation alert
+        - Replace rating submission confirmation alert
+    - RecruiterDashboard.html
+      - Job Posting Management Features
+        - Replace save posting functionality alert
+        - Replace delete posting confirmation alert
+        - Replace cross-posting confirmation alert
+        - Replace boost listing payment alert
+      - Applicant Management Features
+        - Replace chat opening alert
+        - Replace status update confirmation alert
+  - Design UI Files
+    - Admin Dashboard (admin-dashboard.html)
+      - Replace 15 alert instances with proper notifications
+        - System management alerts
+        - Administrative function confirmations
+        - Data validation messages
+    - Locum Dashboard (locum-dashboard.html)
+      - Replace 16 alert instances with modern UI
+        - Job search notifications
+        - Application confirmations
+        - Profile management alerts
+        - Form validation messages
+    - Recruiter Dashboard (recruiter-dashboard.html)
+      - Replace 14 alert instances with proper components
+        - Job posting confirmations
+        - Applicant management notifications
+        - Recruitment tool alerts
+    - Contract Calculator (contract-calculator.html)
+      - Replace 5 alert instances
+        - Calculation validation messages
+        - Form submission confirmations
+    - Paycheck Calculator (paycheck-calculator.html)
+      - Replace 2 alert instances
+        - Financial calculation validations
+        - Input error messages
+    - Job Board (job-board.html)
+      - Replace 1 alert instance
+        - Job listing functionality notification
+  - Vanilla Demo Files
+    - Test Files
+      - test-paycheck-validation.html
+        - Replace validation alert
+      - test-paycheck-round2.html
+        - Replace calculation alert
+    - Dashboard Implementations
+      - recruiter-dashboard.html
+        - Replace 7 alert instances with proper UI
+      - locum-dashboard.html
+        - Replace 16 alert instances with modern components
+      - admin-dashboard.html
+        - Replace 12 alert instances with notifications
+      - contract-calculator.html
+        - Replace calculation validation alert
+  - Implementation Strategy
+    - Create Reusable Alert Components
+      - Design notification component system
+      - Implement toast notifications
+      - Create modal confirmation dialogs
+      - Add form validation UI components
+    - Update CLAUDE.md Guidelines
+      - Document new alert component usage
+      - Update coding standards
+      - Add examples of proper notification patterns
+    - Testing and Validation
+      - Test all replaced alerts across browsers
+      - Verify accessibility compliance
+      - Validate user experience improvements
+      - Ensure no functionality regression

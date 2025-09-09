@@ -33,4 +33,4 @@ Branch: master
 Location: docs/design/UI/
 
 ### 🎯 Purpose:
-These are the original vanilla demo pages showcasing the ContractCalc Pro concept and design system before any framework implementation.
+These are the original vanilla demo pages showcasing the ContractCalc Pro concept and design system before any framework implementation.# Cache bust Mon Sep  8 20:22:50 UTC 2025

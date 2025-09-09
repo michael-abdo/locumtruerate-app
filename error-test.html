@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Detection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; background: #f0f0f0; border-left: 3px solid #007acc; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Error Detection Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Capture errors globally
+        window.addEventListener('error', function(event) {
+            const div = document.createElement('div');
+            div.className = 'result error';
+            div.innerHTML = `<strong>Global Error Caught:</strong><br>
+                Message: ${event.message}<br>
+                File: ${event.filename}<br>
+                Line: ${event.lineno}<br>
+                Column: ${event.colno}`;
+            document.getElementById('results').appendChild(div);
+        });
+        
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            document.getElementById('results').appendChild(div);
+        }
+    </script>
+    
+    <script>
+        // Test 1: Basic execution
+        addResult('✅ Script 1: Basic execution works');
+        
+        // Test 2: Function hoisting
+        try {
+            // This should work due to hoisting
+            testHoisted();
+            function testHoisted() {
+                addResult('✅ Script 1: Function hoisting works');
+            }
+        } catch (e) {
+            addResult(`❌ Script 1: Function hoisting failed: ${e.message}`, 'error');
+        }
+        
+        // Test 3: Variable before definition
+        try {
+            // This should fail
+            console.log(undefinedVar);
+            addResult('✅ Script 1: Variable access works');
+        } catch (e) {
+            addResult(`❌ Script 1: Expected error - accessing undefined variable: ${e.message}`, 'error');
+        }
+        
+        // Test 4: Function expression before definition
+        try {
+            // This should fail
+            testExpression();
+            addResult('✅ Script 1: Function expression called');
+        } catch (e) {
+            addResult(`❌ Script 1: Expected error - function expression not hoisted: ${e.message}`, 'error');
+        }
+        
+        const testExpression = function() {
+            addResult('Function expression executed');
+        };
+        
+        // Test 5: Window function before definition
+        try {
+            // This should fail
+            window.testWindowFunc();
+            addResult('✅ Script 1: Window function called');
+        } catch (e) {
+            addResult(`❌ Script 1: Expected error - window function not defined yet: ${e.message}`, 'error');
+        }
+        
+        window.testWindowFunc = function() {
+            addResult('Window function executed');
+        };
+        
+        // Now it should work
+        try {
+            window.testWindowFunc();
+            addResult('✅ Script 1: Window function works after definition');
+        } catch (e) {
+            addResult(`❌ Script 1: Window function still failed: ${e.message}`, 'error');
+        }
+    </script>
+    
+    <script>
+        // Test if errors in one script block others
+        addResult('✅ Script 2: This script block executes despite errors in Script 1');
+    </script>
+</body>
+</html>

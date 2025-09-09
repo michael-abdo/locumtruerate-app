@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Board - ContractCalc Pro</title>
+    <title>Job Board - LocumTrueRate</title>
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -95,15 +95,29 @@
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
+            transform: translateY(-5px);
+            transition: all 0.2s ease-in-out;
             z-index: 1000;
+            margin-top: 0;
+            pointer-events: none;
         }
 
         .nav-dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .nav-dropdown::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+            z-index: 999;
         }
 
         .dropdown-menu li {
@@ -208,7 +222,7 @@
             background: none;
             cursor: pointer;
             border-radius: 0.25rem;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
         }
 
         .view-btn.active {
@@ -245,13 +259,14 @@
             border: 1px solid var(--border-color);
             border-radius: 0.75rem;
             padding: 1.5rem;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
         }
 
         .job-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            border-color: var(--primary-color);
         }
 
         .job-header {
@@ -349,7 +364,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
             text-align: center;
@@ -368,7 +383,7 @@
             border-radius: 0.5rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
             text-decoration: none;
             display: inline-block;
             text-align: center;
@@ -377,6 +392,30 @@
         .btn-secondary:hover {
             border-color: var(--primary-color);
             color: var(--primary-color);
+        }
+
+        .btn-save {
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .btn-save:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .btn-save.saved {
+            border-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.1);
         }
 
         /* List View Specific */
@@ -503,6 +542,56 @@
             text-align: center;
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+
+        .pagination-btn {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn:disabled:hover {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .filters-container {
@@ -537,7 +626,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-brand">
-                    <h2>ContractCalc Pro</h2>
+                    <h2>LocumTrueRate</h2>
                 </div>
                 <ul class="nav-menu">
                     <li><a href="index.html" class="nav-link">Home</a></li>
@@ -559,7 +648,7 @@
         <!-- Page Header -->
         <section class="page-header">
             <div class="container">
-                <h1>Healthcare Job Board</h1>
+                <h1>Find Your Perfect Locum Position</h1>
                 <p>Find your next locum opportunity with our advanced search and calculator integration</p>
             </div>
         </section>
@@ -595,12 +684,31 @@
                                 <option value="300-400">$300-400/hr</option>
                                 <option value="400+">$400+/hr</option>
                             </select>
+                            <select class="filter-input" id="contractTypeFilter">
+                                <option value="">All Contract Types</option>
+                                <option value="8-week">8 weeks</option>
+                                <option value="13-week">13 weeks</option>
+                                <option value="16-week">16 weeks</option>
+                                <option value="20-week">20 weeks</option>
+                                <option value="26-week">26 weeks</option>
+                                <option value="ongoing">Ongoing</option>
+                            </select>
                         </div>
                         <div class="filters-group">
+                            <select class="filter-input" id="sortFilter">
+                                <option value="">Sort by...</option>
+                                <option value="salary-high">Salary: High to Low</option>
+                                <option value="salary-low">Salary: Low to High</option>
+                                <option value="total-comp-high">Total Compensation: High to Low</option>
+                                <option value="total-comp-low">Total Compensation: Low to High</option>
+                                <option value="location">Location (A-Z)</option>
+                                <option value="duration">Duration (Shortest first)</option>
+                            </select>
                             <div class="view-toggle">
                                 <button class="view-btn active" onclick="toggleView('card')">📋 Cards</button>
                                 <button class="view-btn" onclick="toggleView('list')">📄 List</button>
                             </div>
+                            <button class="btn-primary" onclick="postJob()" style="margin-left: auto;">Post a Job</button>
                             <div class="results-info">
                                 <span id="resultsCount">24</span> positions found
                             </div>
@@ -614,6 +722,9 @@
                 <div class="container">
                     <div class="jobs-grid card-view" id="jobsGrid">
                         <!-- Job listings will be dynamically generated -->
+                    </div>
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination controls will be dynamically generated -->
                     </div>
                 </div>
             </section>
@@ -629,12 +740,65 @@
             </div>
         </div>
 
+        <!-- Job Posting Modal -->
+        <div class="modal" id="postJobModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closePostJobModal()">&times;</button>
+                <h2>Post a New Job</h2>
+                <form id="postJobForm" onsubmit="event.preventDefault(); submitJobPosting();">
+                    <div style="display: grid; gap: 1rem; margin-top: 2rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Job Title *</label>
+                            <input type="text" id="jobTitle" class="form-input" required placeholder="e.g., Emergency Medicine Physician" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Specialty *</label>
+                            <select id="jobSpecialty" class="form-input form-select" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                                <option value="">Select a specialty</option>
+                                <option value="emergency">Emergency Medicine</option>
+                                <option value="internal">Internal Medicine</option>
+                                <option value="surgery">Surgery</option>
+                                <option value="radiology">Radiology</option>
+                                <option value="anesthesiology">Anesthesiology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Location *</label>
+                            <input type="text" id="jobLocation" class="form-input" required placeholder="e.g., Los Angeles, CA" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Hourly Rate *</label>
+                                <input type="text" id="jobSalary" class="form-input" required placeholder="e.g., $350/hr" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Duration *</label>
+                                <input type="text" id="jobDuration" class="form-input" required placeholder="e.g., 13 weeks" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Description *</label>
+                            <textarea id="jobDescription" class="form-input" required rows="4" placeholder="Describe the position, requirements, and facility..." style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem; resize: vertical;"></textarea>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Contact Information *</label>
+                            <input type="text" id="jobContact" class="form-input" required placeholder="Your email or phone number" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="submit" class="btn-primary" style="flex: 1;">Post Job</button>
+                            <button type="button" class="btn-secondary" onclick="closePostJobModal()" style="flex: 1;">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="footer">
             <div class="container">
                 <div class="footer-container">
                     <div class="footer-section">
-                        <h4>ContractCalc Pro</h4>
+                        <h4>LocumTrueRate</h4>
                         <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
                     </div>
                     <div class="footer-section">
@@ -655,13 +819,63 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; 2025 ContractCalc Pro. All rights reserved.</p>
+                    <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
                 </div>
             </div>
         </footer>
     </div>
 
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/auth-guard.js"></script>
+
     <script>
+        // Skip auto auth guard for job board (it's a public page)
+        window.skipAutoAuthGuard = true;
+
+        // Authentication navigation update function
+        function updateNavigationAuth() {
+            const isAuth = isAuthenticated();
+            const user = getUserInfo();
+            
+            const navMenu = document.querySelector('.nav-menu');
+            if (!navMenu) return;
+            
+            // Remove existing auth items
+            const existingAuthItems = navMenu.querySelectorAll('.auth-item');
+            existingAuthItems.forEach(item => item.remove());
+            
+            if (isAuth && user) {
+                const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+                const roleDisplay = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                
+                // Add user info dropdown
+                const userDropdown = document.createElement('li');
+                userDropdown.className = 'nav-dropdown auth-item';
+                userDropdown.innerHTML = `
+                    <a href="#" class="nav-link" role="button" aria-haspopup="true" aria-expanded="false">
+                        👤 ${displayName}
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><div style="padding: 8px 16px; font-size: 0.9rem; color: var(--text-secondary);">Role: ${roleDisplay}</div></li>
+                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
+                        ${user.role === 'admin' ? '<li><a href="admin-dashboard.html">Admin Dashboard</a></li>' : ''}
+                        ${user.role === 'admin' || user.role === 'recruiter' ? '<li><a href="recruiter-dashboard.html">Recruiter Dashboard</a></li>' : ''}
+                        <li><a href="locum-dashboard.html">My Dashboard</a></li>
+                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
+                        <li><a href="#" onclick="logout(); return false;" style="color: var(--error-color);">Logout</a></li>
+                    </ul>
+                `;
+                
+                navMenu.appendChild(userDropdown);
+            } else {
+                const loginItem = document.createElement('li');
+                loginItem.className = 'auth-item';
+                loginItem.innerHTML = '<a href="login.html" class="nav-link">Login</a>';
+                navMenu.appendChild(loginItem);
+            }
+        }
+        
         // Sample job data
         const jobsData = [
             {
@@ -757,54 +971,178 @@
         ];
 
         let currentView = 'card';
-        let filteredJobs = [...jobsData];
+        let filteredJobs = [];
+        let currentPage = 1;
+        const jobsPerPage = 5; // Changed to show pagination with 6 jobs
+        
+        // Initialize filteredJobs after jobsData is defined
+        function initializeJobsData() {
+            console.log('🔧 Initializing jobs data');
+            filteredJobs = [...jobsData];
+            console.log('📊 Filtered jobs initialized with', filteredJobs.length, 'jobs');
+        }
+        
+        // Save job functionality
+        function getSavedJobs() {
+            return JSON.parse(localStorage.getItem('savedJobs') || '[]');
+        }
+        
+        function toggleSaveJob(jobId) {
+            const savedJobs = getSavedJobs();
+            const index = savedJobs.indexOf(jobId);
+            
+            if (index > -1) {
+                savedJobs.splice(index, 1);
+                console.log(`Job ${jobId} removed from saved jobs`);
+            } else {
+                savedJobs.push(jobId);
+                console.log(`Job ${jobId} added to saved jobs`);
+            }
+            
+            localStorage.setItem('savedJobs', JSON.stringify(savedJobs));
+            renderJobs(); // Re-render to update save button states
+        }
+        
+        // Calculate total compensation
+        function calculateTotalCompensation(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            const totalContract = (weeklyPay * contractWeeks) + totalStipends;
+            
+            return `$${totalContract.toLocaleString()}`;
+        }
 
         function renderJobs() {
+            console.log('🎨 Starting renderJobs function');
+            
             const grid = document.getElementById('jobsGrid');
+            if (!grid) {
+                console.error('❌ jobsGrid element not found!');
+                return;
+            }
+            
+            console.log('📋 Clearing existing content');
             grid.innerHTML = '';
             
-            filteredJobs.forEach(job => {
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            const startIndex = (currentPage - 1) * jobsPerPage;
+            const endIndex = startIndex + jobsPerPage;
+            const jobsToShow = filteredJobs.slice(startIndex, endIndex);
+            
+            console.log(`📄 Pagination: page ${currentPage} of ${totalPages}, showing ${jobsToShow.length} jobs`);
+            
+            if (jobsToShow.length === 0) {
+                console.warn('⚠️ No jobs to show on current page');
+                grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-secondary);">No jobs found matching your criteria.</div>';
+                document.getElementById('resultsCount').textContent = '0';
+                return;
+            }
+            
+            jobsToShow.forEach((job, index) => {
+                console.log(`🏗️ Creating job card ${index + 1}: ${job.title}`);
+                
                 const jobCard = document.createElement('div');
                 jobCard.className = 'job-card';
                 jobCard.onclick = () => showJobDetail(job);
                 
-                jobCard.innerHTML = `
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">${job.title}</div>
-                            <div class="job-facility">${job.facility}</div>
-                            <div class="job-location">📍 ${job.location}</div>
+                try {
+                    jobCard.innerHTML = `
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.title}</div>
+                                <div class="job-facility">${job.facility}</div>
+                                <div class="job-location">📍 ${job.location}</div>
+                            </div>
+                            <div class="job-salary">
+                                <div style="font-size: 1rem; font-weight: 600;">${job.salary}</div>
+                                <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Total: ${calculateTotalCompensation(job)}</div>
+                            </div>
                         </div>
-                        <div class="job-salary">${job.salary}</div>
-                    </div>
-                    <div class="job-details">
-                        <div class="job-detail">
-                            <div class="job-detail-label">Duration</div>
-                            <div class="job-detail-value">${job.duration}</div>
+                        <div class="job-details">
+                            <div class="job-detail">
+                                <div class="job-detail-label">Duration</div>
+                                <div class="job-detail-value">${job.duration}</div>
+                            </div>
+                            <div class="job-detail">
+                                <div class="job-detail-label">Hours/Week</div>
+                                <div class="job-detail-value">${job.hours}</div>
+                            </div>
+                            <div class="job-detail">
+                                <div class="job-detail-label">Housing</div>
+                                <div class="job-detail-value">${job.housing}</div>
+                            </div>
                         </div>
-                        <div class="job-detail">
-                            <div class="job-detail-label">Hours/Week</div>
-                            <div class="job-detail-value">${job.hours}</div>
+                        <div class="job-description">${job.description}</div>
+                        <div class="job-tags">
+                            ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
                         </div>
-                        <div class="job-detail">
-                            <div class="job-detail-label">Housing</div>
-                            <div class="job-detail-value">${job.housing}</div>
+                        <div class="job-actions">
+                            <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
+                            <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
+                            <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
+                                ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
+                            </button>
                         </div>
-                    </div>
-                    <div class="job-description">${job.description}</div>
-                    <div class="job-tags">
-                        ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
-                    </div>
-                    <div class="job-actions">
-                        <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
-                        <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
-                    </div>
-                `;
-                
-                grid.appendChild(jobCard);
+                    `;
+                    
+                    grid.appendChild(jobCard);
+                    console.log(`✅ Job card ${index + 1} added to grid`);
+                } catch (error) {
+                    console.error(`❌ Error creating job card ${index + 1}:`, error);
+                }
             });
             
             document.getElementById('resultsCount').textContent = filteredJobs.length;
+            renderPagination(totalPages);
+            
+            console.log(`🎯 Render complete: ${jobsToShow.length} job cards should now be visible`);
+        }
+        
+        function renderPagination(totalPages) {
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += `<span class="pagination-info">...</span>`;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next ›</button>`;
+            
+            // Page info
+            const startItem = (currentPage - 1) * jobsPerPage + 1;
+            const endItem = Math.min(currentPage * jobsPerPage, filteredJobs.length);
+            paginationHTML += `<div class="pagination-info">Showing ${startItem}-${endItem} of ${filteredJobs.length}</div>`;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderJobs();
         }
 
         function toggleView(view) {
@@ -823,6 +1161,7 @@
             const specialty = document.getElementById('specialtyFilter').value;
             const location = document.getElementById('locationFilter').value;
             const salary = document.getElementById('salaryFilter').value;
+            const contractType = document.getElementById('contractTypeFilter').value;
             
             filteredJobs = jobsData.filter(job => {
                 const matchesSearch = job.title.toLowerCase().includes(search) || 
@@ -840,10 +1179,71 @@
                     else if (salary === '400+') matchesSalary = hourlyRate >= 400;
                 }
                 
-                return matchesSearch && matchesSpecialty && matchesLocation && matchesSalary;
+                let matchesContractType = true;
+                if (contractType) {
+                    const duration = job.duration.toLowerCase();
+                    if (contractType === '8-week') matchesContractType = duration.includes('8');
+                    else if (contractType === '13-week') matchesContractType = duration.includes('13');
+                    else if (contractType === '16-week') matchesContractType = duration.includes('16');
+                    else if (contractType === '20-week') matchesContractType = duration.includes('20');
+                    else if (contractType === '26-week') matchesContractType = duration.includes('26');
+                    else if (contractType === 'ongoing') matchesContractType = duration.includes('ongoing');
+                }
+                
+                return matchesSearch && matchesSpecialty && matchesLocation && matchesSalary && matchesContractType;
+            });
+            
+            currentPage = 1; // Reset to first page when filtering
+            sortJobs(); // Apply sorting after filtering
+        }
+        
+        // Sort functionality
+        function sortJobs() {
+            const sortBy = document.getElementById('sortFilter').value;
+            
+            if (!sortBy) {
+                renderJobs();
+                return;
+            }
+            
+            filteredJobs.sort((a, b) => {
+                switch (sortBy) {
+                    case 'salary-high':
+                        return parseInt(b.salary.replace(/\$|\/hr/g, '')) - parseInt(a.salary.replace(/\$|\/hr/g, ''));
+                    case 'salary-low':
+                        return parseInt(a.salary.replace(/\$|\/hr/g, '')) - parseInt(b.salary.replace(/\$|\/hr/g, ''));
+                    case 'total-comp-high':
+                        const totalA = calculateTotalCompensationValue(a);
+                        const totalB = calculateTotalCompensationValue(b);
+                        return totalB - totalA;
+                    case 'total-comp-low':
+                        const totalA2 = calculateTotalCompensationValue(a);
+                        const totalB2 = calculateTotalCompensationValue(b);
+                        return totalA2 - totalB2;
+                    case 'location':
+                        return a.location.localeCompare(b.location);
+                    case 'duration':
+                        const durationA = parseInt(a.duration.replace(/weeks/g, '')) || (a.duration.includes('Ongoing') ? 999 : 13);
+                        const durationB = parseInt(b.duration.replace(/weeks/g, '')) || (b.duration.includes('Ongoing') ? 999 : 13);
+                        return durationA - durationB;
+                    default:
+                        return 0;
+                }
             });
             
             renderJobs();
+        }
+        
+        // Helper function to calculate total compensation as number
+        function calculateTotalCompensationValue(job) {
+            const hourlyRate = parseInt(job.salary.replace(/\$|\/hr/g, ''));
+            const hoursPerWeek = parseInt(job.hours.replace(/hrs\/week/g, ''));
+            const contractWeeks = parseInt(job.duration.replace(/weeks/g, '')) || (job.duration.includes('Ongoing') ? 52 : 13);
+            const housingStipend = job.housing === 'Remote' ? 0 : parseInt(job.housing.replace(/\$|\/week/g, '')) || 0;
+            
+            const weeklyPay = hourlyRate * hoursPerWeek;
+            const totalStipends = housingStipend * contractWeeks;
+            return (weeklyPay * contractWeeks) + totalStipends;
         }
 
         function showJobDetail(jobId) {
@@ -921,7 +1321,58 @@
         }
 
         function applyToJob(jobId) {
-            alert(`Application submitted for Job ID: ${jobId}. You will be redirected to the recruiter's portal.`);
+            const job = jobsData.find(j => j.id === jobId);
+            if (job) {
+                const recruiterInfo = {
+                    1: { name: "Sarah Johnson", email: "sarah.johnson@medhire.com", phone: "(555) 123-4567" },
+                    2: { name: "Michael Chen", email: "m.chen@healthstaffing.com", phone: "(555) 234-5678" },
+                    3: { name: "Lisa Rodriguez", email: "l.rodriguez@surgicalsolutions.com", phone: "(555) 345-6789" },
+                    4: { name: "David Kim", email: "david.kim@radnetwork.com", phone: "(555) 456-7890" },
+                    5: { name: "Jennifer Walsh", email: "j.walsh@traumacare.com", phone: "(555) 567-8901" },
+                    6: { name: "Robert Martinez", email: "r.martinez@ruralhealthcare.com", phone: "(555) 678-9012" }
+                };
+                
+                const recruiter = recruiterInfo[jobId];
+                const modal = document.getElementById('jobModal');
+                const modalContent = document.getElementById('modalContent');
+                
+                modalContent.innerHTML = `
+                    <h2>✅ Application Submitted Successfully!</h2>
+                    <div style="background: var(--success-color); color: white; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0;">
+                        <p style="margin: 0; font-size: 1.1rem;">Your application for <strong>${job.title}</strong> at <strong>${job.facility}</strong> has been submitted.</p>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Your Recruiter Contact</h3>
+                    <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                ${recruiter.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; color: var(--text-primary);">${recruiter.name}</h4>
+                                <p style="margin: 0; color: var(--text-secondary);">Healthcare Recruiter</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiter.email}" style="color: var(--primary-color);">${recruiter.email}</a></p>
+                            <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiter.phone}" style="color: var(--primary-color);">${recruiter.phone}</a></p>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Next Steps</h3>
+                    <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                        <li>Your recruiter will review your application within 24 hours</li>
+                        <li>They may contact you for an initial phone screening</li>
+                        <li>Be prepared to discuss your experience and availability</li>
+                        <li>Have your credentials and references ready</li>
+                    </ul>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button class="btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
+                        <button class="btn-secondary" onclick="closeModal()">Close</button>
+                    </div>
+                `;
+            }
         }
 
         // Event listeners
@@ -929,6 +1380,8 @@
         document.getElementById('specialtyFilter').addEventListener('change', filterJobs);
         document.getElementById('locationFilter').addEventListener('change', filterJobs);
         document.getElementById('salaryFilter').addEventListener('change', filterJobs);
+        document.getElementById('contractTypeFilter').addEventListener('change', filterJobs);
+        document.getElementById('sortFilter').addEventListener('change', sortJobs);
 
         // Close modal when clicking outside
         document.getElementById('jobModal').addEventListener('click', function(e) {
@@ -936,11 +1389,611 @@
                 closeModal();
             }
         });
+        
+        // Close post job modal when clicking outside
+        document.getElementById('postJobModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePostJobModal();
+            }
+        });
+        
+        // Check for redirect after login
+        function handleLoginRedirect() {
+            const redirectHash = window.location.hash;
+            const redirectKey = localStorage.getItem('locum_redirect_key');
+            
+            if ((redirectHash === '#post-job' || redirectKey === window.location.pathname + '#post-job') && checkAuthentication()) {
+                // Clear the redirect key
+                localStorage.removeItem('locum_redirect_key');
+                // Remove hash from URL
+                if (window.location.hash === '#post-job') {
+                    history.replaceState(null, null, window.location.pathname + window.location.search);
+                }
+                // Trigger post job modal
+                setTimeout(() => postJob(), 500);
+            }
+        }
 
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+        // Authentication functions
+        function checkAuthentication() {
+            // Use JWT authentication instead of localStorage
+            return isAuthenticated();
+        }
+        
+        function postJob() {
+            if (checkAuthentication()) {
+                // Check if user has permission to post jobs (recruiters and admins can post)
+                const userRole = getUserRole();
+                if (userRole === 'locum') {
+                    showJobBoardToast('Only recruiters and admins can post job opportunities.', 'warning');
+                    return;
+                }
+                
+                // Open job posting modal
+                document.getElementById('postJobModal').classList.add('active');
+            } else {
+                // Store current location for return after login
+                localStorage.setItem('locum_redirect_key', window.location.pathname + '#post-job');
+                // Redirect to login
+                showJobBoardToast('Please log in to post a job.', 'info');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            }
+        }
+
+        // Toast notification function for job board
+        function showJobBoardToast(message, type = 'info') {
+            // Try to use auth.js showToast if available
+            if (typeof showToast === 'function') {
+                showToast(message, type);
+                return;
+            }
+            
+            // Fallback implementation
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 300px;
+                word-wrap: break-word;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                background-color: ${type === 'warning' ? '#ffc107' : type === 'info' ? '#17a2b8' : '#28a745'};
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+        
+        function closePostJobModal() {
+            document.getElementById('postJobModal').classList.remove('active');
+            document.getElementById('postJobForm').reset();
+        }
+        
+        function submitJobPosting() {
+            // Get form values
+            const newJob = {
+                id: Date.now(), // Generate unique ID
+                title: document.getElementById('jobTitle').value,
+                facility: 'User Posted Job',
+                location: document.getElementById('jobLocation').value,
+                salary: document.getElementById('jobSalary').value,
+                duration: document.getElementById('jobDuration').value,
+                hours: '40 hrs/week', // Default value
+                housing: 'Negotiable', // Default value
+                specialty: document.getElementById('jobSpecialty').value,
+                state: document.getElementById('jobLocation').value.split(',')[1]?.trim().toLowerCase() || 'other',
+                description: document.getElementById('jobDescription').value,
+                requirements: ['Posted by User', 'Contact for Details'],
+                benefits: ['Competitive Pay', 'Flexible Terms'],
+                contact: document.getElementById('jobContact').value,
+                isUserPosted: true
+            };
+            
+            // Save to localStorage (in real app, would send to server)
+            const existingJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
+            existingJobs.unshift(newJob);
+            localStorage.setItem('userPostedJobs', JSON.stringify(existingJobs));
+            
+            // Add to current job list
+            jobsData.unshift(newJob);
+            filteredJobs = [...jobsData];
+            
+            // Show success message
+            showSuccessMessage('Job posted successfully!');
+            
+            // Close modal and refresh display
+            closePostJobModal();
             renderJobs();
+        }
+        
+        function showSuccessMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background-color: var(--success-color);
+                color: white;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Load user-posted jobs on startup
+        function loadUserPostedJobs() {
+            const userJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
+            // Add user jobs to the beginning of jobsData
+            jobsData.unshift(...userJobs);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize navigation with auth state
+            updateNavigationAuth();
+            
+            // Handle login redirect for post job
+            handleLoginRedirect();
+            
+            // Load user-posted jobs first
+            loadUserPostedJobs();
+            console.log('🚀 DOM Content Loaded - Initializing Job Board');
+            console.log('📊 Sample job data count:', jobsData.length);
+            console.log('🎯 Jobs grid element:', document.getElementById('jobsGrid'));
+            
+            // Initialize the filtered jobs array with sample data
+            initializeJobsData();
+            
+            renderJobs();
+            
+            // Verify jobs were rendered
+            setTimeout(() => {
+                const jobCards = document.querySelectorAll('.job-card');
+                console.log('✅ Job cards rendered:', jobCards.length);
+                if (jobCards.length === 0) {
+                    console.error('❌ NO JOB CARDS RENDERED! Debugging...');
+                    console.log('- Filtered jobs count:', filteredJobs.length);
+                    console.log('- Current page:', currentPage);
+                    console.log('- Jobs per page:', jobsPerPage);
+                }
+            }, 100);
+            
+            // Fix button click reliability (prevent rapid double-clicks only)
+            const buttons = document.querySelectorAll('a[href], button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Prevent rapid double-clicking issues
+                    if (this.dataset.clicking) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    this.dataset.clicking = 'true';
+                    setTimeout(() => {
+                        delete this.dataset.clicking;
+                    }, 500);
+                });
+            });
         });
+    </script>
+
+    <!-- Floating Logger Component -->
+    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
+        <span id="fab-icon">🔍</span>
+    </button>
+    
+    <div id="floating-logger" class="floating-logger">
+        <div class="logger-header">
+            <span class="logger-title">Console Logger</span>
+            <div class="logger-controls">
+                <button class="logger-btn" onclick="clearLogs()" title="Clear logs">🗑️</button>
+                <button class="logger-btn" onclick="copyLogs()" title="Copy logs">📋</button>
+                <button class="logger-btn" onclick="minimizeLogger()" title="Minimize logger">
+                    <span id="minimize-icon">−</span>
+                </button>
+                <button class="logger-btn" onclick="toggleLogger()" title="Toggle logger">
+                    <span id="toggle-icon">▼</span>
+                </button>
+            </div>
+        </div>
+        <div id="logger-content" class="logger-content">
+            <div id="logger-messages" class="logger-messages"></div>
+        </div>
+    </div>
+
+    <style>
+        /* Floating Logger Styles */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --background-color: #f8fafc;
+            --text-primary: #1e293b;
+            --text-muted: #94a3b8;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        /* Floating Action Button for toggling logger */
+        .logger-toggle-fab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .logger-toggle-fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .logger-toggle-fab.visible {
+            display: flex;
+        }
+
+        .floating-logger {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 450px;
+            max-width: 90vw;
+            background-color: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1001;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px; /* Increased for better OCR */
+            transition: all 0.3s ease;
+        }
+
+        .floating-logger.hidden {
+            display: none;
+        }
+
+        .logger-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.6rem 0.6rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .logger-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .logger-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .logger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .logger-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .logger-content {
+            max-height: 300px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .logger-content.collapsed {
+            max-height: 0;
+        }
+
+        .logger-messages {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 300px;
+            background-color: var(--background-color);
+        }
+
+        .log-entry {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--border-color);
+            background-color: var(--surface-color);
+            border-radius: 0.5rem;
+            word-wrap: break-word;
+            line-height: 1.6; /* Better OCR readability */
+            letter-spacing: 0.02em; /* Slight letter spacing for OCR */
+        }
+
+        .log-entry.log {
+            border-left-color: var(--primary-color);
+        }
+
+        .log-entry.warn {
+            border-left-color: var(--warning-color);
+            background-color: rgba(245, 158, 11, 0.08);
+        }
+
+        .log-entry.error {
+            border-left-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.08);
+        }
+
+        .log-timestamp {
+            color: var(--text-muted);
+            font-size: 12px; /* Larger for OCR */
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+
+        .log-message {
+            color: var(--text-primary);
+            font-size: 14px; /* Ensure consistent size */
+            font-weight: 400;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .floating-logger {
+                width: calc(100vw - 40px);
+                left: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Floating Logger Implementation
+        (function() {
+            // Store original console methods
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            // Logger state
+            let isCollapsed = false;
+            let isHidden = false;
+            const maxLogs = 100;
+            const logs = [];
+            
+            // Initialize logger
+            function initLogger() {
+                // Override console methods
+                console.log = function(...args) {
+                    logMessage('log', args);
+                    originalLog.apply(console, args);
+                };
+                
+                console.warn = function(...args) {
+                    logMessage('warn', args);
+                    originalWarn.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                    logMessage('error', args);
+                    originalError.apply(console, args);
+                };
+                
+                // Add initial message
+                console.log('🚀 Floating Logger initialized');
+                
+                // Default to open
+                isHidden = false;
+            }
+            
+            // Log message to floating logger
+            function logMessage(type, args) {
+                const timestamp = new Date().toLocaleTimeString();
+                const message = args.map(arg => {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg, null, 2);
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+                
+                // Add to logs array
+                logs.push({ type, timestamp, message });
+                if (logs.length > maxLogs) {
+                    logs.shift();
+                }
+                
+                // Update UI
+                updateLoggerUI();
+            }
+            
+            // Update logger UI
+            function updateLoggerUI() {
+                const messagesContainer = document.getElementById('logger-messages');
+                if (!messagesContainer) return;
+                
+                messagesContainer.innerHTML = logs.map(log => `
+                    <div class="log-entry ${log.type}">
+                        <span class="log-timestamp">${log.timestamp}</span>
+                        <span class="log-message">${escapeHtml(log.message)}</span>
+                    </div>
+                `).join('');
+                
+                // Auto-scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Escape HTML for safe display
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            // Toggle logger visibility (show/hide entire logger)
+            window.toggleLoggerVisibility = function() {
+                isHidden = !isHidden;
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                
+                if (isHidden) {
+                    logger.classList.add('hidden');
+                    fab.classList.add('visible');
+                } else {
+                    logger.classList.remove('hidden');
+                    fab.classList.remove('visible');
+                }
+            };
+            
+            // Minimize logger (hide from view, show FAB)
+            window.minimizeLogger = function() {
+                const logger = document.getElementById('floating-logger');
+                const fab = document.getElementById('logger-toggle-fab');
+                logger.classList.add('hidden');
+                fab.classList.add('visible');
+                isHidden = true;
+            };
+            
+            // Toggle logger collapse/expand
+            window.toggleLogger = function() {
+                isCollapsed = !isCollapsed;
+                const content = document.getElementById('logger-content');
+                const icon = document.getElementById('toggle-icon');
+                
+                if (isCollapsed) {
+                    content.classList.add('collapsed');
+                    icon.textContent = '▲';
+                } else {
+                    content.classList.remove('collapsed');
+                    icon.textContent = '▼';
+                }
+            };
+            
+            // Clear logs
+            window.clearLogs = function() {
+                logs.length = 0;
+                updateLoggerUI();
+                console.log('🗑️ Logs cleared');
+            };
+            
+            // Copy logs to clipboard
+            window.copyLogs = function() {
+                const logText = logs.map(log => 
+                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
+                ).join('\n');
+                
+                navigator.clipboard.writeText(logText).then(() => {
+                    console.log('📋 Logs copied to clipboard');
+                }).catch(err => {
+                    console.error('Failed to copy logs:', err);
+                });
+            };
+            
+            // Make logger draggable
+            function makeLoggerDraggable() {
+                const logger = document.getElementById('floating-logger');
+                const header = logger.querySelector('.logger-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+                
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+                
+                function dragStart(e) {
+                    if (e.target.closest('.logger-controls')) return;
+                    
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                    
+                    if (e.target === header || e.target.closest('.logger-title')) {
+                        isDragging = true;
+                    }
+                }
+                
+                function drag(e) {
+                    if (!isDragging) return;
+                    
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    
+                    logger.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+                
+                function dragEnd() {
+                    initialX = currentX;
+                    initialY = currentY;
+                    isDragging = false;
+                }
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    initLogger();
+                    makeLoggerDraggable();
+                });
+            } else {
+                initLogger();
+                makeLoggerDraggable();
+            }
+        })();
     </script>
 </body>
 </html>

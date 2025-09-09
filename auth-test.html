@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - LocumTrueRate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: #fafafa;
+        }
+
+        .section h2 {
+            color: #444;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .loading {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .token-display {
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            margin: 10px 0;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentication Test</h1>
+
+        <!-- Registration Section -->
+        <div class="section">
+            <h2>
+                <span class="icon">👤</span>
+                1. Register New User
+            </h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" required placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" required placeholder="Min 6 characters">
+                </div>
+                <div class="form-group">
+                    <label for="regRole">Role:</label>
+                    <select id="regRole">
+                        <option value="locum">Locum</option>
+                        <option value="recruiter">Recruiter</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="regFirstName">First Name:</label>
+                    <input type="text" id="regFirstName" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label for="regLastName">Last Name:</label>
+                    <input type="text" id="regLastName" placeholder="Doe">
+                </div>
+                <button type="submit">Register User</button>
+            </form>
+            <div id="registerResponse"></div>
+        </div>
+
+        <!-- Login Section -->
+        <div class="section">
+            <h2>
+                <span class="icon">🔑</span>
+                2. Login User
+            </h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required placeholder="Your password">
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div id="loginResponse"></div>
+        </div>
+
+        <!-- Verify Token Section -->
+        <div class="section">
+            <h2>
+                <span class="icon">✅</span>
+                3. Verify JWT Token
+            </h2>
+            <form id="verifyForm">
+                <div class="form-group">
+                    <label for="jwtToken">JWT Token:</label>
+                    <input type="text" id="jwtToken" required placeholder="Paste your JWT token here">
+                </div>
+                <button type="submit">Verify Token</button>
+            </form>
+            <div id="verifyResponse"></div>
+        </div>
+
+        <!-- Frontend Integration Test Section -->
+        <div class="section">
+            <h2>
+                <span class="icon">🔗</span>
+                4. Test Frontend Integration
+            </h2>
+            <p style="margin-bottom: 20px;">Test the frontend authentication JavaScript modules:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <button onclick="testIsAuthenticated()" class="btn" style="width: 100%; background: #17a2b8; margin: 0;">Test isAuthenticated()</button>
+                <button onclick="testGetUserInfo()" class="btn" style="width: 100%; background: #28a745; margin: 0;">Test getUserInfo()</button>
+                <button onclick="testGetUserRole()" class="btn" style="width: 100%; background: #ffc107; margin: 0;">Test getUserRole()</button>
+                <button onclick="testHasPermission()" class="btn" style="width: 100%; background: #6f42c1; margin: 0;">Test hasPermission()</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                <button onclick="testProtectedPage('locum-dashboard.html')" class="btn" style="width: 100%; background: #fd7e14; margin: 0;">Test Locum Dashboard</button>
+                <button onclick="testProtectedPage('recruiter-dashboard.html')" class="btn" style="width: 100%; background: #e83e8c; margin: 0;">Test Recruiter Dashboard</button>
+                <button onclick="testProtectedPage('admin-dashboard.html')" class="btn" style="width: 100%; background: #dc3545; margin: 0;">Test Admin Dashboard</button>
+                <button onclick="testLogout()" class="btn" style="width: 100%; background: #6c757d; margin: 0;">Test Logout</button>
+            </div>
+            
+            <div id="integrationTestResponse"></div>
+        </div>
+    </div>
+
+    <!-- Authentication scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/auth-guard.js"></script>
+
+    <script>
+        // Skip auto auth guard for test page
+        window.skipAutoAuthGuard = true;
+        
+        const API_BASE = window.location.origin;
+
+        // Utility function to make API requests
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, data: { error: error.message }, status: 0 };
+            }
+        }
+
+        // Display response in the UI
+        function displayResponse(elementId, result) {
+            const element = document.getElementById(elementId);
+            const className = result.success ? 'response success' : 'response error';
+            element.className = className;
+            element.textContent = JSON.stringify(result.data, null, 2);
+        }
+
+        // Show loading state
+        function showLoading(elementId, message = 'Loading...') {
+            const element = document.getElementById(elementId);
+            element.className = 'response loading';
+            element.textContent = message;
+        }
+
+        // Register form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading('registerResponse', 'Registering user...');
+
+            const formData = {
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                role: document.getElementById('regRole').value,
+                first_name: document.getElementById('regFirstName').value,
+                last_name: document.getElementById('regLastName').value
+            };
+
+            const result = await makeRequest(`${API_BASE}/api/auth/register`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            displayResponse('registerResponse', result);
+
+            // If registration successful, auto-fill login form
+            if (result.success && result.data.token) {
+                document.getElementById('loginEmail').value = formData.email;
+                document.getElementById('loginPassword').value = formData.password;
+                document.getElementById('jwtToken').value = result.data.token;
+            }
+        });
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading('loginResponse', 'Logging in...');
+
+            const formData = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            const result = await makeRequest(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+
+            displayResponse('loginResponse', result);
+
+            // If login successful, auto-fill verify form
+            if (result.success && result.data.token) {
+                document.getElementById('jwtToken').value = result.data.token;
+            }
+        });
+
+        // Verify form handler
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading('verifyResponse', 'Verifying token...');
+
+            const token = document.getElementById('jwtToken').value;
+
+            const result = await makeRequest(`${API_BASE}/api/auth/verify`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            displayResponse('verifyResponse', result);
+        });
+
+        // Generate random test data
+        function generateTestUser() {
+            const random = Math.floor(Math.random() * 10000);
+            document.getElementById('regEmail').value = `test${random}@example.com`;
+            document.getElementById('regPassword').value = 'password123';
+            document.getElementById('regFirstName').value = 'Test';
+            document.getElementById('regLastName').value = `User${random}`;
+        }
+
+        // Auto-generate test user data on page load
+        window.addEventListener('load', () => {
+            generateTestUser();
+        });
+
+        // Frontend Integration Test Functions
+        function showIntegrationResult(message, success = true) {
+            const element = document.getElementById('integrationTestResponse');
+            const className = success ? 'response success' : 'response error';
+            element.className = className;
+            element.textContent = message;
+        }
+
+        function testIsAuthenticated() {
+            try {
+                const result = isAuthenticated();
+                showIntegrationResult(`isAuthenticated(): ${result}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testGetUserInfo() {
+            try {
+                const userInfo = getUserInfo();
+                if (userInfo) {
+                    showIntegrationResult(`User Info: ${JSON.stringify(userInfo, null, 2)}`);
+                } else {
+                    showIntegrationResult('No user info found (not logged in)');
+                }
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testGetUserRole() {
+            try {
+                const role = getUserRole();
+                showIntegrationResult(`User Role: ${role || 'No role (not logged in)'}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testHasPermission() {
+            try {
+                const roles = ['locum', 'recruiter', 'admin'];
+                const results = roles.map(role => `${role}: ${hasPermission(role)}`);
+                showIntegrationResult(`Permissions:\n${results.join('\n')}`);
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+
+        function testProtectedPage(pageName) {
+            if (!isAuthenticated()) {
+                showIntegrationResult(`Cannot test ${pageName} - please log in first`, false);
+                return;
+            }
+
+            showIntegrationResult(`Opening ${pageName} in new tab...`);
+            
+            // Open in new tab to test
+            setTimeout(() => {
+                window.open(pageName, '_blank');
+            }, 1000);
+        }
+
+        function testLogout() {
+            try {
+                if (isAuthenticated()) {
+                    logout();
+                    showIntegrationResult('Logout initiated - page will redirect soon');
+                } else {
+                    showIntegrationResult('No user is currently logged in');
+                }
+            } catch (error) {
+                showIntegrationResult(`Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>

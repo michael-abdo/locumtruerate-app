@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagnostic Test</title>
+</head>
+<body>
+    <h1>JavaScript Diagnostic</h1>
+    <input type="number" id="test" value="100" oninput="testFunction(this)">
+    <div id="log"></div>
+    
+    <script>
+        // Global error handler
+        window.onerror = function(msg, url, line, col, error) {
+            document.getElementById('log').innerHTML += 
+                `<div style="color:red">ERROR: ${msg} at line ${line}</div>`;
+            return true;
+        };
+        
+        // Test function that's called BEFORE it's defined
+        document.getElementById('test').setAttribute('oninput', 'testFunction(this)');
+        
+        // Define function later
+        window.testFunction = function(input) {
+            document.getElementById('log').innerHTML += 
+                `<div>Function called with value: ${input.value}</div>`;
+        };
+    </script>
+</body>
+</html>
