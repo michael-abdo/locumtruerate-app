@@ -62,10 +62,37 @@ function deleteItem(id) {
 - Tests validate functionality without requiring actual backend services
 
 ## Deployment
-- Staging deployment via `staging-deploy` branch
-- Automatic Heroku deployment configured
-- All changes should be committed with descriptive messages
-- Test locally before pushing changes
+
+### Heroku Static File Deployment
+- **App**: `locumtruerate-stage` (NOT locumtruerate-stage-8edec28739b0.herokuapp.com)
+- **Staging branch**: `staging-deploy` 
+- **Buildpack**: `heroku-community/nginx` (configured for static files)
+- **Required files for deployment**:
+  1. **NGINX buildpack** properly configured via `heroku buildpacks:set heroku-community/nginx`
+  2. **Custom NGINX configuration** at `config/nginx.conf.erb` for static file serving with cache control
+  3. **Procfile** specifying `web: bin/start-nginx-solo` to start the NGINX server
+
+### 🚨 CRITICAL: Deployment Prevention Checklist
+**ALWAYS verify these files exist before ANY Heroku deployment:**
+```bash
+# Check required files exist
+ls -la Procfile config/nginx.conf.erb
+
+# Verify Procfile content
+cat Procfile
+# Should contain: web: bin/start-nginx-solo
+
+# Verify buildpack
+heroku buildpacks --app locumtruerate-stage
+# Should show: heroku-community/nginx
+```
+
+### Deployment Process
+1. Commit all changes to `staging-deploy` branch
+2. **MANDATORY**: Verify Procfile and NGINX config exist
+3. Deploy: `git push heroku staging-deploy:main --force`
+4. Verify deployment logs show NGINX startup, not Node.js
+5. Test site accessibility immediately after deployment
 
 ## Key Functions Available
 - `showToast(message, type)` - Non-blocking notifications
