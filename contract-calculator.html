@@ -909,16 +909,7 @@
         }
 
         function exportAnalysis() {
-            const analysis = {
-                jobTitle: document.getElementById('jobTitle').value,
-                facility: document.getElementById('facility').value,
-                totalValue: document.getElementById('totalContractValue').textContent,
-                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
-                netTakeHome: document.getElementById('netTakeHome').textContent,
-                timestamp: new Date().toLocaleDateString()
-            };
-            
-            alert(`Contract Analysis PDF exported:\n\n${analysis.jobTitle}\n${analysis.facility}\n\nTotal Value: ${analysis.totalValue}\nTrue Rate: ${analysis.trueHourlyRate}\nNet Take-Home: ${analysis.netTakeHome}\n\nGenerated: ${analysis.timestamp}`);
+            window.print();
         }
 
         // Auto-calculate overtime rate based on regular rate

@@ -899,15 +899,7 @@
         }
 
         function exportToPDF() {
-            // Simulate PDF export
-            const calculation = {
-                period: currentPeriod,
-                netPay: document.getElementById('netPay').textContent,
-                grossTaxable: document.getElementById('grossTaxable').textContent,
-                timestamp: new Date().toLocaleDateString()
-            };
-            
-            alert(`PDF exported for ${calculation.period} paycheck calculation:\nNet Pay: ${calculation.netPay}\nGenerated: ${calculation.timestamp}`);
+            window.print();
         }
 
         // Auto-calculate overtime rate
