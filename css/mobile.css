@@ -1,0 +1,499 @@
+/* Mobile-First CSS Framework for Job Board Application */
+/* Created: 2025-01-09 */
+
+/* =====================================================
+   CSS Custom Properties & Breakpoints
+   ===================================================== */
+:root {
+    /* Standardized Breakpoints */
+    --mobile-breakpoint: 480px;
+    --tablet-breakpoint: 768px;
+    --desktop-breakpoint: 1024px;
+    --large-desktop-breakpoint: 1280px;
+    
+    /* Mobile-First Spacing Scale */
+    --space-xs: 0.25rem;  /* 4px */
+    --space-sm: 0.5rem;   /* 8px */
+    --space-md: 1rem;     /* 16px */
+    --space-lg: 1.5rem;   /* 24px */
+    --space-xl: 2rem;     /* 32px */
+    --space-2xl: 3rem;    /* 48px */
+    
+    /* Touch Target Sizes */
+    --touch-target-min: 48px;
+    --button-height-mobile: 48px;
+    --input-height-mobile: 48px;
+    
+    /* Mobile Typography Scale */
+    --text-xs-mobile: 0.75rem;   /* 12px */
+    --text-sm-mobile: 0.875rem;  /* 14px */
+    --text-base-mobile: 1rem;    /* 16px */
+    --text-lg-mobile: 1.125rem;  /* 18px */
+    --text-xl-mobile: 1.25rem;   /* 20px */
+    --text-2xl-mobile: 1.5rem;   /* 24px */
+    --text-3xl-mobile: 1.875rem; /* 30px */
+    
+    /* Mobile Navigation Heights */
+    --mobile-nav-height: 56px;
+    --mobile-tab-bar-height: 56px;
+    
+    /* Z-Index Scale */
+    --z-mobile-nav: 1000;
+    --z-mobile-menu: 1001;
+    --z-mobile-overlay: 999;
+    --z-sticky-header: 100;
+    --z-fixed-button: 200;
+}
+
+/* =====================================================
+   Base Mobile Resets
+   ===================================================== */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+html {
+    /* Prevent zoom on input focus in iOS */
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Smooth scrolling with momentum on iOS */
+.mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+}
+
+/* =====================================================
+   Mobile Navigation Component
+   ===================================================== */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-nav-height);
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    z-index: var(--z-mobile-nav);
+    display: none;
+}
+
+.mobile-nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 var(--space-md);
+}
+
+/* Hamburger Menu Button */
+.mobile-menu-toggle {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+}
+
+.hamburger-line {
+    width: 24px;
+    height: 2px;
+    background: #1e293b;
+    transition: all 0.3s ease;
+    position: absolute;
+}
+
+.hamburger-line:nth-child(1) {
+    transform: translateY(-8px);
+}
+
+.hamburger-line:nth-child(2) {
+    transform: translateY(0);
+}
+
+.hamburger-line:nth-child(3) {
+    transform: translateY(8px);
+}
+
+/* Active state animations */
+.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+    position: fixed;
+    top: var(--mobile-nav-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: var(--z-mobile-overlay);
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile Menu Panel */
+.mobile-menu {
+    position: fixed;
+    top: var(--mobile-nav-height);
+    left: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: calc(100vh - var(--mobile-nav-height));
+    background: white;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: var(--z-mobile-menu);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-menu.active {
+    left: 0;
+}
+
+.mobile-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-menu-item {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mobile-menu-link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    color: #1e293b;
+    text-decoration: none;
+    font-size: var(--text-base-mobile);
+    min-height: var(--touch-target-min);
+    transition: background-color 0.2s ease;
+}
+
+.mobile-menu-link:active {
+    background-color: #f8fafc;
+}
+
+/* Submenu styles */
+.mobile-submenu {
+    background: #f8fafc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+}
+
+.mobile-submenu.active {
+    display: block;
+}
+
+.mobile-submenu .mobile-menu-link {
+    padding-left: var(--space-2xl);
+    font-size: var(--text-sm-mobile);
+}
+
+/* =====================================================
+   Mobile Utility Classes
+   ===================================================== */
+
+/* Visibility utilities */
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: block !important;
+}
+
+/* Spacing utilities for mobile */
+.mobile-p-0 { padding: 0 !important; }
+.mobile-p-xs { padding: var(--space-xs) !important; }
+.mobile-p-sm { padding: var(--space-sm) !important; }
+.mobile-p-md { padding: var(--space-md) !important; }
+.mobile-p-lg { padding: var(--space-lg) !important; }
+.mobile-p-xl { padding: var(--space-xl) !important; }
+
+.mobile-m-0 { margin: 0 !important; }
+.mobile-m-xs { margin: var(--space-xs) !important; }
+.mobile-m-sm { margin: var(--space-sm) !important; }
+.mobile-m-md { margin: var(--space-md) !important; }
+.mobile-m-lg { margin: var(--space-lg) !important; }
+.mobile-m-xl { margin: var(--space-xl) !important; }
+
+/* Text utilities for mobile */
+.mobile-text-xs { font-size: var(--text-xs-mobile) !important; }
+.mobile-text-sm { font-size: var(--text-sm-mobile) !important; }
+.mobile-text-base { font-size: var(--text-base-mobile) !important; }
+.mobile-text-lg { font-size: var(--text-lg-mobile) !important; }
+.mobile-text-xl { font-size: var(--text-xl-mobile) !important; }
+.mobile-text-2xl { font-size: var(--text-2xl-mobile) !important; }
+.mobile-text-3xl { font-size: var(--text-3xl-mobile) !important; }
+
+.mobile-text-center { text-align: center !important; }
+.mobile-text-left { text-align: left !important; }
+.mobile-text-right { text-align: right !important; }
+
+/* =====================================================
+   Mobile Form Styles
+   ===================================================== */
+.mobile-form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.mobile-form-label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-sm-mobile);
+    font-weight: 500;
+    color: #475569;
+}
+
+.mobile-form-input,
+.mobile-form-select,
+.mobile-form-textarea {
+    width: 100%;
+    min-height: var(--input-height-mobile);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-base-mobile);
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    background: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Prevent zoom on focus */
+.mobile-form-input:focus,
+.mobile-form-select:focus,
+.mobile-form-textarea:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 0;
+    border-color: transparent;
+}
+
+/* Number input specific styles */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Select dropdown arrow */
+.mobile-form-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M1 1L7 7L13 1' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--space-md) center;
+    background-size: 16px;
+    padding-right: var(--space-2xl);
+}
+
+/* =====================================================
+   Mobile Button Styles
+   ===================================================== */
+.mobile-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--button-height-mobile);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--text-base-mobile);
+    font-weight: 500;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.mobile-btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.mobile-btn-primary:active {
+    background: #2563eb;
+    transform: scale(0.98);
+}
+
+.mobile-btn-secondary {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.mobile-btn-secondary:active {
+    background: #f8fafc;
+    transform: scale(0.98);
+}
+
+.mobile-btn-full {
+    width: 100%;
+}
+
+/* Fixed bottom button */
+.mobile-fixed-bottom-btn {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-md);
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    z-index: var(--z-fixed-button);
+}
+
+/* =====================================================
+   Mobile Layout Patterns
+   ===================================================== */
+
+/* Stack layout for mobile */
+.mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* Grid that collapses on mobile */
+.mobile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+/* Horizontal scroll for tables */
+.mobile-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 calc(var(--space-md) * -1);
+    padding: 0 var(--space-md);
+}
+
+.mobile-table {
+    min-width: 600px;
+}
+
+/* Card component for mobile */
+.mobile-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+/* Bottom tab bar */
+.mobile-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-tab-bar-height);
+    background: white;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    z-index: var(--z-sticky-header);
+}
+
+.mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    color: #64748b;
+    text-decoration: none;
+    font-size: var(--text-xs-mobile);
+}
+
+.mobile-tab.active {
+    color: #3b82f6;
+}
+
+/* =====================================================
+   Media Queries - Mobile First Approach
+   ===================================================== */
+
+/* Base styles are mobile-first */
+/* Show mobile navigation on small screens */
+@media (max-width: 767px) {
+    .mobile-nav {
+        display: block;
+    }
+    
+    .mobile-only {
+        display: block !important;
+    }
+    
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Add padding to body to account for fixed nav */
+    body {
+        padding-top: var(--mobile-nav-height);
+    }
+    
+    /* Ensure main navigation is hidden */
+    .navbar {
+        display: none;
+    }
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+    .mobile-grid-tablet-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .mobile-grid-desktop-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .mobile-grid-desktop-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Large desktop styles */
+@media (min-width: 1280px) {
+    .container-mobile {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}

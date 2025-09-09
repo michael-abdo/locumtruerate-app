@@ -15,7 +15,7 @@
 - Window resizing
 
 ## Test URL
-https://locumtruerate-staging-66ba3177c382.herokuapp.com/locum-dashboard.html
+https://locumtruerate-stage-8edec28739b0.herokuapp.com/locum-dashboard.html
 
 ## Test Steps
 

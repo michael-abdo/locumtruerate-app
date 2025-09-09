@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LocumTrueRate - Homepage UX Fixes</title>
+    <title>LocumTrueRate - Healthcare Contract Analysis Platform</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- Google Site Verification -->
+    <meta name="google-site-verification" content="Lm92uJ19M6Zxip5FbjPPEf3uZjDi75IkBsim_lJA0V8">
     <style>
         /* CSS Variables from Design System */
         :root {
@@ -432,13 +441,121 @@
             color: var(--primary-color);
         }
 
-        /* Responsive */
+        /* Responsive - Mobile First Enhancements */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .features-grid { grid-template-columns: 1fr; }
-            .nav-menu { flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface-color); display: none; }
+            /* Hero Section Mobile */
+            .hero {
+                padding: 3rem 0;
+                text-align: center;
+            }
+            
+            .hero h1 { 
+                font-size: 2rem;
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .hero-buttons .btn-primary,
+            .hero-buttons .btn-secondary {
+                width: 100%;
+                min-height: 48px;
+                font-size: 1rem;
+            }
+            
+            /* Features Section Mobile */
+            .features {
+                padding: 3rem 0;
+            }
+            
+            .features h2 {
+                font-size: 1.75rem;
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            
+            .features-grid { 
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.25rem;
+            }
+            
+            /* CTA Section Mobile */
+            .cta {
+                padding: 3rem 0;
+            }
+            
+            .cta h2 {
+                font-size: 1.75rem;
+            }
+            
+            .cta .btn-primary {
+                width: 100%;
+                min-height: 48px;
+            }
+            
+            /* Footer Mobile */
+            .footer-content {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            /* Hide desktop navigation - mobile nav will be shown by mobile.css */
+            .nav-menu { 
+                display: none; 
+            }
+            
+            /* Container padding for mobile */
+            .container {
+                padding: 0 1rem;
+            }
+            
+            /* Ensure all buttons meet touch target size */
+            button,
+            .btn-primary,
+            .btn-secondary,
+            a[class*="btn"] {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .hero p {
+                font-size: 0.95rem;
+            }
+            
+            .features h2,
+            .cta h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
+    <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body>
     <div class="page-container">
@@ -635,488 +752,6 @@
         });
     </script>
 
-    <!-- Floating Logger Component -->
-    <button id="logger-toggle-fab" class="logger-toggle-fab" onclick="toggleLoggerVisibility()" title="Toggle Console Logger">
-        <span id="fab-icon">🔍</span>
-    </button>
-    
-    <div id="floating-logger" class="floating-logger">
-        <div class="logger-header">
-            <span class="logger-title">Console Logger</span>
-            <div class="logger-controls">
-                <button class="logger-btn" onclick="clearLogs(event)" title="Clear logs">🗑️</button>
-                <button class="logger-btn" onclick="copyLogs(event)" title="Copy logs">📋</button>
-                <button class="logger-btn" onclick="minimizeLogger(event)" title="Minimize logger">
-                    <span id="minimize-icon">−</span>
-                </button>
-                <button class="logger-btn" onclick="toggleLogger(event)" title="Toggle logger">
-                    <span id="toggle-icon">▼</span>
-                </button>
-            </div>
-        </div>
-        <div id="logger-content" class="logger-content">
-            <div id="logger-messages" class="logger-messages"></div>
-        </div>
-    </div>
-
-    <style>
-        /* Floating Logger Styles */
-        :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --surface-color: #ffffff;
-            --border-color: #e2e8f0;
-            --background-color: #f8fafc;
-            --text-primary: #1e293b;
-            --text-muted: #94a3b8;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-        }
-
-        /* Floating Action Button for toggling logger */
-        .logger-toggle-fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .logger-toggle-fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .logger-toggle-fab.visible {
-            display: flex;
-        }
-
-        .floating-logger {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 450px;
-            max-width: 90vw;
-            background-color: var(--surface-color);
-            border: 2px solid var(--border-color);
-            border-radius: 0.75rem;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 9999;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px; /* Increased for better OCR */
-            transition: all 0.3s ease;
-        }
-
-        .floating-logger.hidden {
-            display: none;
-        }
-
-        .logger-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0.6rem 0.6rem 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-        }
-
-        .logger-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .logger-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .logger-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 14px;
-        }
-
-        .logger-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .logger-content {
-            max-height: 300px;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .logger-content.collapsed {
-            max-height: 0;
-        }
-
-        .logger-messages {
-            padding: 1rem;
-            overflow-y: auto;
-            max-height: 300px;
-            background-color: var(--background-color);
-        }
-
-        .log-entry {
-            padding: 0.75rem;
-            margin-bottom: 0.75rem;
-            border-left: 4px solid var(--border-color);
-            background-color: var(--surface-color);
-            border-radius: 0.5rem;
-            word-wrap: break-word;
-            line-height: 1.6; /* Better OCR readability */
-            letter-spacing: 0.02em; /* Slight letter spacing for OCR */
-        }
-
-        .log-entry.log {
-            border-left-color: var(--primary-color);
-        }
-
-        .log-entry.warn {
-            border-left-color: var(--warning-color);
-            background-color: rgba(245, 158, 11, 0.08);
-        }
-
-        .log-entry.error {
-            border-left-color: var(--error-color);
-            background-color: rgba(239, 68, 68, 0.08);
-        }
-
-        .log-timestamp {
-            color: var(--text-muted);
-            font-size: 12px; /* Larger for OCR */
-            margin-right: 0.75rem;
-            font-weight: 500;
-        }
-
-        .log-message {
-            color: var(--text-primary);
-            font-size: 14px; /* Ensure consistent size */
-            font-weight: 400;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 480px) {
-            .floating-logger {
-                width: calc(100vw - 40px);
-                right: 20px;
-                left: 20px;
-            }
-        }
-    </style>
-
-    <script>
-        // Floating Logger Implementation
-        (function() {
-            // Store original console methods
-            const originalLog = console.log;
-            const originalWarn = console.warn;
-            const originalError = console.error;
-            
-            // Logger state
-            let isCollapsed = false;
-            let isHidden = false;
-            const maxLogs = 100;
-            const logs = [];
-            
-            // Initialize logger
-            function initLogger() {
-                // Check if we're in production (hide logger in production)
-                const hostname = window.location.hostname.toLowerCase();
-                const isStaging = hostname.includes('staging') || 
-                                hostname.includes('localhost') || 
-                                hostname.includes('127.0.0.1');
-                const isDevelopment = hostname.includes('dev') || 
-                                    hostname.includes('test');
-                
-                // Only show logger on staging, development, or local environments
-                if (!isStaging && !isDevelopment) {
-                    // Hide logger in production
-                    const logger = document.getElementById('floating-logger');
-                    const fab = document.getElementById('logger-toggle-fab');
-                    if (logger) logger.style.display = 'none';
-                    if (fab) fab.style.display = 'none';
-                    // Log to browser console for verification
-                    originalLog.apply(console, ['Floating logger hidden in production environment']);
-                    return;
-                }
-                
-                // Override console methods
-                console.log = function(...args) {
-                    logMessage('log', args);
-                    originalLog.apply(console, args);
-                };
-                
-                console.warn = function(...args) {
-                    logMessage('warn', args);
-                    originalWarn.apply(console, args);
-                };
-                
-                console.error = function(...args) {
-                    logMessage('error', args);
-                    originalError.apply(console, args);
-                };
-                
-                // Add initial message
-                console.log('🚀 Floating Logger initialized');
-                
-                // Default to open
-                isHidden = false;
-            }
-            
-            // Log message to floating logger
-            function logMessage(type, args) {
-                const timestamp = new Date().toLocaleTimeString();
-                const message = args.map(arg => {
-                    if (typeof arg === 'object') {
-                        try {
-                            return JSON.stringify(arg, null, 2);
-                        } catch (e) {
-                            return String(arg);
-                        }
-                    }
-                    return String(arg);
-                }).join(' ');
-                
-                // Add to logs array
-                logs.push({ type, timestamp, message });
-                if (logs.length > maxLogs) {
-                    logs.shift();
-                }
-                
-                // Update UI
-                updateLoggerUI();
-            }
-            
-            // Update logger UI
-            function updateLoggerUI() {
-                const messagesContainer = document.getElementById('logger-messages');
-                if (!messagesContainer) return;
-                
-                messagesContainer.innerHTML = logs.map(log => `
-                    <div class="log-entry ${log.type}">
-                        <span class="log-timestamp">${log.timestamp}</span>
-                        <span class="log-message">${escapeHtml(log.message)}</span>
-                    </div>
-                `).join('');
-                
-                // Auto-scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            // Escape HTML for safe display
-            function escapeHtml(unsafe) {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-            
-            // Toggle logger visibility (show/hide entire logger)
-            window.toggleLoggerVisibility = function() {
-                isHidden = !isHidden;
-                const logger = document.getElementById('floating-logger');
-                const fab = document.getElementById('logger-toggle-fab');
-                
-                if (isHidden) {
-                    logger.classList.add('hidden');
-                    fab.classList.add('visible');
-                } else {
-                    logger.classList.remove('hidden');
-                    fab.classList.remove('visible');
-                }
-            };
-            
-            // Minimize logger (hide from view, show FAB)
-            window.minimizeLogger = function(event) {
-                if (event) event.preventDefault();
-                const logger = document.getElementById('floating-logger');
-                const fab = document.getElementById('logger-toggle-fab');
-                logger.classList.add('hidden');
-                fab.classList.add('visible');
-                isHidden = true;
-            };
-            
-            // Toggle logger collapse/expand
-            window.toggleLogger = function(event) {
-                if (event) event.preventDefault();
-                isCollapsed = !isCollapsed;
-                const content = document.getElementById('logger-content');
-                const icon = document.getElementById('toggle-icon');
-                
-                if (isCollapsed) {
-                    content.classList.add('collapsed');
-                    icon.textContent = '▲';
-                } else {
-                    content.classList.remove('collapsed');
-                    icon.textContent = '▼';
-                }
-            };
-            
-            // Clear logs
-            window.clearLogs = function(event) {
-                if (event) event.preventDefault();
-                logs.length = 0;
-                updateLoggerUI();
-                console.log('🗑️ Logs cleared');
-            };
-            
-            // Copy logs to clipboard
-            window.copyLogs = function(event) {
-                if (event) event.preventDefault();
-                const logText = logs.map(log => 
-                    `[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}`
-                ).join('\n');
-                
-                navigator.clipboard.writeText(logText).then(() => {
-                    console.log('📋 Logs copied to clipboard');
-                }).catch(err => {
-                    console.error('Failed to copy logs:', err);
-                });
-            };
-            
-            // Make logger draggable
-            function makeLoggerDraggable() {
-                const logger = document.getElementById('floating-logger');
-                const header = logger.querySelector('.logger-header');
-                let isDragging = false;
-                let currentX;
-                let currentY;
-                let initialX;
-                let initialY;
-                let xOffset = 0;
-                let yOffset = 0;
-                
-                header.addEventListener('mousedown', dragStart);
-                document.addEventListener('mousemove', drag);
-                document.addEventListener('mouseup', dragEnd);
-                
-                function dragStart(e) {
-                    if (e.target.closest('.logger-controls')) return;
-                    
-                    initialX = e.clientX - xOffset;
-                    initialY = e.clientY - yOffset;
-                    
-                    if (e.target === header || e.target.closest('.logger-title')) {
-                        isDragging = true;
-                    }
-                }
-                
-                function drag(e) {
-                    if (!isDragging) return;
-                    
-                    e.preventDefault();
-                    currentX = e.clientX - initialX;
-                    currentY = e.clientY - initialY;
-                    
-                    xOffset = currentX;
-                    yOffset = currentY;
-                    
-                    logger.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                }
-                
-                function dragEnd() {
-                    initialX = currentX;
-                    initialY = currentY;
-                    isDragging = false;
-                }
-            }
-            
-            // Initialize when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => {
-                    initLogger();
-                    makeLoggerDraggable();
-                });
-            } else {
-                initLogger();
-                makeLoggerDraggable();
-            }
-        })();
-    </script>
-
-    <!-- Authentication scripts -->
-    <script src="js/auth.js"></script>
-    <script>
-        // Update navigation based on authentication state
-        function updateNavigationAuth() {
-            const isAuth = isAuthenticated();
-            const user = getUserInfo();
-            
-            // Find navigation container
-            const navMenu = document.querySelector('.nav-menu');
-            if (!navMenu) return;
-            
-            // Remove existing auth-related items
-            const existingAuthItems = navMenu.querySelectorAll('.auth-item');
-            existingAuthItems.forEach(item => item.remove());
-            
-            if (isAuth && user) {
-                // Add user info and logout
-                const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
-                const roleDisplay = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-                
-                // Create user info dropdown
-                const userDropdown = document.createElement('li');
-                userDropdown.className = 'nav-dropdown auth-item';
-                userDropdown.innerHTML = `
-                    <a href="#" class="nav-link" role="button" aria-haspopup="true" aria-expanded="false">
-                        👤 ${displayName}
-                    </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><div style="padding: 8px 16px; font-size: 0.9rem; color: var(--text-secondary);">Role: ${roleDisplay}</div></li>
-                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
-                        ${user.role === 'admin' ? '<li><a href="admin-dashboard.html">Admin Dashboard</a></li>' : ''}
-                        ${user.role === 'admin' || user.role === 'recruiter' ? '<li><a href="recruiter-dashboard.html">Recruiter Dashboard</a></li>' : ''}
-                        <li><a href="locum-dashboard.html">My Dashboard</a></li>
-                        <li><hr style="margin: 4px 0; border: none; border-top: 1px solid var(--border-color);"></li>
-                        <li><a href="#" onclick="logout(); return false;" style="color: var(--error-color);">Logout</a></li>
-                    </ul>
-                `;
-                
-                navMenu.appendChild(userDropdown);
-                
-            } else {
-                // Add login button
-                const loginItem = document.createElement('li');
-                loginItem.className = 'auth-item';
-                loginItem.innerHTML = '<a href="login.html" class="nav-link">Login</a>';
-                navMenu.appendChild(loginItem);
-            }
-        }
-        
-        // Initialize navigation when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            updateNavigationAuth();
-            
-            // Refresh navigation after login events
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'locum_auth_token' || e.key === 'locum_user_data') {
-                    setTimeout(updateNavigationAuth, 100);
-                }
-            });
-        });
-    </script>
+    <script src="js/mobile-nav.js"></script>
 </body>
 </html>
