@@ -1,0 +1,80 @@
+daemon off;
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+  use epoll;
+  accept_mutex on;
+  worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+  gzip on;
+  gzip_comp_level 2;
+  gzip_min_length 512;
+  gzip_proxied any;
+  gzip_vary on;
+  gzip_types
+    text/plain
+    text/css
+    text/js
+    text/xml
+    text/javascript
+    application/javascript
+    application/json
+    application/xml
+    application/rss+xml
+    application/atom+xml
+    image/svg+xml;
+
+  server_tokens off;
+
+  log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+  access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+  error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+  include mime.types;
+  default_type application/octet-stream;
+  sendfile on;
+
+  # Must read the body in 5 seconds.
+  client_body_timeout 5;
+
+  upstream app_server {
+    server unix:/tmp/nginx.socket fail_timeout=0;
+  }
+
+  server {
+    listen <%= ENV["PORT"] %>;
+    server_name _;
+    keepalive_timeout 5;
+    client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>m;
+
+    # Cache static assets
+    location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+      expires 1y;
+      add_header Cache-Control "public, immutable";
+    }
+
+    # Disable caching for HTML files to ensure updates are visible
+    location ~* \.html$ {
+      expires -1;
+      add_header Cache-Control "no-cache, no-store, must-revalidate";
+      add_header Pragma "no-cache";
+      add_header Expires "0";
+      try_files $uri $uri/ =404;
+    }
+
+    # Root location for all requests
+    location / {
+      expires -1;
+      add_header Cache-Control "no-cache, no-store, must-revalidate";
+      add_header Pragma "no-cache";
+      add_header Expires "0";
+      try_files $uri $uri/ $uri.html =404;
+    }
+
+    # Default index file
+    index index.html;
+    root /app;
+  }
+}
