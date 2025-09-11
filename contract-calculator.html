@@ -641,6 +641,9 @@
                                 </select>
                             </div>
 
+                            <!-- Primary Compensation -->
+                            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Primary Compensation</h3>
+
                             <!-- Hourly Rates -->
                             <div class="input-group">
                                 <div class="form-group">
@@ -655,7 +658,8 @@
                                 </div>
                             </div>
 
-                            <!-- Schedule -->
+                            <!-- Work Schedule -->
+                            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Work Schedule</h3>
                             <div class="input-group">
                                 <div class="form-group">
                                     <label class="form-label">Hours per Week</label>
@@ -667,6 +671,9 @@
                                 </div>
                             </div>
 
+
+                            <!-- Stipends & Reimbursements -->
+                            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Stipends & Reimbursements</h3>
 
                             <!-- Stipends -->
                             <div class="form-group">
@@ -752,6 +759,22 @@
                                         <div class="result-subtext">Subject to federal/state taxes</div>
                                     </div>
                                     <span class="result-value" id="grossTaxableIncome">$244,400</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Daily Pay</span>
+                                    <span class="result-value" id="grossDaily">$1,385</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Weekly Pay</span>
+                                    <span class="result-value" id="grossWeekly">$6,925</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Biweekly Pay</span>
+                                    <span class="result-value" id="grossBiweekly">$13,850</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Gross Monthly Pay</span>
+                                    <span class="result-value" id="grossMonthly">$29,985</span>
                                 </div>
                                 <div class="result-item">
                                     <div>
@@ -926,6 +949,14 @@
             const mileageWeeklyAmount = mileageDriven * mileageRate;
             const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate) / hoursPerWeek : 0;
 
+            // Calculate gross period displays (total contract value / contract weeks)
+            const contractWeeks = contractLength * 52; // assuming contractLength is in years
+            const baseWeeklyGross = contractWeeks > 0 ? totalContractValue / contractWeeks : 0;
+            const grossDaily = baseWeeklyGross / 7; // assuming 7 days per week for daily calculation
+            const grossWeekly = baseWeeklyGross;
+            const grossBiweekly = baseWeeklyGross * 2;
+            const grossMonthly = baseWeeklyGross * 4.33;
+
             // Update display
             document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -937,6 +968,12 @@
             document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toFixed(2);
             document.getElementById('yourContractRate').textContent = '$' + trueHourlyRate.toFixed(2);
             document.getElementById('annualEquivalent').textContent = '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            
+            // Update gross period displays
+            document.getElementById('grossDaily').textContent = '$' + grossDaily.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('grossWeekly').textContent = '$' + grossWeekly.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('grossBiweekly').textContent = '$' + grossBiweekly.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('grossMonthly').textContent = '$' + grossMonthly.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
             // Update subtexts
             document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
