@@ -328,25 +328,6 @@
             margin-top: 0.25rem;
         }
 
-        .result-breakdown {
-            margin-left: 2rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            padding: 0.5rem 1rem;
-            background-color: var(--background-color);
-            border-left: 2px solid var(--border-light);
-        }
-        
-        .breakdown-label {
-            font-weight: normal;
-            color: var(--text-secondary);
-        }
-        
-        .breakdown-value {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
         /* Comparison Section */
         .comparison-section {
             background-color: var(--surface-color);
@@ -650,7 +631,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="437.50" min="0" step="0.01" readonly>
+                                    <input type="number" class="form-input" id="overtimeRate" value="437.50" min="0" step="0.01" oninput="calculateContract()">
                                     <div class="form-help">Rate for hours over 40/week (1.25x regular rate)</div>
                                 </div>
                             </div>
@@ -760,44 +741,12 @@
                                     </div>
                                     <span class="result-value" id="totalHousingStipend">$23,400</span>
                                 </div>
-                                <div class="result-breakdown">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                        <span class="breakdown-label">→ Weekly Amount:</span>
-                                        <span class="breakdown-value" id="housingWeekly">$1,800</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span class="breakdown-label">→ Hourly Impact:</span>
-                                        <span class="breakdown-value" id="housingHourly">$37.50/hr</span>
-                                    </div>
-                                </div>
                                 <div class="result-item">
                                     <div>
                                         <span class="result-label">Other Compensation</span>
                                         <div class="result-subtext">Food, mileage, completion bonus</div>
                                     </div>
                                     <span class="result-value" id="otherCompensation">$30,600</span>
-                                </div>
-                                <div class="result-breakdown">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                        <span class="breakdown-label">→ Food Stipend (weekly):</span>
-                                        <span class="breakdown-value" id="foodWeekly">$300</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                        <span class="breakdown-label">→ Food Hourly Impact:</span>
-                                        <span class="breakdown-value" id="foodHourly">$6.25/hr</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                        <span class="breakdown-label">→ Mileage (weekly):</span>
-                                        <span class="breakdown-value" id="mileageWeekly">$67</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                        <span class="breakdown-label">→ Mileage Hourly Impact:</span>
-                                        <span class="breakdown-value" id="mileageHourly">$1.40/hr</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span class="breakdown-label">→ Completion Bonus:</span>
-                                        <span class="breakdown-value" id="completionBonusDisplay">$5,000</span>
-                                    </div>
                                 </div>
                             </div>
 
@@ -877,7 +826,7 @@
         function calculateContract() {
             // Get input values
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const overtimeRate = hourlyRate * 1.25;
+            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
             const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
             const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
@@ -916,16 +865,6 @@
             // Annual equivalent (52 weeks)
             const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
 
-            // Calculate weekly and hourly breakdowns
-            const housingWeeklyAmount = housingStipend;
-            const housingHourlyImpact = hoursPerWeek > 0 ? housingStipend / hoursPerWeek : 0;
-            
-            const foodWeeklyAmount = foodStipend;
-            const foodHourlyImpact = hoursPerWeek > 0 ? foodStipend / hoursPerWeek : 0;
-            
-            const mileageWeeklyAmount = mileageDriven * mileageRate;
-            const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate) / hoursPerWeek : 0;
-
             // Update display
             document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -940,23 +879,8 @@
 
             // Update subtexts
             document.querySelector('#regularPay').parentElement.querySelector('.result-subtext').textContent = `${regularHours} hrs/week × $${hourlyRate}/hr`;
-            document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate.toFixed(2)}/hr`;
+            document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate}/hr`;
             document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/month × $${beeperCallRate}/hr`;
-            
-            // Update OT rate input display
-            document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
-            
-            // Update breakdown displays
-            document.getElementById('housingWeekly').textContent = '$' + housingWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('housingHourly').textContent = '$' + housingHourlyImpact.toFixed(2) + '/hr';
-            
-            document.getElementById('foodWeekly').textContent = '$' + foodWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('foodHourly').textContent = '$' + foodHourlyImpact.toFixed(2) + '/hr';
-            
-            document.getElementById('mileageWeekly').textContent = '$' + mileageWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('mileageHourly').textContent = '$' + mileageHourlyImpact.toFixed(2) + '/hr';
-            
-            document.getElementById('completionBonusDisplay').textContent = '$' + completionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
 
         function emailResults() {
