@@ -698,6 +698,7 @@
                             <div class="action-buttons">
                                 <button class="btn-primary" onclick="saveCalculation()">Save Calculation</button>
                                 <button class="btn-secondary" onclick="exportToPDF()">Export PDF</button>
+                                <button class="btn-secondary" onclick="emailResults()">Email Results</button>
                             </div>
                         </div>
                     </div>
@@ -900,6 +901,54 @@
 
         function exportToPDF() {
             window.print();
+        }
+
+        function emailResults() {
+            const period = currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1);
+            const netPay = document.getElementById('netPay').textContent;
+            const grossTaxable = document.getElementById('grossTaxable').textContent;
+            
+            // Get all the values for the email body
+            const regularPay = document.getElementById('regularPay').textContent;
+            const overtimePay = document.getElementById('overtimePay').textContent;
+            const callPay = document.getElementById('callPay').textContent;
+            const callbackPay = document.getElementById('callbackPay').textContent;
+            const federalTax = document.getElementById('federalTax').textContent;
+            const stateTax = document.getElementById('stateTax').textContent;
+            const ficaTax = document.getElementById('ficaTax').textContent;
+            const housingStipend = document.getElementById('housingStipendDisplay').textContent;
+            const mealStipend = document.getElementById('mealStipendDisplay').textContent;
+            const mileageReimbursement = document.getElementById('mileageDisplay').textContent;
+            
+            const subject = `${period} Paycheck Calculation - Net Pay: ${netPay}`;
+            
+            const body = `${period} Paycheck Calculation Summary
+========================================
+
+NET TAKE-HOME PAY: ${netPay}
+
+EARNINGS BREAKDOWN:
+Regular Pay: ${regularPay}
+Overtime Pay: ${overtimePay}
+Call Pay: ${callPay}
+Callback Pay: ${callbackPay}
+Gross Taxable Income: ${grossTaxable}
+
+DEDUCTIONS:
+Federal Tax (22%): ${federalTax}
+State Tax: ${stateTax}
+FICA (7.65%): ${ficaTax}
+
+TAX-FREE BENEFITS:
+Housing Stipend: ${housingStipend}
+Meal Stipend: ${mealStipend}
+Mileage Reimbursement: ${mileageReimbursement}
+
+========================================
+Calculated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`;
+            
+            const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
         }
 
         // Auto-calculate overtime rate
