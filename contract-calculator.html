@@ -950,9 +950,8 @@
             const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate) / hoursPerWeek : 0;
 
             // Calculate gross period displays (total contract value / contract weeks)
-            const contractWeeks = contractLength * 52; // assuming contractLength is in years
             const baseWeeklyGross = contractWeeks > 0 ? totalContractValue / contractWeeks : 0;
-            const grossDaily = baseWeeklyGross / 7; // assuming 7 days per week for daily calculation
+            const grossDaily = baseWeeklyGross / 5; // assuming 5 working days per week
             const grossWeekly = baseWeeklyGross;
             const grossBiweekly = baseWeeklyGross * 2;
             const grossMonthly = baseWeeklyGross * 4.33;
