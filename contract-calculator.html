@@ -653,8 +653,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="437.50" min="0" step="0.01" readonly>
-                                    <div class="form-help">Rate for hours over 40/week (1.25x regular rate)</div>
+                                    <input type="number" class="form-input" id="overtimeRate" value="437.50" min="0" step="0.01" oninput="calculateContract()">
+                                    <div class="form-help">Rate for hours over 40/week (typically 1.25x regular rate)</div>
                                 </div>
                             </div>
 
@@ -900,7 +900,7 @@
         function calculateContract() {
             // Get input values
             const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const overtimeRate = hourlyRate * 1.25;
+            const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
             const hoursPerWeek = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
             const contractWeeks = parseFloat(document.getElementById('contractWeeks').value) || 0;
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
@@ -979,8 +979,6 @@
             document.querySelector('#overtimePay').parentElement.querySelector('.result-subtext').textContent = `${overtimeHours} hrs/week × $${overtimeRate.toFixed(2)}/hr`;
             document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/month × $${beeperCallRate}/hr`;
             
-            // Update OT rate input display
-            document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
             
             // Update breakdown displays
             document.getElementById('housingWeekly').textContent = '$' + housingWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -1061,9 +1059,10 @@
                 if (data.contractWeeks) document.getElementById('contractWeeks').value = data.contractWeeks;
                 if (data.housingStipend) document.getElementById('housingStipend').value = data.housingStipend;
                 
-                // Auto-calculate overtime rate
-                const overtimeRate = data.hourlyRate * 1.25;
-                document.getElementById('overtimeRate').value = overtimeRate.toFixed(2);
+                // Set overtime rate if provided
+                if (data.overtimeRate) {
+                    document.getElementById('overtimeRate').value = data.overtimeRate;
+                }
                 
                 // Show alert
                 document.getElementById('prefilledAlert').classList.add('show');
