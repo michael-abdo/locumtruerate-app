@@ -26,9 +26,10 @@ function calculateContract() {
     const totalBeeperCallPay = (beeperCallHours * beeperCallRate * contractWeeks) / 4; // Convert monthly to total
     
     // Tax-free benefits
-    const totalHousingStipend = housingStipend * contractWeeks;
-    const totalFoodStipend = foodStipend * contractWeeks;
-    const totalMileageReimbursement = mileageDriven * mileageRate * contractWeeks;
+    const totalDaysWorked = daysWorkedPerWeek * contractWeeks;
+    const totalHousingStipend = housingStipend * totalDaysWorked;
+    const totalFoodStipend = foodStipend * totalDaysWorked;
+    const totalMileageReimbursement = mileageDriven * mileageRate * totalDaysWorked;
     const otherCompensation = totalFoodStipend + totalMileageReimbursement + completionBonus;
     
     // Taxable income

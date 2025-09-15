@@ -612,27 +612,6 @@
                                 </div>
                             </div>
 
-                            <!-- Tax Information -->
-                            <div class="input-group">
-                                <div class="form-group">
-                                    <label class="form-label">Tax State</label>
-                                    <select class="form-input form-select" id="taxState" onchange="calculatePaycheck()">
-                                        <option value="no-tax">No State Tax</option>
-                                        <option value="low-tax">Low Tax State (3-5%)</option>
-                                        <option value="medium-tax">Medium Tax State (6-8%)</option>
-                                        <option value="high-tax">High Tax State (9-13%)</option>
-                                        <option value="california">California (13.3%)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Filing Status</label>
-                                    <select class="form-input form-select" id="filingStatus" onchange="calculatePaycheck()">
-                                        <option value="single">Single</option>
-                                        <option value="married">Married Filing Jointly</option>
-                                        <option value="head">Head of Household</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Results -->
@@ -664,18 +643,6 @@
                                 <div class="result-item highlight">
                                     <span class="result-label">Gross Taxable Income</span>
                                     <span class="result-value" id="grossTaxable">$5,530</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">Federal Tax (22%)</span>
-                                    <span class="result-value negative" id="federalTax">-$1,217</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">State Tax</span>
-                                    <span class="result-value negative" id="stateTax">-$0</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label">FICA (7.65%)</span>
-                                    <span class="result-value negative" id="ficaTax">-$423</span>
                                 </div>
                                 <div class="result-item">
                                     <span class="result-label">Housing Stipend</span>
@@ -821,8 +788,6 @@
             const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
             const mileageReimbursement = parseFloat(document.getElementById('mileageReimbursement').value) || 0;
-            const taxState = document.getElementById('taxState').value;
-            const filingStatus = document.getElementById('filingStatus').value;
             const daysWorked = parseFloat(document.getElementById('daysWorked').value) || 5;
 
             // Calculate pay components
@@ -834,22 +799,8 @@
             // Taxable income
             const grossTaxable = regularPay + overtimePay + callPay + callbackPay;
             
-            // Tax calculations
-            const federalTaxRate = 0.22; // Simplified federal tax rate
-            const federalTax = grossTaxable * federalTaxRate;
             
-            let stateTaxRate = 0;
-            switch(taxState) {
-                case 'low-tax': stateTaxRate = 0.04; break;
-                case 'medium-tax': stateTaxRate = 0.07; break;
-                case 'high-tax': stateTaxRate = 0.11; break;
-                case 'california': stateTaxRate = 0.133; break;
-                default: stateTaxRate = 0;
-            }
-            const stateTax = grossTaxable * stateTaxRate;
             
-            const ficaRate = 0.0765; // Social Security + Medicare
-            const ficaTax = grossTaxable * ficaRate;
             
             // Tax-free stipends
             const totalMealStipend = mealStipend * daysWorked * multiplier;
@@ -857,7 +808,7 @@
             const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement;
             
             // Net pay calculation
-            const netPay = grossTaxable - federalTax - stateTax - ficaTax + totalStipends;
+            const netPay = grossTaxable + totalStipends;
 
 
             // Update display
@@ -866,9 +817,6 @@
             document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('federalTax').textContent = '-$' + federalTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('stateTax').textContent = stateTax > 0 ? '-$' + stateTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) : '$0';
-            document.getElementById('ficaTax').textContent = '-$' + ficaTax.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('mealStipendDisplay').textContent = '+$' + totalMealStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('mileageDisplay').textContent = '+$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -891,9 +839,7 @@
                     callbackRate: document.getElementById('callbackRate').value,
                     housingStipend: document.getElementById('housingStipend').value,
                     mealStipend: document.getElementById('mealStipend').value,
-                    mileageReimbursement: document.getElementById('mileageReimbursement').value,
-                    taxState: document.getElementById('taxState').value,
-                    filingStatus: document.getElementById('filingStatus').value
+                    mileageReimbursement: document.getElementById('mileageReimbursement').value
                 },
                 results: {
                     netPay: document.getElementById('netPay').textContent,
@@ -923,9 +869,6 @@
             const overtimePay = document.getElementById('overtimePay').textContent;
             const callPay = document.getElementById('callPay').textContent;
             const callbackPay = document.getElementById('callbackPay').textContent;
-            const federalTax = document.getElementById('federalTax').textContent;
-            const stateTax = document.getElementById('stateTax').textContent;
-            const ficaTax = document.getElementById('ficaTax').textContent;
             const housingStipend = document.getElementById('housingStipendDisplay').textContent;
             const mealStipend = document.getElementById('mealStipendDisplay').textContent;
             const mileageReimbursement = document.getElementById('mileageDisplay').textContent;
@@ -943,11 +886,6 @@ Overtime Pay: ${overtimePay}
 Call Pay: ${callPay}
 Callback Pay: ${callbackPay}
 Gross Taxable Income: ${grossTaxable}
-
-DEDUCTIONS:
-Federal Tax (22%): ${federalTax}
-State Tax: ${stateTax}
-FICA (7.65%): ${ficaTax}
 
 TAX-FREE BENEFITS:
 Housing Stipend: ${housingStipend}
