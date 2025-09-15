@@ -45,15 +45,15 @@ function calculateContract() {
     // Annual equivalent (52 weeks)
     const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
 
-    // Calculate weekly and hourly breakdowns
-    const housingWeeklyAmount = housingStipend;
-    const housingHourlyImpact = hoursPerWeek > 0 ? housingStipend / hoursPerWeek : 0;
+    // Calculate daily and hourly breakdowns
+    const housingDailyAmount = housingStipend;
+    const housingHourlyImpact = hoursPerWeek > 0 ? (housingStipend * daysWorkedPerWeek) / hoursPerWeek : 0;
     
-    const foodWeeklyAmount = foodStipend;
-    const foodHourlyImpact = hoursPerWeek > 0 ? foodStipend / hoursPerWeek : 0;
+    const foodDailyAmount = foodStipend;
+    const foodHourlyImpact = hoursPerWeek > 0 ? (foodStipend * daysWorkedPerWeek) / hoursPerWeek : 0;
     
-    const mileageWeeklyAmount = mileageDriven * mileageRate;
-    const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate) / hoursPerWeek : 0;
+    const mileageDailyAmount = mileageDriven * mileageRate;
+    const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate * daysWorkedPerWeek) / hoursPerWeek : 0;
 
     // Calculate gross period displays (total contract value / contract weeks)
     const baseWeeklyGross = contractWeeks > 0 ? totalContractValue / contractWeeks : 0;
@@ -86,13 +86,13 @@ function calculateContract() {
     document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/month × $${beeperCallRate}/hr`;
     
     // Update breakdown displays
-    document.getElementById('housingWeekly').textContent = '$' + housingWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    document.getElementById('housingWeekly').textContent = '$' + housingDailyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     document.getElementById('housingHourly').textContent = '$' + housingHourlyImpact.toFixed(2) + '/hr';
     
-    document.getElementById('foodWeekly').textContent = '$' + foodWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    document.getElementById('foodWeekly').textContent = '$' + foodDailyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     document.getElementById('foodHourly').textContent = '$' + foodHourlyImpact.toFixed(2) + '/hr';
     
-    document.getElementById('mileageWeekly').textContent = '$' + mileageWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    document.getElementById('mileageWeekly').textContent = '$' + mileageDailyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     document.getElementById('mileageHourly').textContent = '$' + mileageHourlyImpact.toFixed(2) + '/hr';
     
     document.getElementById('completionBonusDisplay').textContent = '$' + completionBonus.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
