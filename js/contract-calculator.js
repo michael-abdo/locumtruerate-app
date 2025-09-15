@@ -204,13 +204,19 @@ function initializeContractCalculator() {
         }
     });
 
-    // Add email results listener
+    // Add button event listeners
+    const saveButton = document.getElementById('saveAnalysis');
+    if (saveButton) {
+        saveButton.addEventListener('click', function() {
+            window.location.href = 'login.html';
+        });
+    }
+
     const emailButton = document.getElementById('emailResults');
     if (emailButton) {
         emailButton.addEventListener('click', emailResults);
     }
 
-    // Add export analysis listener  
     const exportButton = document.getElementById('exportAnalysis');
     if (exportButton) {
         exportButton.addEventListener('click', exportAnalysis);
