@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - LocumTrueRate</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <!-- SEO and Legitimacy Signals -->
+    <link rel="canonical" href="https://locumtruerate-stage-8edec28739b0.herokuapp.com/terms-of-service.html">
+    <meta name="author" content="LocumTrueRate">
+    <meta name="description" content="Terms of Service for LocumTrueRate. Terms and conditions for using our healthcare contract calculators and professional tools.">
+    <meta property="og:title" content="Terms of Service - LocumTrueRate">
+    <meta property="og:description" content="Terms and conditions for using our healthcare professional calculation tools.">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Page Container */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background-color: var(--surface-color);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            padding: 0.5rem 0;
+            list-style: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            min-width: 160px;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0.5rem);
+        }
+
+        .dropdown-menu li a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding-bottom: 4rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Legal Content Styles */
+        .legal-content {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            box-shadow: var(--shadow-sm);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .legal-content h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .legal-content h3 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .legal-content h4 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .legal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .legal-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .legal-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+
+        .legal-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .last-updated {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .important-notice {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid var(--warning-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .important-notice h4 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .important-notice p {
+            color: #78350f;
+            margin-bottom: 0;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--text-primary);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4,
+        .footer-section h5 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .legal-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .legal-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>LocumTrueRate</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Terms of Service</h1>
+                <p>Please read these terms carefully before using our services</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="legal-content">
+                    <h2>LocumTrueRate Terms of Service</h2>
+                    
+                    <div class="important-notice">
+                        <h4>Important Notice</h4>
+                        <p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                    </div>
+
+                    <h3>1. Acceptance of Terms</h3>
+                    
+                    <p>Welcome to LocumTrueRate. These Terms of Service ("Terms") govern your use of our website and services. By accessing or using our website, you agree to be bound by these Terms and our Privacy Policy.</p>
+                    
+                    <p>If you disagree with any part of these terms, then you may not access the Service. If you're accessing and using the Service on behalf of a company (such as your employer), you represent and warrant that you have the authority to agree to these Terms on that entity's behalf.</p>
+
+                    <h3>2. Description of Service</h3>
+                    
+                    <p>LocumTrueRate provides healthcare professionals with:</p>
+                    <ul>
+                        <li>Contract calculators for analyzing compensation packages</li>
+                        <li>Paycheck calculators for understanding take-home pay</li>
+                        <li>Job board for finding locum tenens opportunities</li>
+                        <li>Educational resources about healthcare staffing</li>
+                        <li>Comparison tools for evaluating different positions</li>
+                    </ul>
+
+                    <h3>3. Eligibility and Registration</h3>
+                    
+                    <h4>3.1 Eligibility</h4>
+                    <p>You must be at least 18 years old and legally able to enter into contracts to use this Service. Our services are intended for healthcare professionals and industry participants.</p>
+                    
+                    <h4>3.2 Account Registration</h4>
+                    <p>While registration is optional for basic calculator use, creating an account allows you to:</p>
+                    <ul>
+                        <li>Save calculator results</li>
+                        <li>Access personalized job recommendations</li>
+                        <li>Track application history</li>
+                    </ul>
+                    
+                    <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.</p>
+
+                    <h3>4. Acceptable Use</h3>
+                    
+                    <h4>4.1 Permitted Uses</h4>
+                    <p>You may use our Service to:</p>
+                    <ul>
+                        <li>Calculate contract and paycheck information for personal use</li>
+                        <li>Research healthcare job opportunities</li>
+                        <li>Compare compensation packages</li>
+                        <li>Access educational content about healthcare staffing</li>
+                    </ul>
+                    
+                    <h4>4.2 Prohibited Uses</h4>
+                    <p>You may not use our Service to:</p>
+                    <ul>
+                        <li>Violate any laws or regulations</li>
+                        <li>Infringe on intellectual property rights</li>
+                        <li>Transmit viruses, malware, or harmful code</li>
+                        <li>Attempt to gain unauthorized access to our systems</li>
+                        <li>Use automated tools to scrape or harvest data</li>
+                        <li>Impersonate another person or entity</li>
+                        <li>Publish false or misleading information</li>
+                        <li>Interfere with the proper working of the Service</li>
+                    </ul>
+
+                    <h3>5. Content and Intellectual Property</h3>
+                    
+                    <h4>5.1 Our Content</h4>
+                    <p>All content, features, and functionality on our Service are owned by LocumTrueRate and are protected by copyright, trademark, and other intellectual property laws.</p>
+                    
+                    <h4>5.2 Your Content</h4>
+                    <p>You retain ownership of any content you submit, but grant us a license to use it in connection with providing our services. You represent that you have the right to submit such content.</p>
+                    
+                    <h4>5.3 Feedback</h4>
+                    <p>We welcome your feedback and suggestions. Any feedback you provide may be used by us without restriction or compensation to you.</p>
+
+                    <h3>6. Privacy and Data Protection</h3>
+                    
+                    <p>Your privacy is important to us. Our collection and use of personal information is governed by our <a href="privacy-policy.html">Privacy Policy</a>, which is incorporated into these Terms by reference.</p>
+                    
+                    <p>Key privacy highlights:</p>
+                    <ul>
+                        <li>Calculator data is processed locally in your browser</li>
+                        <li>We don't store your financial calculations on our servers</li>
+                        <li>Account information is encrypted and securely stored</li>
+                        <li>We don't sell or share personal information with third parties</li>
+                    </ul>
+
+                    <h3>7. Disclaimers and Warranties</h3>
+                    
+                    <h4>7.1 General Disclaimers</h4>
+                    <p><strong>Our Service is provided "as is" and "as available" without warranties of any kind, either express or implied.</strong></p>
+                    
+                    <p>We disclaim all warranties, including but not limited to:</p>
+                    <ul>
+                        <li>Accuracy of calculations or information</li>
+                        <li>Merchantability and fitness for a particular purpose</li>
+                        <li>Non-infringement of third-party rights</li>
+                        <li>Uninterrupted or error-free operation</li>
+                    </ul>
+                    
+                    <h4>7.2 Financial and Career Advice</h4>
+                    <p><strong>Important:</strong> Our calculators and tools are for informational purposes only and do not constitute financial, legal, or career advice. You should consult with qualified professionals before making important financial or career decisions.</p>
+                    
+                    <h4>7.3 Job Listings</h4>
+                    <p>We are not responsible for the accuracy, completeness, or reliability of job listings. We do not endorse or guarantee any employers or job opportunities posted on our platform.</p>
+
+                    <h3>8. Limitation of Liability</h3>
+                    
+                    <p><strong>To the maximum extent permitted by law, LocumTrueRate shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses.</strong></p>
+                    
+                    <p>In no event shall our total liability exceed the amount you paid us in the 12 months preceding the claim (or $100 if you haven't paid us anything).</p>
+                    
+                    <p>Some jurisdictions do not allow the exclusion of certain warranties or the limitation of liability, so these limitations may not apply to you.</p>
+
+                    <h3>9. Indemnification</h3>
+                    
+                    <p>You agree to defend, indemnify, and hold harmless LocumTrueRate and its officers, directors, employees, and agents from and against any claims, damages, obligations, losses, liabilities, costs, or debt arising from:</p>
+                    <ul>
+                        <li>Your use of and access to the Service</li>
+                        <li>Your violation of any term of these Terms</li>
+                        <li>Your violation of any third-party right</li>
+                        <li>Any content you submit or transmit through the Service</li>
+                    </ul>
+
+                    <h3>10. Termination</h3>
+                    
+                    <p>We may terminate or suspend your account and access to the Service immediately, without prior notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.</p>
+                    
+                    <p>Upon termination, your right to use the Service will cease immediately. You may delete your account at any time by contacting us.</p>
+
+                    <h3>11. Changes to Terms</h3>
+                    
+                    <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days notice prior to any new terms taking effect.</p>
+                    
+                    <p>Your continued use of the Service after the effective date of the revised Terms constitutes acceptance of the new Terms.</p>
+
+                    <h3>12. Governing Law and Disputes</h3>
+                    
+                    <h4>12.1 Governing Law</h4>
+                    <p>These Terms shall be governed by and construed in accordance with the laws of the State of Texas, without regard to its conflict of law provisions.</p>
+                    
+                    <h4>12.2 Dispute Resolution</h4>
+                    <p>Any disputes arising out of or relating to these Terms or the Service shall be resolved through binding arbitration in accordance with the Commercial Arbitration Rules of the American Arbitration Association.</p>
+                    
+                    <p>You waive any right to participate in a class-action lawsuit or class-wide arbitration against us.</p>
+
+                    <h3>13. Miscellaneous</h3>
+                    
+                    <h4>13.1 Entire Agreement</h4>
+                    <p>These Terms, together with our Privacy Policy, constitute the entire agreement between you and LocumTrueRate regarding the Service.</p>
+                    
+                    <h4>13.2 Severability</h4>
+                    <p>If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions will remain in full force and effect.</p>
+                    
+                    <h4>13.3 Waiver</h4>
+                    <p>No waiver of any term shall be deemed a further or continuing waiver of such term or any other term.</p>
+                    
+                    <h4>13.4 Assignment</h4>
+                    <p>You may not assign or transfer these Terms or your rights hereunder without our prior written consent. We may assign these Terms without restriction.</p>
+
+                    <h3>14. Contact Information</h3>
+                    
+                    <p>If you have any questions about these Terms of Service, please contact us:</p>
+                    <ul>
+                        <li><strong>Email:</strong> legal@locumtruerate.com</li>
+                        <li><strong>Address:</strong> LocumTrueRate, Legal Department<br>
+                            123 Medical Plaza, Suite 100<br>
+                            Austin, TX 78701</li>
+                        <li><strong>Phone:</strong> (555) 123-4567</li>
+                    </ul>
+
+                    <p class="last-updated"><strong>Last Updated:</strong> September 15, 2025</p>
+                    <p class="last-updated"><strong>Effective Date:</strong> September 15, 2025</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>LocumTrueRate</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Company</h5>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                            <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li>Email: support@locumtruerate.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 LocumTrueRate. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
