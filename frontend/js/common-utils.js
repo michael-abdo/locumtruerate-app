@@ -209,6 +209,129 @@ window.LocumUtils = window.LocumUtils || {};
     }
 
     /**
+     * Password Strength Validation
+     * Check password strength and provide feedback
+     * @param {string} password - Password to validate
+     * @returns {object} Strength level and suggestions
+     */
+    function validatePasswordStrength(password) {
+        const result = {
+            strength: 0,
+            level: 'weak',
+            suggestions: []
+        };
+        
+        // Length check
+        if (password.length < 8) {
+            result.suggestions.push('Use at least 8 characters');
+        } else {
+            result.strength += 1;
+        }
+        
+        // Uppercase check
+        if (!/[A-Z]/.test(password)) {
+            result.suggestions.push('Add uppercase letters');
+        } else {
+            result.strength += 1;
+        }
+        
+        // Lowercase check
+        if (!/[a-z]/.test(password)) {
+            result.suggestions.push('Add lowercase letters');
+        } else {
+            result.strength += 1;
+        }
+        
+        // Number check
+        if (!/\d/.test(password)) {
+            result.suggestions.push('Add numbers');
+        } else {
+            result.strength += 1;
+        }
+        
+        // Special character check
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            result.suggestions.push('Add special characters');
+        } else {
+            result.strength += 1;
+        }
+        
+        // Set strength level
+        if (result.strength <= 2) {
+            result.level = 'weak';
+        } else if (result.strength <= 3) {
+            result.level = 'medium';
+        } else {
+            result.level = 'strong';
+        }
+        
+        return result;
+    }
+
+    /**
+     * Serialize Form Data
+     * Convert form data to object for API submission
+     * @param {HTMLFormElement} form - Form to serialize
+     * @returns {object} Form data as object
+     */
+    function serializeForm(form) {
+        const formData = new FormData(form);
+        const data = {};
+        
+        for (const [key, value] of formData.entries()) {
+            // Handle multiple values (like checkboxes)
+            if (data[key] !== undefined) {
+                if (!Array.isArray(data[key])) {
+                    data[key] = [data[key]];
+                }
+                data[key].push(value);
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        return data;
+    }
+
+    /**
+     * Clear Form Errors
+     * Remove all error messages from a form
+     * @param {HTMLFormElement} form - Form to clear errors from
+     */
+    function clearFormErrors(form) {
+        const errorElements = form.querySelectorAll('.error-message');
+        errorElements.forEach(error => {
+            error.classList.remove('show');
+            error.textContent = '';
+        });
+        
+        const invalidInputs = form.querySelectorAll('.is-invalid');
+        invalidInputs.forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+    }
+
+    /**
+     * Show Field Error
+     * Display error message for specific field
+     * @param {string} fieldId - Field ID
+     * @param {string} message - Error message
+     */
+    function showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(fieldId + '-error');
+        
+        if (field) {
+            field.classList.add('is-invalid');
+        }
+        
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+    }
+
+    /**
      * Debounced Function Execution
      * Prevent excessive function calls during rapid events (e.g., input typing)
      * @param {Function} func - Function to debounce
@@ -574,6 +697,145 @@ window.LocumUtils = window.LocumUtils || {};
         });
     }
 
+    /**
+     * Loading State Management
+     * Show/hide loading indicators and disable/enable UI elements
+     * @param {boolean} isLoading - Loading state
+     * @param {string|Element} target - Target element or selector
+     * @param {object} options - Additional options
+     */
+    function setLoadingState(isLoading, target, options = {}) {
+        const defaults = {
+            loadingText: 'Loading...',
+            disableInputs: true,
+            showOverlay: false,
+            spinnerClass: 'spinner-border'
+        };
+        
+        const config = { ...defaults, ...options };
+        const element = typeof target === 'string' ? document.querySelector(target) : target;
+        
+        if (!element) return;
+        
+        if (isLoading) {
+            // Store original state
+            element.dataset.originalContent = element.innerHTML;
+            element.dataset.originalDisabled = element.disabled;
+            
+            // Set loading content
+            if (element.tagName === 'BUTTON') {
+                element.innerHTML = `<span class="${config.spinnerClass}"></span> ${config.loadingText}`;
+                element.disabled = true;
+            } else {
+                element.classList.add('loading');
+                if (config.showOverlay) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'loading-overlay';
+                    overlay.innerHTML = `<div class="${config.spinnerClass}"></div>`;
+                    element.style.position = 'relative';
+                    element.appendChild(overlay);
+                }
+            }
+            
+            // Disable form inputs if requested
+            if (config.disableInputs && element.tagName === 'FORM') {
+                element.querySelectorAll('input, select, textarea, button').forEach(input => {
+                    input.disabled = true;
+                });
+            }
+        } else {
+            // Restore original state
+            if (element.dataset.originalContent) {
+                element.innerHTML = element.dataset.originalContent;
+            }
+            
+            if (element.dataset.originalDisabled !== 'true') {
+                element.disabled = false;
+            }
+            
+            element.classList.remove('loading');
+            
+            // Remove overlay
+            const overlay = element.querySelector('.loading-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+            
+            // Re-enable form inputs
+            if (config.disableInputs && element.tagName === 'FORM') {
+                element.querySelectorAll('input, select, textarea, button').forEach(input => {
+                    if (!input.dataset.keepDisabled) {
+                        input.disabled = false;
+                    }
+                });
+            }
+            
+            // Clean up data attributes
+            delete element.dataset.originalContent;
+            delete element.dataset.originalDisabled;
+        }
+    }
+
+    /**
+     * Show loading spinner
+     * Display a fullscreen or inline loading spinner
+     * @param {object} options - Spinner options
+     * @returns {Element} Spinner element
+     */
+    function showLoadingSpinner(options = {}) {
+        const defaults = {
+            fullscreen: false,
+            container: document.body,
+            message: 'Loading...',
+            size: 'medium' // small, medium, large
+        };
+        
+        const config = { ...defaults, ...options };
+        
+        // Create spinner element
+        const spinner = document.createElement('div');
+        spinner.className = `loading-spinner ${config.size}`;
+        spinner.id = 'loadingSpinner' + Date.now();
+        
+        if (config.fullscreen) {
+            spinner.classList.add('fullscreen');
+        }
+        
+        spinner.innerHTML = `
+            <div class="spinner-content">
+                <div class="spinner"></div>
+                ${config.message ? `<p class="spinner-message">${config.message}</p>` : ''}
+            </div>
+        `;
+        
+        // Append to container
+        const container = typeof config.container === 'string' ? 
+            document.querySelector(config.container) : config.container;
+        
+        if (container) {
+            container.appendChild(spinner);
+        }
+        
+        return spinner;
+    }
+
+    /**
+     * Hide loading spinner
+     * Remove a loading spinner by element or ID
+     * @param {Element|string} spinner - Spinner element or ID
+     */
+    function hideLoadingSpinner(spinner) {
+        const element = typeof spinner === 'string' ? 
+            document.getElementById(spinner) : spinner;
+        
+        if (element) {
+            element.style.opacity = '0';
+            setTimeout(() => {
+                element.remove();
+            }, 300);
+        }
+    }
+
     // Export functions to global namespace
     window.LocumUtils = {
         showToast,
@@ -582,6 +844,10 @@ window.LocumUtils = window.LocumUtils || {};
         formatRelativeTime,
         validateInput,
         validateForm,
+        validatePasswordStrength,
+        serializeForm,
+        clearFormErrors,
+        showFieldError,
         debounce,
         apiRequest,
         localStorage,
@@ -595,7 +861,11 @@ window.LocumUtils = window.LocumUtils || {};
         loadPaginatedData,
         searchData,
         exportData,
-        initializeDashboard
+        initializeDashboard,
+        // Loading utilities
+        setLoadingState,
+        showLoadingSpinner,
+        hideLoadingSpinner
     };
 
 })();

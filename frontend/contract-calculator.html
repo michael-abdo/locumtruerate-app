@@ -9,6 +9,8 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -1088,7 +1090,7 @@
             if (emailBtn) emailBtn.disabled = !hasCalculatedResults;
         }
 
-        function calculateContract() {
+        async function calculateContract() {
             console.log('🔄 calculateContract() called');
             console.log('🔍 Checking if DOM is ready...');
             
@@ -1103,7 +1105,7 @@
             }
             
             console.log('✅ All input elements found');
-            console.log('🔄 Calculating contract (simplified gross only)...');
+            console.log('🔄 Calculating contract via API...');
             
             // Get input values - simplified fields only
             console.log('📊 Getting input values...');
@@ -1126,10 +1128,15 @@
             const travelReimbursement = getInputValue('travelReimbursement');
             const otherStipends = getInputValue('otherStipends');
             
+            // Get additional form values
+            const jobTitle = document.getElementById('jobTitle')?.value || '';
+            const contractType = document.getElementById('contractType')?.value || '';
+            const workState = document.getElementById('workState')?.value || '';
+            
             // Log input values for debugging
             console.log(`📊 Inputs: $${hourlyRate}/hr, ${hoursPerWeek} hrs/week, ${contractWeeks} weeks`);
             
-            // Validation with visible error messages
+            // Basic validation
             let hasErrors = false;
             const validationErrors = [];
             
@@ -1149,115 +1156,170 @@
                 validationErrors.push('Contract length must be at least 1 week');
                 hasErrors = true;
             }
-            if (contractWeeks > 52) {
-                console.warn('⚠️ Contract length over 1 year');
-            }
             if (travelReimbursement < 0 || otherStipends < 0 || housingStipend < 0) {
                 validationErrors.push('Values cannot be negative');
                 hasErrors = true;
             }
             
-            // Show validation errors
+            // Show validation errors and return if invalid
             if (hasErrors) {
                 console.error('❌ Validation errors:', validationErrors);
-                // Show first error as notification
-                if (typeof showNotification === 'function' && validationErrors.length > 0) {
-                    showNotification(`❌ ${validationErrors[0]}`, 'error');
+                if (typeof LocumUtils !== 'undefined' && validationErrors.length > 0) {
+                    LocumUtils.showToast(`❌ ${validationErrors[0]}`, 'error');
                 }
-            }
-            
-            // Simple gross calculations only
-            const weeklyGrossPay = hourlyRate * hoursPerWeek;
-            const totalGrossPay = weeklyGrossPay * contractWeeks;
-            const totalHousingStipend = housingStipend * contractWeeks;
-            const totalContractValue = totalGrossPay + totalHousingStipend + travelReimbursement + otherStipends;
-            
-            // True hourly rate calculation
-            const totalHours = hoursPerWeek * contractWeeks;
-            const trueHourlyRate = totalHours > 0 ? totalContractValue / totalHours : 0;
-            
-            // Annual equivalent (52 weeks)
-            const annualEquivalent = trueHourlyRate * hoursPerWeek * 52;
-
-            // Update display elements - only update elements that exist
-            const elements = {
-                'regularPay': '$' + totalGrossPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'weeklyGrossPay': '$' + weeklyGrossPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
-                'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalHousingStipend': '$' + totalHousingStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'otherStipends': '$' + (travelReimbursement + otherStipends).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'netTakeHome': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'totalContractValue': '$' + totalContractValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
-                'trueHourlyRate': '$' + trueHourlyRate.toFixed(2),
-                'yourContractRate': '$' + trueHourlyRate.toFixed(2),
-                'annualEquivalent': '$' + annualEquivalent.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
-            };
-
-            // Safely update each element
-            console.log('📊 Updating result display elements...');
-            const failedUpdates = [];
-            Object.keys(elements).forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = elements[id];
-                    console.log(`✅ Updated ${id}: ${elements[id]}`);
-                } else {
-                    failedUpdates.push(id);
-                    console.error(`❌ FAILED TO UPDATE: Result element not found: ${id}`);
-                }
-            });
-            
-            if (failedUpdates.length > 0) {
-                console.error(`❌❌❌ CRITICAL: Failed to update ${failedUpdates.length} result elements!`);
-                console.error(`Failed elements: ${failedUpdates.join(', ')}`);
-                console.error('This is why calculations appear as $0!');
-            }
-            
-            // Log calculation results
-            console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
-            
-            // Update button states after calculation
-            updateButtonStates();
-        }
-
-        function saveContract() {
-            // Check for account requirement
-            const isLoggedIn = localStorage.getItem('userToken'); // Simulate login check
-            if (!isLoggedIn) {
-                showGuestLoginModal('save');
                 return;
             }
             
-            // Always allow saving, but warn if validation issues exist
-            const hasValidationErrors = !areAllFieldsValid();
-            if (hasValidationErrors) {
-                LocumUtils.showToast('Saving contract with validation errors', 'warning');
-            }
-            
-            const contractData = {
-                timestamp: new Date().toISOString(),
-                jobTitle: document.getElementById('jobTitle').value,
-                hourlyRate: document.getElementById('hourlyRate').value,
-                hoursPerWeek: document.getElementById('hoursPerWeek').value,
-                contractWeeks: document.getElementById('contractWeeks').value,
-                workState: document.getElementById('workState').value,
-                totalValue: document.getElementById('totalContractValue').textContent,
-                trueHourlyRate: document.getElementById('trueHourlyRate').textContent,
-                weeklyGrossPay: document.getElementById('weeklyGrossPay').textContent,
-            };
+            try {
+                // Show loading state
+                LocumUtils.setLoadingState(true, '#calculate-btn', { loadingText: 'Calculating...' });
+                
+                // Prepare data for API
+                const contractData = {
+                    hourlyRate: hourlyRate,
+                    hoursPerWeek: hoursPerWeek,
+                    contractWeeks: contractWeeks,
+                    housingStipend: housingStipend,
+                    travelReimbursement: travelReimbursement,
+                    otherStipends: otherStipends,
+                    jobTitle: jobTitle,
+                    contractType: contractType,
+                    workState: workState
+                };
+                
+                // Call API for calculation
+                const response = await window.apiClient.calculateContract(contractData);
+                
+                if (response.success && response.calculation) {
+                    const calc = response.calculation;
+                    
+                    // Update display elements with API results
+                    const elements = {
+                        'regularPay': '$' + (calc.totalGrossPay || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                        'weeklyGrossPay': '$' + (calc.weeklyGrossPay || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+                        'totalContractValue': '$' + (calc.totalContractValue || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                        'totalHousingStipend': '$' + (calc.totalHousingStipend || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                        'otherStipends': '$' + (calc.totalOtherStipends || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                        'netTakeHome': '$' + (calc.netTakeHome || calc.totalContractValue || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}),
+                        'trueHourlyRate': '$' + (calc.trueHourlyRate || 0).toFixed(2),
+                        'yourContractRate': '$' + (calc.trueHourlyRate || 0).toFixed(2),
+                        'annualEquivalent': '$' + (calc.annualEquivalent || 0).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})
+                    };
 
-            let savedContracts = JSON.parse(localStorage.getItem('savedContracts') || '[]');
-            savedContracts.unshift(contractData);
-            savedContracts = savedContracts.slice(0, 10); // Keep only last 10
-            localStorage.setItem('savedContracts', JSON.stringify(savedContracts));
-            
-            console.log('💾 Contract saved successfully:', contractData);
-            
-            // Show success notification
-            showNotification('✅ Contract analysis saved successfully!', 'success');
-            
-            // Update comparison cards with new data if available
-            updateComparisonCards();
+                    // Safely update each element
+                    console.log('📊 Updating result display elements...');
+                    const failedUpdates = [];
+                    Object.keys(elements).forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.textContent = elements[id];
+                            console.log(`✅ Updated ${id}: ${elements[id]}`);
+                        } else {
+                            failedUpdates.push(id);
+                            console.error(`❌ FAILED TO UPDATE: Result element not found: ${id}`);
+                        }
+                    });
+                    
+                    if (failedUpdates.length > 0) {
+                        console.error(`❌❌❌ CRITICAL: Failed to update ${failedUpdates.length} result elements!`);
+                        console.error(`Failed elements: ${failedUpdates.join(', ')}`);
+                    }
+                    
+                    // Store calculation for saving
+                    window.lastCalculation = calc;
+                    
+                    // Log calculation results
+                    console.log(`📊 API Results: Weekly: $${(calc.weeklyGrossPay || 0).toFixed(2)}, Total: $${(calc.totalContractValue || 0).toFixed(2)}, True Rate: $${(calc.trueHourlyRate || 0).toFixed(2)}`);
+                    
+                    LocumUtils.showToast('Calculation completed', 'success');
+                    
+                } else {
+                    throw new Error(response.message || 'Calculation failed');
+                }
+                
+            } catch (error) {
+                console.error('❌ Calculation error:', error);
+                LocumUtils.showToast('Calculation failed: ' + error.message, 'error');
+                
+                // Clear results on error
+                const elements = ['regularPay', 'weeklyGrossPay', 'totalContractValue', 'totalHousingStipend', 'otherStipends', 'netTakeHome', 'trueHourlyRate', 'yourContractRate', 'annualEquivalent'];
+                elements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = '$0.00';
+                    }
+                });
+                
+            } finally {
+                // Hide loading state
+                LocumUtils.setLoadingState(false, '#calculate-btn');
+                
+                // Update button states after calculation
+                updateButtonStates();
+            }
+        }
+
+        async function saveContract() {
+            try {
+                // Check for authentication
+                if (!window.auth || !window.auth.isAuthenticated()) {
+                    showGuestLoginModal('save');
+                    return;
+                }
+                
+                // Check if we have a calculation to save
+                if (!window.lastCalculation) {
+                    LocumUtils.showToast('Please calculate a contract first before saving', 'warning');
+                    return;
+                }
+                
+                // Always allow saving, but warn if validation issues exist
+                const hasValidationErrors = !areAllFieldsValid();
+                if (hasValidationErrors) {
+                    LocumUtils.showToast('Saving contract with validation errors', 'warning');
+                }
+                
+                // Show loading state
+                LocumUtils.setLoadingState(true, '#save-btn', { loadingText: 'Saving...' });
+                
+                // Prepare calculation data for saving
+                const contractData = {
+                    type: 'contract',
+                    inputs: {
+                        jobTitle: document.getElementById('jobTitle')?.value || '',
+                        hourlyRate: parseFloat(document.getElementById('hourlyRate')?.value) || 0,
+                        hoursPerWeek: parseFloat(document.getElementById('hoursPerWeek')?.value) || 0,
+                        contractWeeks: parseFloat(document.getElementById('contractWeeks')?.value) || 0,
+                        contractType: document.getElementById('contractType')?.value || '',
+                        workState: document.getElementById('workState')?.value || '',
+                        housingStipend: parseFloat(document.getElementById('housingStipend')?.value) || 0,
+                        travelReimbursement: parseFloat(document.getElementById('travelReimbursement')?.value) || 0,
+                        otherStipends: parseFloat(document.getElementById('otherStipends')?.value) || 0
+                    },
+                    results: window.lastCalculation,
+                    calculatedAt: new Date().toISOString()
+                };
+                
+                // Save via API
+                const response = await window.apiClient.saveCalculation(contractData);
+                
+                if (response.success) {
+                    LocumUtils.showToast('Contract analysis saved successfully!', 'success');
+                    console.log('💾 Contract saved successfully:', response.calculation);
+                    
+                    // Update comparison cards with new data if available
+                    updateComparisonCards();
+                } else {
+                    throw new Error(response.message || 'Failed to save contract');
+                }
+                
+            } catch (error) {
+                console.error('❌ Save contract error:', error);
+                LocumUtils.showToast('Failed to save contract: ' + error.message, 'error');
+            } finally {
+                // Hide loading state
+                LocumUtils.setLoadingState(false, '#save-btn');
+            }
         }
 
         function compareContracts() {

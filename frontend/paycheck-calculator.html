@@ -9,6 +9,8 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
         * {
@@ -633,61 +635,99 @@
         }
 
         // Calculate paycheck
-        function calculatePaycheck() {
-            console.log('Calculating paycheck...');
+        async function calculatePaycheck() {
+            console.log('Calculating paycheck via API...');
             
-            // Get and validate inputs
-            const regularHours = validateInput(document.getElementById('regularHours'));
-            const regularRate = validateInput(document.getElementById('regularRate'));
-            const overtimeHours = validateInput(document.getElementById('overtimeHours'));
-            const overtimeRate = validateInput(document.getElementById('overtimeRate'));
-            const callHours = validateInput(document.getElementById('callHours'));
-            const callRate = validateInput(document.getElementById('callRate'));
-            const callbackHours = validateInput(document.getElementById('callbackHours'));
-            const callbackRate = validateInput(document.getElementById('callbackRate'));
-            const housingStipend = validateInput(document.getElementById('housingStipend'));
-            const mealStipend = validateInput(document.getElementById('mealStipend'));
-            const mileageReimbursement = validateInput(document.getElementById('mileageReimbursement'));
+            try {
+                // Get and validate inputs
+                const regularHours = validateInput(document.getElementById('regularHours'));
+                const regularRate = validateInput(document.getElementById('regularRate'));
+                const overtimeHours = validateInput(document.getElementById('overtimeHours'));
+                const overtimeRate = validateInput(document.getElementById('overtimeRate'));
+                const callHours = validateInput(document.getElementById('callHours'));
+                const callRate = validateInput(document.getElementById('callRate'));
+                const callbackHours = validateInput(document.getElementById('callbackHours'));
+                const callbackRate = validateInput(document.getElementById('callbackRate'));
+                const housingStipend = validateInput(document.getElementById('housingStipend'));
+                const mealStipend = validateInput(document.getElementById('mealStipend'));
+                const mileageReimbursement = validateInput(document.getElementById('mileageReimbursement'));
+                const taxState = document.getElementById('taxState').value;
 
-            // Get multiplier for period
-            const multiplier = periodMultipliers[currentPeriod];
+                // Basic validation
+                if (regularHours < 0 || regularRate < 0) {
+                    LocumUtils.showToast('Please enter valid values for regular hours and rate', 'error');
+                    return;
+                }
 
-            // Calculate pay components
-            const regularPay = regularHours * regularRate * multiplier;
-            const overtimePay = overtimeHours * overtimeRate * multiplier;
-            const callPay = callHours * callRate * multiplier;
-            const callbackPay = callbackHours * callbackRate * multiplier;
-            const totalGrossPay = regularPay + overtimePay + callPay + callbackPay;
+                // Show loading state
+                LocumUtils.setLoadingState(true, 'button', { loadingText: 'Calculating...' });
 
-            // Calculate stipends (already in period amounts)
-            const totalStipends = housingStipend + mealStipend + mileageReimbursement;
+                // Prepare data for API
+                const paycheckData = {
+                    regularHours: regularHours,
+                    regularRate: regularRate,
+                    overtimeHours: overtimeHours,
+                    overtimeRate: overtimeRate,
+                    callHours: callHours,
+                    callRate: callRate,
+                    callbackHours: callbackHours,
+                    callbackRate: callbackRate,
+                    housingStipend: housingStipend,
+                    mealStipend: mealStipend,
+                    mileageReimbursement: mileageReimbursement,
+                    taxState: taxState,
+                    payPeriod: currentPeriod
+                };
 
-            // Calculate taxes
-            const ficaTax = totalGrossPay * 0.0765;
-            const federalTax = calculateFederalTax(totalGrossPay);
-            const selectedState = document.getElementById('taxState').value;
-            const stateTaxRate = stateTaxRates[selectedState];
-            const stateTax = totalGrossPay * stateTaxRate;
+                // Call API for calculation
+                const response = await window.apiClient.calculatePaycheck(paycheckData);
 
-            const totalDeductions = federalTax + stateTax + ficaTax;
-            const netPay = totalGrossPay - totalDeductions + totalStipends;
+                if (response.success && response.calculation) {
+                    const calc = response.calculation;
 
-            // Update display using LocumUtils.formatCurrency
-            document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(regularPay);
-            document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(overtimePay);
-            document.getElementById('callPay').textContent = LocumUtils.formatCurrency(callPay);
-            document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(callbackPay);
-            document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(totalGrossPay);
-            
-            document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(housingStipend);
-            document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(mealStipend);
-            document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(mileageReimbursement);
-            document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(totalStipends);
-            
-            document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(federalTax);
-            document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(stateTax);
-            document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(ficaTax);
-            document.getElementById('netPay').textContent = LocumUtils.formatCurrency(netPay);
+                    // Update display using LocumUtils.formatCurrency with API results
+                    document.getElementById('regularPay').textContent = LocumUtils.formatCurrency(calc.regularPay || 0);
+                    document.getElementById('overtimePay').textContent = LocumUtils.formatCurrency(calc.overtimePay || 0);
+                    document.getElementById('callPay').textContent = LocumUtils.formatCurrency(calc.callPay || 0);
+                    document.getElementById('callbackPay').textContent = LocumUtils.formatCurrency(calc.callbackPay || 0);
+                    document.getElementById('totalGrossPay').textContent = LocumUtils.formatCurrency(calc.totalGrossPay || 0);
+                    
+                    document.getElementById('housingStipendDisplay').textContent = LocumUtils.formatCurrency(calc.housingStipend || 0);
+                    document.getElementById('mealStipendDisplay').textContent = LocumUtils.formatCurrency(calc.mealStipend || 0);
+                    document.getElementById('mileageDisplay').textContent = LocumUtils.formatCurrency(calc.mileageReimbursement || 0);
+                    document.getElementById('totalStipends').textContent = LocumUtils.formatCurrency(calc.totalStipends || 0);
+                    
+                    document.getElementById('federalTax').textContent = LocumUtils.formatCurrency(calc.federalTax || 0);
+                    document.getElementById('stateTax').textContent = LocumUtils.formatCurrency(calc.stateTax || 0);
+                    document.getElementById('ficaTax').textContent = LocumUtils.formatCurrency(calc.ficaTax || 0);
+                    document.getElementById('netPay').textContent = LocumUtils.formatCurrency(calc.netPay || 0);
+
+                    // Store calculation for saving
+                    window.lastCalculation = calc;
+
+                    LocumUtils.showToast('Paycheck calculation completed', 'success');
+
+                } else {
+                    throw new Error(response.message || 'Calculation failed');
+                }
+
+            } catch (error) {
+                console.error('❌ Paycheck calculation error:', error);
+                LocumUtils.showToast('Calculation failed: ' + error.message, 'error');
+                
+                // Clear results on error
+                const elements = ['regularPay', 'overtimePay', 'callPay', 'callbackPay', 'totalGrossPay', 'housingStipendDisplay', 'mealStipendDisplay', 'mileageDisplay', 'totalStipends', 'federalTax', 'stateTax', 'ficaTax', 'netPay'];
+                elements.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = '$0.00';
+                    }
+                });
+
+            } finally {
+                // Hide loading state
+                LocumUtils.setLoadingState(false, 'button');
+            }
         }
 
         // Simple federal tax calculation
@@ -733,18 +773,62 @@
         }
 
         // Save calculation
-        function saveCalculation() {
-            const data = {
-                period: currentPeriod,
-                regularHours: document.getElementById('regularHours').value,
-                regularRate: document.getElementById('regularRate').value,
-                overtimeHours: document.getElementById('overtimeHours').value,
-                overtimeRate: document.getElementById('overtimeRate').value,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('paycheckCalculation', JSON.stringify(data));
-            LocumUtils.showToast('Calculation saved successfully!', 'success');
+        async function saveCalculation() {
+            try {
+                // Check for authentication
+                if (!window.auth || !window.auth.isAuthenticated()) {
+                    LocumUtils.showToast('Please log in to save calculations', 'warning');
+                    return;
+                }
+                
+                // Check if we have a calculation to save
+                if (!window.lastCalculation) {
+                    LocumUtils.showToast('Please calculate a paycheck first before saving', 'warning');
+                    return;
+                }
+                
+                // Show loading state
+                LocumUtils.setLoadingState(true, '#saveBtn', { loadingText: 'Saving...' });
+                
+                // Prepare calculation data for saving
+                const paycheckData = {
+                    type: 'paycheck',
+                    inputs: {
+                        period: currentPeriod,
+                        regularHours: parseFloat(document.getElementById('regularHours').value) || 0,
+                        regularRate: parseFloat(document.getElementById('regularRate').value) || 0,
+                        overtimeHours: parseFloat(document.getElementById('overtimeHours').value) || 0,
+                        overtimeRate: parseFloat(document.getElementById('overtimeRate').value) || 0,
+                        callHours: parseFloat(document.getElementById('callHours').value) || 0,
+                        callRate: parseFloat(document.getElementById('callRate').value) || 0,
+                        callbackHours: parseFloat(document.getElementById('callbackHours').value) || 0,
+                        callbackRate: parseFloat(document.getElementById('callbackRate').value) || 0,
+                        housingStipend: parseFloat(document.getElementById('housingStipend').value) || 0,
+                        mealStipend: parseFloat(document.getElementById('mealStipend').value) || 0,
+                        mileageReimbursement: parseFloat(document.getElementById('mileageReimbursement').value) || 0,
+                        taxState: document.getElementById('taxState').value
+                    },
+                    results: window.lastCalculation,
+                    calculatedAt: new Date().toISOString()
+                };
+                
+                // Save via API
+                const response = await window.apiClient.saveCalculation(paycheckData);
+                
+                if (response.success) {
+                    LocumUtils.showToast('Paycheck calculation saved successfully!', 'success');
+                    console.log('💾 Paycheck saved successfully:', response.calculation);
+                } else {
+                    throw new Error(response.message || 'Failed to save paycheck calculation');
+                }
+                
+            } catch (error) {
+                console.error('❌ Save paycheck error:', error);
+                LocumUtils.showToast('Failed to save paycheck: ' + error.message, 'error');
+            } finally {
+                // Hide loading state
+                LocumUtils.setLoadingState(false, '#saveBtn');
+            }
         }
 
         // Print results

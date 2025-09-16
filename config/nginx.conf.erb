@@ -1,0 +1,89 @@
+daemon off;
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+    use epoll;
+    accept_mutex on;
+    worker_connections <%= ENV['NGINX_WORKER_CONNECTIONS'] || 1024 %>;
+}
+
+http {
+    gzip on;
+    gzip_comp_level 2;
+    gzip_min_length 512;
+    gzip_proxied any;
+    gzip_vary on;
+    gzip_types
+        text/plain
+        text/css
+        text/js
+        text/xml
+        text/javascript
+        application/javascript
+        application/xml+rss
+        application/json;
+
+    server_tokens off;
+
+    log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+    access_log <%= ENV['NGINX_ACCESS_LOG_PATH'] || 'logs/nginx/access.log' %> l2met;
+    error_log <%= ENV['NGINX_ERROR_LOG_PATH'] || 'logs/nginx/error.log' %>;
+
+    include mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+
+    # Must read the body in 5 seconds.
+    client_body_timeout 5;
+
+    server {
+        listen <%= ENV["PORT"] %>;
+        server_name _;
+        keepalive_timeout 5;
+        client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
+
+        # Serve static files from frontend directory
+        location / {
+            root /app/frontend/;
+            index index.html;
+            
+            # Cache static assets
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+                add_header X-Content-Type-Options nosniff;
+                add_header X-Frame-Options DENY;
+                add_header X-XSS-Protection "1; mode=block";
+            }
+            
+            # Security headers for HTML files
+            location ~* \.(html)$ {
+                add_header X-Content-Type-Options nosniff;
+                add_header X-Frame-Options DENY;
+                add_header X-XSS-Protection "1; mode=block";
+                add_header Referrer-Policy "strict-origin-when-cross-origin";
+                add_header Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: https:; connect-src 'self' https: wss:;";
+            }
+            
+            # Try to serve request as file, then as directory, then fall back to index
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Health check endpoint for load balancers
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        # Optional: API proxy for same-origin requests
+        # Uncomment if backend API is available on same domain
+        # location /api/ {
+        #     proxy_pass http://localhost:4000/api/;
+        #     proxy_set_header Host $host;
+        #     proxy_set_header X-Real-IP $remote_addr;
+        #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        #     proxy_set_header X-Forwarded-Proto $scheme;
+        # }
+    }
+}

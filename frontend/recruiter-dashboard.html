@@ -9,6 +9,8 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -498,6 +500,28 @@
             background-color: var(--background-color);
             color: var(--text-secondary);
             border: 1px solid var(--border-color);
+        }
+
+        /* Tab Button Styles */
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+            background-color: var(--background-color);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
         }
 
         /* Job Listings Table */
@@ -3757,42 +3781,87 @@
             }
         }
 
-        function saveDraftJob() {
-            showNotification('Job saved as draft', 'info');
-            closeJobModal();
+        async function saveDraftJob() {
+            try {
+                const jobData = {
+                    title: document.getElementById('job-title').value,
+                    specialty: document.getElementById('job-specialty').value,
+                    facility: document.getElementById('job-facility').value,
+                    facilityType: document.getElementById('job-facility-type').value,
+                    city: document.getElementById('job-city').value,
+                    state: document.getElementById('job-state').value,
+                    zip: document.getElementById('job-zip').value,
+                    rate: parseFloat(document.getElementById('job-rate').value) || 0,
+                    startDate: document.getElementById('job-start-date').value,
+                    duration: document.getElementById('job-duration').value,
+                    description: document.getElementById('job-description').value,
+                    experience: document.getElementById('job-experience').value,
+                    call: document.getElementById('job-call').value,
+                    status: 'draft'
+                };
+                
+                // Save draft via API
+                const response = await window.apiClient.createJob(jobData);
+                
+                if (response.success) {
+                    LocumUtils.showToast('Job saved as draft', 'success');
+                    closeJobModal();
+                    
+                    // Refresh the jobs list to include the draft
+                    await loadRecruiterJobs();
+                } else {
+                    throw new Error(response.message || 'Failed to save draft');
+                }
+            } catch (error) {
+                console.error('Error saving job draft:', error);
+                LocumUtils.showToast('Failed to save draft: ' + error.message, 'error');
+            }
         }
 
-        function submitNewJob(event) {
+        async function submitNewJob(event) {
             event.preventDefault();
             
             const submitButton = event.target.querySelector('button[type="submit"]');
             setButtonLoading(submitButton, true);
             
-            const jobData = {
-                title: document.getElementById('job-title').value,
-                specialty: document.getElementById('job-specialty').value,
-                facility: document.getElementById('job-facility').value,
-                facilityType: document.getElementById('job-facility-type').value,
-                city: document.getElementById('job-city').value,
-                state: document.getElementById('job-state').value,
-                zip: document.getElementById('job-zip').value,
-                rate: document.getElementById('job-rate').value,
-                startDate: document.getElementById('job-start-date').value,
-                duration: document.getElementById('job-duration').value,
-                description: document.getElementById('job-description').value,
-                experience: document.getElementById('job-experience').value,
-                call: document.getElementById('job-call').value
-            };
-            
-            // Simulate API call with loading state
-            setTimeout(() => {
-                // Add new job to table
-                addJobToTable(jobData);
+            try {
+                const jobData = {
+                    title: document.getElementById('job-title').value,
+                    specialty: document.getElementById('job-specialty').value,
+                    facility: document.getElementById('job-facility').value,
+                    facilityType: document.getElementById('job-facility-type').value,
+                    city: document.getElementById('job-city').value,
+                    state: document.getElementById('job-state').value,
+                    zip: document.getElementById('job-zip').value,
+                    rate: parseFloat(document.getElementById('job-rate').value),
+                    startDate: document.getElementById('job-start-date').value,
+                    duration: document.getElementById('job-duration').value,
+                    description: document.getElementById('job-description').value,
+                    experience: document.getElementById('job-experience').value,
+                    call: document.getElementById('job-call').value,
+                    status: 'active'
+                };
                 
+                // Post job via API
+                const response = await window.apiClient.createJob(jobData);
+                
+                if (response.success) {
+                    // Add new job to table with the returned job data
+                    addJobToTable(response.job);
+                    LocumUtils.showToast('Job posted successfully!', 'success');
+                    closeJobModal();
+                    
+                    // Refresh the jobs list to get updated data
+                    await loadRecruiterJobs();
+                } else {
+                    throw new Error(response.message || 'Failed to post job');
+                }
+            } catch (error) {
+                console.error('Error posting job:', error);
+                LocumUtils.showToast('Failed to post job: ' + error.message, 'error');
+            } finally {
                 setButtonLoading(submitButton, false);
-                LocumUtils.showToast('Job posted successfully!', 'success');
-                closeJobModal();
-            }, 1500);
+            }
         }
 
         function addJobToTable(jobData) {
@@ -3833,6 +3902,88 @@
             // Update pagination and stats
             updateJobsPagination();
             updateDashboardStats();
+        }
+
+        async function loadRecruiterJobs() {
+            try {
+                LocumUtils.setLoadingState(true, '#jobs-table-body', { showOverlay: true });
+                
+                // Fetch jobs from API
+                const response = await window.apiClient.getMyPostedJobs();
+                
+                if (response.success && response.jobs) {
+                    const tableBody = document.getElementById('jobs-table-body');
+                    
+                    // Clear existing jobs
+                    tableBody.innerHTML = '';
+                    
+                    // Populate with API data
+                    response.jobs.forEach(job => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-status', job.status || 'active');
+                        row.setAttribute('data-job-id', job.id);
+                        
+                        // Format application count
+                        const applicationCount = job.applicationCount || 0;
+                        
+                        // Format date
+                        const formattedDate = job.createdAt ? 
+                            LocumUtils.formatDate(new Date(job.createdAt)) : 
+                            LocumUtils.formatDate(new Date());
+                        
+                        row.innerHTML = `
+                            <td>${job.title || 'Untitled Position'}</td>
+                            <td>${job.facility || 'Not specified'}</td>
+                            <td>${job.city || ''}, ${job.state || ''}</td>
+                            <td data-sort-value="${job.rate || 0}">$${job.rate || 0}/hr</td>
+                            <td data-sort-value="${applicationCount}">${applicationCount}</td>
+                            <td data-sort-value="${job.createdAt || Date.now()}">${formattedDate}</td>
+                            <td>
+                                <select class="status-dropdown" onchange="changeJobStatus(${job.id}, this.value)">
+                                    <option value="active" ${job.status === 'active' ? 'selected' : ''}>Active</option>
+                                    <option value="pending" ${job.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="draft" ${job.status === 'draft' ? 'selected' : ''}>Draft</option>
+                                    <option value="filled" ${job.status === 'filled' ? 'selected' : ''}>Filled</option>
+                                    <option value="expired" ${job.status === 'expired' ? 'selected' : ''}>Expired</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="job-actions">
+                                    <button class="action-btn view" onclick="viewJob(${job.id})">View</button>
+                                    <button class="action-btn edit" onclick="editJob(${job.id})">Edit</button>
+                                    <button class="action-btn delete" onclick="deleteJob(${job.id})">Delete</button>
+                                </div>
+                            </td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Update pagination and stats
+                    updateJobsPagination();
+                    updateDashboardStats();
+                    
+                } else {
+                    throw new Error(response.message || 'Failed to load jobs');
+                }
+            } catch (error) {
+                console.error('Error loading recruiter jobs:', error);
+                LocumUtils.showToast('Failed to load jobs: ' + error.message, 'error');
+                
+                // Show empty state if needed
+                const tableBody = document.getElementById('jobs-table-body');
+                if (tableBody.children.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                No jobs found. <a href="#" onclick="showNewJobForm()" style="color: var(--primary-color);">Post your first job</a>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } finally {
+                LocumUtils.setLoadingState(false, '#jobs-table-body');
+            }
         }
 
         function viewAnalytics() {
@@ -4264,13 +4415,325 @@
             updateJobsPagination();
         }
 
-        function viewJob(jobId) {
-            showNotification(`Viewing job details for Job ID: ${jobId}`, 'info');
-            // This would open a detailed view showing:
-            // • Complete job description
-            // • Applicant list and status  
-            // • Performance metrics
-            // • Edit options
+        async function viewJob(jobId) {
+            try {
+                // Get job details from API
+                const jobResponse = await window.apiClient.getJob(jobId);
+                if (!jobResponse.success) {
+                    throw new Error(jobResponse.message || 'Failed to load job details');
+                }
+                
+                const job = jobResponse.job;
+                
+                // Get applications for this job
+                const applicationsResponse = await window.apiClient.getJobApplications(jobId);
+                const applications = applicationsResponse.success ? applicationsResponse.applications : [];
+                
+                // Create job details modal
+                const modal = document.createElement('div');
+                modal.className = 'compose-modal';
+                modal.innerHTML = `
+                    <div class="compose-modal-content" style="max-width: 1000px; max-height: 90vh;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 style="color: var(--primary-color);">📋 Job Details: ${job.title}</h2>
+                            <button onclick="closeJobDetailsModal()" style="
+                                background: none;
+                                border: none;
+                                font-size: 1.5rem;
+                                cursor: pointer;
+                                color: var(--text-secondary);
+                            ">×</button>
+                        </div>
+                        
+                        <!-- Job Information Tabs -->
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                            <button class="tab-btn active" onclick="switchJobTab('details', this)">Job Details</button>
+                            <button class="tab-btn" onclick="switchJobTab('applications', this)">Applications (${applications.length})</button>
+                            <button class="tab-btn" onclick="switchJobTab('analytics', this)">Analytics</button>
+                        </div>
+                        
+                        <!-- Job Details Tab -->
+                        <div id="job-details-tab" class="job-tab-content">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                <div>
+                                    <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Position Information</h3>
+                                    <div style="display: grid; gap: 0.75rem;">
+                                        <div><strong>Title:</strong> ${job.title}</div>
+                                        <div><strong>Specialty:</strong> ${job.specialty || 'Not specified'}</div>
+                                        <div><strong>Experience Required:</strong> ${job.experience || 'Not specified'}</div>
+                                        <div><strong>Call Requirements:</strong> ${job.call || 'Not specified'}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Facility & Location</h3>
+                                    <div style="display: grid; gap: 0.75rem;">
+                                        <div><strong>Facility:</strong> ${job.facility}</div>
+                                        <div><strong>Type:</strong> ${job.facilityType || 'Not specified'}</div>
+                                        <div><strong>Location:</strong> ${job.city}, ${job.state} ${job.zip || ''}</div>
+                                        <div><strong>Rate:</strong> $${job.rate}/hr</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Contract Details</h3>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                                    <div><strong>Start Date:</strong> ${job.startDate ? LocumUtils.formatDate(new Date(job.startDate)) : 'Not specified'}</div>
+                                    <div><strong>Duration:</strong> ${job.duration || 'Not specified'}</div>
+                                    <div><strong>Status:</strong> 
+                                        <span class="status-indicator ${job.status}">${job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : 'Active'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${job.description ? `
+                                <div style="margin-top: 2rem;">
+                                    <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Job Description</h3>
+                                    <div style="background: var(--background-color); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                        ${job.description}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; gap: 1rem;">
+                                <button class="btn secondary" onclick="editJob(${jobId})">Edit Job</button>
+                                <button class="btn secondary" onclick="duplicateJob(${jobId})">Duplicate</button>
+                                <button class="btn danger" onclick="deleteJob(${jobId})">Delete Job</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Applications Tab -->
+                        <div id="job-applications-tab" class="job-tab-content" style="display: none;">
+                            <div id="job-applications-list">
+                                ${applications.length > 0 ? applications.map(app => `
+                                    <div class="applicant-card" style="margin-bottom: 1rem;">
+                                        <div class="applicant-avatar">${(app.applicant?.firstName || 'U').charAt(0)}${(app.applicant?.lastName || 'U').charAt(0)}</div>
+                                        <div class="applicant-info" style="flex: 1;">
+                                            <div class="applicant-header">
+                                                <div class="applicant-name">${app.applicant?.firstName || 'Unknown'} ${app.applicant?.lastName || 'Applicant'}</div>
+                                                <div class="applicant-status-badge">
+                                                    <span class="status-indicator ${app.status || 'new'}">${(app.status || 'new').charAt(0).toUpperCase() + (app.status || 'new').slice(1)}</span>
+                                                </div>
+                                            </div>
+                                            <div class="applicant-specialty">${app.applicant?.email || 'No email provided'}</div>
+                                            <div class="applicant-rating">
+                                                Applied: ${app.createdAt ? LocumUtils.formatDate(new Date(app.createdAt)) : 'Unknown date'}
+                                                ${app.coverLetter ? ` • Cover letter provided` : ''}
+                                            </div>
+                                        </div>
+                                        <div class="applicant-actions">
+                                            <button class="action-btn view" onclick="viewApplication(${app.id})">Review</button>
+                                            <button class="action-btn edit" onclick="updateApplicationStatus(${app.id})">Update Status</button>
+                                        </div>
+                                    </div>
+                                `).join('') : `
+                                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                        <div style="font-size: 3rem; margin-bottom: 1rem;">📄</div>
+                                        <h3>No Applications Yet</h3>
+                                        <p>This job hasn't received any applications yet.</p>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                        
+                        <!-- Analytics Tab -->
+                        <div id="job-analytics-tab" class="job-tab-content" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                                <div style="background: var(--background-color); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 600; color: var(--primary-color);">${applications.length}</div>
+                                    <div style="color: var(--text-secondary);">Total Applications</div>
+                                </div>
+                                <div style="background: var(--background-color); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 600; color: var(--success-color);">${applications.filter(app => app.status === 'hired').length}</div>
+                                    <div style="color: var(--text-secondary);">Hired</div>
+                                </div>
+                                <div style="background: var(--background-color); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 600; color: var(--warning-color);">${job.views || 0}</div>
+                                    <div style="color: var(--text-secondary);">Views</div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <h4 style="margin-bottom: 1rem;">Application Status Breakdown</h4>
+                                <div style="display: grid; gap: 0.5rem;">
+                                    ${['new', 'reviewing', 'interviewing', 'shortlisted', 'offered', 'hired', 'rejected'].map(status => {
+                                        const count = applications.filter(app => app.status === status).length;
+                                        const percentage = applications.length > 0 ? Math.round((count / applications.length) * 100) : 0;
+                                        return `
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span style="text-transform: capitalize;">${status}</span>
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <div style="width: 100px; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                                                        <div style="width: ${percentage}%; height: 100%; background: var(--primary-color);"></div>
+                                                    </div>
+                                                    <span style="min-width: 40px; text-align: right;">${count} (${percentage}%)</span>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add modal event handlers
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeJobDetailsModal();
+                    }
+                });
+                
+                document.addEventListener('keydown', function escapeHandler(e) {
+                    if (e.key === 'Escape') {
+                        closeJobDetailsModal();
+                        document.removeEventListener('keydown', escapeHandler);
+                    }
+                });
+                
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+                document.body.appendChild(modal);
+                
+                // Animate in
+                modal.style.opacity = '0';
+                const modalContent = modal.querySelector('.compose-modal-content');
+                modalContent.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                    modalContent.style.transform = 'scale(1)';
+                }, 10);
+                
+            } catch (error) {
+                console.error('Error viewing job details:', error);
+                LocumUtils.showToast('Failed to load job details: ' + error.message, 'error');
+            }
+        }
+
+        function closeJobDetailsModal() {
+            const modal = document.querySelector('.compose-modal');
+            if (modal) {
+                // Restore body scroll
+                document.body.style.overflow = '';
+                
+                // Remove modal with fade animation
+                modal.style.opacity = '0';
+                const modalContent = modal.querySelector('.compose-modal-content');
+                if (modalContent) {
+                    modalContent.style.transform = 'scale(0.9)';
+                }
+                
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.remove();
+                    }
+                }, 300);
+            }
+        }
+
+        function switchJobTab(tabName, button) {
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.job-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected tab
+            const selectedTab = document.getElementById(`job-${tabName}-tab`);
+            if (selectedTab) {
+                selectedTab.style.display = 'block';
+            }
+        }
+
+        async function viewApplication(applicationId) {
+            try {
+                const response = await window.apiClient.getApplication(applicationId);
+                if (!response.success) {
+                    throw new Error(response.message || 'Failed to load application details');
+                }
+                
+                const application = response.application;
+                LocumUtils.showToast(`Viewing application from ${application.applicant?.firstName || 'Unknown'} ${application.applicant?.lastName || 'Applicant'}`, 'info');
+                
+                // TODO: Implement full application details modal
+                // This would show cover letter, resume, contact info, etc.
+                
+            } catch (error) {
+                console.error('Error viewing application:', error);
+                LocumUtils.showToast('Failed to load application details: ' + error.message, 'error');
+            }
+        }
+
+        async function updateApplicationStatus(applicationId) {
+            try {
+                const newStatus = prompt('Enter new status (new, reviewing, interviewing, shortlisted, offered, hired, rejected, withdrawn):');
+                if (!newStatus) return;
+                
+                const response = await window.apiClient.updateApplicationStatus(applicationId, { status: newStatus });
+                if (response.success) {
+                    LocumUtils.showToast('Application status updated successfully', 'success');
+                    // Refresh the current job view if the modal is open
+                    const modal = document.querySelector('.compose-modal');
+                    if (modal) {
+                        // Re-open the job details to refresh the applications
+                        const jobId = modal.querySelector('[onclick*="editJob"]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
+                        if (jobId) {
+                            closeJobDetailsModal();
+                            setTimeout(() => viewJob(jobId), 300);
+                        }
+                    }
+                } else {
+                    throw new Error(response.message || 'Failed to update application status');
+                }
+            } catch (error) {
+                console.error('Error updating application status:', error);
+                LocumUtils.showToast('Failed to update application status: ' + error.message, 'error');
+            }
+        }
+
+        async function duplicateJob(jobId) {
+            try {
+                const jobResponse = await window.apiClient.getJob(jobId);
+                if (!jobResponse.success) {
+                    throw new Error(jobResponse.message || 'Failed to load job details');
+                }
+                
+                const originalJob = jobResponse.job;
+                
+                // Create duplicate job data
+                const duplicateJobData = {
+                    title: `Copy of ${originalJob.title}`,
+                    specialty: originalJob.specialty,
+                    facility: originalJob.facility,
+                    facilityType: originalJob.facilityType,
+                    city: originalJob.city,
+                    state: originalJob.state,
+                    zip: originalJob.zip,
+                    rate: originalJob.rate,
+                    startDate: originalJob.startDate,
+                    duration: originalJob.duration,
+                    description: originalJob.description,
+                    experience: originalJob.experience,
+                    call: originalJob.call,
+                    status: 'draft' // Set as draft by default
+                };
+                
+                const response = await window.apiClient.createJob(duplicateJobData);
+                if (response.success) {
+                    LocumUtils.showToast('Job duplicated successfully', 'success');
+                    closeJobDetailsModal();
+                    await loadRecruiterJobs(); // Refresh jobs list
+                } else {
+                    throw new Error(response.message || 'Failed to duplicate job');
+                }
+            } catch (error) {
+                console.error('Error duplicating job:', error);
+                LocumUtils.showToast('Failed to duplicate job: ' + error.message, 'error');
+            }
         }
 
         function editJob(jobId) {
@@ -7836,6 +8299,13 @@ Dr. James Wilson`,
                 // Update dashboard stats to match actual data
                 if (typeof updateDashboardStats === 'function') {
                     updateDashboardStats();
+                }
+                
+                // Load recruiter's jobs from API
+                if (typeof loadRecruiterJobs === 'function') {
+                    loadRecruiterJobs().catch(error => {
+                        console.error('Failed to load recruiter jobs on initialization:', error);
+                    });
                 }
                 
                 // Add KPI refresh controls

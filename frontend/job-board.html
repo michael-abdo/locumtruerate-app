@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -559,6 +561,32 @@
                 gap: 1rem;
             }
         }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -599,10 +627,10 @@
             <!-- Filters Section -->
             <section class="filters-section">
                 <div class="container">
-                    <div class="filters-container">
+                    <form id="jobSearchForm" class="filters-container">
                         <div class="filters-group">
-                            <input type="text" class="form-control" placeholder="Search jobs..." id="searchInput">
-                            <select class="form-control form-select" id="specialtyFilter">
+                            <input type="text" class="form-control" placeholder="Search jobs..." id="searchInput" name="search">
+                            <select class="form-control form-select" id="specialtyFilter" name="specialty">
                                 <option value="">All Specialties</option>
                                 <option value="emergency">Emergency Medicine</option>
                                 <option value="internal">Internal Medicine</option>
@@ -610,7 +638,7 @@
                                 <option value="radiology">Radiology</option>
                                 <option value="anesthesiology">Anesthesiology</option>
                             </select>
-                            <select class="form-control form-select" id="locationFilter">
+                            <select class="form-control form-select" id="locationFilter" name="location">
                                 <option value="">All Locations</option>
                                 <option value="california">California</option>
                                 <option value="texas">Texas</option>
@@ -618,14 +646,14 @@
                                 <option value="new-york">New York</option>
                                 <option value="illinois">Illinois</option>
                             </select>
-                            <select class="form-control form-select" id="salaryFilter">
+                            <select class="form-control form-select" id="salaryFilter" name="salaryRange">
                                 <option value="">Any Salary</option>
                                 <option value="0-200">Under $200/hr</option>
                                 <option value="200-300">$200-300/hr</option>
                                 <option value="300-400">$300-400/hr</option>
                                 <option value="400+">$400+/hr</option>
                             </select>
-                            <select class="form-control form-select" id="contractTypeFilter">
+                            <select class="form-control form-select" id="contractTypeFilter" name="contractType">
                                 <option value="">All Contract Types</option>
                                 <option value="8-week">8 weeks</option>
                                 <option value="13-week">13 weeks</option>
@@ -636,7 +664,7 @@
                             </select>
                         </div>
                         <div class="filters-group">
-                            <select class="form-control form-select" id="sortFilter">
+                            <select class="form-control form-select" id="sortFilter" name="sort">
                                 <option value="">Sort by...</option>
                                 <option value="salary-high">Salary: High to Low</option>
                                 <option value="salary-low">Salary: Low to High</option>
@@ -645,15 +673,21 @@
                                 <option value="location">Location (A-Z)</option>
                                 <option value="duration">Duration (Shortest first)</option>
                             </select>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-icon">🔍</span> Search
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="resetFilters()">
+                                Clear Filters
+                            </button>
                             <div class="view-toggle">
-                                <button class="view-btn active" onclick="toggleView('card')">📋 Cards</button>
-                                <button class="view-btn" onclick="toggleView('list')">📄 List</button>
+                                <button class="view-btn active" onclick="toggleView('card')" type="button">📋 Cards</button>
+                                <button class="view-btn" onclick="toggleView('list')" type="button">📄 List</button>
                             </div>
                             <div class="results-info">
-                                <span id="resultsCount">24</span> positions found
+                                <span id="resultsCount">0</span> positions found
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </section>
 
@@ -662,6 +696,10 @@
                 <div class="container">
                     <div class="jobs-grid card-view" id="jobsGrid">
                         <!-- Job listings will be dynamically generated -->
+                    </div>
+                    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Loading jobs...</p>
                     </div>
                     <div class="pagination" id="pagination">
                         <!-- Pagination controls will be dynamically generated -->
@@ -715,93 +753,58 @@
     <script>
         // Job data will be loaded from API
         let jobsData = [];
-        // Determine API URL based on current location
-        let apiBaseUrl;
-        if (window.location.hostname === 'localhost') {
-            apiBaseUrl = 'http://localhost:4000/api/v1';
-        } else if (window.location.hostname.includes('herokuapp.com')) {
-            // For Heroku deployments, use the same origin
-            apiBaseUrl = window.location.origin + '/api/v1';
-        } else {
-            // Default to relative URL
-            apiBaseUrl = '/api/v1';
-        }
 
         let currentView = 'card';
         let filteredJobs = [...jobsData];
         let currentPage = 1;
         const jobsPerPage = 2; // Changed to 2 to show pagination with fewer jobs
         
-        // Load jobs from API with comprehensive logging
+        // Load jobs from API
         async function loadJobsFromAPI() {
-            console.log('🔄 Starting to load jobs from API...');
-            console.log('🌐 API Base URL:', apiBaseUrl);
-            console.log('📍 Current location:', window.location.hostname);
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('jobsGrid').style.display = 'none';
             
             try {
-                const apiUrl = `${apiBaseUrl}/jobs`;
-                console.log('🎯 Fetching from:', apiUrl);
-                
-                const response = await fetch(apiUrl);
-                console.log('📡 API Response received:', response.status, response.statusText);
-                
-                if (!response.ok) {
-                    console.error('❌ API request failed:', {
-                        status: response.status,
-                        statusText: response.statusText,
-                        url: apiUrl
-                    });
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log('📋 Raw API data received:', data);
-                console.log('📊 API Response structure:', {
-                    hasJobs: !!data.jobs,
-                    jobsLength: data.jobs ? data.jobs.length : 0,
-                    pagination: data.pagination,
-                    timestamp: data.timestamp
-                });
+                const data = await window.apiClient.getJobs();
                 
                 if (data.jobs && Array.isArray(data.jobs)) {
                     // Transform API data to match frontend format
-                    jobsData = data.jobs.map((job, index) => {
-                        try {
-                            const transformed = transformJobData(job);
-                            console.log(`✅ Transformed job ${index + 1}:`, transformed);
-                            return transformed;
-                        } catch (err) {
-                            console.error(`❌ Failed to transform job ${index + 1}:`, err, job);
-                            return null;
-                        }
-                    }).filter(job => job !== null);
-                    console.log('✅ Jobs transformed successfully. Count:', jobsData.length);
-                    if (jobsData.length > 0) {
-                        console.log('🎯 Sample job data:', jobsData[0]);
-                    }
+                    jobsData = data.jobs.map(job => transformJobData(job)).filter(Boolean);
+                    
+                    // Update results count
+                    document.getElementById('resultsCount').textContent = jobsData.length;
+                    
+                    // Update filtered jobs and re-render
+                    filteredJobs = [...jobsData];
+                    renderJobs();
                 } else {
-                    console.warn('⚠️ No jobs array found in API response:', data);
                     jobsData = [];
+                    filteredJobs = [];
+                    renderJobs();
+                    LocumUtils.showToast('No jobs found.', 'info');
                 }
                 
-                // Update filtered jobs and re-render
-                filteredJobs = [...jobsData];
-                renderJobs();
-                
-                console.log('🎨 Jobs rendered. Total jobs:', jobsData.length);
-                
             } catch (error) {
-                console.error('❌ Failed to load jobs from API:', error);
-                console.error('❌ Error details:', {
-                    message: error.message,
-                    stack: error.stack,
-                    name: error.name
-                });
-                LocumUtils.showToast('Failed to load job listings. Using fallback data.', 'warning');
+                console.error('Failed to load jobs:', error);
                 
-                // Fallback to sample data for development
-                console.log('🔄 Loading fallback sample data...');
-                loadSampleData();
+                // Show appropriate error message
+                if (error.status === 0) {
+                    LocumUtils.showToast('Unable to connect to server. Please check your connection.', 'error');
+                } else if (error.data && error.data.message) {
+                    LocumUtils.showToast(error.data.message, 'error');
+                } else {
+                    LocumUtils.showToast('Failed to load job listings.', 'error');
+                }
+                
+                // Clear the grid
+                jobsData = [];
+                filteredJobs = [];
+                renderJobs();
+            } finally {
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('jobsGrid').style.display = '';
             }
         }
         
@@ -970,8 +973,9 @@
                             : '<span class="job-tag">Board Certification Required</span>'}
                     </div>
                     <div class="job-actions">
-                        <button class="btn btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
-                        <button class="btn btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); applyToJob(${job.id})">Apply Now</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">Details</button>
                         <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
                             ${getSavedJobs().includes(job.id) ? '❤️' : '🤍'}
                         </button>
@@ -1088,6 +1092,23 @@
             sortJobs(); // Apply sorting after filtering
         }
         
+        function resetFilters() {
+            // Reset form inputs
+            document.getElementById('jobSearchForm').reset();
+            
+            // Reset filtered jobs to show all
+            filteredJobs = [...jobsData];
+            currentPage = 1;
+            
+            // Update results count
+            document.getElementById('resultsCount').textContent = jobsData.length;
+            
+            // Re-render jobs
+            renderJobs();
+            
+            LocumUtils.showToast('Filters cleared', 'success');
+        }
+        
         // Sort functionality
         function sortJobs() {
             const sortBy = document.getElementById('sortFilter').value;
@@ -1199,11 +1220,13 @@
         // Make functions available globally
         window.closeModal = closeModal;
         window.applyToJob = applyToJob;
+        window.submitJobApplication = submitJobApplication;
         window.calculateContract = calculateContract;
         window.showJobDetail = showJobDetail;
         window.goToPage = goToPage;
         window.toggleView = toggleView;
         window.toggleSaveJob = toggleSaveJob;
+        window.resetFilters = resetFilters;
 
         function calculateContract(jobId) {
             // Simulate opening contract calculator with pre-filled data
@@ -1226,18 +1249,104 @@
 
         function applyToJob(jobId) {
             const job = jobsData.find(j => j.id === jobId);
-            if (job) {
-                const recruiterInfo = {
-                    1: { name: "Sarah Johnson", email: "sarah.johnson@medhire.com", phone: "(555) 123-4567" },
-                    2: { name: "Michael Chen", email: "m.chen@healthstaffing.com", phone: "(555) 234-5678" },
-                    3: { name: "Lisa Rodriguez", email: "l.rodriguez@surgicalsolutions.com", phone: "(555) 345-6789" },
-                    4: { name: "David Kim", email: "david.kim@radnetwork.com", phone: "(555) 456-7890" },
-                    5: { name: "Jennifer Walsh", email: "j.walsh@traumacare.com", phone: "(555) 567-8901" },
-                    6: { name: "Robert Martinez", email: "r.martinez@ruralhealthcare.com", phone: "(555) 678-9012" }
-                };
+            if (!job) {
+                LocumUtils.showToast('Job not found.', 'error');
+                return;
+            }
+
+            // Check if user is authenticated
+            if (!window.auth.isAuthenticated()) {
+                LocumUtils.showToast('Please login to apply for jobs.', 'warning');
+                // Store job ID for after login
+                localStorage.setItem('pendingJobApplication', jobId);
+                window.location.href = '/frontend/locum-dashboard.html';
+                return;
+            }
+
+            // Show application form modal
+            const modal = document.getElementById('jobModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <h2>Apply for ${job.title}</h2>
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">${job.facility}</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">📍 ${job.location}</p>
                 
-                const recruiter = recruiterInfo[jobId];
-                const modal = document.getElementById('jobModal');
+                <form id="jobApplicationForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <label for="coverLetter" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Cover Letter</label>
+                        <textarea 
+                            id="coverLetter" 
+                            name="coverLetter" 
+                            rows="6" 
+                            class="form-control" 
+                            placeholder="Tell us why you're interested in this position..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="availability" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Available Start Date</label>
+                        <input 
+                            type="date" 
+                            id="availability" 
+                            name="availability" 
+                            class="form-control" 
+                            min="${new Date().toISOString().split('T')[0]}"
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            <input type="checkbox" name="hasLicense" id="hasLicense" required>
+                            I have an active medical license in ${job.location.split(',')[1] ? job.location.split(',')[1].trim() : job.location}
+                        </label>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            <input type="checkbox" name="boardCertified" id="boardCertified" required>
+                            I am board certified in ${job.specialty || 'relevant specialty'}
+                        </label>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Application</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
+                    </div>
+                </form>
+            `;
+            
+            modal.classList.add('active');
+            
+            // Add form submission handler
+            const applicationForm = document.getElementById('jobApplicationForm');
+            if (applicationForm) {
+                applicationForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await submitJobApplication(jobId, applicationForm);
+                });
+            }
+        }
+        
+        async function submitJobApplication(jobId, form) {
+            try {
+                // Show loading state
+                LocumUtils.setLoadingState(true, form);
+                
+                const formData = LocumUtils.serializeForm(form);
+                
+                // Submit application via API
+                const response = await window.apiClient.applyToJob(jobId, {
+                    coverLetter: formData.coverLetter,
+                    availability: formData.availability,
+                    hasLicense: formData.hasLicense === 'on',
+                    boardCertified: formData.boardCertified === 'on'
+                });
+                
+                // Show success message
+                const job = jobsData.find(j => j.id === jobId);
                 const modalContent = document.getElementById('modalContent');
                 
                 modalContent.innerHTML = `
@@ -1246,36 +1355,30 @@
                         <p style="margin: 0; font-size: 1.1rem;">Your application for <strong>${job.title}</strong> at <strong>${job.facility}</strong> has been submitted.</p>
                     </div>
                     
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Your Recruiter Contact</h3>
-                    <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
-                                ${recruiter.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div>
-                                <h4 style="margin: 0; color: var(--text-primary);">${recruiter.name}</h4>
-                                <p style="margin: 0; color: var(--text-secondary);">Healthcare Recruiter</p>
-                            </div>
-                        </div>
-                        <div style="display: grid; gap: 0.5rem;">
-                            <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiter.email}" style="color: var(--primary-color);">${recruiter.email}</a></p>
-                            <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiter.phone}" style="color: var(--primary-color);">${recruiter.phone}</a></p>
-                        </div>
-                    </div>
-                    
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Next Steps</h3>
-                    <ul style="padding-left: 1.5rem; line-height: 1.8;">
-                        <li>Your recruiter will review your application within 24 hours</li>
-                        <li>They may contact you for an initial phone screening</li>
-                        <li>Be prepared to discuss your experience and availability</li>
-                        <li>Have your credentials and references ready</li>
-                    </ul>
+                    <p style="margin-bottom: 1rem;">Application ID: <strong>${response.applicationId || response.id}</strong></p>
+                    <p>A recruiter will contact you within 24-48 hours to discuss your application and next steps.</p>
                     
                     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                        <button class="btn btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
-                        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                        <button class="btn btn-primary" onclick="window.location.href='/frontend/locum-dashboard.html'">View My Applications</button>
+                        <button class="btn btn-secondary" onclick="closeModal()">Continue Browsing</button>
                     </div>
                 `;
+                
+                LocumUtils.showToast('Application submitted successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Failed to submit application:', error);
+                
+                if (error.status === 401) {
+                    LocumUtils.showToast('Your session has expired. Please login again.', 'warning');
+                    window.location.href = '/frontend/locum-dashboard.html';
+                } else if (error.data && error.data.message) {
+                    LocumUtils.showToast(error.data.message, 'error');
+                } else {
+                    LocumUtils.showToast('Failed to submit application. Please try again.', 'error');
+                }
+            } finally {
+                LocumUtils.setLoadingState(false, form);
             }
         }
 
@@ -1346,13 +1449,55 @@
                 
                 console.log('✅ Job board initialization complete');
                 
-                // Set up event listeners after DOM is ready
-                document.getElementById('searchInput').addEventListener('input', filterJobs);
-                document.getElementById('specialtyFilter').addEventListener('change', filterJobs);
-                document.getElementById('locationFilter').addEventListener('change', filterJobs);
-                document.getElementById('salaryFilter').addEventListener('change', filterJobs);
-                document.getElementById('contractTypeFilter').addEventListener('change', filterJobs);
-                document.getElementById('sortFilter').addEventListener('change', sortJobs);
+                // Set up form submission handler
+                const jobSearchForm = document.getElementById('jobSearchForm');
+                if (jobSearchForm) {
+                    jobSearchForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        // Get form data
+                        const formData = LocumUtils.serializeForm(this);
+                        
+                        // Show loading state
+                        document.getElementById('loadingSpinner').style.display = 'block';
+                        document.getElementById('jobsGrid').style.display = 'none';
+                        
+                        try {
+                            // Load jobs with filters
+                            const data = await window.apiClient.getJobs(formData);
+                            
+                            if (data.jobs && Array.isArray(data.jobs)) {
+                                jobsData = data.jobs.map(job => transformJobData(job)).filter(Boolean);
+                                document.getElementById('resultsCount').textContent = jobsData.length;
+                                filteredJobs = [...jobsData];
+                                renderJobs();
+                                
+                                if (jobsData.length === 0) {
+                                    LocumUtils.showToast('No jobs match your search criteria.', 'info');
+                                }
+                            } else {
+                                jobsData = [];
+                                filteredJobs = [];
+                                renderJobs();
+                                LocumUtils.showToast('No jobs found.', 'info');
+                            }
+                        } catch (error) {
+                            console.error('Failed to search jobs:', error);
+                            LocumUtils.showToast('Failed to search jobs. Please try again.', 'error');
+                        } finally {
+                            document.getElementById('loadingSpinner').style.display = 'none';
+                            document.getElementById('jobsGrid').style.display = '';
+                        }
+                    });
+                    
+                    // Real-time filtering on input change (optional)
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', LocumUtils.debounce(() => {
+                            filterJobs();
+                        }, 500));
+                    }
+                }
 
                 // Close modal when clicking outside
                 document.getElementById('jobModal').addEventListener('click', function(e) {

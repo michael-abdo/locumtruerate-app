@@ -9,6 +9,8 @@
     <!-- Common Utilities -->
     <link rel="stylesheet" href="js/common-utils.css">
     <script src="js/common-utils.js"></script>
+    <script src="js/apiClient.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* Using centralized CSS variables from css/variables.css */
 
@@ -132,6 +134,75 @@
             display: flex;
             align-items: center;
             margin-left: auto;
+        }
+        
+        /* Navigation User Menu */
+        .nav-user {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+        
+        .user-menu-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-menu-button:hover {
+            background-color: var(--background-color);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        
+        .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: var(--card-shadow);
+            min-width: 150px;
+            z-index: 1000;
+            list-style: none;
+            padding: 0.5rem 0;
+            margin: 0.5rem 0;
+        }
+        
+        .user-dropdown-menu li {
+            padding: 0;
+        }
+        
+        .user-dropdown-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-dropdown-menu a:hover {
+            background-color: var(--background-color);
         }
 
         .search-input {
@@ -2375,6 +2446,17 @@
                     </button>
                     <div id="search-results" class="search-results" role="listbox" aria-label="Search results"></div>
                 </div>
+                <div class="nav-user" id="navUser" style="display: none;">
+                    <button class="user-menu-button" onclick="toggleUserMenu()" aria-label="User menu">
+                        <span class="user-avatar"></span>
+                        <span class="user-name">User</span>
+                        <span class="dropdown-arrow">▾</span>
+                    </button>
+                    <ul class="user-dropdown-menu" id="userDropdownMenu" style="display: none;">
+                        <li><a href="#" onclick="updateProfile()">Profile</a></li>
+                        <li><a href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
 
@@ -2416,6 +2498,75 @@
         <!-- Main Content -->
         <main id="main-content" class="main-content" role="main" aria-label="Locum dashboard content">
             <div class="container">
+                <!-- Authentication Section (shown when not logged in) -->
+                <div id="authSection" style="display: none;">
+                    <div class="dashboard-section">
+                        <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">Welcome to LocumTrueRate</h2>
+                        
+                        <div class="auth-container" style="display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;">
+                            <!-- Login Form -->
+                            <div class="auth-form-wrapper" style="background: var(--surface-color); padding: 2rem; border-radius: 1rem; box-shadow: var(--card-shadow); min-width: 350px;">
+                                <h3 style="margin-bottom: 1.5rem;">Login to Your Account</h3>
+                                <form id="loginForm">
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <label for="loginEmail" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                                        <input type="email" id="loginEmail" name="email" class="form-control" required placeholder="your@email.com">
+                                        <span id="loginEmail-error" class="error-message"></span>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <label for="loginPassword" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Password</label>
+                                        <input type="password" id="loginPassword" name="password" class="form-control" required placeholder="••••••••">
+                                        <span id="loginPassword-error" class="error-message"></span>
+                                    </div>
+                                    <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 1rem;">Login</button>
+                                    <p style="text-align: center; color: var(--text-secondary);">
+                                        <a href="#" onclick="showForgotPassword()" style="color: var(--primary-color);">Forgot password?</a>
+                                    </p>
+                                </form>
+                            </div>
+                            
+                            <!-- Register Form -->
+                            <div class="auth-form-wrapper" style="background: var(--surface-color); padding: 2rem; border-radius: 1rem; box-shadow: var(--card-shadow); min-width: 350px;">
+                                <h3 style="margin-bottom: 1.5rem;">Create New Account</h3>
+                                <form id="registerForm">
+                                    <div style="margin-bottom: 1rem;">
+                                        <label for="registerName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Full Name</label>
+                                        <input type="text" id="registerName" name="name" class="form-control" required placeholder="Dr. John Smith">
+                                        <span id="registerName-error" class="error-message"></span>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label for="registerEmail" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                                        <input type="email" id="registerEmail" name="email" class="form-control" required placeholder="your@email.com">
+                                        <span id="registerEmail-error" class="error-message"></span>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label for="registerPassword" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Password</label>
+                                        <input type="password" id="registerPassword" name="password" class="form-control" required placeholder="••••••••">
+                                        <span id="registerPassword-error" class="error-message"></span>
+                                        <div id="passwordStrength" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+                                    </div>
+                                    <div style="margin-bottom: 1rem;">
+                                        <label for="registerRole" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Account Type</label>
+                                        <select id="registerRole" name="role" class="form-control" required>
+                                            <option value="locum">Locum Tenens Physician</option>
+                                            <option value="recruiter">Recruiter</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <label>
+                                            <input type="checkbox" name="terms" required>
+                                            I agree to the <a href="#" style="color: var(--primary-color);">Terms of Service</a>
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="btn-primary" style="width: 100%;">Create Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Content (shown when logged in) -->
+                <div id="dashboardContent" style="display: none;">
                 <!-- Stats Overview -->
                 <section class="stats-grid" role="region" aria-labelledby="stats-heading">
                     <h2 id="stats-heading" class="sr-only">Dashboard Statistics Overview</h2>
@@ -3934,6 +4085,7 @@ American Board of Internal Medicine</textarea>
                         </div>
                     </div>
                 </div>
+                </div> <!-- End of dashboardContent -->
             </div>
         </main>
 
@@ -5414,11 +5566,370 @@ American Board of Internal Medicine</textarea>
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeAccessibility();
+                
+                // Check authentication status on page load
+                checkAuthAndInitDashboard();
+                
+                // Set up authentication form handlers
+                setupAuthForms();
+                
+                // Handle pending job application if coming from job board
+                handlePendingJobApplication();
+                
                 console.log('Locum dashboard loaded successfully');
             } catch (error) {
                 handleError(error, 'Dashboard initialization');
             }
         });
+        
+        // Check authentication and initialize dashboard
+        async function checkAuthAndInitDashboard() {
+            const authSection = document.getElementById('authSection');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const navUser = document.getElementById('navUser');
+            
+            if (window.auth.isAuthenticated()) {
+                // User is logged in - show dashboard
+                authSection.style.display = 'none';
+                dashboardContent.style.display = 'block';
+                navUser.style.display = 'flex';
+                
+                // Load user data and applications
+                await loadDashboardData();
+            } else {
+                // User is not logged in - show auth forms
+                authSection.style.display = 'block';
+                dashboardContent.style.display = 'none';
+                navUser.style.display = 'none';
+            }
+        }
+        
+        // Set up authentication forms
+        function setupAuthForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            // Login form handler
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await handleLogin(e);
+                });
+            }
+            
+            // Register form handler
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await handleRegister(e);
+                });
+                
+                // Password strength checker
+                const passwordInput = document.getElementById('registerPassword');
+                if (passwordInput) {
+                    passwordInput.addEventListener('input', (e) => {
+                        const strength = LocumUtils.validatePasswordStrength(e.target.value);
+                        const strengthDiv = document.getElementById('passwordStrength');
+                        
+                        if (strengthDiv) {
+                            let color = '#dc3545'; // red
+                            if (strength.level === 'medium') color = '#ffc107'; // yellow
+                            if (strength.level === 'strong') color = '#28a745'; // green
+                            
+                            strengthDiv.innerHTML = `
+                                <span style="color: ${color}">Password strength: ${strength.level}</span>
+                                ${strength.suggestions.length > 0 ? '<br>' + strength.suggestions.join(', ') : ''}
+                            `;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Handle login
+        async function handleLogin(e) {
+            const form = e.target;
+            
+            // Clear previous errors
+            LocumUtils.clearFormErrors(form);
+            
+            // Validate form
+            if (!LocumUtils.validateForm(form)) {
+                return;
+            }
+            
+            try {
+                // Show loading state
+                LocumUtils.setLoadingState(true, form);
+                
+                const formData = LocumUtils.serializeForm(form);
+                
+                // Login via auth module
+                await window.auth.login({
+                    email: formData.email,
+                    password: formData.password
+                });
+                
+                LocumUtils.showToast('Login successful!', 'success');
+                
+                // Reload page to show dashboard
+                checkAuthAndInitDashboard();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (error.data && error.data.message) {
+                    LocumUtils.showToast(error.data.message, 'error');
+                    
+                    // Show field-specific errors if available
+                    if (error.data.errors) {
+                        Object.keys(error.data.errors).forEach(field => {
+                            LocumUtils.showFieldError(`login${field.charAt(0).toUpperCase() + field.slice(1)}`, error.data.errors[field]);
+                        });
+                    }
+                } else {
+                    LocumUtils.showToast('Login failed. Please try again.', 'error');
+                }
+            } finally {
+                LocumUtils.setLoadingState(false, form);
+            }
+        }
+        
+        // Handle registration
+        async function handleRegister(e) {
+            const form = e.target;
+            
+            // Clear previous errors
+            LocumUtils.clearFormErrors(form);
+            
+            // Validate form
+            if (!LocumUtils.validateForm(form)) {
+                return;
+            }
+            
+            try {
+                // Show loading state
+                LocumUtils.setLoadingState(true, form);
+                
+                const formData = LocumUtils.serializeForm(form);
+                
+                // Register via auth module
+                await window.auth.register({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    role: formData.role
+                });
+                
+                LocumUtils.showToast('Registration successful! Welcome to LocumTrueRate!', 'success');
+                
+                // Reload page to show dashboard
+                checkAuthAndInitDashboard();
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                
+                if (error.data && error.data.message) {
+                    LocumUtils.showToast(error.data.message, 'error');
+                    
+                    // Show field-specific errors if available
+                    if (error.data.errors) {
+                        Object.keys(error.data.errors).forEach(field => {
+                            LocumUtils.showFieldError(`register${field.charAt(0).toUpperCase() + field.slice(1)}`, error.data.errors[field]);
+                        });
+                    }
+                } else {
+                    LocumUtils.showToast('Registration failed. Please try again.', 'error');
+                }
+            } finally {
+                LocumUtils.setLoadingState(false, form);
+            }
+        }
+        
+        // Handle logout
+        function logout() {
+            window.auth.logout();
+        }
+        
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Get current user data
+                const user = window.auth.getCurrentUser();
+                
+                if (!user) {
+                    // Try to refresh user data from API
+                    await window.auth.refreshUserData();
+                    const refreshedUser = window.auth.getCurrentUser();
+                    
+                    if (refreshedUser) {
+                        updateUserProfile(refreshedUser);
+                    }
+                } else {
+                    updateUserProfile(user);
+                }
+                
+                // Load user's applications
+                await loadMyApplications();
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                LocumUtils.showToast('Failed to load dashboard data', 'error');
+            }
+        }
+        
+        // Update user profile display
+        function updateUserProfile(user) {
+            // Get initials for avatars
+            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
+            
+            // Update profile avatar
+            const avatar = document.querySelector('.profile-avatar');
+            if (avatar) {
+                avatar.textContent = initials;
+            }
+            
+            // Update navigation user avatar
+            const navAvatar = document.querySelector('.user-avatar');
+            if (navAvatar) {
+                navAvatar.textContent = initials;
+            }
+            
+            // Update profile info
+            const profileName = document.querySelector('.profile-info h3');
+            if (profileName) {
+                profileName.textContent = user.name || 'Locum Tenens Physician';
+            }
+            
+            // Update navigation user info
+            const navUserName = document.querySelector('.user-name');
+            if (navUserName) {
+                navUserName.textContent = user.name || 'User';
+            }
+        }
+        
+        // Toggle user menu
+        function toggleUserMenu() {
+            const menu = document.getElementById('userDropdownMenu');
+            if (menu) {
+                menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const userMenu = document.querySelector('.nav-user');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            
+            if (userMenu && !userMenu.contains(e.target) && dropdownMenu) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+        
+        // Load user's applications
+        async function loadMyApplications() {
+            try {
+                const applications = await window.apiClient.getMyApplications();
+                
+                // Update stats
+                if (applications && applications.length > 0) {
+                    const activeCount = applications.filter(app => app.status === 'pending' || app.status === 'interview').length;
+                    const activeContracts = document.querySelector('.stat-card.primary .stat-value');
+                    if (activeContracts) {
+                        activeContracts.textContent = activeCount;
+                    }
+                }
+                
+                // Display applications in dashboard
+                displayApplications(applications);
+                
+            } catch (error) {
+                console.error('Failed to load applications:', error);
+            }
+        }
+        
+        // Display applications in dashboard
+        function displayApplications(applications) {
+            // Find or create applications section
+            let appSection = document.getElementById('applicationsSection');
+            
+            if (!appSection) {
+                // Create applications section if it doesn't exist
+                const dashboardContent = document.getElementById('dashboardContent');
+                const sectionHTML = `
+                    <div class="dashboard-section" id="applicationsSection" style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <h2 class="section-title">My Applications</h2>
+                        </div>
+                        <div id="applicationsList">
+                            <!-- Applications will be displayed here -->
+                        </div>
+                    </div>
+                `;
+                
+                dashboardContent.insertAdjacentHTML('beforeend', sectionHTML);
+                appSection = document.getElementById('applicationsSection');
+            }
+            
+            const appList = document.getElementById('applicationsList');
+            
+            if (!applications || applications.length === 0) {
+                appList.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <p style="color: var(--text-secondary);">No applications yet.</p>
+                        <a href="job-board.html" class="btn-primary" style="margin-top: 1rem; display: inline-block;">Browse Jobs</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Display applications
+            appList.innerHTML = applications.map(app => `
+                <div style="background: var(--surface-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; box-shadow: var(--card-shadow);">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">${app.job?.title || 'Job Title'}</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">${app.job?.facility || 'Facility'} - ${app.job?.location || 'Location'}</p>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary);">Applied: ${new Date(app.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; background: ${getStatusColor(app.status)}; color: white;">
+                                ${app.status}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Get status color
+        function getStatusColor(status) {
+            const colors = {
+                pending: '#ffc107',
+                interview: '#17a2b8',
+                accepted: '#28a745',
+                rejected: '#dc3545',
+                withdrawn: '#6c757d'
+            };
+            return colors[status] || '#6c757d';
+        }
+        
+        // Handle pending job application from job board
+        function handlePendingJobApplication() {
+            const pendingJobId = localStorage.getItem('pendingJobApplication');
+            
+            if (pendingJobId && window.auth.isAuthenticated()) {
+                localStorage.removeItem('pendingJobApplication');
+                
+                // Redirect to job board with the job ID
+                window.location.href = `/frontend/job-board.html#apply-${pendingJobId}`;
+            }
+        }
+        
+        // Show forgot password (placeholder)
+        function showForgotPassword() {
+            LocumUtils.showToast('Password reset functionality coming soon!', 'info');
+        }
     </script>
 
     <!-- Floating Logger Component -->
