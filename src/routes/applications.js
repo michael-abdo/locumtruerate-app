@@ -39,23 +39,13 @@ router.post('/', requireAuth, async (req, res) => {
       // Track successful application creation
       metricsInstance.recordApplicationCreated(req.user.id, value.jobId, responseTime);
       
-      // Enhanced error logging to debug response issue
-      try {
-        config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
+      config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
 
-        res.status(201).json({
-          message: 'Application submitted successfully',
-          application: newApplication,
-          timestamp: config.utils.timestamp()
-        });
-      } catch (responseError) {
-        config.logger.error(`Error sending response for application ${applicationData.jobId}`, responseError, 'APPLICATION_CREATE');
-        // Try to understand what's in newApplication
-        config.logger.error(`newApplication object: ${JSON.stringify(newApplication)}`, null, 'APPLICATION_CREATE');
-        config.logger.error(`newApplication type: ${typeof newApplication}`, null, 'APPLICATION_CREATE');
-        config.logger.error(`newApplication.id: ${newApplication?.id}`, null, 'APPLICATION_CREATE');
-        throw responseError;
-      }
+      res.status(201).json({
+        message: 'Application submitted successfully',
+        application: newApplication,
+        timestamp: config.utils.timestamp()
+      });
 
     } catch (createError) {
       // Handle specific business logic errors

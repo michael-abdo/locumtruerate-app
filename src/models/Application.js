@@ -71,8 +71,30 @@ class Application {
         const result = await client.query(insertQuery, values);
         const application = result.rows[0];
 
-        // Return application with job details
-        return await Application.findByIdWithDetails(application.id);
+        // Get job details within the same transaction
+        const detailsQuery = `
+          SELECT 
+            a.*,
+            j.title as job_title,
+            j.location as job_location,
+            j.state as job_state,
+            j.specialty as job_specialty,
+            j.hourly_rate_min as job_hourly_rate_min,
+            j.hourly_rate_max as job_hourly_rate_max,
+            j.company_name as job_company_name,
+            j.status as job_status,
+            u.email as applicant_email,
+            p.first_name as applicant_first_name,
+            p.last_name as applicant_last_name
+          FROM applications a
+          INNER JOIN jobs j ON a.job_id = j.id
+          INNER JOIN users u ON a.user_id = u.id
+          LEFT JOIN profiles p ON u.id = p.user_id
+          WHERE a.id = $1
+        `;
+        
+        const detailsResult = await client.query(detailsQuery, [application.id]);
+        return detailsResult.rows.length > 0 ? Application.formatApplication(detailsResult.rows[0]) : null;
       });
     } catch (error) {
       // Handle unique constraint violation
