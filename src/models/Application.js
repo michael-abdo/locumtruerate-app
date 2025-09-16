@@ -152,7 +152,7 @@ class Application {
     );
 
     return {
-      applications: result.items.map(row => this.formatApplication(row)),
+      applications: result.items.map(row => Application.formatApplication(row)),
       pagination: result.pagination
     };
   }
@@ -233,7 +233,7 @@ class Application {
     );
 
     return {
-      applications: result.items.map(row => this.formatApplicationForRecruiter(row)),
+      applications: result.items.map(row => Application.formatApplicationForRecruiter(row)),
       pagination: result.pagination
     };
   }
@@ -266,7 +266,7 @@ class Application {
     `;
 
     const result = await pool.query(query, [id]);
-    return result.rows.length > 0 ? this.formatApplication(result.rows[0]) : null;
+    return result.rows.length > 0 ? Application.formatApplication(result.rows[0]) : null;
   }
 
   /**
@@ -321,7 +321,7 @@ class Application {
       const updateResult = await client.query(updateQuery, [newStatus, recruiterId, notes, id]);
       const updatedApplication = updateResult.rows[0];
 
-      return this.formatApplication(updatedApplication);
+      return Application.formatApplication(updatedApplication);
     });
   }
 
@@ -434,7 +434,7 @@ class Application {
    * @returns {Object} Formatted application object for recruiters
    */
   static formatApplicationForRecruiter(row) {
-    const formatted = this.formatApplication(row);
+    const formatted = Application.formatApplication(row);
     // Recruiters see applicant details but not job details (they already know the job)
     delete formatted.job;
     return formatted;
