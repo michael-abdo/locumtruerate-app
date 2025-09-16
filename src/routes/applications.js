@@ -39,7 +39,10 @@ router.post('/', requireAuth, async (req, res) => {
       // Track successful application creation
       metricsInstance.recordApplicationCreated(req.user.id, value.jobId, responseTime);
       
-      config.logger.info(`Application created successfully: ${newApplication.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
+      // Debug logging
+      config.logger.info(`Application object: ${JSON.stringify(newApplication)}`, 'APPLICATION_CREATE');
+      
+      config.logger.info(`Application created successfully: ${newApplication?.id} for job: ${value.jobId} by user: ${req.user.id}`, 'APPLICATION_CREATE');
 
       res.status(201).json({
         message: 'Application submitted successfully',
