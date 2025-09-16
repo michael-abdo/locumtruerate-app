@@ -222,7 +222,8 @@ print_test "UPDATE JOB"
 if [ ! -z "$AUTH_TOKEN" ] && [ ! -z "$JOB_ID" ]; then
     UPDATE_JOB_DATA='{
         "title": "Updated Test Locum Position",
-        "hourlyRate": 90
+        "hourlyRateMin": 85,
+        "hourlyRateMax": 95
     }'
     
     UPDATE_JOB_RESPONSE=$(curl -s -w "HTTPSTATUS:%{http_code}" \
