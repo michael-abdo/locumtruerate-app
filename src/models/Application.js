@@ -72,14 +72,7 @@ class Application {
         const application = result.rows[0];
 
         // Return application with job details
-        try {
-          const result = await Application.findByIdWithDetails(application.id);
-          config.logger.info(`Application formatted successfully: ${application.id}`, 'APPLICATION_CREATE');
-          return result;
-        } catch (formatError) {
-          config.logger.error(`Error formatting application ${application.id}`, formatError, 'APPLICATION_CREATE');
-          throw formatError;
-        }
+        return await Application.findByIdWithDetails(application.id);
       });
     } catch (error) {
       // Handle unique constraint violation

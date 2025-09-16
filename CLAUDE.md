@@ -62,10 +62,22 @@ function deleteItem(id) {
 - Tests validate functionality without requiring actual backend services
 
 ## Deployment
-- Staging deployment via `staging-deploy` branch
+
+### Worktree Structure
+- **Main repository**: `/home/Mike/projects/jobboard/` (production-deploy branch)
+- **Staging worktree**: `/home/Mike/projects/jobboard/staging/` (staging-deploy branch)
+
+### Workflow
+- Staging deployment via `staging-deploy` branch using git worktree
 - Automatic Heroku deployment configured
 - All changes should be committed with descriptive messages
 - Test locally before pushing changes
+
+### Working with Worktrees
+- **Switch to staging**: Navigate to `staging/` directory 
+- **Deploy staging**: Run `staging/deploy.sh staging` from main directory
+- **Deploy production**: Run `staging/deploy.sh production` from main directory
+- **Check status**: Run `staging/check-branch-status.sh` from main directory
 
 ## Key Functions Available
 - `showToast(message, type)` - Non-blocking notifications
