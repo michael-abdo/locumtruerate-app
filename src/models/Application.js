@@ -72,7 +72,7 @@ class Application {
         const application = result.rows[0];
 
         // Return application with job details
-        return await this.findByIdWithDetails(application.id);
+        return await Application.findByIdWithDetails(application.id);
       });
     } catch (error) {
       // Handle unique constraint violation
