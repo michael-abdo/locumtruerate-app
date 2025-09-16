@@ -577,11 +577,11 @@
                             <!-- Call & Callback Hours -->
                             <div class="input-group">
                                 <div class="form-group">
-                                    <label class="form-label">Call Hours</label>
+                                    <label class="form-label">Beeper Call Hours</label>
                                     <input type="number" class="form-input" id="callHours" value="24" min="0" oninput="calculatePaycheck()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Call Rate ($)</label>
+                                    <label class="form-label">Beeper Call Rate ($)</label>
                                     <input type="number" class="form-input" id="callRate" value="25.00" min="0" step="0.01" oninput="calculatePaycheck()">
                                 </div>
                             </div>
@@ -681,41 +681,6 @@
                         </div>
                     </div>
 
-                    <!-- Info Cards -->
-                    <div class="info-cards">
-                        <div class="info-card">
-                            <h3>Tax-Free Stipends</h3>
-                            <ul>
-                                <li>Housing stipends are typically tax-free</li>
-                                <li>Meal allowances when traveling</li>
-                                <li>Mileage reimbursement at IRS rates</li>
-                                <li>Travel reimbursements</li>
-                                <li>Licensing and certification fees</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="info-card">
-                            <h3>Understanding Your Pay</h3>
-                            <ul>
-                                <li>Regular hours at base rate</li>
-                                <li>Overtime typically 1.25x regular rate</li>
-                                <li>Call pay for being on-call</li>
-                                <li>Callback pay for emergency calls</li>
-                                <li>State tax rates vary significantly</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="info-card">
-                            <h3>Financial Planning Tips</h3>
-                            <ul>
-                                <li>Save 20-30% for taxes if independent contractor</li>
-                                <li>Max out retirement contributions</li>
-                                <li>Consider quarterly tax payments</li>
-                                <li>Track business expenses for deductions</li>
-                                <li>Build emergency fund (3-6 months)</li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </section>
         </main>
@@ -824,16 +789,16 @@
 
 
             // Update display
-            document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('mealStipendDisplay').textContent = '+$' + totalMealStipend.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('mileageDisplay').textContent = '+$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('netPayDisplay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            document.getElementById('netPay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('mealStipendDisplay').textContent = '+$' + totalMealStipend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('mileageDisplay').textContent = '+$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('netPayDisplay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('netPay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         function saveCalculation() {
