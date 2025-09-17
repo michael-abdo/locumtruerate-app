@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const config = require('./config/config');
 const { testConnection, closePool } = require('./db/connection');
 const { createErrorResponse, cleanup: cleanupAuth } = require('./middleware/auth');
@@ -12,6 +13,19 @@ const app = express();
 // Get configuration from centralized config
 const PORT = config.server.port;
 const API_VERSION = config.server.apiVersion;
+
+// Rate limiting configuration
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again later.',
+  handler: (req, res) => {
+    config.logger.warn(`Rate limit exceeded for IP: ${req.ip}`, 'RATE_LIMIT');
+    return createErrorResponse(res, 429, 'Too many requests from this IP, please try again later.', 'rate_limit_exceeded');
+  }
+});
 
 // Security middleware with relaxed CSP for inline scripts
 app.use(helmet({
@@ -70,6 +84,9 @@ if (config.server.env === 'development') {
 
 // Performance metrics middleware
 app.use(metricsMiddleware);
+
+// Apply rate limiting to all API routes
+app.use('/api/', limiter);
 
 // Serve static files from frontend directory
 app.use(express.static('frontend'));
