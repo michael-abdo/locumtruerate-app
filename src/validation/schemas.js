@@ -178,7 +178,6 @@ const applicationSchemas = {
   create: Joi.object({
     jobId: baseSchemas.positiveInteger.required(),
     coverLetter: Joi.string().min(10).max(5000).required(),
-    expectedRate: baseSchemas.hourlyRate.optional(),
     availableDate: baseSchemas.futureDate.optional(),
     notes: baseSchemas.notes.optional()
   }),
@@ -190,7 +189,7 @@ const applicationSchemas = {
   
   query: paginationSchema.keys({
     status: Joi.string().valid(...statusValues.applicationStatuses).optional(),
-    sortBy: Joi.string().valid('created_at', 'updated_at', 'status').default('created_at')
+    sortBy: Joi.string().valid('created_at', 'updated_at', 'application_status').default('created_at')
   }),
   
   search: paginationSchema.keys({
@@ -200,7 +199,7 @@ const applicationSchemas = {
     state: baseSchemas.stateCode.optional(),
     minRate: baseSchemas.hourlyRate.optional(),
     maxRate: baseSchemas.hourlyRate.optional(),
-    sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at')
+    sortBy: Joi.string().valid('created_at', 'updated_at', 'application_status', 'salary_expectation').default('created_at')
   }).concat(searchQuerySchema),
   
   recruiterSearch: paginationSchema.keys({
@@ -210,7 +209,7 @@ const applicationSchemas = {
     maxRate: baseSchemas.hourlyRate.optional(),
     minExperience: Joi.number().integer().min(0).max(50).optional(),
     applicantSpecialty: Joi.string().max(50).optional(),
-    sortBy: Joi.string().valid('created_at', 'updated_at', 'status', 'expected_rate').default('created_at')
+    sortBy: Joi.string().valid('created_at', 'updated_at', 'application_status', 'salary_expectation').default('created_at')
   }).concat(searchQuerySchema)
 };
 

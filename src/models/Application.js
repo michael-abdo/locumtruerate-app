@@ -17,7 +17,7 @@ class Application {
    * @param {number} applicationData.userId - ID of the user applying
    * @param {number} applicationData.jobId - ID of the job being applied to
    * @param {string} applicationData.coverLetter - Cover letter text
-   * @param {number} applicationData.expectedRate - Expected hourly rate (optional)
+   * @param {number} applicationData.expectedRate - Expected salary (optional)
    * @param {Date} applicationData.availableDate - Date available to start (optional)
    * @param {string} applicationData.notes - Additional notes (optional)
    * @returns {Promise<Object>} Created application with job details
@@ -57,17 +57,39 @@ class Application {
           throw new Error('You have already applied to this job');
         }
 
+        // Get user details to populate required fields
+        const userQuery = 'SELECT u.email, p.first_name, p.last_name FROM users u LEFT JOIN profiles p ON u.id = p.user_id WHERE u.id = $1';
+        const userResult = await client.query(userQuery, [userId]);
+        
+        if (userResult.rows.length === 0) {
+          throw new Error('User not found');
+        }
+        
+        const user = userResult.rows[0];
+        const applicantName = (user.first_name && user.last_name) 
+          ? `${user.first_name.trim()} ${user.last_name.trim()}`.trim() 
+          : user.first_name ? user.first_name.trim() : 'Application User';
+        const applicantEmail = user.email || 'no-email@example.com';
+        
+        // Debug logging
+        config.logger.info(`Creating application: user=${userId}, name=${applicantName}, email=${applicantEmail}`, 'APPLICATION_DEBUG');
+
         // Create the application
         const insertQuery = `
           INSERT INTO applications (
-            user_id, job_id, cover_letter, expected_rate, 
-            available_date, notes, status
+            user_id, job_id, cover_letter, salary_expectation, 
+            availability_start, additional_notes, application_status,
+            applicant_name, applicant_email
           )
-          VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+          VALUES ($1, $2, $3, $4, $5, $6, 'pending', $7, $8)
           RETURNING *
         `;
 
-        const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes];
+        const values = [userId, jobId, coverLetter, expectedRate, availableDate, notes, applicantName, applicantEmail];
+        
+        // Debug the exact values being inserted
+        config.logger.info(`Insert values: [${values.map(v => v === null ? 'NULL' : `'${v}'`).join(', ')}]`, 'APPLICATION_DEBUG');
+        
         const result = await client.query(insertQuery, values);
         const application = result.rows[0];
 
@@ -132,7 +154,7 @@ class Application {
     let paramIndex = 2;
 
     if (status) {
-      conditions.push(`a.status = $${paramIndex}`);
+      conditions.push(`a.application_status = $${paramIndex}`);
       values.push(status);
       paramIndex++;
     }
@@ -165,7 +187,7 @@ class Application {
     const countQuery = `SELECT COUNT(*) FROM applications a ${whereClause}`;
 
     // Use paginated query utility
-    const validSortFields = ['created_at', 'updated_at', 'status', 'expected_rate'];
+    const validSortFields = ['created_at', 'updated_at', 'application_status', 'salary_expectation'];
     const result = await executePaginatedQuery(
       baseQuery,
       countQuery,
@@ -213,7 +235,7 @@ class Application {
     let valueIndex = 2;
 
     if (status) {
-      conditions.push(`a.status = $${valueIndex}`);
+      conditions.push(`a.application_status = $${valueIndex}`);
       values.push(status);
       valueIndex++;
     }
@@ -244,7 +266,7 @@ class Application {
     `;
 
     // Valid sort fields
-    const validSortFields = ['created_at', 'status', 'expected_rate', 'reviewed_at'];
+    const validSortFields = ['created_at', 'application_status', 'salary_expectation', 'reviewed_at'];
 
     // Execute paginated query
     const result = await executePaginatedQuery(
@@ -331,7 +353,7 @@ class Application {
       const updateQuery = `
         UPDATE applications 
         SET 
-          status = $1,
+          application_status = $1,
           reviewed_at = CURRENT_TIMESTAMP,
           reviewed_by = $2,
           notes = COALESCE($3, notes),
@@ -360,7 +382,7 @@ class Application {
       await client.query('BEGIN');
 
       // Check if application exists and user owns it
-      const checkQuery = 'SELECT user_id, status FROM applications WHERE id = $1';
+      const checkQuery = 'SELECT user_id, application_status FROM applications WHERE id = $1';
       const checkResult = await client.query(checkQuery, [id]);
 
       if (checkResult.rows.length === 0) {
@@ -373,18 +395,18 @@ class Application {
         throw new Error('Unauthorized to withdraw this application');
       }
 
-      if (application.status === 'withdrawn') {
+      if (application.application_status === 'withdrawn') {
         throw new Error('Application is already withdrawn');
       }
 
-      if (application.status === 'accepted') {
+      if (application.application_status === 'accepted') {
         throw new Error('Cannot withdraw an accepted application');
       }
 
       // Update status to withdrawn
       const updateQuery = `
         UPDATE applications 
-        SET status = 'withdrawn', updated_at = CURRENT_TIMESTAMP
+        SET application_status = 'withdrawn', updated_at = CURRENT_TIMESTAMP
         WHERE id = $1
       `;
 
@@ -411,9 +433,9 @@ class Application {
       id: row.id,
       userId: row.user_id,
       jobId: row.job_id,
-      status: row.status,
+      status: row.application_status,
       coverLetter: row.cover_letter,
-      expectedRate: row.expected_rate ? parseFloat(row.expected_rate) : null,
+      expectedRate: row.salary_expectation ? parseFloat(row.salary_expectation) : null,
       availableDate: row.available_date,
       notes: row.notes,
       reviewedAt: row.reviewed_at,
@@ -523,9 +545,9 @@ class Application {
     const applications = applicationsResult.rows.map(row => ({
       id: row.id,
       job_id: row.job_id,
-      status: row.status,
+      status: row.application_status,
       cover_letter: row.cover_letter,
-      expected_rate: row.expected_rate,
+      salary_expectation: row.salary_expectation,
       available_date: row.available_date,
       notes: row.notes,
       reviewed_at: row.reviewed_at,
@@ -606,11 +628,11 @@ class Application {
     const statsQuery = `
       SELECT 
         COUNT(*) as total_applications,
-        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_applications,
-        COUNT(CASE WHEN status = 'reviewed' THEN 1 END) as reviewed_applications,
-        COUNT(CASE WHEN status = 'accepted' THEN 1 END) as accepted_applications,
-        COUNT(CASE WHEN status = 'rejected' THEN 1 END) as rejected_applications,
-        COUNT(CASE WHEN status = 'withdrawn' THEN 1 END) as withdrawn_applications,
+        COUNT(CASE WHEN application_status = 'pending' THEN 1 END) as pending_applications,
+        COUNT(CASE WHEN application_status = 'reviewed' THEN 1 END) as reviewed_applications,
+        COUNT(CASE WHEN application_status = 'accepted' THEN 1 END) as accepted_applications,
+        COUNT(CASE WHEN application_status = 'rejected' THEN 1 END) as rejected_applications,
+        COUNT(CASE WHEN application_status = 'withdrawn' THEN 1 END) as withdrawn_applications,
         MIN(created_at) as first_application_date,
         MAX(created_at) as last_application_date,
         COUNT(CASE WHEN reviewed_at IS NOT NULL THEN 1 END) as applications_reviewed
@@ -752,7 +774,7 @@ class Application {
     // Status filters
     if (statuses.length > 0) {
       const statusPlaceholders = statuses.map(() => `$${valueIndex++}`).join(',');
-      conditions.push(`a.status IN (${statusPlaceholders})`);
+      conditions.push(`a.application_status IN (${statusPlaceholders})`);
       values.push(...statuses);
     }
 
@@ -785,13 +807,13 @@ class Application {
 
     // Rate range filters
     if (minRate !== undefined) {
-      conditions.push(`a.expected_rate >= $${valueIndex}`);
+      conditions.push(`a.salary_expectation >= $${valueIndex}`);
       values.push(minRate);
       valueIndex++;
     }
 
     if (maxRate !== undefined) {
-      conditions.push(`a.expected_rate <= $${valueIndex}`);
+      conditions.push(`a.salary_expectation <= $${valueIndex}`);
       values.push(maxRate);
       valueIndex++;
     }
@@ -934,7 +956,7 @@ class Application {
     // Status filters
     if (statuses.length > 0) {
       const statusPlaceholders = statuses.map(() => `$${valueIndex++}`).join(',');
-      conditions.push(`a.status IN (${statusPlaceholders})`);
+      conditions.push(`a.application_status IN (${statusPlaceholders})`);
       values.push(...statuses);
     }
 
@@ -953,13 +975,13 @@ class Application {
 
     // Rate range filters
     if (minRate !== undefined) {
-      conditions.push(`a.expected_rate >= $${valueIndex}`);
+      conditions.push(`a.salary_expectation >= $${valueIndex}`);
       values.push(minRate);
       valueIndex++;
     }
 
     if (maxRate !== undefined) {
-      conditions.push(`a.expected_rate <= $${valueIndex}`);
+      conditions.push(`a.salary_expectation <= $${valueIndex}`);
       values.push(maxRate);
       valueIndex++;
     }
@@ -1053,7 +1075,7 @@ class Application {
       SELECT DISTINCT
         j.specialty,
         j.state,
-        a.status
+        a.application_status
       FROM applications a
       INNER JOIN jobs j ON a.job_id = j.id
     `;
@@ -1068,12 +1090,12 @@ class Application {
 
     const specialties = [...new Set(result.rows.map(row => row.specialty).filter(Boolean))];
     const states = [...new Set(result.rows.map(row => row.state).filter(Boolean))];
-    const statuses = [...new Set(result.rows.map(row => row.status).filter(Boolean))];
+    const statuses = [...new Set(result.rows.map(row => row.application_status).filter(Boolean))];
 
     // Get rate range
     const rateQuery = userId 
-      ? 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE user_id = $1 AND expected_rate IS NOT NULL'
-      : 'SELECT MIN(expected_rate) as min_rate, MAX(expected_rate) as max_rate FROM applications WHERE expected_rate IS NOT NULL';
+      ? 'SELECT MIN(salary_expectation) as min_rate, MAX(salary_expectation) as max_rate FROM applications WHERE user_id = $1 AND salary_expectation IS NOT NULL'
+      : 'SELECT MIN(salary_expectation) as min_rate, MAX(salary_expectation) as max_rate FROM applications WHERE salary_expectation IS NOT NULL';
     
     const rateValues = userId ? [userId] : [];
     const rateResult = await pool.query(rateQuery, rateValues);
