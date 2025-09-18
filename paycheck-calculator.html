@@ -814,8 +814,8 @@
             // Net pay calculation (everything)
             const netPay = grossTaxable + totalStipends;
             
-            // True hourly rate calculation (excludes expense reimbursements)
-            // Only includes actual compensation: wages + true stipends
+            // True hourly rate calculation (excludes expense reimbursements like flight/toll/rental)
+            // Includes wages + true stipends (housing, meals, mileage)
             const compensationForHourlyRate = regularPay + overtimePay + callPay + callbackPay + totalStipends;
             const weeklyCompensationForHourlyRate = compensationForHourlyRate / multiplier;
             const trueHourlyRate = totalHours > 0 ? weeklyCompensationForHourlyRate / totalHours : 0;
