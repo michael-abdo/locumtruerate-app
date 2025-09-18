@@ -542,9 +542,9 @@
                             <!-- Work Schedule -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Work Schedule</h3>
                             <div class="form-group">
-                                <label class="form-label">Regular Hours</label>
-                                <input type="number" class="form-input" id="regularHours" value="40" min="0" max="80" oninput="calculatePaycheck()">
-                                <div class="form-help">Regular hours worked per pay period</div>
+                                <label class="form-label">Total Hours Worked</label>
+                                <input type="number" class="form-input" id="totalHours" value="48" min="0" max="80" oninput="calculatePaycheck()">
+                                <div class="form-help">Total hours worked per week (OT automatically calculated above 40 hours)</div>
                             </div>
 
                             <div class="form-group">
@@ -563,15 +563,10 @@
 
                             <!-- Additional Compensation -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Additional Compensation</h3>
-                            <div class="input-group">
-                                <div class="form-group">
-                                    <label class="form-label">Overtime Hours</label>
-                                    <input type="number" class="form-input" id="overtimeHours" value="8" min="0" oninput="calculatePaycheck()">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Overtime Rate ($)</label>
-                                    <input type="number" class="form-input" id="overtimeRate" value="106.25" min="0" step="0.01" oninput="calculatePaycheck()">
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">Overtime Rate ($)</label>
+                                <input type="number" class="form-input" id="overtimeRate" value="106.25" min="0" step="0.01" oninput="calculatePaycheck()">
+                                <div class="form-help">Rate for hours over 40/week (typically 1.25x regular rate)</div>
                             </div>
 
                             <!-- Call & Callback Hours -->
@@ -623,6 +618,25 @@
                                 </div>
                             </div>
 
+                            <!-- Additional Reimbursements -->
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Weekly Flight Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="weeklyFlight" value="0" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <div class="form-help">Weekly flight expense reimbursement</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Weekly Toll Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="weeklyToll" value="0" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <div class="form-help">Weekly toll and parking fees</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Weekly Rental Car Reimbursement ($)</label>
+                                    <input type="number" class="form-input" id="weeklyRentalCar" value="0" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <div class="form-help">Weekly rental car expenses</div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Results -->
@@ -632,6 +646,7 @@
                             <div class="results-summary">
                                 <h3 id="periodLabel">Weekly Net Pay</h3>
                                 <div class="amount" id="netPay">$4,325</div>
+                                <div class="rate" style="font-size: 1.4rem; font-weight: 700; margin-top: 0.5rem;">True Hourly Rate: <span id="trueHourlyRate">$90.10</span></div>
                             </div>
 
                             <div class="results-breakdown">
@@ -753,10 +768,13 @@
             const multiplier = periodMultipliers[currentPeriod];
             
             // Get input values
-            const regularHours = parseFloat(document.getElementById('regularHours').value) || 0;
+            const totalHours = parseFloat(document.getElementById('totalHours').value) || 0;
             const regularRate = parseFloat(document.getElementById('regularRate').value) || 0;
-            const overtimeHours = parseFloat(document.getElementById('overtimeHours').value) || 0;
             const overtimeRate = parseFloat(document.getElementById('overtimeRate').value) || 0;
+            
+            // Calculate regular and overtime hours from total
+            const regularHours = Math.min(40, totalHours);
+            const overtimeHours = Math.max(0, totalHours - 40);
             const callHours = parseFloat(document.getElementById('callHours').value) || 0;
             const callRate = parseFloat(document.getElementById('callRate').value) || 0;
             const callbackHours = parseFloat(document.getElementById('callbackHours').value) || 0;
@@ -765,6 +783,9 @@
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
             const mileageDriven = parseFloat(document.getElementById('mileageDriven').value) || 0;
             const mileageRate = parseFloat(document.getElementById('mileageRate').value) || 0;
+            const weeklyFlight = parseFloat(document.getElementById('weeklyFlight').value) || 0;
+            const weeklyToll = parseFloat(document.getElementById('weeklyToll').value) || 0;
+            const weeklyRentalCar = parseFloat(document.getElementById('weeklyRentalCar').value) || 0;
             const daysWorked = parseFloat(document.getElementById('daysWorked').value) || 5;
 
             // Calculate pay components
@@ -782,10 +803,15 @@
             // Tax-free stipends
             const totalMealStipend = mealStipend * daysWorked * multiplier;
             const totalMileageReimbursement = mileageDriven * mileageRate * daysWorked * multiplier;
-            const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement;
+            const totalWeeklyReimbursements = (weeklyFlight + weeklyToll + weeklyRentalCar) * multiplier;
+            const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement + totalWeeklyReimbursements;
             
             // Net pay calculation
             const netPay = grossTaxable + totalStipends;
+            
+            // True hourly rate calculation (total weekly compensation / total hours)
+            const weeklyTotalCompensation = (grossTaxable + totalStipends) / multiplier;
+            const trueHourlyRate = totalHours > 0 ? weeklyTotalCompensation / totalHours : 0;
 
 
             // Update display
@@ -799,6 +825,7 @@
             document.getElementById('mileageDisplay').textContent = '+$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('netPayDisplay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('netPay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('trueHourlyRate').textContent = '$' + trueHourlyRate.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
 
         function saveCalculation() {
