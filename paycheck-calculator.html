@@ -597,8 +597,18 @@
                             <!-- Stipends & Reimbursements -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Stipends & Reimbursements</h3>
                             <div class="form-group">
-                                <label class="form-label">Housing Stipend ($)</label>
+                                <label class="form-label">Housing ($)</label>
                                 <input type="number" class="form-input" id="housingStipend" value="1200" min="0" step="0.01" oninput="calculatePaycheck()">
+                                <div class="housing-type-selection" style="margin: 0.5rem 0;">
+                                    <label style="display: inline-flex; align-items: center; margin-right: 1rem; font-size: 0.9rem;">
+                                        <input type="radio" name="housingType" value="stipend" checked onchange="calculatePaycheck()" style="margin-right: 0.3rem;">
+                                        Stipend (counts toward hourly rate)
+                                    </label>
+                                    <label style="display: inline-flex; align-items: center; font-size: 0.9rem;">
+                                        <input type="radio" name="housingType" value="reimbursement" onchange="calculatePaycheck()" style="margin-right: 0.3rem;">
+                                        Reimbursement (expense only)
+                                    </label>
+                                </div>
                                 <div class="form-help">Tax-free housing allowance per pay period</div>
                             </div>
 
@@ -677,7 +687,7 @@
                                     <span class="result-value" id="grossTaxable">$5,530</span>
                                 </div>
                                 <div class="result-item">
-                                    <span class="result-label">Housing Stipend</span>
+                                    <span class="result-label" id="housingLabel">Housing Stipend</span>
                                     <span class="result-value positive" id="housingStipendDisplay">+$1,200</span>
                                 </div>
                                 <div class="result-item">
@@ -785,7 +795,9 @@
             const callRate = parseFloat(document.getElementById('callRate').value) || 0;
             const callbackHours = parseFloat(document.getElementById('callbackHours').value) || 0;
             const callbackRate = parseFloat(document.getElementById('callbackRate').value) || 0;
-            const housingStipend = parseFloat(document.getElementById('housingStipend').value) || 0;
+            const housingAmount = parseFloat(document.getElementById('housingStipend').value) || 0;
+            const housingType = document.querySelector('input[name="housingType"]:checked').value;
+            const isHousingStipend = housingType === 'stipend';
             const mealStipend = parseFloat(document.getElementById('mealStipend').value) || 0;
             const mileageDriven = parseFloat(document.getElementById('mileageDriven').value) || 0;
             const mileageRate = parseFloat(document.getElementById('mileageRate').value) || 0;
@@ -809,10 +821,15 @@
             // Tax-free stipends (only true stipends, not expense reimbursements)
             const totalMealStipend = mealStipend * daysWorked * multiplier;
             const totalMileageReimbursement = mileageDriven * mileageRate * daysWorked * multiplier;
-            const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement;
             
-            // Net pay calculation (everything)
-            const netPay = grossTaxable + totalStipends;
+            // Housing: conditional based on type
+            const housingForTrueRate = isHousingStipend ? (housingAmount * multiplier) : 0;
+            const housingReimbursement = isHousingStipend ? 0 : (housingAmount * multiplier);
+            
+            const totalStipends = housingForTrueRate + totalMealStipend + totalMileageReimbursement;
+            
+            // Net pay calculation (everything - stipends + housing reimbursement)
+            const netPay = grossTaxable + totalStipends + housingReimbursement;
             
             // True hourly rate calculation (excludes expense reimbursements like flight/toll/rental)
             // Includes wages + true stipends (housing, meals, mileage)
@@ -828,7 +845,11 @@
             document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('expenseReimbursements').textContent = '$' + totalWeeklyReimbursements.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            // Update housing display with dynamic label
+            const housingLabel = isHousingStipend ? "Housing Stipend" : "Housing Reimbursement";
+            const housingDisplayAmount = housingForTrueRate + housingReimbursement;
+            document.getElementById('housingLabel').textContent = housingLabel;
+            document.getElementById('housingStipendDisplay').textContent = '+$' + housingDisplayAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('mealStipendDisplay').textContent = '+$' + totalMealStipend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('mileageDisplay').textContent = '+$' + totalMileageReimbursement.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('netPayDisplay').textContent = '$' + netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
