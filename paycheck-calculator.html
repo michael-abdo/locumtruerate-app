@@ -555,19 +555,21 @@
 
                             <!-- Primary Compensation -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Primary Compensation</h3>
-                            <div class="form-group">
-                                <label class="form-label">Regular Hourly Rate ($)</label>
-                                <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="calculatePaycheck()">
-                                <div class="form-help">Base hourly rate for regular time</div>
+                            <div class="input-group">
+                                <div class="form-group">
+                                    <label class="form-label">Regular Hourly Rate ($)</label>
+                                    <input type="number" class="form-input" id="regularRate" value="85.00" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <div class="form-help">Base hourly rate for regular time</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Overtime Rate ($)</label>
+                                    <input type="number" class="form-input" id="overtimeRate" value="106.25" min="0" step="0.01" oninput="calculatePaycheck()">
+                                    <div class="form-help">Rate for hours over 40/week (typically 1.25x)</div>
+                                </div>
                             </div>
 
                             <!-- Additional Compensation -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Additional Compensation</h3>
-                            <div class="form-group">
-                                <label class="form-label">Overtime Rate ($)</label>
-                                <input type="number" class="form-input" id="overtimeRate" value="106.25" min="0" step="0.01" oninput="calculatePaycheck()">
-                                <div class="form-help">Rate for hours over 40/week (typically 1.25x regular rate)</div>
-                            </div>
 
                             <!-- Call & Callback Hours -->
                             <div class="input-group">
@@ -665,6 +667,10 @@
                                 <div class="result-item">
                                     <span class="result-label">Callback Pay</span>
                                     <span class="result-value" id="callbackPay">$510</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Expense Reimbursements</span>
+                                    <span class="result-value" id="expenseReimbursements">$0.00</span>
                                 </div>
                                 <div class="result-item highlight">
                                     <span class="result-label">Gross Taxable Income</span>
@@ -794,24 +800,25 @@
             const callPay = (callHours * callRate) * multiplier;
             const callbackPay = (callbackHours * callbackRate) * multiplier;
             
-            // Taxable income
-            const grossTaxable = regularPay + overtimePay + callPay + callbackPay;
+            // Expense reimbursements (taxable)
+            const totalWeeklyReimbursements = (weeklyFlight + weeklyToll + weeklyRentalCar) * multiplier;
             
+            // Taxable income (includes expense reimbursements)
+            const grossTaxable = regularPay + overtimePay + callPay + callbackPay + totalWeeklyReimbursements;
             
-            
-            
-            // Tax-free stipends
+            // Tax-free stipends (only true stipends, not expense reimbursements)
             const totalMealStipend = mealStipend * daysWorked * multiplier;
             const totalMileageReimbursement = mileageDriven * mileageRate * daysWorked * multiplier;
-            const totalWeeklyReimbursements = (weeklyFlight + weeklyToll + weeklyRentalCar) * multiplier;
-            const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement + totalWeeklyReimbursements;
+            const totalStipends = housingStipend * multiplier + totalMealStipend + totalMileageReimbursement;
             
-            // Net pay calculation
+            // Net pay calculation (everything)
             const netPay = grossTaxable + totalStipends;
             
-            // True hourly rate calculation (total weekly compensation / total hours)
-            const weeklyTotalCompensation = (grossTaxable + totalStipends) / multiplier;
-            const trueHourlyRate = totalHours > 0 ? weeklyTotalCompensation / totalHours : 0;
+            // True hourly rate calculation (excludes expense reimbursements)
+            // Only includes actual compensation: wages + true stipends
+            const compensationForHourlyRate = regularPay + overtimePay + callPay + callbackPay + totalStipends;
+            const weeklyCompensationForHourlyRate = compensationForHourlyRate / multiplier;
+            const trueHourlyRate = totalHours > 0 ? weeklyCompensationForHourlyRate / totalHours : 0;
 
 
             // Update display
@@ -819,6 +826,7 @@
             document.getElementById('overtimePay').textContent = '$' + overtimePay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('callPay').textContent = '$' + callPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('callbackPay').textContent = '$' + callbackPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('expenseReimbursements').textContent = '$' + totalWeeklyReimbursements.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('grossTaxable').textContent = '$' + grossTaxable.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('housingStipendDisplay').textContent = '+$' + (housingStipend * multiplier).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('mealStipendDisplay').textContent = '+$' + totalMealStipend.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
