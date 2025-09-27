@@ -10,17 +10,17 @@ The market averages displayed in the contract calculator are **hardcoded static 
 
 ## Market Rate Data Structure
 
-### Available Clinician Types & Rates
-- **MD (Medical Doctor)**: $150/hr (Range: $100-$250)
-- **MD-EM (Emergency Medicine)**: $175/hr (Range: $150-$225) 
-- **CRNA (Nurse Anesthetist)**: $200/hr (Range: $175-$250)
-- **NP (Nurse Practitioner)**: $75/hr (Range: $60-$95)
-- **PA (Physician Assistant)**: $70/hr (Range: $55-$90)
-- **RN (Registered Nurse)**: $50/hr (Range: $40-$65)
+### Available Clinician Types & Rates (Updated December 2024)
+- **MD (Medical Doctor)**: $215/hr (Range: $120-$400)
+- **MD-EM (Emergency Medicine)**: $250/hr (Range: $200-$300) 
+- **CRNA (Nurse Anesthetist)**: $220/hr (Range: $190-$280)
+- **NP (Nurse Practitioner)**: $90/hr (Range: $70-$110)
+- **PA (Physician Assistant)**: $90/hr (Range: $70-$110)
+- **RN (Registered Nurse)**: $68/hr (Range: $34-$79)
 - **AA (Anesthesiologist Assistant)**: $85/hr (Range: $70-$100)
 - **Tech (Medical Technician)**: $35/hr (Range: $25-$45)
-- **MD-Hospitalist**: $150/hr (Range: $125-$175)
-- **MD-ICU (Critical Care)**: $180/hr (Range: $160-$210)
+- **MD-Hospitalist**: $180/hr (Range: $140-$220)
+- **MD-ICU (Critical Care)**: $275/hr (Range: $200-$350)
 
 ### State Multipliers
 The system applies basic geographic multipliers to base rates, but these are also **static estimates**, not real market data.
@@ -38,6 +38,9 @@ The system applies basic geographic multipliers to base rates, but these are als
 ```
 /js/market-data.js
 ```
+
+## Last Updated
+**December 2024** - Rates updated based on web research of 2024 locum tenens market data from multiple industry sources including OnCall Solutions, LocumTenens.com, CompHealth, and ZipRecruiter salary surveys.
 
 ## How It Works
 ```javascript

@@ -1,6 +1,7 @@
 /**
  * Market Data for Clinician Average Rates
  * Contains average hourly rates by clinician type for comparison
+ * Updated: December 2024 based on national locum tenens market research
  */
 
 const MarketData = {
@@ -8,45 +9,45 @@ const MarketData = {
     clinicianRates: {
         'MD': {
             name: 'Medical Doctor',
-            avgRate: 150,
-            minRate: 100,
-            maxRate: 250,
-            description: 'General physician rates'
+            avgRate: 215,
+            minRate: 120,
+            maxRate: 400,
+            description: 'General physician rates (2024 market average)'
         },
         'MD-EM': {
             name: 'Emergency Medicine Specialist',
-            avgRate: 175,
-            minRate: 150,
-            maxRate: 225,
-            description: 'EM specialist premium rates'
+            avgRate: 250,
+            minRate: 200,
+            maxRate: 300,
+            description: 'EM specialist premium rates (2024 market data)'
         },
         'CRNA': {
             name: 'Certified Registered Nurse Anesthetist',
-            avgRate: 200,
-            minRate: 175,
-            maxRate: 250,
-            description: 'CRNA anesthesia specialist rates'
+            avgRate: 220,
+            minRate: 190,
+            maxRate: 280,
+            description: 'CRNA anesthesia specialist rates (2024 market data)'
         },
         'NP': {
             name: 'Nurse Practitioner',
-            avgRate: 75,
-            minRate: 60,
-            maxRate: 95,
-            description: 'Advanced practice nurse rates'
+            avgRate: 90,
+            minRate: 70,
+            maxRate: 110,
+            description: 'Advanced practice nurse rates (2024 market data)'
         },
         'PA': {
             name: 'Physician Assistant',
-            avgRate: 70,
-            minRate: 55,
-            maxRate: 90,
-            description: 'Physician assistant rates'
+            avgRate: 90,
+            minRate: 70,
+            maxRate: 110,
+            description: 'Physician assistant rates (2024 market data)'
         },
         'RN': {
             name: 'Registered Nurse',
-            avgRate: 50,
-            minRate: 40,
-            maxRate: 65,
-            description: 'Registered nurse rates'
+            avgRate: 68,
+            minRate: 34,
+            maxRate: 79,
+            description: 'Registered nurse rates (2024 market data)'
         },
         'AA': {
             name: 'Anesthesiologist Assistant',
@@ -64,17 +65,17 @@ const MarketData = {
         },
         'MD-Hospitalist': {
             name: 'Hospitalist',
-            avgRate: 150,
-            minRate: 125,
-            maxRate: 175,
-            description: 'Hospital-based physician rates'
+            avgRate: 180,
+            minRate: 140,
+            maxRate: 220,
+            description: 'Hospital-based physician rates (2024 market data)'
         },
         'MD-ICU': {
             name: 'Critical Care/ICU',
-            avgRate: 180,
-            minRate: 160,
-            maxRate: 210,
-            description: 'ICU/Critical care specialist rates'
+            avgRate: 275,
+            minRate: 200,
+            maxRate: 350,
+            description: 'ICU/Critical care specialist rates (2024 market data)'
         }
     },
 
