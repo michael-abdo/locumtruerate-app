@@ -97,6 +97,76 @@ async function login(email, password) {
 }
 
 /**
+ * Register new user
+ * Returns user data and stores JWT token
+ */
+async function register(userData) {
+    const { email, password, role, first_name, last_name, phone } = userData;
+    
+    // Validate required fields
+    if (!email || !password || !role) {
+        const error = 'Email, password, and role are required';
+        showToast(error, 'error');
+        return { success: false, error };
+    }
+
+    if (password.length < 6) {
+        const error = 'Password must be at least 6 characters';
+        showToast(error, 'error');
+        return { success: false, error };
+    }
+
+    try {
+        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/auth/register`, {
+            method: 'POST',
+            body: JSON.stringify({
+                email,
+                password,
+                role,
+                first_name: first_name || null,
+                last_name: last_name || null,
+                phone: phone || null
+            })
+        });
+
+        if (result.success && result.data.token) {
+            // Store authentication data (same as login)
+            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
+            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
+            
+            // Maintain compatibility with existing code
+            localStorage.setItem('userAuthenticated', 'true');
+            localStorage.setItem('userEmail', result.data.user.email);
+            localStorage.setItem('userName', `${result.data.user.first_name || ''} ${result.data.user.last_name || ''}`.trim());
+            localStorage.setItem('userRole', result.data.user.role);
+
+            showToast('Registration successful!', 'success');
+            return { success: true, user: result.data.user };
+        } else {
+            // Handle specific error codes
+            if (result.data.code === 'EMAIL_EXISTS') {
+                const error = 'An account with this email already exists';
+                showToast(error, 'error');
+                return { success: false, error, code: 'EMAIL_EXISTS' };
+            } else if (result.data.code === 'WEAK_PASSWORD') {
+                const error = 'Password must be at least 6 characters';
+                showToast(error, 'error');
+                return { success: false, error, code: 'WEAK_PASSWORD' };
+            } else {
+                const error = result.data.error || 'Registration failed';
+                showToast(error, 'error');
+                return { success: false, error };
+            }
+        }
+    } catch (error) {
+        console.error('Registration error:', error);
+        const errorMessage = 'Registration failed. Please try again.';
+        showToast(errorMessage, 'error');
+        return { success: false, error: errorMessage };
+    }
+}
+
+/**
  * Logout user - clear tokens and redirect
  */
 async function logout() {
@@ -344,6 +414,7 @@ function showToast(message, type = 'info', duration = 5000) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         login,
+        register,
         logout,
         isAuthenticated,
         getAuthToken,

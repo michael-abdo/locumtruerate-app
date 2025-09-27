@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - LocumTrueRate</title>
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .signup-container {
+            background-color: var(--surface-color);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+            margin: 1rem;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header p {
+            color: var(--text-secondary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-label .optional {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            background-color: white;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--error-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        .toast.info {
+            background-color: var(--primary-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>LocumTrueRate</h1>
+            <p>Create your account to get started</p>
+        </div>
+
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <!-- Name Fields -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-input" id="firstName" required>
+                    <span class="error-message" id="firstNameError"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" id="lastName" required>
+                    <span class="error-message" id="lastNameError"></span>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group full-width">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="email" required>
+                <span class="error-message" id="emailError"></span>
+            </div>
+
+            <!-- Password Fields -->
+            <div class="form-group full-width">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="password" required minlength="6">
+                <span class="error-message" id="passwordError"></span>
+            </div>
+
+            <div class="form-group full-width">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-input" id="confirmPassword" required>
+                <span class="error-message" id="confirmPasswordError"></span>
+            </div>
+
+            <!-- Account Type -->
+            <div class="form-group full-width">
+                <label class="form-label">I am a</label>
+                <select class="form-select" id="role" required>
+                    <option value="">Select your role</option>
+                    <option value="locum">Locum Professional</option>
+                    <option value="recruiter">Recruiter</option>
+                </select>
+                <span class="error-message" id="roleError"></span>
+            </div>
+
+            <!-- Phone (Optional) -->
+            <div class="form-group full-width">
+                <label class="form-label">Phone Number <span class="optional">(optional)</span></label>
+                <input type="tel" class="form-input" id="phone" placeholder="(xxx) xxx-xxxx">
+                <span class="error-message" id="phoneError"></span>
+            </div>
+
+            <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+
+        <div class="back-link">
+            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+                Already have an account? <a href="login.html">Log in</a>
+            </p>
+            <a href="job-board.html">← Back to Job Board</a>
+        </div>
+    </div>
+
+    <!-- Authentication script -->
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Make showToast globally available
+        window.showToast = showToast;
+
+        // Phone number formatting
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = `(${value}`;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+                }
+            }
+            input.value = value;
+        }
+
+        // Add phone formatting listener
+        document.getElementById('phone').addEventListener('input', function(e) {
+            formatPhoneNumber(e.target);
+        });
+
+        // Clear error message on input
+        document.querySelectorAll('.form-input, .form-select').forEach(input => {
+            input.addEventListener('input', function() {
+                const errorElement = document.getElementById(this.id + 'Error');
+                if (errorElement) {
+                    errorElement.classList.remove('show');
+                    this.classList.remove('error');
+                }
+            });
+        });
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            
+            // Clear all errors
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-select').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Get form values
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+            const phone = document.getElementById('phone').value.trim();
+            
+            let hasErrors = false;
+            
+            // Validate fields
+            if (!firstName) {
+                document.getElementById('firstNameError').textContent = 'First name is required';
+                document.getElementById('firstNameError').classList.add('show');
+                document.getElementById('firstName').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (!lastName) {
+                document.getElementById('lastNameError').textContent = 'Last name is required';
+                document.getElementById('lastNameError').classList.add('show');
+                document.getElementById('lastName').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (!email) {
+                document.getElementById('emailError').textContent = 'Email is required';
+                document.getElementById('emailError').classList.add('show');
+                document.getElementById('email').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+                document.getElementById('passwordError').classList.add('show');
+                document.getElementById('password').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').classList.add('show');
+                document.getElementById('confirmPassword').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (!role) {
+                document.getElementById('roleError').textContent = 'Please select your role';
+                document.getElementById('roleError').classList.add('show');
+                document.getElementById('role').classList.add('error');
+                hasErrors = true;
+            }
+            
+            if (hasErrors) {
+                return;
+            }
+            
+            // Disable form during signup
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Creating account...';
+            
+            try {
+                // Call register function (will be created in auth.js)
+                const result = await register({
+                    email,
+                    password,
+                    role,
+                    first_name: firstName,
+                    last_name: lastName,
+                    phone: phone || null
+                });
+                
+                if (result.success) {
+                    showToast('Account created successfully! Redirecting...', 'success');
+                    
+                    // Redirect based on role
+                    setTimeout(() => {
+                        if (role === 'recruiter') {
+                            window.location.href = 'recruiter-dashboard.html';
+                        } else {
+                            window.location.href = 'locum-dashboard.html';
+                        }
+                    }, 1500);
+                } else {
+                    // Error handling
+                    if (result.error && result.error.includes('already exists')) {
+                        document.getElementById('emailError').textContent = 'This email is already registered';
+                        document.getElementById('emailError').classList.add('show');
+                        document.getElementById('email').classList.add('error');
+                    } else {
+                        showToast(result.error || 'Registration failed. Please try again.', 'error');
+                    }
+                    
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showToast('An unexpected error occurred. Please try again.', 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
+        }
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof isAuthenticated !== 'undefined' && isAuthenticated()) {
+                showToast('You are already logged in. Redirecting...', 'info');
+                setTimeout(() => {
+                    const userRole = localStorage.getItem('userRole');
+                    if (userRole === 'recruiter') {
+                        window.location.href = 'recruiter-dashboard.html';
+                    } else {
+                        window.location.href = 'locum-dashboard.html';
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
