@@ -111,6 +111,29 @@
             transform: translateY(-1px);
         }
 
+        .btn-secondary {
+            width: 100%;
+            background-color: transparent;
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
         .demo-note {
             background-color: var(--warning-color);
             color: white;
@@ -202,12 +225,10 @@
             </div>
 
             <button type="submit" class="btn-primary">Log In</button>
+            <a href="signup.html" class="btn-secondary">Sign Up</a>
         </form>
 
         <div class="back-link">
-            <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-                Don't have an account? <a href="signup.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Sign up</a>
-            </p>
             <a href="job-board.html">← Back to Job Board</a>
         </div>
     </div>
