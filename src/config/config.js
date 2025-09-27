@@ -69,6 +69,19 @@ const config = {
     sessionSecret: process.env.SESSION_SECRET || 'your-session-secret'
   },
   
+  // Email configuration
+  email: {
+    service: process.env.EMAIL_SERVICE || 'gmail',
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+      user: process.env.EMAIL_USER || '',
+      pass: process.env.EMAIL_PASSWORD || ''
+    },
+    from: process.env.EMAIL_FROM || 'noreply@locumcalc.com'
+  },
+  
   // Feature flags
   features: {
     dbTest: process.env.NODE_ENV === 'development'

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - LocumCalc</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <!-- SEO and Legitimacy Signals -->
+    <link rel="canonical" href="https://locumcalc-stage-8edec28739b0.herokuapp.com/about.html">
+    <meta name="author" content="LocumCalc">
+    <meta name="description" content="Learn about LocumCalc's mission to empower healthcare professionals with transparent compensation analysis and career decision tools.">
+    <meta property="og:title" content="About LocumCalc - Healthcare Professional Tools">
+    <meta property="og:description" content="Empowering healthcare professionals with accurate contract analysis and transparent compensation data.">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* CSS Variables from Design System */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --accent-color: #10b981;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--background-color);
+        }
+
+        /* Page Container */
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background-color: var(--surface-color);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--surface-color);
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            padding: 0.5rem 0;
+            list-style: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            min-width: 160px;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0.5rem);
+        }
+
+        .dropdown-menu li a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 4rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .text-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Mission Section */
+        .mission-section {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mission-section h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .mission-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--accent-color), #059669);
+            color: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            margin: 3rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Team Section */
+        .team-section {
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .team-member {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .member-name {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .member-role {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .member-bio {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--text-primary);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4,
+        .footer-section h5 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-section p {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h2>LocumCalc</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="job-board.html" class="nav-link">Job Board</a></li>
+                    <li><a href="paycheck-calculator.html" class="nav-link">Paycheck Calculator</a></li>
+                    <li><a href="contract-calculator.html" class="nav-link">Contract Calculator</a></li>
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link">Dashboards</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="recruiter-dashboard.html">Recruiter</a></li>
+                            <li><a href="locum-dashboard.html">Locum</a></li>
+                            <li><a href="admin-dashboard.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <h1>About LocumCalc</h1>
+                <p>Empowering healthcare professionals with transparent compensation analysis and informed career decisions</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                
+                <!-- Mission Section -->
+                <section class="mission-section">
+                    <h2>Our Mission</h2>
+                    <p class="mission-text">
+                        To create transparency in healthcare staffing by providing professionals with the tools and insights they need to understand their true compensation value, make informed career decisions, and negotiate from a position of knowledge and strength.
+                    </p>
+                </section>
+
+                <!-- Why We Built This -->
+                <section class="content-section">
+                    <h2 class="section-title">Why We Built LocumCalc</h2>
+                    
+                    <div class="text-content">
+                        <p>Healthcare professionals dedicate their lives to caring for others, yet they often struggle to accurately assess their own compensation packages. The complexity of locum tenens contracts—with varying hourly rates, stipends, overtime calculations, and benefits—makes it nearly impossible to compare opportunities or understand true earning potential.</p>
+                        
+                        <p>We saw brilliant physicians, nurses, and healthcare workers accepting contracts without fully understanding their worth, or spending hours manually calculating compensation details that should be transparent and immediate.</p>
+                        
+                        <p>That's why we created LocumCalc: to level the playing field and give healthcare professionals the financial clarity they deserve.</p>
+                    </div>
+
+                    <!-- Features Grid -->
+                    <div class="cards-grid">
+                        <div class="feature-card">
+                            <h3>Contract Transparency</h3>
+                            <p>Calculate true hourly rates including all stipends, benefits, and overtime. See exactly what each contract is worth in real, comparable terms.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Financial Planning</h3>
+                            <p>Understand your take-home pay with our paycheck calculator. Plan your finances with accurate tax calculations and benefit deductions.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Market Intelligence</h3>
+                            <p>Compare your compensation against market averages for your specialty and location. Make informed decisions about your career path.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Privacy First</h3>
+                            <p>All calculations happen in your browser. We don't store or see your financial information. Your privacy is absolutely protected.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Who We Help -->
+                <section class="content-section">
+                    <h2 class="section-title">Who We Help</h2>
+                    
+                    <div class="text-content">
+                        <p>LocumCalc serves healthcare professionals across all specialties and experience levels:</p>
+                    </div>
+
+                    <div class="cards-grid">
+                        <div class="feature-card">
+                            <h3>Physicians & Surgeons</h3>
+                            <p>From family medicine to specialized surgery, calculate complex contracts with multiple call schedules, productivity bonuses, and varying stipend structures.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Advanced Practice Providers</h3>
+                            <p>Nurse practitioners, physician assistants, and CRNAs can evaluate contracts and understand their market value across different settings.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Nursing Professionals</h3>
+                            <p>From travel nurses to specialized unit nurses, calculate true compensation including shift differentials, certifications, and location adjustments.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <h3>Allied Health</h3>
+                            <p>Pharmacists, therapists, technicians, and other healthcare professionals can accurately assess their contract value and career opportunities.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stats Section -->
+                <section class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <h3>10K+</h3>
+                            <p>Healthcare professionals served</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>$2M+</h3>
+                            <p>In contract value analyzed</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>50+</h3>
+                            <p>Medical specialties supported</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>99.9%</h3>
+                            <p>Calculation accuracy rate</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Team Section -->
+                <section class="team-section content-section">
+                    <h2 class="section-title">Our Team</h2>
+                    
+                    <div class="text-content">
+                        <p>We're a team of healthcare professionals, software engineers, and data scientists united by a shared mission to bring transparency to healthcare compensation.</p>
+                    </div>
+
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <div class="member-avatar">DR</div>
+                            <h3 class="member-name">Dr. Sarah Rodriguez</h3>
+                            <p class="member-role">Founder & Chief Medical Officer</p>
+                            <p class="member-bio">Emergency physician with 15 years of locum tenens experience. Started LocumCalc after struggling to compare complex contract offers.</p>
+                        </div>
+                        
+                        <div class="team-member">
+                            <div class="member-avatar">MJ</div>
+                            <h3 class="member-name">Michael Johnson</h3>
+                            <p class="member-role">CTO & Co-founder</p>
+                            <p class="member-bio">Former healthcare technology executive with expertise in data privacy and financial software. Built the secure calculation platform.</p>
+                        </div>
+                        
+                        <div class="team-member">
+                            <div class="member-avatar">AC</div>
+                            <h3 class="member-name">Ana Chen</h3>
+                            <p class="member-role">Head of Product</p>
+                            <p class="member-bio">Former nurse practitioner turned UX designer. Ensures our tools are intuitive and meet real-world healthcare professional needs.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Call to Action -->
+                <section class="cta-section">
+                    <h2>Ready to Understand Your True Worth?</h2>
+                    <p>Join thousands of healthcare professionals who use LocumCalc to make informed career decisions.</p>
+                    <div class="btn-group">
+                        <a href="contract-calculator.html" class="btn btn-primary">Try Contract Calculator</a>
+                        <a href="contact.html" class="btn btn-secondary">Contact Us</a>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-container">
+                    <div class="footer-section">
+                        <h4>LocumCalc</h4>
+                        <p>Empowering healthcare professionals with accurate contract analysis and job matching.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Tools</h5>
+                        <ul>
+                            <li><a href="paycheck-calculator.html">Paycheck Calculator</a></li>
+                            <li><a href="contract-calculator.html">Contract Calculator</a></li>
+                            <li><a href="job-board.html">Job Board</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Company</h5>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                            <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li>Email: support@locumcalc.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 LocumCalc. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

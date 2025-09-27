@@ -1,11 +1,11 @@
--- Database initialization script for LocumTrueRate API
+-- Database initialization script for LocumCalc API
 
 -- Create database (run this as superuser)
--- CREATE DATABASE locumtruerate_dev;
--- CREATE DATABASE locumtruerate_test;
+-- CREATE DATABASE locumcalc_dev;
+-- CREATE DATABASE locumcalc_test;
 
 -- Connect to the database before running the rest
--- \c locumtruerate_dev
+-- \c locumcalc_dev
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -132,7 +132,7 @@ CREATE TRIGGER update_applications_updated_at BEFORE UPDATE ON applications
 
 -- Insert some sample data for development
 INSERT INTO users (email, password_hash, role) VALUES
-    ('admin@locumtruerate.com', '$2b$10$YourHashedPasswordHere', 'admin'),
+    ('admin@locumcalc.com', '$2b$10$YourHashedPasswordHere', 'admin'),
     ('recruiter@example.com', '$2b$10$YourHashedPasswordHere', 'recruiter'),
     ('locum@example.com', '$2b$10$YourHashedPasswordHere', 'locum');
 

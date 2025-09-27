@@ -1,7 +1,7 @@
-# LocumTrueRate API Documentation
+# LocumCalc API Documentation
 
 ## Overview
-Complete REST API documentation for the LocumTrueRate job board platform.
+Complete REST API documentation for the LocumCalc job board platform.
 
 **Base URL**: `http://localhost:4000/api/v1`  
 **Authentication**: Bearer Token (JWT)  

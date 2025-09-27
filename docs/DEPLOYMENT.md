@@ -1,4 +1,4 @@
-# LocumTrueRate Deployment Guide
+# LocumCalc Deployment Guide
 
 ## Overview
 
@@ -8,8 +8,8 @@ We use a two-stage deployment process:
 
 ## URLs
 
-- **Staging**: https://locumtruerate-staging-66ba3177c382.herokuapp.com
-- **Production**: https://locumtruerate-production.herokuapp.com (to be created)
+- **Staging**: https://locumcalc-staging-66ba3177c382.herokuapp.com
+- **Production**: https://locumcalc-production.herokuapp.com (to be created)
 
 ## Deployment Flow
 
@@ -67,10 +67,10 @@ git push heroku-prod main:main --force
 ### Quick Rollback
 ```bash
 # View recent releases
-heroku releases -a locumtruerate-production
+heroku releases -a locumcalc-production
 
 # Rollback to previous version
-heroku rollback -a locumtruerate-production
+heroku rollback -a locumcalc-production
 ```
 
 ### Git-based Rollback
@@ -97,27 +97,27 @@ git push heroku-prod <commit-hash>:main --force
 ## Troubleshooting
 
 ### Deployment Failed
-1. Check Heroku logs: `heroku logs -a locumtruerate-production`
+1. Check Heroku logs: `heroku logs -a locumcalc-production`
 2. Verify build pack: Should be `heroku/nodejs`
 3. Check `package.json` for correct Node version
 
 ### Wrong Version Deployed
-1. Clear build cache: `heroku builds:cache:purge -a locumtruerate-production`
+1. Clear build cache: `heroku builds:cache:purge -a locumcalc-production`
 2. Force push again: `git push heroku-prod main:main --force`
 
 ## Next Steps
 
 1. Create production Heroku app:
    ```bash
-   heroku create locumtruerate-production
+   heroku create locumcalc-production
    ```
 
 2. Configure production app:
    ```bash
-   heroku config:set NODE_ENV=production -a locumtruerate-production
+   heroku config:set NODE_ENV=production -a locumcalc-production
    ```
 
 3. Set up custom domain (optional):
    ```bash
-   heroku domains:add www.locumtruerate.com -a locumtruerate-production
+   heroku domains:add www.locumcalc.com -a locumcalc-production
    ```

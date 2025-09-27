@@ -1,6 +1,6 @@
-# LocumTrueRate API Endpoints Documentation
+# LocumCalc API Endpoints Documentation
 
-**Base URL**: `https://locumtruerate-production-17560d4c3d1a.herokuapp.com`
+**Base URL**: `https://locumcalc-production-17560d4c3d1a.herokuapp.com`
 
 ## System Endpoints
 

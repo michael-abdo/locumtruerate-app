@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-		"name": "LocumTrueRate API",
-		"description": "Complete API collection for LocumTrueRate - Locum Tenens Job Board Platform\n\nThis collection includes all 26 endpoints with:\n- Authentication flow with automatic token management\n- Jobs CRUD operations with advanced filtering\n- Applications system with search and status management\n- Calculator endpoints for contract and paycheck calculations\n- GDPR compliance endpoints for data export\n\n## Usage\n1. Import the LocumTrueRate Environment\n2. Run 'Auth - Login' first to get a token\n3. Token is automatically saved and used in subsequent requests\n4. All endpoints include response validation tests",
+		"name": "LocumCalc API",
+		"description": "Complete API collection for LocumCalc - Locum Tenens Job Board Platform\n\nThis collection includes all 26 endpoints with:\n- Authentication flow with automatic token management\n- Jobs CRUD operations with advanced filtering\n- Applications system with search and status management\n- Calculator endpoints for contract and paycheck calculations\n- GDPR compliance endpoints for data export\n\n## Usage\n1. Import the LocumCalc Environment\n2. Run 'Auth - Login' first to get a token\n3. Token is automatically saved and used in subsequent requests\n4. All endpoints include response validation tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -27,7 +27,7 @@
 									"",
 									"pm.test(\"Response has service name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.service).to.eql('locumtruerate-api');",
+									"    pm.expect(jsonData.service).to.eql('locumcalc-api');",
 									"});"
 								],
 								"type": "text/javascript"

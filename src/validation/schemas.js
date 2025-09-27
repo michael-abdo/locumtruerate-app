@@ -103,6 +103,28 @@ const authSchemas = {
     password: Joi.string().required().messages({
       'any.required': 'Password is required'
     })
+  }),
+  
+  forgotPassword: Joi.object({
+    email: baseSchemas.email.required().messages({
+      'any.required': 'Email address is required',
+      'string.email': 'Please provide a valid email address'
+    })
+  }),
+  
+  resetPassword: Joi.object({
+    token: Joi.string().length(64).required().messages({
+      'any.required': 'Reset token is required',
+      'string.length': 'Invalid reset token format'
+    }),
+    password: baseSchemas.password.required().messages({
+      'any.required': 'New password is required',
+      'string.min': 'Password must be at least 6 characters long'
+    }),
+    confirmPassword: Joi.string().required().valid(Joi.ref('password')).messages({
+      'any.required': 'Please confirm your password',
+      'any.only': 'Passwords do not match'
+    })
   })
 };
 

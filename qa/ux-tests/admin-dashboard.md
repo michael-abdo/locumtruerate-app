@@ -15,7 +15,7 @@
 - Window resizing
 
 ## Test URL
-https://locumtruerate-staging-66ba3177c382.herokuapp.com/admin-dashboard.html
+https://locumcalc-staging-66ba3177c382.herokuapp.com/admin-dashboard.html
 
 ## Test Steps
 
@@ -25,7 +25,7 @@ https://locumtruerate-staging-66ba3177c382.herokuapp.com/admin-dashboard.html
    - ✅ Pass | ❌ Fail
 
 2. Verify page title and navigation
-   - Browser tab shows "Admin Dashboard - LocumTrueRate"
+   - Browser tab shows "Admin Dashboard - LocumCalc"
    - Navigation shows "Dashboards" dropdown with "Admin" highlighted as active
    - ✅ Pass | ❌ Fail
 

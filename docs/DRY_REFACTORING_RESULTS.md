@@ -265,7 +265,7 @@ Zero regression - all functionality preserved!
 
 ### **Live Server Test Results:**
 ```
-🚀 LocumTrueRate API Server
+🚀 LocumCalc API Server
 2025-07-25T00:29:00.617Z - INFO [SERVER_STARTUP]: Version: v1
 2025-07-25T00:29:00.617Z - INFO [SERVER_STARTUP]: Port: 4000
 2025-07-25T00:29:00.618Z - INFO [SERVER_STARTUP]: Environment: development

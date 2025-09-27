@@ -145,6 +145,86 @@ class User {
   static async comparePassword(password, hash) {
     return bcrypt.compare(password, hash);
   }
+  
+  /**
+   * Set password reset token for user
+   * @param {number} userId - User ID
+   * @param {string} token - Reset token
+   * @param {Date} expires - Token expiration date
+   * @returns {Promise<boolean>} Success status
+   */
+  static async setPasswordResetToken(userId, token, expires) {
+    const query = `
+      UPDATE users 
+      SET reset_token = $2,
+          reset_token_expires = $3,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `;
+    
+    const values = [userId, token, expires];
+    const result = await pool.query(query, values);
+    return result.rowCount > 0;
+  }
+  
+  /**
+   * Find user by password reset token
+   * @param {string} token - Reset token
+   * @returns {Promise<Object|null>} User object or null if token invalid/expired
+   */
+  static async findByPasswordResetToken(token) {
+    const query = `
+      SELECT 
+        u.id, u.email, u.role, u.created_at,
+        p.first_name, p.last_name, p.phone, p.specialty, p.years_experience
+      FROM users u
+      LEFT JOIN profiles p ON u.id = p.user_id
+      WHERE u.reset_token = $1 
+        AND u.reset_token_expires > CURRENT_TIMESTAMP
+    `;
+    
+    const result = await pool.query(query, [token]);
+    return result.rows[0] || null;
+  }
+  
+  /**
+   * Clear password reset token
+   * @param {number} userId - User ID
+   * @returns {Promise<boolean>} Success status
+   */
+  static async clearPasswordResetToken(userId) {
+    const query = `
+      UPDATE users 
+      SET reset_token = NULL,
+          reset_token_expires = NULL,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `;
+    
+    const result = await pool.query(query, [userId]);
+    return result.rowCount > 0;
+  }
+  
+  /**
+   * Update user password
+   * @param {number} userId - User ID
+   * @param {string} newPassword - New plain text password (will be hashed)
+   * @returns {Promise<boolean>} Success status
+   */
+  static async updatePassword(userId, newPassword) {
+    const passwordHash = await this.hashPassword(newPassword);
+    
+    const query = `
+      UPDATE users 
+      SET password_hash = $2,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $1
+    `;
+    
+    const values = [userId, passwordHash];
+    const result = await pool.query(query, values);
+    return result.rowCount > 0;
+  }
 }
 
 module.exports = User;

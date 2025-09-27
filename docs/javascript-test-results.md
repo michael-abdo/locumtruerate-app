@@ -3,7 +3,7 @@
 ## Live Site Testing Report
 
 **Test Date:** July 18, 2025  
-**Site URL:** https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
+**Site URL:** https://locumcalc-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
 
 ## JavaScript Analysis Summary
 

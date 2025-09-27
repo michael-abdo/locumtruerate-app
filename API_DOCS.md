@@ -1,8 +1,8 @@
-# LocumTrueRate API Documentation
+# LocumCalc API Documentation
 
 ## Overview
 
-The LocumTrueRate API is a comprehensive RESTful API for a locum tenens job board platform. It provides authentication, job management, application tracking, salary calculations, and GDPR compliance features.
+The LocumCalc API is a comprehensive RESTful API for a locum tenens job board platform. It provides authentication, job management, application tracking, salary calculations, and GDPR compliance features.
 
 **Base URL**: `http://localhost:4000`  
 **API Version**: `v1`  
@@ -47,7 +47,7 @@ Basic health check to verify API is running.
 ```json
 {
   "status": "ok",
-  "service": "locumtruerate-api",
+  "service": "locumcalc-api",
   "version": "v1",
   "timestamp": "2025-07-26T16:27:00.000Z",
   "environment": "development"
@@ -65,7 +65,7 @@ Get API information and available endpoints.
 {
   "success": true,
   "data": {
-    "name": "LocumTrueRate API",
+    "name": "LocumCalc API",
     "version": "v1",
     "description": "API for locum tenens job board platform",
     "endpoints": [
@@ -802,7 +802,7 @@ Get privacy compliance summary and user rights.
       "objection": "Object to data processing"
     },
     "contact": {
-      "dataProtectionOfficer": "privacy@locumtruerate.com",
+      "dataProtectionOfficer": "privacy@locumcalc.com",
       "supervisoryAuthority": "Relevant data protection authority"
     }
   }

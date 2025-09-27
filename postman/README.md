@@ -1,13 +1,13 @@
-# LocumTrueRate API Testing Guide
+# LocumCalc API Testing Guide
 
 ## Overview
 
-This directory contains Postman collections and testing tools for the LocumTrueRate API. The collection includes comprehensive testing for all 26 endpoints with automatic token management, response validation, and error case testing.
+This directory contains Postman collections and testing tools for the LocumCalc API. The collection includes comprehensive testing for all 26 endpoints with automatic token management, response validation, and error case testing.
 
 ## Files
 
-- `LocumTrueRate_API_Collection.json` - Complete Postman collection with all 26 API endpoints
-- `LocumTrueRate_Environment.json` - Environment variables for local development
+- `LocumCalc_API_Collection.json` - Complete Postman collection with all 26 API endpoints
+- `LocumCalc_Environment.json` - Environment variables for local development
 - `test-with-newman.sh` - Automated test runner script with Newman
 - `reports/` - Test execution reports (generated after running tests)
 - `README.md` - This testing guide
@@ -17,9 +17,9 @@ This directory contains Postman collections and testing tools for the LocumTrueR
 ### Option 1: Using Postman Desktop
 
 1. Open Postman
-2. Import the collection: Click "Import" → Select `LocumTrueRate_API_Collection.json`
-3. Import the environment: Click "Import" → Select `LocumTrueRate_Environment.json`
-4. Select "LocumTrueRate Development" from the environment dropdown
+2. Import the collection: Click "Import" → Select `LocumCalc_API_Collection.json`
+3. Import the environment: Click "Import" → Select `LocumCalc_Environment.json`
+4. Select "LocumCalc Development" from the environment dropdown
 5. Run the "Login" request first to get an auth token
 6. Run any other requests - the token is automatically included
 
@@ -140,7 +140,7 @@ pm.environment.set("lastJobId", jsonData.data.job.id);
 - If Newman fails to install globally, try local installation:
   ```bash
   npm install newman
-  npx newman run LocumTrueRate_API_Collection.json -e LocumTrueRate_Environment.json
+  npx newman run LocumCalc_API_Collection.json -e LocumCalc_Environment.json
   ```
 
 ## Error Testing
@@ -178,8 +178,8 @@ To run tests in CI/CD pipeline:
 - name: Run API Tests
   run: |
     npm install -g newman
-    newman run postman/LocumTrueRate_API_Collection.json \
-      -e postman/LocumTrueRate_Environment.json \
+    newman run postman/LocumCalc_API_Collection.json \
+      -e postman/LocumCalc_Environment.json \
       --reporters cli,junit \
       --reporter-junit-export results.xml
 ```
