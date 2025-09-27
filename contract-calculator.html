@@ -676,6 +676,25 @@
                                 <div class="form-help">Number of working days per week</div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="form-label">Weeks Per Month You Will Work</label>
+                                <div style="margin: 0.5rem 0;">
+                                    <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                        <input type="radio" name="weeksPerMonth" value="2" style="margin-right: 0.5rem;">
+                                        <span>2 weeks per month</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                        <input type="radio" name="weeksPerMonth" value="3" style="margin-right: 0.5rem;">
+                                        <span>3 weeks per month</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="radio" name="weeksPerMonth" value="4" checked style="margin-right: 0.5rem;">
+                                        <span>4 weeks per month (Standard full-time)</span>
+                                    </label>
+                                </div>
+                                <div class="form-help">Used to calculate monthly compensation estimates</div>
+                            </div>
+
                             <!-- Primary Compensation -->
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Primary Compensation</h3>
 
@@ -714,6 +733,28 @@
                                 <label class="form-label">Housing Stipend ($ per day)</label>
                                 <input type="number" class="form-input" id="housingStipend" value="360" min="0" step="0.01">
                                 <div class="form-help">Tax-free daily housing allowance</div>
+                            </div>
+
+                            <!-- Housing Coverage Options -->
+                            <div class="form-group">
+                                <label class="form-label">Housing Coverage Type</label>
+                                <div style="margin: 0.5rem 0;">
+                                    <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                        <input type="radio" name="housingCoverage" value="days-worked" checked style="margin-right: 0.5rem;">
+                                        <span>Days worked only</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                        <input type="radio" name="housingCoverage" value="days-worked-plus-travel" style="margin-right: 0.5rem;">
+                                        <span>Day before + days worked + day after</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="radio" name="housingCoverage" value="days-worked-plus-before" style="margin-right: 0.5rem;">
+                                        <span>Day before + days worked (per work week)</span>
+                                    </label>
+                                </div>
+                                <div class="form-help" style="margin-top: 0.75rem; padding: 0.75rem; background: var(--background-color); border-radius: 0.375rem; border-left: 3px solid var(--primary-color);">
+                                    <strong>Note:</strong> Housing coverage is capped at 7 days per week to prevent over-calculation.
+                                </div>
                             </div>
 
                             <div class="form-group">

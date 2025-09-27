@@ -833,12 +833,14 @@
                         <div class="filters-group">
                             <input type="text" class="filter-input" placeholder="Search jobs..." id="searchInput">
                             <select class="filter-input" id="specialtyFilter">
-                                <option value="">All Specialties</option>
-                                <option value="emergency">Emergency Medicine</option>
-                                <option value="internal">Internal Medicine</option>
-                                <option value="surgery">Surgery</option>
-                                <option value="radiology">Radiology</option>
-                                <option value="anesthesiology">Anesthesiology</option>
+                                <option value="">All Professions</option>
+                                <option value="md-do">MD/DO</option>
+                                <option value="crna">CRNA</option>
+                                <option value="np">NP</option>
+                                <option value="pa">PA</option>
+                                <option value="rn">RN</option>
+                                <option value="scrub-tech">Scrub Tech</option>
+                                <option value="aa">AA</option>
                             </select>
                             <select class="filter-input" id="locationFilter">
                                 <option value="">All Locations</option>
@@ -925,12 +927,14 @@
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Specialty *</label>
                             <select id="jobSpecialty" class="form-input form-select" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
-                                <option value="">Select a specialty</option>
-                                <option value="emergency">Emergency Medicine</option>
-                                <option value="internal">Internal Medicine</option>
-                                <option value="surgery">Surgery</option>
-                                <option value="radiology">Radiology</option>
-                                <option value="anesthesiology">Anesthesiology</option>
+                                <option value="">Select a profession</option>
+                                <option value="md-do">MD/DO</option>
+                                <option value="crna">CRNA</option>
+                                <option value="np">NP</option>
+                                <option value="pa">PA</option>
+                                <option value="rn">RN</option>
+                                <option value="scrub-tech">Scrub Tech</option>
+                                <option value="aa">AA</option>
                             </select>
                         </div>
                         <div>
@@ -958,6 +962,47 @@
                         <div style="display: flex; gap: 1rem; margin-top: 1rem;">
                             <button type="submit" class="btn-primary" style="flex: 1;">Post Job</button>
                             <button type="button" class="btn-secondary" onclick="closePostJobModal()" style="flex: 1;">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contact Preference Modal -->
+        <div class="modal" id="contactPreferenceModal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeContactModal()">&times;</button>
+                <h2>Request Contact from Recruiter</h2>
+                <form id="contactPreferenceForm" onsubmit="event.preventDefault(); submitContactRequest();">
+                    <div style="display: grid; gap: 1rem; margin-top: 2rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name *</label>
+                            <input type="text" id="candidateName" class="form-input" required placeholder="John Doe" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email *</label>
+                            <input type="email" id="candidateEmail" class="form-input" required placeholder="john.doe@example.com" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone Number *</label>
+                            <input type="tel" id="candidatePhone" class="form-input" required placeholder="(555) 123-4567" oninput="formatPhoneNumber(this)" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: 0.5rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 1rem; font-weight: 500;">Preferred Contact Method *</label>
+                            <div style="display: flex; gap: 2rem;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="contactMethod" value="phone" required style="margin-right: 0.5rem;">
+                                    <span>Phone Call</span>
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="contactMethod" value="email" required style="margin-right: 0.5rem;">
+                                    <span>Email</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="submit" class="btn-primary" style="flex: 1;">Submit Contact Request</button>
+                            <button type="button" class="btn-secondary" onclick="closeContactModal()" style="flex: 1;">Cancel</button>
                         </div>
                     </div>
                 </form>
@@ -1470,7 +1515,7 @@
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <button class="btn-primary" onclick="calculateContract(${job.id})">Calculate Contract Value</button>
-                    <button class="btn-secondary" onclick="applyToJob(${job.id})">Apply Now</button>
+                    <button class="btn-secondary" onclick="applyToJob(${job.id})">Request a Call or Email</button>
                 </div>
             `;
             
@@ -1503,56 +1548,107 @@
         function applyToJob(jobId) {
             const job = jobsData.find(j => j.id === jobId);
             if (job) {
-                const recruiterInfo = {
-                    1: { name: "Sarah Johnson", email: "sarah.johnson@medhire.com", phone: "(555) 123-4567" },
-                    2: { name: "Michael Chen", email: "m.chen@healthstaffing.com", phone: "(555) 234-5678" },
-                    3: { name: "Lisa Rodriguez", email: "l.rodriguez@surgicalsolutions.com", phone: "(555) 345-6789" },
-                    4: { name: "David Kim", email: "david.kim@radnetwork.com", phone: "(555) 456-7890" },
-                    5: { name: "Jennifer Walsh", email: "j.walsh@traumacare.com", phone: "(555) 567-8901" },
-                    6: { name: "Robert Martinez", email: "r.martinez@ruralhealthcare.com", phone: "(555) 678-9012" }
-                };
+                // Store the current job ID for the contact request
+                window.currentJobId = jobId;
                 
-                const recruiter = recruiterInfo[jobId];
-                const modal = document.getElementById('jobModal');
-                const modalContent = document.getElementById('modalContent');
+                // Close any open modal
+                closeModal();
                 
-                modalContent.innerHTML = `
-                    <h2>✅ Application Submitted Successfully!</h2>
-                    <div style="background: var(--success-color); color: white; padding: 1rem; border-radius: 0.5rem; margin: 2rem 0;">
-                        <p style="margin: 0; font-size: 1.1rem;">Your application for <strong>${job.title}</strong> at <strong>${job.facility}</strong> has been submitted.</p>
-                    </div>
-                    
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Your Recruiter Contact</h3>
-                    <div style="background: var(--background-color); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
-                                ${recruiter.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div>
-                                <h4 style="margin: 0; color: var(--text-primary);">${recruiter.name}</h4>
-                                <p style="margin: 0; color: var(--text-secondary);">Healthcare Recruiter</p>
-                            </div>
-                        </div>
-                        <div style="display: grid; gap: 0.5rem;">
-                            <p style="margin: 0;"><strong>📧 Email:</strong> <a href="mailto:${recruiter.email}" style="color: var(--primary-color);">${recruiter.email}</a></p>
-                            <p style="margin: 0;"><strong>📞 Phone:</strong> <a href="tel:${recruiter.phone}" style="color: var(--primary-color);">${recruiter.phone}</a></p>
-                        </div>
-                    </div>
-                    
-                    <h3 style="margin: 2rem 0 1rem 0; color: var(--primary-color);">Next Steps</h3>
-                    <ul style="padding-left: 1.5rem; line-height: 1.8;">
-                        <li>Your recruiter will review your application within 24 hours</li>
-                        <li>They may contact you for an initial phone screening</li>
-                        <li>Be prepared to discuss your experience and availability</li>
-                        <li>Have your credentials and references ready</li>
-                    </ul>
-                    
-                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                        <button class="btn-primary" onclick="calculateContract(${jobId})">Calculate Contract Value</button>
-                        <button class="btn-secondary" onclick="closeModal()">Close</button>
-                    </div>
-                `;
+                // Show the contact preference modal
+                const contactModal = document.getElementById('contactPreferenceModal');
+                contactModal.classList.add('active');
             }
+        }
+
+        // Close contact preference modal
+        function closeContactModal() {
+            const modal = document.getElementById('contactPreferenceModal');
+            modal.classList.remove('active');
+        }
+
+        // Format phone number as user types
+        function formatPhoneNumber(input) {
+            // Remove all non-digits
+            let value = input.value.replace(/\D/g, '');
+            
+            // Format as (XXX) XXX-XXXX
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = `(${value}`;
+                } else if (value.length <= 6) {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+                } else {
+                    value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6, 10)}`;
+                }
+            }
+            
+            input.value = value;
+        }
+
+        // Validate phone number
+        function validatePhone(phone) {
+            const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+            return phoneRegex.test(phone);
+        }
+
+        // Validate email
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Submit contact request
+        function submitContactRequest() {
+            const name = document.getElementById('candidateName').value;
+            const email = document.getElementById('candidateEmail').value;
+            const phone = document.getElementById('candidatePhone').value;
+            const contactMethod = document.querySelector('input[name="contactMethod"]:checked').value;
+            const jobId = window.currentJobId;
+            
+            // Validate inputs
+            if (!validateEmail(email)) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!validatePhone(phone)) {
+                showToast('Please enter a valid phone number', 'error');
+                return;
+            }
+            
+            // Submit to backend API
+            fetch('/api/leads/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    jobId: jobId,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    contactPreference: contactMethod
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    document.getElementById('contactPreferenceModal').style.display = 'none';
+                    
+                    // Show success message
+                    showToast('Your information has been submitted! A recruiter will contact you soon.', 'success');
+                    
+                    // Clear form
+                    document.getElementById('contactForm').reset();
+                } else {
+                    showToast(data.error || 'Failed to submit your information. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting lead:', error);
+                showToast('An error occurred. Please try again later.', 'error');
+            });
         }
 
         // Event listeners

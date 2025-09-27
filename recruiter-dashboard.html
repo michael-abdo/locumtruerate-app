@@ -2928,14 +2928,14 @@
                                     min-width: 140px;
                                 "
                             >
-                                <option value="">All Specialties</option>
-                                <option value="emergency-medicine">Emergency Medicine</option>
-                                <option value="internal-medicine">Internal Medicine</option>
-                                <option value="anesthesiology">Anesthesiology</option>
-                                <option value="surgery">Surgery</option>
-                                <option value="cardiology">Cardiology</option>
-                                <option value="neurology">Neurology</option>
-                                <option value="radiology">Radiology</option>
+                                <option value="">All Professions</option>
+                                <option value="md-do">MD/DO</option>
+                                <option value="crna">CRNA</option>
+                                <option value="np">NP</option>
+                                <option value="pa">PA</option>
+                                <option value="rn">RN</option>
+                                <option value="scrub-tech">Scrub Tech</option>
+                                <option value="aa">AA</option>
                             </select>
                             
                             <select 
@@ -3618,15 +3618,14 @@
                             <div>
                                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Specialty *</label>
                                 <select id="job-specialty" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
-                                    <option value="">Select Specialty</option>
-                                    <option value="emergency-medicine">Emergency Medicine</option>
-                                    <option value="internal-medicine">Internal Medicine</option>
-                                    <option value="anesthesiology">Anesthesiology</option>
-                                    <option value="surgery">Surgery</option>
-                                    <option value="cardiology">Cardiology</option>
-                                    <option value="neurology">Neurology</option>
-                                    <option value="radiology">Radiology</option>
-                                    <option value="other">Other</option>
+                                    <option value="">Select Profession</option>
+                                    <option value="md-do">MD/DO</option>
+                                    <option value="crna">CRNA</option>
+                                    <option value="np">NP</option>
+                                    <option value="pa">PA</option>
+                                    <option value="rn">RN</option>
+                                    <option value="scrub-tech">Scrub Tech</option>
+                                    <option value="aa">AA</option>
                                 </select>
                             </div>
                         </div>
@@ -3721,6 +3720,28 @@
                             </div>
                         </div>
                         
+                        <!-- Image Upload -->
+                        <div style="margin-top: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Job Posting Image (Optional)</label>
+                            <div style="border: 2px dashed var(--border-color); padding: 1.5rem; border-radius: 0.5rem; text-align: center; position: relative;">
+                                <input type="file" id="job-image" accept="image/*" onchange="previewJobImage(event)" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                                <div id="image-preview-container" style="display: none;">
+                                    <img id="job-image-preview" src="" style="max-width: 100%; max-height: 200px; margin-bottom: 1rem; border-radius: 0.5rem;">
+                                    <br>
+                                    <button type="button" class="btn secondary" onclick="removeJobImage()" style="margin-top: 0.5rem;">Remove Image</button>
+                                </div>
+                                <div id="image-upload-prompt">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem; color: var(--text-secondary);">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                    <p style="margin: 0; color: var(--text-secondary);">Click to upload image or drag and drop</p>
+                                    <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: var(--text-muted);">PNG, JPG up to 10MB</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
                             <button type="button" class="btn secondary" onclick="closeJobModal()">Cancel</button>
                             <button type="button" class="btn secondary" onclick="saveDraftJob()">Save as Draft</button>
@@ -3801,37 +3822,95 @@
             closeJobModal();
         }
 
+        // Image preview functionality
+        function previewJobImage(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    showNotification('Please upload a JPG or PNG image', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Validate file size (10MB max)
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    showNotification('Image size must be less than 10MB', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Preview the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('job-image-preview').src = e.target.result;
+                    document.getElementById('image-preview-container').style.display = 'block';
+                    document.getElementById('image-upload-prompt').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeJobImage() {
+            document.getElementById('job-image').value = '';
+            document.getElementById('job-image-preview').src = '';
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('image-upload-prompt').style.display = 'block';
+        }
+
         function submitNewJob(event) {
             event.preventDefault();
             
             const submitButton = event.target.querySelector('button[type="submit"]');
             setButtonLoading(submitButton, true);
             
-            const jobData = {
-                title: document.getElementById('job-title').value,
-                specialty: document.getElementById('job-specialty').value,
-                facility: document.getElementById('job-facility').value,
-                facilityType: document.getElementById('job-facility-type').value,
-                city: document.getElementById('job-city').value,
-                state: document.getElementById('job-state').value,
-                zip: document.getElementById('job-zip').value,
-                rate: document.getElementById('job-rate').value,
-                startDate: document.getElementById('job-start-date').value,
-                duration: document.getElementById('job-duration').value,
-                description: document.getElementById('job-description').value,
-                experience: document.getElementById('job-experience').value,
-                call: document.getElementById('job-call').value
-            };
+            const formData = new FormData();
             
-            // Simulate API call with loading state
-            setTimeout(() => {
-                // Add new job to table
-                addJobToTable(jobData);
-                
+            // Add job data
+            formData.append('title', document.getElementById('job-title').value);
+            formData.append('specialty', document.getElementById('job-specialty').value);
+            formData.append('location', `${document.getElementById('job-city').value}, ${document.getElementById('job-state').value}`);
+            formData.append('hourlyRate', document.getElementById('job-rate').value);
+            formData.append('description', document.getElementById('job-description').value);
+            
+            // Add image if selected
+            const imageInput = document.getElementById('job-image');
+            if (imageInput.files && imageInput.files[0]) {
+                formData.append('jobImage', imageInput.files[0]);
+            }
+            
+            // Get auth token (in production, this would be stored securely)
+            const token = localStorage.getItem('authToken');
+            
+            // Submit to API
+            fetch('/api/jobs', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
                 setButtonLoading(submitButton, false);
-                showToast('Job posted successfully!', 'success');
-                closeJobModal();
-            }, 1500);
+                
+                if (data.success) {
+                    showToast('Job posted successfully!', 'success');
+                    closeJobModal();
+                    // Reload jobs list
+                    loadJobs();
+                } else {
+                    showToast(data.error || 'Failed to post job', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error posting job:', error);
+                setButtonLoading(submitButton, false);
+                showToast('An error occurred. Please try again.', 'error');
+            });
         }
 
         function addJobToTable(jobData) {
@@ -4354,15 +4433,14 @@
                             <div>
                                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Specialty *</label>
                                 <select id="edit-job-specialty" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
-                                    <option value="">Select Specialty</option>
-                                    <option value="emergency-medicine">Emergency Medicine</option>
-                                    <option value="internal-medicine">Internal Medicine</option>
-                                    <option value="anesthesiology">Anesthesiology</option>
-                                    <option value="surgery">Surgery</option>
-                                    <option value="cardiology">Cardiology</option>
-                                    <option value="neurology">Neurology</option>
-                                    <option value="radiology">Radiology</option>
-                                    <option value="other">Other</option>
+                                    <option value="">Select Profession</option>
+                                    <option value="md-do">MD/DO</option>
+                                    <option value="crna">CRNA</option>
+                                    <option value="np">NP</option>
+                                    <option value="pa">PA</option>
+                                    <option value="rn">RN</option>
+                                    <option value="scrub-tech">Scrub Tech</option>
+                                    <option value="aa">AA</option>
                                 </select>
                             </div>
                         </div>
@@ -4566,12 +4644,14 @@
                         <div style="display: flex; gap: 1rem; align-items: center;">
                             <input type="text" id="applicant-search" placeholder="Search by name, specialty, or location..." style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.25rem;">
                             <select id="specialty-filter" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.25rem;">
-                                <option value="">All Specialties</option>
-                                <option value="emergency-medicine">Emergency Medicine</option>
-                                <option value="internal-medicine">Internal Medicine</option>
-                                <option value="anesthesiology">Anesthesiology</option>
-                                <option value="surgery">Surgery</option>
-                                <option value="cardiology">Cardiology</option>
+                                <option value="">All Professions</option>
+                                <option value="md-do">MD/DO</option>
+                                <option value="crna">CRNA</option>
+                                <option value="np">NP</option>
+                                <option value="pa">PA</option>
+                                <option value="rn">RN</option>
+                                <option value="scrub-tech">Scrub Tech</option>
+                                <option value="aa">AA</option>
                             </select>
                             <select id="status-filter" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.25rem;">
                                 <option value="">All Status</option>
@@ -7848,6 +7928,18 @@ Dr. James Wilson`,
             try {
                 // Remove console.log to avoid potential issues
                 // Initialize core functions with error handling
+                
+                // Load jobs from API
+                function loadJobs() {
+                    const token = localStorage.getItem('authToken');
+                    
+                    // For demo purposes, show existing sample data
+                    // In production with auth, this would fetch recruiter's jobs
+                    console.log('Jobs would be loaded from /api/jobs with recruiter filter');
+                }
+                
+                // Load jobs on initialization
+                loadJobs();
                 
                 // Add status filter to applicant controls
                 addStatusFilter();

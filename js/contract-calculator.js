@@ -25,9 +25,27 @@ function calculateContract() {
     const overtimePay = overtimeHours * overtimeRate * contractWeeks;
     const totalBeeperCallPay = (beeperCallHours * beeperCallRate * contractWeeks) / 4; // Convert monthly to total
     
+    // Get housing coverage type
+    const housingCoverageType = document.querySelector('input[name="housingCoverage"]:checked')?.value || 'days-worked';
+    
+    // Calculate housing days based on coverage type
+    let housingDaysPerWeek = daysWorkedPerWeek;
+    
+    if (housingCoverageType === 'days-worked-plus-travel') {
+        // Day before + days worked + day after
+        housingDaysPerWeek = daysWorkedPerWeek + 2;
+    } else if (housingCoverageType === 'days-worked-plus-before') {
+        // Day before + days worked (per work week)
+        housingDaysPerWeek = daysWorkedPerWeek + 1;
+    }
+    
+    // Enforce maximum 7 days per week for housing
+    housingDaysPerWeek = Math.min(housingDaysPerWeek, 7);
+    
     // Tax-free benefits
     const totalDaysWorked = daysWorkedPerWeek * contractWeeks;
-    const totalHousingStipend = housingStipend * totalDaysWorked;
+    const totalHousingDays = housingDaysPerWeek * contractWeeks;
+    const totalHousingStipend = housingStipend * totalHousingDays;
     const totalFoodStipend = foodStipend * totalDaysWorked;
     const totalMileageReimbursement = mileageDriven * mileageRate * totalDaysWorked;
     const otherCompensation = totalFoodStipend + totalMileageReimbursement + completionBonus;
@@ -47,7 +65,8 @@ function calculateContract() {
 
     // Calculate daily and hourly breakdowns
     const housingDailyAmount = housingStipend;
-    const housingHourlyImpact = hoursPerWeek > 0 ? (housingStipend * daysWorkedPerWeek) / hoursPerWeek : 0;
+    const housingWeeklyAmount = housingStipend * housingDaysPerWeek;
+    const housingHourlyImpact = hoursPerWeek > 0 ? housingWeeklyAmount / hoursPerWeek : 0;
     
     const foodDailyAmount = foodStipend;
     const foodHourlyImpact = hoursPerWeek > 0 ? (foodStipend * daysWorkedPerWeek) / hoursPerWeek : 0;
@@ -55,12 +74,17 @@ function calculateContract() {
     const mileageDailyAmount = mileageDriven * mileageRate;
     const mileageHourlyImpact = hoursPerWeek > 0 ? (mileageDriven * mileageRate * daysWorkedPerWeek) / hoursPerWeek : 0;
 
+    // Get weeks per month selection
+    const weeksPerMonth = parseFloat(document.querySelector('input[name="weeksPerMonth"]:checked')?.value || '4');
+    
     // Calculate gross period displays (total contract value / contract weeks)
     const baseWeeklyGross = contractWeeks > 0 ? totalContractValue / contractWeeks : 0;
     const grossDaily = baseWeeklyGross / daysWorkedPerWeek;
     const grossWeekly = baseWeeklyGross;
     const grossBiweekly = baseWeeklyGross * 2;
-    const grossMonthly = baseWeeklyGross * 4.33;
+    
+    // Calculate monthly based on selected weeks per month
+    const grossMonthly = baseWeeklyGross * weeksPerMonth;
 
     // Update display
     document.getElementById('regularPay').textContent = '$' + regularPay.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -86,7 +110,7 @@ function calculateContract() {
     document.getElementById('beeperCallSubtext').textContent = `${beeperCallHours} hrs/month × $${beeperCallRate}/hr`;
     
     // Update breakdown displays
-    document.getElementById('housingWeekly').textContent = '$' + housingDailyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    document.getElementById('housingWeekly').textContent = '$' + housingWeeklyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
     document.getElementById('housingHourly').textContent = '$' + housingHourlyImpact.toFixed(2) + '/hr';
     
     document.getElementById('foodWeekly').textContent = '$' + foodDailyAmount.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
@@ -194,6 +218,18 @@ function initializeContractCalculator() {
         if (element) {
             element.addEventListener('input', calculateContract);
         }
+    });
+    
+    // Add housing coverage radio button listeners
+    const housingCoverageRadios = document.querySelectorAll('input[name="housingCoverage"]');
+    housingCoverageRadios.forEach(radio => {
+        radio.addEventListener('change', calculateContract);
+    });
+    
+    // Add weeks per month radio button listeners
+    const weeksPerMonthRadios = document.querySelectorAll('input[name="weeksPerMonth"]');
+    weeksPerMonthRadios.forEach(radio => {
+        radio.addEventListener('change', calculateContract);
     });
 
     // Add market average update listeners

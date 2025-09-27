@@ -77,6 +77,72 @@ const initializeDatabase = async () => {
             ) ENGINE=InnoDB
         `);
         
+        // Create job_listings table
+        await promisePool.execute(`
+            CREATE TABLE IF NOT EXISTS job_listings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                recruiter_id INT NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                specialty VARCHAR(100) NOT NULL,
+                location VARCHAR(255) NOT NULL,
+                hourly_rate DECIMAL(10, 2),
+                hours_per_week INT,
+                contract_length_weeks INT,
+                housing_stipend DECIMAL(10, 2),
+                description TEXT,
+                requirements TEXT,
+                benefits TEXT,
+                image_url VARCHAR(500),
+                status ENUM('active', 'filled', 'closed') DEFAULT 'active',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (recruiter_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_recruiter_id (recruiter_id),
+                INDEX idx_specialty (specialty),
+                INDEX idx_status (status)
+            ) ENGINE=InnoDB
+        `);
+        
+        // Create leads table
+        await promisePool.execute(`
+            CREATE TABLE IF NOT EXISTS leads (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                job_id INT NOT NULL,
+                recruiter_id INT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                contact_preference ENUM('call', 'email') DEFAULT 'email',
+                status ENUM('new', 'contacted', 'converted', 'rejected') DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                contacted_at TIMESTAMP NULL,
+                FOREIGN KEY (job_id) REFERENCES job_listings(id) ON DELETE CASCADE,
+                FOREIGN KEY (recruiter_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_job_id (job_id),
+                INDEX idx_recruiter_id (recruiter_id),
+                INDEX idx_status (status)
+            ) ENGINE=InnoDB
+        `);
+        
+        // Create lead_charges table
+        await promisePool.execute(`
+            CREATE TABLE IF NOT EXISTS lead_charges (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT NOT NULL,
+                recruiter_id INT NOT NULL,
+                amount DECIMAL(10, 2) NOT NULL DEFAULT 39.99,
+                payment_status ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending',
+                payment_method VARCHAR(50),
+                transaction_id VARCHAR(255),
+                charged_at TIMESTAMP NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE,
+                FOREIGN KEY (recruiter_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_payment_status (payment_status)
+            ) ENGINE=InnoDB
+        `);
+        
         console.log('✅ Database tables initialized');
         return true;
     } catch (error) {
