@@ -351,9 +351,7 @@ function initializeContractCalculator() {
     // Add button event listeners
     const saveButton = document.getElementById('saveAnalysis');
     if (saveButton) {
-        saveButton.addEventListener('click', function() {
-            window.location.href = 'login.html';
-        });
+        saveButton.addEventListener('click', saveContractAnalysis);
     }
 
     const emailButton = document.getElementById('emailResults');
@@ -364,12 +362,6 @@ function initializeContractCalculator() {
     const exportButton = document.getElementById('exportAnalysis');
     if (exportButton) {
         exportButton.addEventListener('click', exportAnalysis);
-    }
-
-    // Add save analysis button listener
-    const saveButton = document.getElementById('saveAnalysis');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveContractAnalysis);
     }
 
     // Initialize calculator

@@ -1308,6 +1308,7 @@
                             ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
                         </div>
                         <div class="job-actions">
+                            <button class="btn-primary" onclick="event.stopPropagation(); trackEvent('request_contact_click', {jobId: ${job.id}, position: 'job_card'}); applyToJob(${job.id})" aria-label="Request a call or email from recruiter">Request a Call/Email</button>
                             <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})">Calculate Contract</button>
                             <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})">View Details</button>
                             <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job">
@@ -1825,6 +1826,31 @@
             const userJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
             // Add user jobs to the beginning of jobsData
             jobsData.unshift(...userJobs);
+        }
+        
+        // Track user events for analytics
+        function trackEvent(eventName, eventData = {}) {
+            // Simple event tracking for analytics
+            console.log(`Analytics Event: ${eventName}`, eventData);
+            
+            // Could send to analytics service here
+            // For now, just log to console
+            const analyticsEvent = {
+                event: eventName,
+                timestamp: new Date().toISOString(),
+                ...eventData
+            };
+            
+            // Store events in localStorage for debugging
+            const events = JSON.parse(localStorage.getItem('analytics_events') || '[]');
+            events.push(analyticsEvent);
+            
+            // Keep only last 100 events
+            if (events.length > 100) {
+                events.splice(0, events.length - 100);
+            }
+            
+            localStorage.setItem('analytics_events', JSON.stringify(events));
         }
         
         document.addEventListener('DOMContentLoaded', function() {
