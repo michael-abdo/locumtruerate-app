@@ -599,6 +599,73 @@
             color: var(--primary-color);
         }
 
+        /* Profile Display Section Styles */
+        .profile-panel {
+            background-color: var(--background-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-panel-title {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .profile-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.875rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .profile-field:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+
+        .field-value {
+            color: var(--text-primary);
+            font-weight: 400;
+            word-break: break-word;
+        }
+
+        .bio-field {
+            max-height: 100px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        /* Mobile responsiveness for profile section */
+        @media (max-width: 768px) {
+            .profile-content {
+                grid-template-columns: 1fr !important;
+                gap: 1.5rem !important;
+            }
+            
+            .field-label {
+                min-width: 120px;
+                font-size: 0.9rem;
+            }
+            
+            .field-value {
+                font-size: 0.9rem;
+            }
+        }
+
         th[onclick] {
             user-select: none;
         }
@@ -2285,6 +2352,68 @@
                             <div class="action-icon">🏥</div>
                             <div class="action-title">Client Portal</div>
                             <div class="action-description">Manage client relationships</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recruiter Profile Overview -->
+                <div class="dashboard-section" id="profile-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Profile Overview</h2>
+                        <div class="section-actions">
+                            <button class="btn-small primary" onclick="updateRecruiterProfile()">Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <div class="profile-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Left Panel - Personal Information -->
+                        <div class="profile-panel">
+                            <h3 class="profile-panel-title">Personal Information</h3>
+                            <div class="profile-field">
+                                <span class="field-label">First Name:</span>
+                                <span class="field-value" id="profile-first-name">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Last Name:</span>
+                                <span class="field-value" id="profile-last-name">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Email:</span>
+                                <span class="field-value" id="profile-email">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Phone:</span>
+                                <span class="field-value" id="profile-phone">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Company/Organization:</span>
+                                <span class="field-value" id="profile-company">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Years in Recruiting:</span>
+                                <span class="field-value" id="profile-experience">-</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Panel - Professional Details -->
+                        <div class="profile-panel">
+                            <h3 class="profile-panel-title">Professional Details</h3>
+                            <div class="profile-field">
+                                <span class="field-label">Previous Company/Background:</span>
+                                <span class="field-value" id="profile-education">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Recruiting Focus/Specialization:</span>
+                                <span class="field-value" id="profile-residency">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Certifications/Training:</span>
+                                <span class="field-value" id="profile-certifications">-</span>
+                            </div>
+                            <div class="profile-field">
+                                <span class="field-label">Professional Bio:</span>
+                                <div class="field-value bio-field" id="profile-bio">-</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -6238,10 +6367,10 @@ Dr. James Wilson`,
                 // Close modal
                 closeProfileModal();
                 
-                // Update the dashboard with new data
+                // Update the dashboard with new data (without page reload)
                 setTimeout(() => {
-                    location.reload();
-                }, 1000);
+                    loadRecruiterData(); // This will update all dynamic elements including profile display
+                }, 500);
                 
             } catch (error) {
                 console.error('Error saving profile:', error);
@@ -8118,10 +8247,31 @@ Dr. James Wilson`,
                     modalAvatar.textContent = initials;
                 }
                 
+                // Update profile display section
+                updateProfileDisplay(userData);
+                
                 console.log('Recruiter data loaded successfully');
             } else {
                 console.log('No recruiter data found or user is not a recruiter');
+                // Show empty state for profile display
+                updateProfileDisplay({});
             }
+        }
+
+        function updateProfileDisplay(userData) {
+            // Update Personal Information panel
+            document.getElementById('profile-first-name').textContent = userData.firstName || '-';
+            document.getElementById('profile-last-name').textContent = userData.lastName || '-';
+            document.getElementById('profile-email').textContent = userData.email || '-';
+            document.getElementById('profile-phone').textContent = userData.phone || '-';
+            document.getElementById('profile-company').textContent = userData.specialty || '-';
+            document.getElementById('profile-experience').textContent = userData.experience ? `${userData.experience} years` : '-';
+            
+            // Update Professional Details panel
+            document.getElementById('profile-education').textContent = userData.education || '-';
+            document.getElementById('profile-residency').textContent = userData.residency || '-';
+            document.getElementById('profile-certifications').textContent = userData.boardCertifications || '-';
+            document.getElementById('profile-bio').textContent = userData.bio || '-';
         }
 
         // Initialize dashboard
