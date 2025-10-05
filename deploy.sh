@@ -13,11 +13,11 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
-REPO="michael-abdo/locumtruerate-app"
-STAGING_APP="locumtruerate-staging"
-STAGING_URL="https://locumtruerate-staging-66ba3177c382.herokuapp.com"
-PRODUCTION_APP="locumtruerate-demo-2e641e257df4"
-PRODUCTION_URL="https://locumtruerate-demo-2e641e257df4.herokuapp.com"
+REPO="michael-abdo/locumcalc-app"
+STAGING_APP="locumcalc-staging"
+STAGING_URL="https://locumcalc-staging-66ba3177c382.herokuapp.com"
+PRODUCTION_APP="locumcalc-demo-2e641e257df4"
+PRODUCTION_URL="https://locumcalc-demo-2e641e257df4.herokuapp.com"
 
 # Function to show usage
 show_usage() {
@@ -90,7 +90,7 @@ EOF
         echo "Creating/verifying production app..."
         heroku create $app_name --region us || echo "App already exists"
         heroku config:set NODE_ENV=production -a $app_name
-        heroku config:set APP_NAME="LocumTrueRate Production" -a $app_name
+        heroku config:set APP_NAME="LocumCalc Production" -a $app_name
     fi
     
     # Set up git remote and deploy

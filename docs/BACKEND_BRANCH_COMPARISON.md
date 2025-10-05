@@ -4,7 +4,7 @@
 
 ## 🔍 **Executive Summary**
 
-This document provides a comprehensive high-level comparison of all backend implementations across the LocumTrueRate project branches. The project has evolved through three distinct backend architectures, from minimal static serving to full-featured API implementations.
+This document provides a comprehensive high-level comparison of all backend implementations across the LocumCalc project branches. The project has evolved through three distinct backend architectures, from minimal static serving to full-featured API implementations.
 
 ## 🏗️ **Branch Overview Matrix**
 

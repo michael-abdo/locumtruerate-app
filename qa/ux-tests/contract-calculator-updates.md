@@ -15,7 +15,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 ## Contract Calculator Updates Test
 
 ### Test Environment
-- **Base URL**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/
+- **Base URL**: https://locumcalc-staging-66ba3177c382.herokuapp.com/
 - **Page**: contract-calculator.html
 - **Test Date**: 2025-08-27
 
@@ -24,7 +24,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 #### UI Updates - Dropdowns
 
 1. Navigate to Contract Calculator page
-   - Navigate to https://locumtruerate-staging-66ba3177c382.herokuapp.com/contract-calculator.html
+   - Navigate to https://locumcalc-staging-66ba3177c382.herokuapp.com/contract-calculator.html
    - Contract Calculator page loads with form on left and results on right
    - ✅ Pass | ❌ Fail + reason
 

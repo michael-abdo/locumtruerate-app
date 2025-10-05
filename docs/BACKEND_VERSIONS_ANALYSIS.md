@@ -144,10 +144,10 @@ app.use(express.static(__dirname));
 
 | Heroku App | Git Remote | URL Pattern | Likely Branch | Purpose |
 |------------|------------|-------------|---------------|---------|
-| **locumtruerate-stage** | `heroku`, `staging-new` | Main staging environment | staging-deploy | Current staging |
-| **locumtruerate-demo** | `heroku-production` | Production environment | production-deploy | Production API |
-| **locumtruerate-demo-2e641e257df4** | `heroku-prod` | Alternative production | production-deploy | Production backup |
-| **locumtruerate-staging** | `heroku-staging` | Old staging environment | Unknown | Legacy staging |
+| **locumcalc-stage** | `heroku`, `staging-new` | Main staging environment | staging-deploy | Current staging |
+| **locumcalc-demo** | `heroku-production` | Production environment | production-deploy | Production API |
+| **locumcalc-demo-2e641e257df4** | `heroku-prod` | Alternative production | production-deploy | Production backup |
+| **locumcalc-staging** | `heroku-staging` | Old staging environment | Unknown | Legacy staging |
 | **fatigue-detection-api** | `heroku-assessment` | Unrelated project | N/A | Different project |
 
 ## Key Insights and Architectural Evolution

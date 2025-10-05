@@ -36,14 +36,14 @@ jobs:
           
           # Create production app if it doesn't exist
           echo "📦 Creating/verifying production app..."
-          heroku create locumtruerate-66ba3177c382 --region us || echo "App already exists"
+          heroku create locumcalc-66ba3177c382 --region us || echo "App already exists"
           
           # Configure production environment
-          heroku config:set NODE_ENV=production -a locumtruerate-66ba3177c382
-          heroku config:set APP_NAME="LocumTrueRate Production" -a locumtruerate-66ba3177c382
+          heroku config:set NODE_ENV=production -a locumcalc-66ba3177c382
+          heroku config:set APP_NAME="LocumCalc Production" -a locumcalc-66ba3177c382
           
           # Add production remote and deploy
-          git remote add heroku-prod https://git.heroku.com/locumtruerate-66ba3177c382.git || true
+          git remote add heroku-prod https://git.heroku.com/locumcalc-66ba3177c382.git || true
           
           echo "🚀 Deploying to PRODUCTION..."
           git push heroku-prod production-deploy:main --force
@@ -54,10 +54,10 @@ jobs:
           sleep 60
           
           echo "🔍 Testing production..."
-          curl -I https://locumtruerate-66ba3177c382.herokuapp.com/ || echo "Still starting up..."
+          curl -I https://locumcalc-66ba3177c382.herokuapp.com/ || echo "Still starting up..."
           
           echo "✅ Production deployment complete!"
-          echo "🌟 Live at: https://locumtruerate-66ba3177c382.herokuapp.com"
+          echo "🌟 Live at: https://locumcalc-66ba3177c382.herokuapp.com"
           
       - name: Cleanup Branch
         run: |

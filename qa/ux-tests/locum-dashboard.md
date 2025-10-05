@@ -15,7 +15,7 @@
 - Window resizing
 
 ## Test URL
-https://locumtruerate-stage-8edec28739b0.herokuapp.com/locum-dashboard.html
+https://locumcalc-staging-66ba3177c382.herokuapp.com/locum-dashboard.html
 
 ## Test Steps
 
@@ -25,7 +25,7 @@ https://locumtruerate-stage-8edec28739b0.herokuapp.com/locum-dashboard.html
    - ✅ Pass | ❌ Fail
 
 2. Verify page title and navigation
-   - Browser tab shows "Locum Dashboard - LocumTrueRate"
+   - Browser tab shows "Locum Dashboard - LocumCalc"
    - Navigation shows "Dashboards" dropdown with "Locum" highlighted as active
    - ✅ Pass | ❌ Fail
 

@@ -4,7 +4,7 @@
 
 ## 🎯 **Executive Summary**
 
-This document identifies the 20% of development effort that will deliver 80% of business value for the LocumTrueRate platform. Focus on high-impact, low-effort features that transform the platform from demo to functioning job board.
+This document identifies the 20% of development effort that will deliver 80% of business value for the LocumCalc platform. Focus on high-impact, low-effort features that transform the platform from demo to functioning job board.
 
 **Core Principle**: *Build the minimum that creates maximum user value*
 

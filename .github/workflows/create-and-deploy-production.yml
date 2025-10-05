@@ -47,12 +47,12 @@ jobs:
           curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           
           # Create the production app
-          echo "🚀 Creating production app: locumtruerate-66ba3177c382"
-          heroku create locumtruerate-66ba3177c382 --region us || echo "App may already exist"
+          echo "🚀 Creating production app: locumcalc-66ba3177c382"
+          heroku create locumcalc-66ba3177c382 --region us || echo "App may already exist"
           
           # Configure production environment
-          heroku config:set NODE_ENV=production -a locumtruerate-66ba3177c382
-          heroku config:set APP_NAME="LocumTrueRate Production" -a locumtruerate-66ba3177c382
+          heroku config:set NODE_ENV=production -a locumcalc-66ba3177c382
+          heroku config:set APP_NAME="LocumCalc Production" -a locumcalc-66ba3177c382
           
           echo "✅ Production app ready!"
           
@@ -73,7 +73,7 @@ jobs:
           chmod 600 ~/.netrc
           
           # Add production remote
-          git remote add heroku-prod https://git.heroku.com/locumtruerate-66ba3177c382.git || true
+          git remote add heroku-prod https://git.heroku.com/locumcalc-66ba3177c382.git || true
           
           # Deploy to production
           echo "🚀 Deploying to PRODUCTION..."
@@ -86,18 +86,18 @@ jobs:
           sleep 45
           
           echo "🔍 Checking production deployment..."
-          RESPONSE=$(curl -s https://locumtruerate-66ba3177c382.herokuapp.com/health || echo "No health endpoint")
+          RESPONSE=$(curl -s https://locumcalc-66ba3177c382.herokuapp.com/health || echo "No health endpoint")
           echo "Response: $RESPONSE"
           
           echo "✅ Production deployment complete!"
-          echo "🌟 Live at: https://locumtruerate-66ba3177c382.herokuapp.com"
+          echo "🌟 Live at: https://locumcalc-66ba3177c382.herokuapp.com"
           
       - name: Output URLs
         run: |
           echo "🎉 Deployment Summary:"
           echo ""
-          echo "📍 STAGING:    https://locumtruerate-staging-66ba3177c382.herokuapp.com"
-          echo "📍 PRODUCTION: https://locumtruerate-66ba3177c382.herokuapp.com"
+          echo "📍 STAGING:    https://locumcalc-staging-66ba3177c382.herokuapp.com"
+          echo "📍 PRODUCTION: https://locumcalc-66ba3177c382.herokuapp.com"
           echo ""
           echo "🔄 Deployment Status:"
           echo "- Staging: Auto-deploys from vanilla-only branch"

@@ -6,7 +6,7 @@ on:
       app_name:
         description: 'Heroku app name to create'
         required: true
-        default: 'locumtruerate-66ba3177c382'
+        default: 'locumcalc-66ba3177c382'
       confirm:
         description: 'Type "create" to confirm app creation'
         required: true
@@ -33,7 +33,7 @@ jobs:
           
           # Configure the app
           heroku config:set NODE_ENV=production -a ${{ github.event.inputs.app_name }}
-          heroku config:set APP_NAME="LocumTrueRate Production" -a ${{ github.event.inputs.app_name }}
+          heroku config:set APP_NAME="LocumCalc Production" -a ${{ github.event.inputs.app_name }}
           
           # Verify app was created
           echo "✅ App created successfully!"

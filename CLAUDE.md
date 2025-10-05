@@ -64,7 +64,7 @@ function deleteItem(id) {
 ## Deployment
 
 ### Heroku Static File Deployment
-- **App**: `locumtruerate-stage` (NOT locumtruerate-stage-8edec28739b0.herokuapp.com)
+- **App**: `locumcalc-stage` (NOT locumcalc-staging-66ba3177c382.herokuapp.com)
 - **Staging branch**: `staging-deploy` 
 - **Buildpack**: `heroku-community/nginx` (configured for static files)
 - **Required files for deployment**:
@@ -83,7 +83,7 @@ cat Procfile
 # Should contain: web: bin/start-nginx-solo
 
 # Verify buildpack
-heroku buildpacks --app locumtruerate-stage
+heroku buildpacks --app locumcalc-stage
 # Should show: heroku-community/nginx
 ```
 

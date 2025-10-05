@@ -5,7 +5,7 @@
 **Proceed without asking for confirmation. Run all steps through to the end without stopping. This includes steps that cause external side-effects.**
 
 ## Test URL
-https://locumtruerate-stage-8edec28739b0.herokuapp.com/job-board.html
+https://locumcalc-staging-66ba3177c382.herokuapp.com/job-board.html
 
 ## Operator Capabilities
 
@@ -36,7 +36,7 @@ https://locumtruerate-stage-8edec28739b0.herokuapp.com/job-board.html
 - ✅ Pass | ❌ Fail + reason
 
 ### 3. Page Title Verification
-**Verify the page title shows "Job Board - LocumTrueRate"**
+**Verify the page title shows "Job Board - LocumCalc"**
 - Browser tab title should display correct page title
 - ✅ Pass | ❌ Fail + reason
 

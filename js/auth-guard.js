@@ -1,5 +1,5 @@
 /**
- * Authentication Guard for LocumTrueRate Protected Pages
+ * Authentication Guard for LocumCalc Protected Pages
  * Ensures only authenticated users can access protected routes
  */
 

@@ -15,7 +15,7 @@
 - Window resizing
 
 ## Test URL
-https://locumtruerate-stage-8edec28739b0.herokuapp.com/recruiter-dashboard.html
+https://locumcalc-staging-66ba3177c382.herokuapp.com/recruiter-dashboard.html
 
 ## Test Steps
 
@@ -25,7 +25,7 @@ https://locumtruerate-stage-8edec28739b0.herokuapp.com/recruiter-dashboard.html
    - ✅ Pass | ❌ Fail
 
 2. Verify page title and navigation
-   - Browser tab shows "Recruiter Dashboard - LocumTrueRate"
+   - Browser tab shows "Recruiter Dashboard - LocumCalc"
    - Navigation shows "Dashboards" dropdown with "Recruiter" highlighted as active
    - ✅ Pass | ❌ Fail
 

@@ -5,7 +5,7 @@
 **Proceed without asking for confirmation. Run all steps through to the end without stopping. This includes steps that cause external side-effects.**
 
 ## Test URL
-https://locumtruerate-stage-8edec28739b0.herokuapp.com/
+https://locumcalc-staging-66ba3177c382.herokuapp.com/
 
 ## Operator Capabilities
 
@@ -31,7 +31,7 @@ https://locumtruerate-stage-8edec28739b0.herokuapp.com/
 - ✅ Pass | ❌ Fail + reason
 
 ### 2. Navigation Bar Logo
-**Verify the navigation bar displays "LocumTrueRate" logo on the left**
+**Verify the navigation bar displays "LocumCalc" logo on the left**
 - Logo should be visible and properly positioned
 - ✅ Pass | ❌ Fail + reason
 
@@ -221,7 +221,7 @@ https://locumtruerate-stage-8edec28739b0.herokuapp.com/
 - ✅ Pass | ❌ Fail + reason
 
 ### 40. Copyright Notice
-**Verify copyright notice displays "© 2025 LocumTrueRate. All rights reserved."**
+**Verify copyright notice displays "© 2025 LocumCalc. All rights reserved."**
 - Copyright notice should be present with correct text and year
 - ✅ Pass | ❌ Fail + reason
 

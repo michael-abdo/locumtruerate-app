@@ -145,7 +145,7 @@ Returns server status and deployment information.
 ```json
 {
   "status": "ok",
-  "app": "locumtruerate-vanilla-demos",
+  "app": "locumcalc-vanilla-demos",
   "version": "4.2.4",
   "timestamp": "2025-09-15T22:30:00.000Z",
   "message": "This is the REAL vanilla demos server!",

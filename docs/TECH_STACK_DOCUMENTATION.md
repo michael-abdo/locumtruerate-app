@@ -1,4 +1,4 @@
-# LocumTrueRate Tech Stack Documentation
+# LocumCalc Tech Stack Documentation
 
 *Generated: September 2025*
 
@@ -117,7 +117,7 @@ const config = {
 ### **Hosting Platform**
 | Component | Technology | Configuration |
 |-----------|------------|---------------|
-| **Platform** | Heroku | locumtruerate-stage app |
+| **Platform** | Heroku | locumcalc-stage app |
 | **Process** | Node.js Dyno | `web: node server.js` |
 | **Database** | JawsDB MySQL | Heroku addon |
 | **Domain** | Heroku subdomain | Auto-SSL enabled |
@@ -325,7 +325,7 @@ Incremental Modernization Options:
 ```bash
 # 1. Clone repository
 git clone [repository-url]
-cd locumtruerate-app
+cd locumcalc-app
 git checkout staging-deploy
 
 # 2. Install dependencies
@@ -359,7 +359,7 @@ open http://localhost:3000
 
 ### **Debug Tools**
 - **Browser DevTools**: Primary debugging interface
-- **Heroku Logs**: `heroku logs --tail --app locumtruerate-stage`
+- **Heroku Logs**: `heroku logs --tail --app locumcalc-stage`
 - **Database**: Direct MySQL client connection
 - **Network**: Browser Network tab for API debugging
 
@@ -367,7 +367,7 @@ open http://localhost:3000
 
 ## 📋 **Summary**
 
-LocumTrueRate uses a **modern vanilla web stack** that prioritizes simplicity, performance, and maintainability. The architecture combines the best of traditional web development (server-rendered HTML, direct DOM manipulation) with modern JavaScript features and deployment practices.
+LocumCalc uses a **modern vanilla web stack** that prioritizes simplicity, performance, and maintainability. The architecture combines the best of traditional web development (server-rendered HTML, direct DOM manipulation) with modern JavaScript features and deployment practices.
 
 This stack choice enables rapid development, easy debugging, and excellent performance while avoiding the complexity and overhead of modern JavaScript frameworks. The result is a robust, maintainable application that serves its purpose effectively with minimal technical overhead.
 

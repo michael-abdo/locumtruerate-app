@@ -6,18 +6,18 @@
 echo "🚀 Creating new Heroku staging app..."
 
 # Step 1: Create new app
-APP_NAME="locumtruerate-stage"
+APP_NAME="locumcalc-stage"
 echo "Creating app: $APP_NAME"
 heroku create $APP_NAME --remote staging-new || {
     # If name is taken, try with year suffix
-    APP_NAME="locumtruerate-stage-2025"
+    APP_NAME="locumcalc-stage-2025"
     echo "First name taken, trying: $APP_NAME"
     heroku create $APP_NAME --remote staging-new
 }
 
 # Step 2: Get environment variables from old app
 echo "📋 Copying environment variables from old staging app..."
-OLD_APP="locumtruerate-staging-66ba3177c382"
+OLD_APP="locumcalc-staging-66ba3177c382"
 
 # Get config vars (excluding Heroku-specific ones)
 heroku config --app $OLD_APP --shell | grep -v "^HEROKU_" > old_config.env

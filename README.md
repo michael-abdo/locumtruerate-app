@@ -1,6 +1,6 @@
 # ContractCalc Pro - Vanilla Demo Pages
 
-## Original Vanilla Demo Pages from sabir15a/LocumTrueRate.com
+## Original Vanilla Demo Pages from sabir15a/LocumCalc.com
 
 This repository contains **ONLY** the original vanilla HTML demo pages and their corresponding screenshots from the sabir15a repository.
 
@@ -28,7 +28,7 @@ This repository contains **ONLY** the original vanilla HTML demo pages and their
 Each HTML file is completely standalone and can be opened directly in a browser. No build process or dependencies required.
 
 ### 📅 Source:
-Extracted from original sabir15a/LocumTrueRate.com repository  
+Extracted from original sabir15a/LocumCalc.com repository  
 Branch: master  
 Location: docs/design/UI/
 

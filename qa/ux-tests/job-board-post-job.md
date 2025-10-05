@@ -15,7 +15,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 ## Job Board Post a Job Feature Test
 
 ### Test Environment
-- **Base URL**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/
+- **Base URL**: https://locumcalc-staging-66ba3177c382.herokuapp.com/
 - **Pages**: job-board.html, login.html
 - **Test Date**: 2025-08-27
 
@@ -24,7 +24,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 #### Post a Job Button Visibility
 
 1. Navigate to Job Board page
-   - Navigate to https://locumtruerate-staging-66ba3177c382.herokuapp.com/job-board.html
+   - Navigate to https://locumcalc-staging-66ba3177c382.herokuapp.com/job-board.html
    - Job Board page loads with job listings
    - ✅ Pass | ❌ Fail + reason
 

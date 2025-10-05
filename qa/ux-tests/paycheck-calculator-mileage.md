@@ -15,7 +15,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 ## Paycheck Calculator Mileage Simplification Test
 
 ### Test Environment
-- **Base URL**: https://locumtruerate-staging-66ba3177c382.herokuapp.com/
+- **Base URL**: https://locumcalc-staging-66ba3177c382.herokuapp.com/
 - **Page**: paycheck-calculator.html
 - **Test Date**: 2025-08-27
 
@@ -24,7 +24,7 @@ Proceed without asking for confirmation. Run all steps through to the end withou
 #### Mileage Field Verification
 
 1. Navigate to Paycheck Calculator page
-   - Navigate to https://locumtruerate-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
+   - Navigate to https://locumcalc-staging-66ba3177c382.herokuapp.com/paycheck-calculator.html
    - Paycheck Calculator page loads with form on left and results on right
    - ✅ Pass | ❌ Fail + reason
 

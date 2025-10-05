@@ -1,5 +1,5 @@
 /**
- * Dynamic Navigation Module for LocumTrueRate
+ * Dynamic Navigation Module for LocumCalc
  * Provides authentication-aware navigation across all pages
  */
 
@@ -72,7 +72,7 @@ function generateNavigation() {
                     text-decoration: none;
                 ">
                     <a href="index.html" style="color: white; text-decoration: none;">
-                        LocumTrueRate
+                        LocumCalc
                     </a>
                 </div>
                 

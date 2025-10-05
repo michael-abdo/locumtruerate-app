@@ -34,7 +34,7 @@ jobs:
           chmod 600 ~/.netrc
           
           # Add Heroku remote
-          git remote add heroku-prod https://git.heroku.com/locumtruerate-production.git || true
+          git remote add heroku-prod https://git.heroku.com/locumcalc-production.git || true
           
           # Push to Heroku
           echo "🚀 Deploying to PRODUCTION..."
@@ -46,7 +46,7 @@ jobs:
           sleep 45
           
           echo "🔍 Checking production deployment..."
-          RESPONSE=$(curl -s https://locumtruerate-production.herokuapp.com/health)
+          RESPONSE=$(curl -s https://locumcalc-production.herokuapp.com/health)
           echo "Response: $RESPONSE"
           
           echo "✅ Production deployment complete!"

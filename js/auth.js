@@ -1,5 +1,5 @@
 /**
- * JWT Authentication Module for LocumTrueRate
+ * JWT Authentication Module for LocumCalc
  * Handles login, logout, token management, and authentication checks
  */
 

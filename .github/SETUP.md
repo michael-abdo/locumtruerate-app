@@ -9,7 +9,7 @@ Add these secrets in your GitHub repository settings (`Settings > Secrets and va
 | Secret Name | Description | Example Value |
 |-------------|-------------|---------------|
 | `HEROKU_API_KEY` | Your Heroku API key for authentication | `your-heroku-api-key` |
-| `HEROKU_STAGING_APP_NAME` | Name of the staging Heroku app | `locumtruerate-stage` |
+| `HEROKU_STAGING_APP_NAME` | Name of the staging Heroku app | `locumcalc-stage` |
 
 ### How to Set Up
 
@@ -27,12 +27,12 @@ Add these secrets in your GitHub repository settings (`Settings > Secrets and va
 ### App Names
 
 - **Staging:** The app name specified in `HEROKU_STAGING_APP_NAME` secret
-- **Production:** `locumtruerate-demo-2e641e257df4` (hardcoded in workflow)
+- **Production:** `locumcalc-demo-2e641e257df4` (hardcoded in workflow)
 
 ### Deployment URLs
 
 - **Staging:** `https://[HEROKU_STAGING_APP_NAME].herokuapp.com`
-- **Production:** `https://locumtruerate-demo-2e641e257df4.herokuapp.com`
+- **Production:** `https://locumcalc-demo-2e641e257df4.herokuapp.com`
 
 ## Creating New Staging App
 
