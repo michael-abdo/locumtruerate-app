@@ -85,6 +85,14 @@ async function login(email, password) {
         });
         
         console.log('DEBUG: apiRequest result:', result);
+        
+        // Enhanced debug logging to inspect exact structure
+        console.log('DEBUG: result.data type:', typeof result.data);
+        console.log('DEBUG: result.data keys:', Object.keys(result.data || {}));
+        console.log('DEBUG: result.data.data type:', typeof result.data.data);
+        console.log('DEBUG: result.data.data contents:', result.data.data);
+        console.log('DEBUG: result.data.data keys:', result.data.data ? Object.keys(result.data.data) : 'data.data is null/undefined');
+        console.log('DEBUG: result.data.data.token value:', result.data.data ? result.data.data.token : 'data.data is null');
 
         if (result.success && result.data.data && result.data.data.token) {
             console.log('DEBUG: Login successful, token received:', !!result.data.data.token);
