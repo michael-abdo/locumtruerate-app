@@ -89,29 +89,27 @@ async function login(email, password) {
         // Enhanced debug logging to inspect exact structure
         console.log('DEBUG: result.data type:', typeof result.data);
         console.log('DEBUG: result.data keys:', Object.keys(result.data || {}));
-        console.log('DEBUG: result.data.data type:', typeof result.data.data);
-        console.log('DEBUG: result.data.data contents:', result.data.data);
-        console.log('DEBUG: result.data.data keys:', result.data.data ? Object.keys(result.data.data) : 'data.data is null/undefined');
-        console.log('DEBUG: result.data.data.token value:', result.data.data ? result.data.data.token : 'data.data is null');
+        console.log('DEBUG: result.data.token exists:', !!result.data.token);
+        console.log('DEBUG: result.data.user exists:', !!result.data.user);
 
-        if (result.success && result.data.data && result.data.data.token) {
-            console.log('DEBUG: Login successful, token received:', !!result.data.data.token);
-            console.log('DEBUG: User data:', result.data.data.user);
+        if (result.success && result.data && result.data.token) {
+            console.log('DEBUG: Login successful, token received:', !!result.data.token);
+            console.log('DEBUG: User data:', result.data.user);
             
             // Store authentication data
-            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.data.token);
-            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.data.user));
+            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
+            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
             
             // Maintain compatibility with existing code
             localStorage.setItem('userAuthenticated', 'true');
-            localStorage.setItem('userEmail', result.data.data.user.email);
-            localStorage.setItem('userName', `${result.data.data.user.firstName || ''} ${result.data.data.user.lastName || ''}`.trim());
-            localStorage.setItem('userRole', result.data.data.user.role);
+            localStorage.setItem('userEmail', result.data.user.email);
+            localStorage.setItem('userName', `${result.data.user.firstName || ''} ${result.data.user.lastName || ''}`.trim());
+            localStorage.setItem('userRole', result.data.user.role);
 
             showToast('Login successful!', 'success');
-            return { success: true, user: result.data.data.user };
+            return { success: true, user: result.data.user };
         } else {
-            console.log('DEBUG: Login failed - result.success:', result.success, 'token exists:', !!result.data?.data?.token);
+            console.log('DEBUG: Login failed - result.success:', result.success, 'token exists:', !!result.data?.token);
             console.log('DEBUG: Full result.data:', result.data);
             const error = result.data.error || result.data.message || 'Login failed';
             showToast(error, 'error');
