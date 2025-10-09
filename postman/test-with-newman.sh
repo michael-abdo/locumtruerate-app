@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# LocumTrueRate API Testing Script
+# LocumCalc API Testing Script
 # Tests all 26 endpoints using Newman (Postman CLI)
 
-echo "===== LOCUMTRUERATE API TESTING WITH NEWMAN ====="
+echo "===== LOCUMCALC API TESTING WITH NEWMAN ====="
 echo ""
 
 # Colors for output
@@ -14,8 +14,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-COLLECTION_FILE="./LocumTrueRate_API_Collection.json"
-ENVIRONMENT_FILE="./LocumTrueRate_Environment.json"
+COLLECTION_FILE="./LocumCalc_API_Collection.json"
+ENVIRONMENT_FILE="./LocumCalc_Environment.json"
 REPORTS_DIR="./reports"
 
 # Create reports directory if it doesn't exist

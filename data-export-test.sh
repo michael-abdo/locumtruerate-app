@@ -5,7 +5,7 @@
 
 set -e
 
-BASE_URL="https://locumtruerate-production-17560d4c3d1a.herokuapp.com"
+BASE_URL="https://locumcalc-production-17560d4c3d1a.herokuapp.com"
 API_BASE="${BASE_URL}/api/v1"
 
 # Colors for output

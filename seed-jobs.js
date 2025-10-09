@@ -8,7 +8,7 @@ async function seedJobs() {
     // First create a test user to post jobs
     const userResult = await pool.query(`
       INSERT INTO users (email, password_hash, role)
-      VALUES ('admin@locumtruerate.com', '$2b$10$example', 'admin')
+      VALUES ('admin@locumcalc.com', '$2b$10$example', 'admin')
       ON CONFLICT (email) DO NOTHING
       RETURNING id
     `);
@@ -18,7 +18,7 @@ async function seedJobs() {
       userId = userResult.rows[0].id;
     } else {
       // User already exists, get their ID
-      const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', ['admin@locumtruerate.com']);
+      const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', ['admin@locumcalc.com']);
       userId = existingUser.rows[0].id;
     }
     

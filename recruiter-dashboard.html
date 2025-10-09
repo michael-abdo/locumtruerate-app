@@ -479,6 +479,76 @@
             gap: 1rem;
         }
 
+        /* Profile Section Styles */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .profile-details {
+            margin-top: 1.5rem;
+        }
+        
+        .profile-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .profile-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .profile-detail-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+        
+        .profile-detail-value {
+            color: var(--text-primary);
+            text-align: right;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .profile-professional {
+            background-color: var(--background-color);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        
+        .professional-details {
+            display: grid;
+            gap: 1.25rem;
+        }
+        
+        .professional-detail {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .professional-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .professional-detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .professional-detail-value {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
         .section-title {
             font-size: 1.5rem;
             font-weight: 600;
@@ -2284,6 +2354,75 @@
                             <div class="action-icon">🏥</div>
                             <div class="action-title">Client Portal</div>
                             <div class="action-description">Manage client relationships</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Overview -->
+                <div class="dashboard-section" id="profile-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Profile Overview</h2>
+                        <div class="section-actions">
+                            <button class="btn-small secondary" onclick="exportProfile()">Export Profile</button>
+                            <button class="btn-small primary" onclick="updateProfile()">Edit Profile</button>
+                        </div>
+                    </div>
+                    <div class="profile-grid">
+                        <!-- Left Panel - Personal Information -->
+                        <div class="profile-summary">
+                            <div class="profile-avatar" id="profile-avatar">SJ</div>
+                            <div class="profile-info">
+                                <h3 id="profile-name">Sarah Johnson</h3>
+                                <div class="profile-specialty" id="profile-company">Metropolitan Staffing Solutions</div>
+                            </div>
+                            <div class="profile-details">
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">First Name</div>
+                                    <div class="profile-detail-value" id="profile-first-name">Sarah</div>
+                                </div>
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">Last Name</div>
+                                    <div class="profile-detail-value" id="profile-last-name">Johnson</div>
+                                </div>
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">Email Address</div>
+                                    <div class="profile-detail-value" id="profile-email">sarah.johnson@email.com</div>
+                                </div>
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">Phone Number</div>
+                                    <div class="profile-detail-value" id="profile-phone">(555) 123-4567</div>
+                                </div>
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">Company/Organization</div>
+                                    <div class="profile-detail-value" id="profile-organization">Metropolitan Staffing Solutions</div>
+                                </div>
+                                <div class="profile-detail">
+                                    <div class="profile-detail-label">Years in Recruiting</div>
+                                    <div class="profile-detail-value" id="profile-experience">8</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Panel - Professional Details -->
+                        <div class="profile-professional">
+                            <h4 style="margin-bottom: 1.5rem; color: var(--text-primary);">Professional Details</h4>
+                            <div class="professional-details">
+                                <div class="professional-detail">
+                                    <div class="professional-detail-label">Previous Company/Background</div>
+                                    <div class="professional-detail-value" id="profile-previous-company">Healthcare Recruiting Corp</div>
+                                </div>
+                                <div class="professional-detail">
+                                    <div class="professional-detail-label">Recruiting Focus/Specialization</div>
+                                    <div class="professional-detail-value" id="profile-specialization">Healthcare & Medical Professionals</div>
+                                </div>
+                                <div class="professional-detail">
+                                    <div class="professional-detail-label">Certifications/Training</div>
+                                    <div class="professional-detail-value" id="profile-certifications">Certified Personnel Consultant (CPC)<br>Healthcare Recruiting Certification</div>
+                                </div>
+                                <div class="professional-detail">
+                                    <div class="professional-detail-label">Professional Bio</div>
+                                    <div class="professional-detail-value" id="profile-bio">Experienced healthcare recruiter specializing in locum tenens placements with 8 years in the industry. Expert in matching healthcare professionals with suitable temporary and permanent positions.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -7923,9 +8062,101 @@ Dr. James Wilson`,
             }
         }
 
+        // Load recruiter data from localStorage
+        function loadRecruiterData() {
+            const userData = JSON.parse(localStorage.getItem('locum_user_data') || '{}');
+            
+            if (userData && userData.firstName && userData.role === 'recruiter') {
+                // Update welcome message
+                const welcomeElement = document.querySelector('.header-info h1');
+                if (welcomeElement) {
+                    welcomeElement.textContent = `Welcome back, ${userData.firstName} ${userData.lastName}`;
+                }
+                
+                // Update header description
+                const headerDesc = document.querySelector('.header-info p');
+                if (headerDesc) {
+                    const company = userData.company || 'Healthcare Recruiting';
+                    const position = userData.position || 'Healthcare Recruiter';
+                    headerDesc.textContent = `${company} • ${position}`;
+                }
+                
+                // Update navigation profile link
+                const profileLink = document.querySelector('.profile-link span');
+                if (profileLink) {
+                    profileLink.textContent = `${userData.firstName} ${userData.lastName}`;
+                }
+                
+                // Update avatar initials
+                const avatars = document.querySelectorAll('.profile-avatar');
+                const initials = `${userData.firstName.charAt(0)}${userData.lastName.charAt(0)}`.toUpperCase();
+                avatars.forEach(avatar => {
+                    avatar.textContent = initials;
+                });
+                
+                // Update profile dropdown info
+                const profileName = document.querySelector('.profile-name');
+                if (profileName) {
+                    profileName.textContent = `${userData.firstName} ${userData.lastName}`;
+                }
+                
+                const profileRole = document.querySelector('.profile-role');
+                if (profileRole) {
+                    profileRole.textContent = userData.position || 'Healthcare Recruiter';
+                }
+                
+                const profileCompany = document.querySelector('.profile-company');
+                if (profileCompany) {
+                    profileCompany.textContent = userData.company || 'Healthcare Recruiting';
+                }
+                
+                // Add role display next to profile overview (if profile section exists)
+                const profileInfo = document.querySelector('.profile-info');
+                if (profileInfo && !profileInfo.querySelector('.user-role')) {
+                    const roleElement = document.createElement('div');
+                    roleElement.className = 'user-role';
+                    roleElement.style.cssText = 'display: inline-block; background: var(--primary-color); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; margin-left: 10px; text-transform: capitalize;';
+                    roleElement.textContent = userData.role || 'recruiter';
+                    
+                    const profileHeader = profileInfo.querySelector('h3');
+                    if (profileHeader) {
+                        profileHeader.appendChild(roleElement);
+                    }
+                }
+
+                // Update profile section data
+                const profileElements = {
+                    'profile-avatar': `${userData.firstName.charAt(0)}${userData.lastName.charAt(0)}`.toUpperCase(),
+                    'profile-name': `${userData.firstName} ${userData.lastName}`,
+                    'profile-company': userData.company || 'Healthcare Recruiting',
+                    'profile-first-name': userData.firstName,
+                    'profile-last-name': userData.lastName,
+                    'profile-email': userData.email,
+                    'profile-phone': userData.phone || 'Not provided',
+                    'profile-organization': userData.company || 'Healthcare Recruiting',
+                    'profile-experience': userData.experience || '0',
+                    'profile-previous-company': userData.education || 'Previous healthcare recruiting company',
+                    'profile-specialization': userData.residency || 'Healthcare & Medical Professionals',
+                    'profile-certifications': userData.certifications || 'Healthcare recruiting certifications',
+                    'profile-bio': userData.bio || 'Experienced healthcare recruiter specializing in locum tenens placements.'
+                };
+
+                // Update all profile elements
+                Object.keys(profileElements).forEach(elementId => {
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.textContent = profileElements[elementId];
+                    }
+                });
+            }
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // Load recruiter data
+                loadRecruiterData();
+                
                 // Remove console.log to avoid potential issues
                 // Initialize core functions with error handling
                 

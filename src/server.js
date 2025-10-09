@@ -55,8 +55,8 @@ const corsOptions = {
       config.server.corsOrigin,
       'http://localhost:3000',
       'http://localhost:4000',
-      'https://locumtruerate-staging-66ba3177c382.herokuapp.com',
-      'https://locumtruerate-demo-2e641e257df4.herokuapp.com'
+      'https://locumcalc-staging-66ba3177c382.herokuapp.com',
+      'https://locumcalc-demo-2e641e257df4.herokuapp.com'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
@@ -95,7 +95,7 @@ app.use(express.static('frontend'));
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'locumtruerate-api',
+    service: 'locumcalc-api',
     version: API_VERSION,
     timestamp: config.utils.timestamp(),
     environment: config.server.env
@@ -105,7 +105,7 @@ app.get('/health', (req, res) => {
 // API info endpoint
 app.get(`/api/${API_VERSION}`, (req, res) => {
   res.json({
-    message: 'LocumTrueRate API',
+    message: 'LocumCalc API',
     version: API_VERSION,
     endpoints: {
       health: '/health',
@@ -204,7 +204,7 @@ const startServer = async () => {
 
     // Start listening
     app.listen(PORT, () => {
-      config.logger.startup(`LocumTrueRate API Server`);
+      config.logger.startup(`LocumCalc API Server`);
       config.logger.info(`Version: ${API_VERSION}`, 'SERVER_STARTUP');
       config.logger.info(`Port: ${PORT}`, 'SERVER_STARTUP');
       config.logger.info(`Environment: ${config.server.env}`, 'SERVER_STARTUP');

@@ -51,7 +51,7 @@ router.get('/my-data', requireAuth, asyncHandler(async (req, res) => {
         gdprCompliance: {
           rightsExercised: 'data_portability',
           legalBasis: 'article_20_gdpr',
-          dataController: 'LocumTrueRate Platform'
+          dataController: 'LocumCalc Platform'
         }
       },
       userData: exportData
@@ -118,7 +118,7 @@ router.get('/request-deletion', requireAuth, asyncHandler(async (req, res) => {
       'Allow up to 30 days for processing'
     ],
     contact: {
-      email: 'privacy@locumtruerate.com',
+      email: 'privacy@locumcalc.com',
       subject: `Data Deletion Request - User ID: ${req.user.id}`
     }
   };

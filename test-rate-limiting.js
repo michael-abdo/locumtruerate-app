@@ -2,7 +2,7 @@
 
 /**
  * Rate Limiting Test Script
- * Tests the rate limiting functionality of the LocumTrueRate API
+ * Tests the rate limiting functionality of the LocumCalc API
  */
 
 const http = require('http');

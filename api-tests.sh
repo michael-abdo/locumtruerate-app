@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# LocumTrueRate API Test Script
+# LocumCalc API Test Script
 # Tests all API endpoints against the production deployment
 
 # Color codes for output
@@ -11,7 +11,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Base URL for production
-BASE_URL="https://locumtruerate-production-17560d4c3d1a.herokuapp.com"
+BASE_URL="https://locumcalc-production-17560d4c3d1a.herokuapp.com"
 
 # Variables to store auth data
 AUTH_TOKEN=""
@@ -39,7 +39,7 @@ print_warning() {
     echo -e "${YELLOW}⚠ $1${NC}"
 }
 
-echo -e "${BLUE}LocumTrueRate API Test Suite${NC}"
+echo -e "${BLUE}LocumCalc API Test Suite${NC}"
 echo "Testing against: $BASE_URL"
 echo "$(date)"
 

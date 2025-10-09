@@ -86,7 +86,7 @@ class EmailService {
       const mailOptions = {
         from: config.email.from,
         to: to,
-        subject: 'Reset Your LocumTrueRate Password',
+        subject: 'Reset Your LocumCalc Password',
         html: this.generatePasswordResetHTML(resetUrl, userFirstName),
         text: this.generatePasswordResetText(resetUrl, userFirstName)
       };
@@ -189,14 +189,14 @@ class EmailService {
     <body>
         <div class="container">
             <div class="header">
-                <div class="logo">LocumTrueRate</div>
+                <div class="logo">LocumCalc</div>
                 <p>Password Reset Request</p>
             </div>
             
             <div class="content">
                 <p>Hello${firstName ? ` ${firstName}` : ''},</p>
                 
-                <p>We received a request to reset your password for your LocumTrueRate account. If you made this request, click the button below to reset your password:</p>
+                <p>We received a request to reset your password for your LocumCalc account. If you made this request, click the button below to reset your password:</p>
                 
                 <p style="text-align: center;">
                     <a href="${resetUrl}" class="button">Reset My Password</a>
@@ -220,9 +220,9 @@ class EmailService {
             </div>
             
             <div class="footer">
-                <p>This email was sent by LocumTrueRate<br>
+                <p>This email was sent by LocumCalc<br>
                 If you have questions, please contact our support team.</p>
-                <p>© ${new Date().getFullYear()} LocumTrueRate. All rights reserved.</p>
+                <p>© ${new Date().getFullYear()} LocumCalc. All rights reserved.</p>
             </div>
         </div>
     </body>
@@ -238,11 +238,11 @@ class EmailService {
    */
   generatePasswordResetText(resetUrl, firstName) {
     return `
-LocumTrueRate - Password Reset Request
+LocumCalc - Password Reset Request
 
 Hello${firstName ? ` ${firstName}` : ''},
 
-We received a request to reset your password for your LocumTrueRate account.
+We received a request to reset your password for your LocumCalc account.
 
 If you made this request, click the link below or copy it into your browser to reset your password:
 
@@ -256,8 +256,8 @@ SECURITY NOTICE:
 If you didn't request a password reset, you can safely ignore this email. Your account security is important to us.
 
 ---
-This email was sent by LocumTrueRate
-© ${new Date().getFullYear()} LocumTrueRate. All rights reserved.
+This email was sent by LocumCalc
+© ${new Date().getFullYear()} LocumCalc. All rights reserved.
     `.trim();
   }
 
@@ -275,16 +275,16 @@ This email was sent by LocumTrueRate
       const mailOptions = {
         from: config.email.from,
         to: to,
-        subject: 'LocumTrueRate Email Service Test',
+        subject: 'LocumCalc Email Service Test',
         html: `
           <h2>Email Service Test</h2>
-          <p>This is a test email to verify your LocumTrueRate email configuration.</p>
+          <p>This is a test email to verify your LocumCalc email configuration.</p>
           <p>Sent at: ${new Date().toISOString()}</p>
         `,
         text: `
           Email Service Test
           
-          This is a test email to verify your LocumTrueRate email configuration.
+          This is a test email to verify your LocumCalc email configuration.
           Sent at: ${new Date().toISOString()}
         `
       };
