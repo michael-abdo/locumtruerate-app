@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Login Test</title>
+</head>
+<body>
+    <h1>Login Debug Test</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="results"></div>
+    
+    <script>
+        async function testLogin() {
+            const results = document.getElementById('results');
+            results.innerHTML = 'Testing login...';
+            
+            try {
+                console.log('Starting login test...');
+                
+                const response = await fetch('https://locumtruerate-staging-66ba3177c382.herokuapp.com/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'testuser@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                results.innerHTML = `
+                    <h3>Test Results:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Success:</strong> ${data.success || 'N/A'}</p>
+                    <p><strong>Message:</strong> ${data.message || 'N/A'}</p>
+                    <p><strong>Error:</strong> ${data.error || 'N/A'}</p>
+                    <p><strong>Token:</strong> ${data.data?.token ? 'Received' : 'Not received'}</p>
+                `;
+                
+            } catch (error) {
+                console.error('Login test failed:', error);
+                results.innerHTML = `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
