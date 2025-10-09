@@ -5,7 +5,7 @@
 
 // Configuration
 const AUTH_CONFIG = {
-    API_BASE: window.location.origin,
+    API_BASE: 'https://locumtruerate-staging-66ba3177c382.herokuapp.com',
     TOKEN_KEY: 'locum_auth_token',
     USER_KEY: 'locum_user_data',
     REDIRECT_KEY: 'redirectAfterLogin'
