@@ -65,7 +65,7 @@ async function login(email, password) {
     }
 
     try {
-        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/auth/login`, {
+        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/login`, {
             method: 'POST',
             body: JSON.stringify({ email, password })
         });
@@ -117,14 +117,14 @@ async function register(userData) {
     }
 
     try {
-        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/auth/register`, {
+        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/register`, {
             method: 'POST',
             body: JSON.stringify({
                 email,
                 password,
                 role,
-                first_name: first_name || null,
-                last_name: last_name || null,
+                firstName: first_name || null,
+                lastName: last_name || null,
                 phone: phone || null
             })
         });
@@ -175,7 +175,7 @@ async function logout() {
     // Call logout API if token exists
     if (token) {
         try {
-            await apiRequest(`${AUTH_CONFIG.API_BASE}/api/auth/logout`, {
+            await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/logout`, {
                 method: 'POST'
             });
         } catch (error) {
@@ -272,7 +272,7 @@ function hasPermission(requiredRole) {
  * Verify JWT token with server
  */
 async function verifyToken() {
-    const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/auth/verify`, {
+    const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/verify`, {
         method: 'GET'
     });
 
