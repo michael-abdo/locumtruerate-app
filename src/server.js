@@ -88,8 +88,7 @@ app.use(metricsMiddleware);
 // Apply rate limiting to all API routes
 app.use('/api/', limiter);
 
-// Serve static files from frontend directory
-app.use(express.static('frontend'));
+// Note: This is a backend API server - static files served separately
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -120,6 +119,23 @@ app.get(`/api/${API_VERSION}`, (req, res) => {
       dataExport: `/api/${API_VERSION}/data-export/my-data`,
       privacySummary: `/api/${API_VERSION}/data-export/privacy-summary`,
       deletionRequest: `/api/${API_VERSION}/data-export/request-deletion`
+    }
+  });
+});
+
+// Root endpoint - API information
+app.get('/', (req, res) => {
+  res.json({
+    message: 'LocumCalc API Server',
+    service: 'locumcalc-api',
+    version: API_VERSION,
+    status: 'running',
+    timestamp: config.utils.timestamp(),
+    environment: config.server.env,
+    endpoints: {
+      health: '/health',
+      api: `/api/${API_VERSION}`,
+      documentation: 'https://github.com/michael-abdo/locumcalc-app/blob/main/API_DOCS.md'
     }
   });
 });
