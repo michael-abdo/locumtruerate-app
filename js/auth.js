@@ -31,8 +31,15 @@ async function apiRequest(url, options = {}) {
     }
 
     try {
+        console.log('DEBUG: Making API request to:', url);
+        console.log('DEBUG: Request config:', config);
+        
         const response = await fetch(url, config);
+        console.log('DEBUG: Response status:', response.status);
+        console.log('DEBUG: Response ok:', response.ok);
+        
         const data = await response.json();
+        console.log('DEBUG: Response data:', data);
 
         // Handle token expiration
         if (!response.ok && data.code === 'TOKEN_EXPIRED') {
@@ -42,7 +49,9 @@ async function apiRequest(url, options = {}) {
             return { success: false, data };
         }
 
-        return { success: response.ok, data, status: response.status };
+        const result = { success: response.ok, data, status: response.status };
+        console.log('DEBUG: Final apiRequest result:', result);
+        return result;
     } catch (error) {
         console.error('API request failed:', error);
         return { 
@@ -65,12 +74,22 @@ async function login(email, password) {
     }
 
     try {
-        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/login`, {
+        const requestUrl = `${AUTH_CONFIG.API_BASE}/api/v1/auth/login`;
+        const requestBody = JSON.stringify({ email, password });
+        console.log('DEBUG: Login request URL:', requestUrl);
+        console.log('DEBUG: Login request body:', requestBody);
+        
+        const result = await apiRequest(requestUrl, {
             method: 'POST',
-            body: JSON.stringify({ email, password })
+            body: requestBody
         });
+        
+        console.log('DEBUG: apiRequest result:', result);
 
         if (result.success && result.data.token) {
+            console.log('DEBUG: Login successful, token received:', !!result.data.token);
+            console.log('DEBUG: User data:', result.data.user);
+            
             // Store authentication data
             localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
             localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
@@ -84,6 +103,8 @@ async function login(email, password) {
             showToast('Login successful!', 'success');
             return { success: true, user: result.data.user };
         } else {
+            console.log('DEBUG: Login failed - result.success:', result.success, 'token exists:', !!result.data?.token);
+            console.log('DEBUG: Full result.data:', result.data);
             const error = result.data.error || 'Login failed';
             showToast(error, 'error');
             return { success: false, error };
