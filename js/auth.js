@@ -367,8 +367,8 @@ function initAuth() {
  * Show toast notification (compatibility with existing toast systems)
  */
 function showToast(message, type = 'info', duration = 5000) {
-    // Try to use existing toast function if available
-    if (typeof window.showToast === 'function') {
+    // Try to use existing toast function if available (but not ourselves!)
+    if (typeof window.showToast === 'function' && window.showToast !== showToast) {
         window.showToast(message, type, duration);
         return;
     }
