@@ -71,9 +71,15 @@ async function login(email, password) {
         });
 
         if (result.success && result.data && result.data.token) {
+            console.log('DEBUG: login - storing token:', result.data.token.substring(0, 50) + '...');
+            console.log('DEBUG: login - AUTH_CONFIG.TOKEN_KEY:', AUTH_CONFIG.TOKEN_KEY);
+            
             // Store authentication data
             localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
             localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
+            
+            console.log('DEBUG: login - token stored, verifying:', !!localStorage.getItem(AUTH_CONFIG.TOKEN_KEY));
+            console.log('DEBUG: login - localStorage test:', localStorage.getItem(AUTH_CONFIG.TOKEN_KEY) ? localStorage.getItem(AUTH_CONFIG.TOKEN_KEY).substring(0, 50) + '...' : 'null');
             
             // Maintain compatibility with existing code
             localStorage.setItem('userAuthenticated', 'true');
