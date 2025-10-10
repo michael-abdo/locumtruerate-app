@@ -175,6 +175,10 @@ app.use(`/api/${API_VERSION}/applications`, applicationsRoutes);
 const dataExportRoutes = require('./routes/data-export');
 app.use(`/api/${API_VERSION}/data-export`, dataExportRoutes);
 
+// Bug reports routes
+const bugsRoutes = require('./routes/bugs');
+app.use(`/api/${API_VERSION}/bugs`, bugsRoutes);
+
 // 404 handler
 app.use((req, res) => {
   return createErrorResponse(res, 404, `The requested resource ${req.path} was not found`, 'not_found');

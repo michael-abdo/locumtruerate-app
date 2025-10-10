@@ -130,11 +130,40 @@ CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
 CREATE TRIGGER update_applications_updated_at BEFORE UPDATE ON applications
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- Bug reports table for bug tracking system
+CREATE TABLE bug_reports (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    type VARCHAR(50) DEFAULT 'other' CHECK (type IN ('ui', 'functionality', 'performance', 'data', 'security', 'other')),
+    priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'critical')),
+    status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved', 'closed', 'duplicate')),
+    description TEXT NOT NULL,
+    steps_to_reproduce TEXT,
+    additional_info TEXT,
+    system_info JSONB,
+    user_info JSONB,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add indexes for bug reports
+CREATE INDEX idx_bug_reports_status ON bug_reports(status);
+CREATE INDEX idx_bug_reports_priority ON bug_reports(priority);
+CREATE INDEX idx_bug_reports_type ON bug_reports(type);
+CREATE INDEX idx_bug_reports_user_id ON bug_reports(user_id);
+CREATE INDEX idx_bug_reports_created_at ON bug_reports(created_at);
+
+-- Add trigger for bug_reports updated_at
+CREATE TRIGGER update_bug_reports_updated_at BEFORE UPDATE ON bug_reports
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Insert some sample data for development
+-- Password for all test users is 'admin123'
 INSERT INTO users (email, password_hash, role) VALUES
-    ('admin@locumcalc.com', '$2b$10$YourHashedPasswordHere', 'admin'),
-    ('recruiter@example.com', '$2b$10$YourHashedPasswordHere', 'recruiter'),
-    ('locum@example.com', '$2b$10$YourHashedPasswordHere', 'locum');
+    ('admin@locumcalc.com', '$2b$10$JuxJkWBNu4BH2MDk0y.YPOH0lAFoBMXiEl0iv2hEZlzf2dVyGEBFK', 'admin'),
+    ('recruiter@example.com', '$2b$10$JuxJkWBNu4BH2MDk0y.YPOH0lAFoBMXiEl0iv2hEZlzf2dVyGEBFK', 'recruiter'),
+    ('locum@example.com', '$2b$10$JuxJkWBNu4BH2MDk0y.YPOH0lAFoBMXiEl0iv2hEZlzf2dVyGEBFK', 'locum');
 
 -- Add sample profiles
 INSERT INTO profiles (user_id, first_name, last_name, specialty, years_experience) VALUES
