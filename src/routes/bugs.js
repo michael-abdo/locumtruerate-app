@@ -1,7 +1,7 @@
 const express = require('express');
 const { createSuccessResponse, createErrorResponse } = require('../utils/responses');
 const config = require('../config/config');
-const { authenticateToken } = require('../middleware/auth');
+const { requireAuth } = require('../middleware/auth');
 const { query } = require('../db/connection'); // Use existing connection
 
 const router = express.Router();
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
         
         if (req.headers.authorization) {
             try {
-                const authenticateResult = await authenticateToken(req, res, () => {});
+                await requireAuth(req, res, () => {});
                 if (req.user) {
                     userId = req.user.id;
                     userEmail = req.user.email;
@@ -109,7 +109,7 @@ router.post('/', async (req, res) => {
  * @desc Get bug reports (admin only)
  * @access Private - Admin
  */
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
     try {
         // Check if user is admin
         if (req.user.role !== 'admin') {
@@ -209,7 +209,7 @@ router.get('/', authenticateToken, async (req, res) => {
  * @desc Update bug report status (admin only)
  * @access Private - Admin
  */
-router.patch('/:id/status', authenticateToken, async (req, res) => {
+router.patch('/:id/status', requireAuth, async (req, res) => {
     try {
         // Check if user is admin
         if (req.user.role !== 'admin') {
@@ -259,7 +259,7 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
  * @desc Get bug report statistics (admin only)
  * @access Private - Admin
  */
-router.get('/stats', authenticateToken, async (req, res) => {
+router.get('/stats', requireAuth, async (req, res) => {
     try {
         // Check if user is admin
         if (req.user.role !== 'admin') {
