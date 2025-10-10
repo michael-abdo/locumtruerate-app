@@ -71,15 +71,9 @@ async function login(email, password) {
         });
 
         if (result.success && result.data && result.data.data && result.data.data.token) {
-            console.log('DEBUG: login - storing token:', result.data.data.token.substring(0, 50) + '...');
-            console.log('DEBUG: login - AUTH_CONFIG.TOKEN_KEY:', AUTH_CONFIG.TOKEN_KEY);
-            
             // Store authentication data
             localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.data.token);
             localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.data.user));
-            
-            console.log('DEBUG: login - token stored, verifying:', !!localStorage.getItem(AUTH_CONFIG.TOKEN_KEY));
-            console.log('DEBUG: login - localStorage test:', localStorage.getItem(AUTH_CONFIG.TOKEN_KEY) ? localStorage.getItem(AUTH_CONFIG.TOKEN_KEY).substring(0, 50) + '...' : 'null');
             
             // Maintain compatibility with existing code
             localStorage.setItem('userAuthenticated', 'true');
@@ -204,11 +198,8 @@ async function logout() {
  */
 function isAuthenticated() {
     const token = getAuthToken();
-    console.log('DEBUG: isAuthenticated - token exists:', !!token);
-    console.log('DEBUG: isAuthenticated - token value:', token ? token.substring(0, 50) + '...' : 'null');
     
     if (!token) {
-        console.log('DEBUG: isAuthenticated - no token found, returning false');
         return false;
     }
 
@@ -217,23 +208,15 @@ function isAuthenticated() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const currentTime = Math.floor(Date.now() / 1000);
         
-        console.log('DEBUG: isAuthenticated - token payload:', payload);
-        console.log('DEBUG: isAuthenticated - current time:', currentTime);
-        console.log('DEBUG: isAuthenticated - token exp:', payload.exp);
-        console.log('DEBUG: isAuthenticated - is expired:', payload.exp < currentTime);
-        
         if (payload.exp < currentTime) {
             // Token expired
-            console.log('DEBUG: isAuthenticated - token expired, clearing auth');
             clearAuth();
             return false;
         }
 
-        console.log('DEBUG: isAuthenticated - token valid, returning true');
         return true;
     } catch (error) {
         console.error('Token validation error:', error);
-        console.log('DEBUG: isAuthenticated - token parsing failed, clearing auth');
         clearAuth();
         return false;
     }
@@ -250,20 +233,11 @@ function getAuthToken() {
  * Get user information from stored data
  */
 function getUserInfo() {
-    console.log('DEBUG: getUserInfo() called');
-    console.log('DEBUG: AUTH_CONFIG.USER_KEY:', AUTH_CONFIG.USER_KEY);
-    
     try {
         const userData = localStorage.getItem(AUTH_CONFIG.USER_KEY);
-        console.log('DEBUG: Raw userData from localStorage:', userData);
-        
-        const parsedUser = userData ? JSON.parse(userData) : null;
-        console.log('DEBUG: Parsed user data:', parsedUser);
-        
-        return parsedUser;
+        return userData ? JSON.parse(userData) : null;
     } catch (error) {
         console.error('Error parsing user data:', error);
-        console.log('DEBUG: getUserInfo() returning null due to error');
         return null;
     }
 }
@@ -272,12 +246,8 @@ function getUserInfo() {
  * Get user role for authorization checks
  */
 function getUserRole() {
-    console.log('DEBUG: getUserRole() called');
     const user = getUserInfo();
-    console.log('DEBUG: getUserInfo() returned:', user);
-    const role = user ? user.role : null;
-    console.log('DEBUG: getUserRole() returning:', role);
-    return role;
+    return user ? user.role : null;
 }
 
 /**
@@ -351,35 +321,24 @@ function redirectToLogin(returnUrl = null) {
  * Handle redirect after successful login
  */
 function handlePostLoginRedirect() {
-    console.log('DEBUG: handlePostLoginRedirect() called');
-    console.log('DEBUG: AUTH_CONFIG.REDIRECT_KEY:', AUTH_CONFIG.REDIRECT_KEY);
-    
     const redirectUrl = localStorage.getItem(AUTH_CONFIG.REDIRECT_KEY);
-    console.log('DEBUG: redirectUrl from localStorage:', redirectUrl);
     
     if (redirectUrl) {
-        console.log('DEBUG: Using stored redirect URL:', redirectUrl);
         localStorage.removeItem(AUTH_CONFIG.REDIRECT_KEY);
-        console.log('DEBUG: Redirecting to stored URL');
         window.location.href = redirectUrl;
     } else {
-        console.log('DEBUG: No stored redirect URL, using role-based redirect');
         // Default redirect based on user role
         const userRole = getUserRole();
-        console.log('DEBUG: User role:', userRole);
         
         switch (userRole) {
             case 'admin':
-                console.log('DEBUG: Redirecting to admin-dashboard.html');
                 window.location.href = 'admin-dashboard.html';
                 break;
             case 'recruiter':
-                console.log('DEBUG: Redirecting to recruiter-dashboard.html');
                 window.location.href = 'recruiter-dashboard.html';
                 break;
             case 'locum':
             default:
-                console.log('DEBUG: Redirecting to locum-dashboard.html');
                 window.location.href = 'locum-dashboard.html';
                 break;
         }
