@@ -198,7 +198,11 @@ async function logout() {
  */
 function isAuthenticated() {
     const token = getAuthToken();
+    console.log('DEBUG: isAuthenticated - token exists:', !!token);
+    console.log('DEBUG: isAuthenticated - token value:', token ? token.substring(0, 50) + '...' : 'null');
+    
     if (!token) {
+        console.log('DEBUG: isAuthenticated - no token found, returning false');
         return false;
     }
 
@@ -207,15 +211,23 @@ function isAuthenticated() {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const currentTime = Math.floor(Date.now() / 1000);
         
+        console.log('DEBUG: isAuthenticated - token payload:', payload);
+        console.log('DEBUG: isAuthenticated - current time:', currentTime);
+        console.log('DEBUG: isAuthenticated - token exp:', payload.exp);
+        console.log('DEBUG: isAuthenticated - is expired:', payload.exp < currentTime);
+        
         if (payload.exp < currentTime) {
             // Token expired
+            console.log('DEBUG: isAuthenticated - token expired, clearing auth');
             clearAuth();
             return false;
         }
 
+        console.log('DEBUG: isAuthenticated - token valid, returning true');
         return true;
     } catch (error) {
         console.error('Token validation error:', error);
+        console.log('DEBUG: isAuthenticated - token parsing failed, clearing auth');
         clearAuth();
         return false;
     }
