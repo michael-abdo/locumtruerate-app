@@ -10,6 +10,9 @@ const { metricsMiddleware, metricsInstance } = require('./middleware/metrics');
 // Create Express app
 const app = express();
 
+// Trust proxy for Heroku deployment
+app.set('trust proxy', 1);
+
 // Get configuration from centralized config
 const PORT = config.server.port;
 const API_VERSION = config.server.apiVersion;
