@@ -2848,73 +2848,19 @@
                     </div>
 
                     <div class="applications-list">
-                        <div class="application-item" data-status="applied">
-                            <div class="application-info">
-                                <h3>Emergency Medicine Physician</h3>
-                                <div class="application-facility">Riverside Regional Medical Center</div>
-                                <div class="application-location">📍 Newport News, VA</div>
-                                <div class="application-date">Applied: Jan 15, 2025</div>
-                            </div>
-                            <div class="application-details">
-                                <div class="application-rate">$395/hr</div>
-                                <div class="application-status-pill applied">Applied</div>
-                            </div>
-                            <div class="application-actions">
-                                <button class="btn-small primary" onclick="viewApplicationDetails(1)">View Details</button>
-                                <button class="btn-small secondary" onclick="withdrawApplication(1)">Withdraw</button>
-                            </div>
+                        <!-- Applications will be loaded dynamically from API -->
+                        <div class="loading-spinner" style="display: none;">
+                            <svg class="spinner" width="24" height="24" viewBox="0 0 24 24">
+                                <circle class="spinner-track" cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="2" fill="none" />
+                                <circle class="spinner-fill" cx="12" cy="12" r="10" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="23.562" transform="rotate(-90 12 12)">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite" />
+                                </circle>
+                            </svg>
+                            <span style="margin-left: 8px;">Loading applications...</span>
                         </div>
-
-                        <div class="application-item" data-status="interview">
-                            <div class="application-info">
-                                <h3>ER Physician - Level 1 Trauma</h3>
-                                <div class="application-facility">Stanford Health Care</div>
-                                <div class="application-location">📍 Palo Alto, CA</div>
-                                <div class="application-date">Applied: Jan 12, 2025</div>
-                            </div>
-                            <div class="application-details">
-                                <div class="application-rate">$425/hr</div>
-                                <div class="application-status-pill interview">Interview Scheduled</div>
-                            </div>
-                            <div class="application-actions">
-                                <button class="btn-small primary" onclick="viewApplicationDetails(2)">View Details</button>
-                                <button class="btn-small accent" onclick="prepareForInterview(2)">Prepare</button>
-                            </div>
-                        </div>
-
-                        <div class="application-item" data-status="offer">
-                            <div class="application-info">
-                                <h3>Emergency Medicine - Rural</h3>
-                                <div class="application-facility">Banner Health</div>
-                                <div class="application-location">📍 Flagstaff, AZ</div>
-                                <div class="application-date">Applied: Jan 8, 2025</div>
-                            </div>
-                            <div class="application-details">
-                                <div class="application-rate">$370/hr</div>
-                                <div class="application-status-pill offer">Offer Received</div>
-                            </div>
-                            <div class="application-actions">
-                                <button class="btn-small primary" onclick="viewApplicationDetails(3)">View Offer</button>
-                                <button class="btn-small accent" onclick="acceptOffer(3)">Accept</button>
-                                <button class="btn-small secondary" onclick="declineOffer(3)">Decline</button>
-                            </div>
-                        </div>
-
-                        <div class="application-item" data-status="rejected">
-                            <div class="application-info">
-                                <h3>Emergency Medicine Locum</h3>
-                                <div class="application-facility">Houston Methodist</div>
-                                <div class="application-location">📍 Houston, TX</div>
-                                <div class="application-date">Applied: Jan 5, 2025</div>
-                            </div>
-                            <div class="application-details">
-                                <div class="application-rate">$340/hr</div>
-                                <div class="application-status-pill rejected">Not Selected</div>
-                            </div>
-                            <div class="application-actions">
-                                <button class="btn-small primary" onclick="viewApplicationDetails(4)">View Feedback</button>
-                                <button class="btn-small secondary" onclick="archiveApplication(4)">Archive</button>
-                            </div>
+                        <div class="no-applications" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <p>No applications found.</p>
+                            <p style="margin-top: 0.5rem;">Start browsing <a href="job-board.html" style="color: var(--primary-color);">available jobs</a> to apply!</p>
                         </div>
                     </div>
                 </div>
@@ -4196,9 +4142,158 @@ American Board of Internal Medicine</textarea>
             showToast('Application archived', 'info');
         }
 
+        // API Configuration
+        const AUTH_CONFIG = {
+            API_BASE: 'https://locumtruerate-staging-66ba3177c382.herokuapp.com'
+        };
+
+        // Load applications from API
+        async function loadApplications() {
+            const container = document.querySelector('.applications-list');
+            const spinner = container.querySelector('.loading-spinner');
+            const noApps = container.querySelector('.no-applications');
+            
+            // Show loading state
+            spinner.style.display = 'flex';
+            noApps.style.display = 'none';
+            
+            // Remove existing application items
+            container.querySelectorAll('.application-item').forEach(item => item.remove());
+            
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications/my`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const applications = data.data?.applications || [];
+                
+                spinner.style.display = 'none';
+                
+                if (applications.length === 0) {
+                    noApps.style.display = 'block';
+                    return;
+                }
+                
+                // Render each application
+                applications.forEach(app => {
+                    const applicationItem = createApplicationItem(app);
+                    container.appendChild(applicationItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                spinner.style.display = 'none';
+                
+                // Check if user is not authenticated
+                if (error.message.includes('401') || error.message.includes('403')) {
+                    showToast('Please login to view applications', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    showToast('Failed to load applications. Please try again.', 'error');
+                    noApps.style.display = 'block';
+                }
+            }
+        }
+        
+        // Create application item HTML
+        function createApplicationItem(app) {
+            const div = document.createElement('div');
+            div.className = 'application-item';
+            div.setAttribute('data-status', app.status.toLowerCase());
+            div.setAttribute('data-app-id', app.id);
+            
+            // Format date
+            const appliedDate = new Date(app.createdAt);
+            const formattedDate = appliedDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            // Determine status text and class
+            const statusInfo = getStatusInfo(app.status);
+            
+            // Build actions based on status
+            const actions = getApplicationActions(app);
+            
+            div.innerHTML = `
+                <div class="application-info">
+                    <h3>${app.job?.title || 'Position'}</h3>
+                    <div class="application-facility">${app.job?.companyName || app.job?.company_name || 'Healthcare Facility'}</div>
+                    <div class="application-location">📍 ${app.job?.location || ''}, ${app.job?.state || ''}</div>
+                    <div class="application-date">Applied: ${formattedDate}</div>
+                </div>
+                <div class="application-details">
+                    <div class="application-rate">$${app.job?.hourlyRate || app.job?.hourly_rate || '0'}/hr</div>
+                    <div class="application-status-pill ${statusInfo.class}">${statusInfo.text}</div>
+                </div>
+                <div class="application-actions">
+                    ${actions}
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // Get status display info
+        function getStatusInfo(status) {
+            const statusMap = {
+                'pending': { text: 'Applied', class: 'applied' },
+                'reviewing': { text: 'Under Review', class: 'review' },
+                'interview': { text: 'Interview Scheduled', class: 'interview' },
+                'offered': { text: 'Offer Received', class: 'offer' },
+                'accepted': { text: 'Accepted', class: 'accepted' },
+                'rejected': { text: 'Not Selected', class: 'rejected' },
+                'withdrawn': { text: 'Withdrawn', class: 'withdrawn' }
+            };
+            
+            return statusMap[status?.toLowerCase()] || { text: status, class: 'applied' };
+        }
+        
+        // Get application action buttons
+        function getApplicationActions(app) {
+            const status = app.status?.toLowerCase();
+            let actions = `<button class="btn-small primary" onclick="viewApplicationDetails(${app.id})">View Details</button>`;
+            
+            switch (status) {
+                case 'pending':
+                case 'reviewing':
+                    actions += `<button class="btn-small secondary" onclick="withdrawApplication(${app.id})">Withdraw</button>`;
+                    break;
+                case 'interview':
+                    actions += `<button class="btn-small accent" onclick="prepareForInterview(${app.id})">Prepare</button>`;
+                    break;
+                case 'offered':
+                    actions += `<button class="btn-small accent" onclick="acceptOffer(${app.id})">Accept</button>`;
+                    actions += `<button class="btn-small secondary" onclick="declineOffer(${app.id})">Decline</button>`;
+                    break;
+                case 'rejected':
+                    actions += `<button class="btn-small secondary" onclick="archiveApplication(${app.id})">Archive</button>`;
+                    break;
+            }
+            
+            return actions;
+        }
+
         function refreshApplications() {
             console.log('Refreshing application status...');
-            showToast('Application statuses updated', 'success');
+            loadApplications().then(() => {
+                showToast('Applications refreshed', 'success');
+            }).catch(error => {
+                console.error('Error refreshing applications:', error);
+                showToast('Failed to refresh applications', 'error');
+            });
         }
 
         // Financial tracking functionality
@@ -5461,6 +5556,18 @@ American Board of Internal Medicine</textarea>
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 initializeAccessibility();
+                
+                // Check authentication and load applications
+                if (isAuthenticated()) {
+                    loadApplications();
+                } else {
+                    // If not authenticated, show login prompt
+                    const appsList = document.querySelector('.applications-list');
+                    const noApps = appsList.querySelector('.no-applications');
+                    noApps.style.display = 'block';
+                    noApps.innerHTML = '<p>Please <a href="login.html" style="color: var(--primary-color);">login</a> to view your applications.</p>';
+                }
+                
                 console.log('Locum dashboard loaded successfully');
             } catch (error) {
                 handleError(error, 'Dashboard initialization');

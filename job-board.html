@@ -1906,41 +1906,68 @@
             document.getElementById('postJobForm').reset();
         }
         
-        function submitJobPosting() {
-            // Get form values
-            const newJob = {
-                id: Date.now(), // Generate unique ID
+        async function submitJobPosting() {
+            const token = getAuthToken();
+            if (!token) {
+                showToast('Please login to post jobs', 'error');
+                return;
+            }
+            
+            // Extract salary range from the input (e.g., "$300-$400/hr" -> min: 300, max: 400)
+            const salaryInput = document.getElementById('jobSalary').value;
+            const salaryMatch = salaryInput.match(/\$?(\d+)(?:-\$?(\d+))?/);
+            const hourlyRateMin = salaryMatch ? parseInt(salaryMatch[1]) : null;
+            const hourlyRateMax = salaryMatch && salaryMatch[2] ? parseInt(salaryMatch[2]) : hourlyRateMin;
+            
+            // Get state from location
+            const locationParts = document.getElementById('jobLocation').value.split(',');
+            const city = locationParts[0].trim();
+            const state = locationParts[1] ? locationParts[1].trim().toLowerCase().slice(0, 2) : 'ca';
+            
+            // Prepare job data for API
+            const jobData = {
                 title: document.getElementById('jobTitle').value,
-                facility: 'User Posted Job',
-                location: document.getElementById('jobLocation').value,
-                salary: document.getElementById('jobSalary').value,
-                duration: document.getElementById('jobDuration').value,
-                hours: '40 hrs/week', // Default value
-                housing: 'Negotiable', // Default value
+                location: city,
+                state: state,
                 specialty: document.getElementById('jobSpecialty').value,
-                state: document.getElementById('jobLocation').value.split(',')[1]?.trim().toLowerCase() || 'other',
                 description: document.getElementById('jobDescription').value,
-                requirements: ['Posted by User', 'Contact for Details'],
-                benefits: ['Competitive Pay', 'Flexible Terms'],
-                contact: document.getElementById('jobContact').value,
-                isUserPosted: true
+                hourlyRateMin: hourlyRateMin,
+                hourlyRateMax: hourlyRateMax,
+                duration: document.getElementById('jobDuration').value,
+                shiftType: 'Full-time', // Default, could add field later
+                companyName: getUserData()?.companyName || 'Healthcare Facility',
+                status: 'active'
             };
             
-            // Save to localStorage (in real app, would send to server)
-            const existingJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
-            existingJobs.unshift(newJob);
-            localStorage.setItem('userPostedJobs', JSON.stringify(existingJobs));
-            
-            // Add to current job list
-            jobsData.unshift(newJob);
-            filteredJobs = [...jobsData];
-            
-            // Show success message
-            showSuccessMessage('Job posted successfully!');
-            
-            // Close modal and refresh display
-            closePostJobModal();
-            renderJobs();
+            try {
+                // Submit to API
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(jobData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccessMessage('Job posted successfully!');
+                    
+                    // Reload jobs from API to include the new job
+                    await initializeJobsData();
+                    renderJobs();
+                    
+                    // Close modal
+                    closePostJobModal();
+                } else {
+                    showToast(result.message || 'Failed to post job', 'error');
+                }
+            } catch (error) {
+                console.error('Error posting job:', error);
+                showToast('Failed to post job. Please try again.', 'error');
+            }
         }
         
         function showSuccessMessage(message) {
@@ -1968,11 +1995,9 @@
             }, 3000);
         }
         
-        // Load user-posted jobs on startup
+        // User-posted jobs are now loaded from API, not localStorage
         function loadUserPostedJobs() {
-            const userJobs = JSON.parse(localStorage.getItem('userPostedJobs') || '[]');
-            // Add user jobs to the beginning of jobsData
-            jobsData.unshift(...userJobs);
+            // Deprecated - jobs are now loaded from API in initializeJobsData()
         }
         
         document.addEventListener('DOMContentLoaded', async function() {
