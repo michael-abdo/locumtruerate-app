@@ -59,7 +59,8 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:4000',
       'https://locumcalc-staging-66ba3177c382.herokuapp.com',
-      'https://locumcalc-demo-2e641e257df4.herokuapp.com'
+      'https://locumcalc-demo-2e641e257df4.herokuapp.com',
+      'https://locumtruerate-stage-8edec28739b0.herokuapp.com'
     ];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
