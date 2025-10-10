@@ -88,8 +88,8 @@ if (config.server.env === 'development') {
 // Performance metrics middleware
 app.use(metricsMiddleware);
 
-// Apply rate limiting to all API routes
-app.use('/api/', limiter);
+// Apply rate limiting to all API routes (temporarily disabled for debugging)
+// app.use('/api/', limiter);
 
 // Serve static files from frontend directory
 app.use(express.static('frontend'));
