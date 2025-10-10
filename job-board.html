@@ -405,6 +405,16 @@
             background-color: var(--text-muted);
             transform: none;
         }
+        
+        .btn-primary.applied {
+            background-color: #4CAF50;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary.applied:hover {
+            background-color: #4CAF50;
+            transform: none;
+        }
 
         .btn-secondary {
             background-color: transparent;
@@ -1186,110 +1196,69 @@
             }
         }
         
-        // Sample job data
-        const jobsData = [
-            {
-                id: 1,
-                title: "Emergency Medicine Physician",
-                facility: "Metropolitan General Hospital",
-                location: "Los Angeles, CA",
-                salary: "$350/hr",
-                duration: "13 weeks",
-                hours: "48 hrs/week",
-                housing: "$1,800/week",
-                specialty: "emergency",
-                state: "california",
-                description: "Join our busy Level 1 trauma center serving the greater Los Angeles area. Seeking board-certified EM physicians for immediate start.",
-                requirements: ["Board Certified EM", "ACLS/PALS Required", "3+ Years Experience"],
-                benefits: ["Housing Stipend", "Travel Allowance", "Medical Insurance", "Malpractice Coverage"]
-            },
-            {
-                id: 2,
-                title: "Internal Medicine Hospitalist",
-                facility: "Houston Medical Center",
-                location: "Houston, TX",
-                salary: "$285/hr",
-                duration: "26 weeks",
-                hours: "40 hrs/week",
-                housing: "$1,400/week",
-                specialty: "internal",
-                state: "texas",
-                description: "Growing hospitalist program seeking internal medicine physicians for day and night shifts. Academic medical center environment.",
-                requirements: ["Board Certified IM", "Hospital Experience", "EMR Proficiency"],
-                benefits: ["Competitive Salary", "Housing Stipend", "CME Allowance", "401k Match"]
-            },
-            {
-                id: 3,
-                title: "Anesthesiologist",
-                facility: "Sunshine Surgery Center",
-                location: "Miami, FL",
-                salary: "$425/hr",
-                duration: "8 weeks",
-                hours: "50 hrs/week",
-                housing: "$2,000/week",
-                specialty: "anesthesiology",
-                state: "florida",
-                description: "Seeking experienced anesthesiologist for high-volume surgery center. Mix of outpatient and same-day procedures.",
-                requirements: ["Board Certified Anesthesiology", "ASC Experience Preferred", "Regional Blocks"],
-                benefits: ["Excellent Hourly Rate", "Housing Stipend", "Travel Reimbursement", "Flexible Schedule"]
-            },
-            {
-                id: 4,
-                title: "Radiologist - Teleradiology",
-                facility: "RadNet Solutions",
-                location: "Remote (NY Licensed)",
-                salary: "$295/hr",
-                duration: "Ongoing",
-                hours: "40 hrs/week",
-                housing: "Remote",
-                specialty: "radiology",
-                state: "new-york",
-                description: "Remote teleradiology position covering multiple hospital systems. Flexible scheduling with excellent work-life balance.",
-                requirements: ["Board Certified Radiology", "NY State License", "PACS Experience"],
-                benefits: ["Remote Work", "Flexible Hours", "Technology Stipend", "Professional Development"]
-            },
-            {
-                id: 5,
-                title: "General Surgeon",
-                facility: "Prairie Regional Medical",
-                location: "Chicago, IL",
-                salary: "$380/hr",
-                duration: "20 weeks",
-                hours: "60 hrs/week",
-                housing: "$1,600/week",
-                specialty: "surgery",
-                state: "illinois",
-                description: "Level 2 trauma center seeking general surgeon for call coverage and elective procedures. Teaching opportunities available.",
-                requirements: ["Board Certified General Surgery", "Trauma Experience", "Laparoscopic Skills"],
-                benefits: ["Competitive Compensation", "Housing Provided", "Call Stipend", "Teaching Bonus"]
-            },
-            {
-                id: 6,
-                title: "Emergency Medicine - Rural",
-                facility: "County Community Hospital",
-                location: "Fresno, CA",
-                salary: "$320/hr",
-                duration: "16 weeks",
-                hours: "36 hrs/week",
-                housing: "$1,200/week",
-                specialty: "emergency",
-                state: "california",
-                description: "Rural emergency department seeking EM physicians. Moderate volume with diverse patient population. Great lifestyle opportunity.",
-                requirements: ["Board Certified EM", "Rural Experience Preferred", "Procedures Required"],
-                benefits: ["Lifestyle Balance", "Housing Stipend", "Low Patient Volume", "Community Impact"]
-            }
-        ];
+        // Job data will be loaded from API
+        let jobsData = [];
+        // Static job data removed - now loading from API
 
         let currentView = 'card';
         let filteredJobs = [];
         let currentPage = 1;
         const jobsPerPage = 5; // Changed to show pagination with 6 jobs
         
-        // Initialize filteredJobs after jobsData is defined
-        function initializeJobsData() {
-            console.log('🔧 Initializing jobs data');
-            filteredJobs = [...jobsData];
-            console.log('📊 Filtered jobs initialized with', filteredJobs.length, 'jobs');
+        // Initialize jobs from API
+        async function initializeJobsData() {
+            console.log('🔧 Loading jobs from API...');
+            
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Transform API data to match frontend format
+                    jobsData = data.data.jobs.map(job => ({
+                        id: job.id,
+                        title: job.title,
+                        facility: job.company_name || 'Healthcare Facility',
+                        location: `${job.location}, ${job.state.toUpperCase()}`,
+                        salary: `$${job.hourly_rate_min || job.hourly_rate_max || 0}/hr`,
+                        duration: job.duration || '13 weeks',
+                        hours: '40 hrs/week', // Default, could be in job.shift_type
+                        housing: '$1,500/week', // Default, could be added to API
+                        specialty: job.specialty.toLowerCase(),
+                        state: job.state.toLowerCase(),
+                        description: job.description || 'Contact us for more details about this opportunity.',
+                        requirements: ['Board Certified', 'State License Required', 'Experience Preferred'],
+                        benefits: ['Competitive Salary', 'Housing Stipend', 'Travel Allowance', 'Malpractice Coverage']
+                    }));
+                    
+                    filteredJobs = [...jobsData];
+                    console.log('📊 Loaded', jobsData.length, 'jobs from API');
+                    
+                    // Update results count
+                    document.getElementById('resultsCount').textContent = jobsData.length;
+                } else {
+                    throw new Error(data.message || 'Failed to load jobs');
+                }
+            } catch (error) {
+                console.error('❌ Error loading jobs:', error);
+                showToast('Failed to load jobs. Please try again later.', 'error');
+                
+                // Fallback to empty array
+                jobsData = [];
+                filteredJobs = [];
+                document.getElementById('resultsCount').textContent = '0';
+            }
         }
         
         // Save job functionality
@@ -1393,7 +1362,7 @@
                             ${job.requirements.map(req => `<span class="job-tag">${req}</span>`).join('')}
                         </div>
                         <div class="job-actions">
-                            <button class="btn-primary" onclick="event.stopPropagation(); trackEvent('request_contact_click', {jobId: ${job.id}, position: 'job_card'}); applyToJob(${job.id})" aria-label="Request a call or email from recruiter">Request a Call/Email</button>
+                            <button class="btn-primary" onclick="event.stopPropagation(); trackEvent('apply_click', {jobId: ${job.id}, position: 'job_card'}); applyToJob(${job.id})" aria-label="Apply to this job">Apply to Job</button>
                             <button class="btn-primary" onclick="event.stopPropagation(); calculateContract(${job.id})" aria-label="Calculate contract value">Calculate</button>
                             <button class="btn-secondary" onclick="event.stopPropagation(); showJobDetail(${job.id})" aria-label="View job details">View Details</button>
                             <button class="btn-save ${getSavedJobs().includes(job.id) ? 'saved' : ''}" onclick="event.stopPropagation(); toggleSaveJob(${job.id})" title="Save Job" aria-label="${getSavedJobs().includes(job.id) ? 'Remove from saved jobs' : 'Save this job'}">
@@ -1601,7 +1570,7 @@
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                     <button class="btn-primary" onclick="calculateContract(${job.id})">Calculate Contract Value</button>
-                    <button class="btn-secondary" onclick="trackEvent('request_contact_click', {jobId: ${job.id}, position: 'job_modal'}); applyToJob(${job.id})">Request a Call or Email</button>
+                    <button class="btn-secondary" onclick="trackEvent('apply_click', {jobId: ${job.id}, position: 'job_modal'}); applyToJob(${job.id})">Apply to Job</button>
                 </div>
             `;
             
@@ -1631,18 +1600,75 @@
             }
         }
 
-        function applyToJob(jobId) {
+        async function applyToJob(jobId) {
             const job = jobsData.find(j => j.id === jobId);
-            if (job) {
-                // Store the current job ID for the contact request
-                window.currentJobId = jobId;
+            if (!job) {
+                showToast('Job not found', 'error');
+                return;
+            }
+            
+            // Check if user is logged in
+            const token = getAuthToken();
+            const user = getUserData();
+            
+            if (!token) {
+                // Not logged in - redirect to login
+                localStorage.setItem('redirectAfterLogin', window.location.href);
+                window.location.href = `login.html?message=${encodeURIComponent('Please login to apply for jobs')}`;
+                return;
+            }
+            
+            // User is logged in - check if locum role (only locums can apply)
+            if (user && user.role !== 'locum') {
+                showToast('Only locum professionals can apply to jobs', 'error');
+                return;
+            }
+            
+            // Show confirmation dialog
+            const confirmApply = confirm(`Apply to ${job.title} at ${job.facility}?`);
+            if (!confirmApply) return;
+            
+            try {
+                // Submit application via API
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        jobId: jobId,
+                        coverLetter: '', // Could add a cover letter field later
+                        expectedRate: null, // Could add expected rate field later
+                        availableDate: new Date().toISOString().split('T')[0], // Available immediately
+                        notes: ''
+                    })
+                });
                 
-                // Close any open modal
-                closeModal();
+                const data = await response.json();
                 
-                // Show the contact preference modal
-                const contactModal = document.getElementById('contactPreferenceModal');
-                contactModal.classList.add('active');
+                if (data.success) {
+                    showToast('Application submitted successfully!', 'success');
+                    trackEvent('application_submitted', { jobId: jobId });
+                    
+                    // Update UI to show applied status
+                    const applyButtons = document.querySelectorAll(`button[onclick*="applyToJob(${jobId})"]`);
+                    applyButtons.forEach(btn => {
+                        btn.textContent = 'Applied ✓';
+                        btn.disabled = true;
+                        btn.classList.add('applied');
+                    });
+                } else {
+                    // Handle specific errors
+                    if (data.error === 'You have already applied to this job') {
+                        showToast('You have already applied to this job', 'info');
+                    } else {
+                        showToast(data.message || 'Failed to submit application', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Application error:', error);
+                showToast('Failed to submit application. Please try again.', 'error');
             }
         }
 
@@ -1949,7 +1975,7 @@
             jobsData.unshift(...userJobs);
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Initialize navigation with auth state
             updateNavigationAuth();
             
@@ -1959,11 +1985,10 @@
             // Load user-posted jobs first
             loadUserPostedJobs();
             console.log('🚀 DOM Content Loaded - Initializing Job Board');
-            console.log('📊 Sample job data count:', jobsData.length);
             console.log('🎯 Jobs grid element:', document.getElementById('jobsGrid'));
             
-            // Initialize the filtered jobs array with sample data
-            initializeJobsData();
+            // Initialize jobs from API
+            await initializeJobsData();
             
             renderJobs();
             
