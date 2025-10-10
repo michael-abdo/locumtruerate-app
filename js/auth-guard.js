@@ -91,27 +91,37 @@ function showRoleSpecificElements(userRole) {
 
     // Hide all role-specific elements first
     Object.values(roleElements).flat().forEach(element => {
-        element.style.display = 'none';
+        if (element && element.style) {
+            element.style.display = 'none';
+        }
     });
 
     // Show elements for current role
     if (roleElements[userRole]) {
         roleElements[userRole].forEach(element => {
-            element.style.display = '';
+            if (element && element.style) {
+                element.style.display = '';
+            }
         });
     }
 
     // Show elements for roles the user has access to (admin can see recruiter, etc.)
     if (userRole === 'admin') {
         roleElements['recruiter'].forEach(element => {
-            element.style.display = '';
+            if (element && element.style) {
+                element.style.display = '';
+            }
         });
         roleElements['locum'].forEach(element => {
-            element.style.display = '';
+            if (element && element.style) {
+                element.style.display = '';
+            }
         });
     } else if (userRole === 'recruiter') {
         roleElements['locum'].forEach(element => {
-            element.style.display = '';
+            if (element && element.style) {
+                element.style.display = '';
+            }
         });
     }
 }
