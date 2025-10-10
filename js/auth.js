@@ -70,25 +70,25 @@ async function login(email, password) {
             body: JSON.stringify({ email, password })
         });
 
-        if (result.success && result.data && result.data.token) {
-            console.log('DEBUG: login - storing token:', result.data.token.substring(0, 50) + '...');
+        if (result.success && result.data && result.data.data && result.data.data.token) {
+            console.log('DEBUG: login - storing token:', result.data.data.token.substring(0, 50) + '...');
             console.log('DEBUG: login - AUTH_CONFIG.TOKEN_KEY:', AUTH_CONFIG.TOKEN_KEY);
             
             // Store authentication data
-            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
-            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
+            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.data.token);
+            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.data.user));
             
             console.log('DEBUG: login - token stored, verifying:', !!localStorage.getItem(AUTH_CONFIG.TOKEN_KEY));
             console.log('DEBUG: login - localStorage test:', localStorage.getItem(AUTH_CONFIG.TOKEN_KEY) ? localStorage.getItem(AUTH_CONFIG.TOKEN_KEY).substring(0, 50) + '...' : 'null');
             
             // Maintain compatibility with existing code
             localStorage.setItem('userAuthenticated', 'true');
-            localStorage.setItem('userEmail', result.data.user.email);
-            localStorage.setItem('userName', `${result.data.user.firstName || ''} ${result.data.user.lastName || ''}`.trim());
-            localStorage.setItem('userRole', result.data.user.role);
+            localStorage.setItem('userEmail', result.data.data.user.email);
+            localStorage.setItem('userName', `${result.data.data.user.firstName || ''} ${result.data.data.user.lastName || ''}`.trim());
+            localStorage.setItem('userRole', result.data.data.user.role);
 
             showToast('Login successful!', 'success');
-            return { success: true, user: result.data.user };
+            return { success: true, user: result.data.data.user };
         } else {
             const error = result.data.error || result.data.message || 'Login failed';
             showToast(error, 'error');
