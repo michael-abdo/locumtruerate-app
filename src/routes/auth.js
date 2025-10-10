@@ -127,9 +127,20 @@ router.post('/login', asyncHandler(async (req, res) => {
   // Generate JWT token
   const token = generateToken(user.id);
   config.logger.info(`User logged in successfully: ${email}`, 'AUTH_LOGIN');
+  
+  // DEBUG: Log token details for troubleshooting
+  config.logger.info(`DEBUG: Generated token length: ${token.length}`, 'AUTH_LOGIN');
+  config.logger.info(`DEBUG: Token starts with: ${token.substring(0, 50)}...`, 'AUTH_LOGIN');
+  config.logger.info(`DEBUG: User object: ${JSON.stringify({
+    id: user.id,
+    email: user.email,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    role: user.role
+  })}`, 'AUTH_LOGIN');
 
   // Return token and user info (without password)
-  return createSuccessResponse(res, 200, {
+  const responseData = {
     token,
     user: {
       id: user.id,
@@ -139,7 +150,10 @@ router.post('/login', asyncHandler(async (req, res) => {
       phone: user.phone,
       role: user.role
     }
-  }, 'Login successful');
+  };
+  
+  config.logger.info(`DEBUG: Response data: ${JSON.stringify(responseData)}`, 'AUTH_LOGIN');
+  return createSuccessResponse(res, 200, responseData, 'Login successful');
 }));
 
 /**
