@@ -129,7 +129,7 @@ function emailResults() {
     const trueRate = document.getElementById('trueHourlyRate').textContent;
     
     const subject = 'Contract Analysis Results';
-    const body = `Contract Analysis Summary\n\nClinician Type: ${clinicianType}\nState: ${state}\nTotal Contract Value: ${totalValue}\nTrue Hourly Rate: ${trueRate}\n\nGenerated on: ${new Date().toLocaleDateString()}`;
+    const body = `Contract Analysis Summary\n\nClinician Type: ${clinicianType}\nState: ${state}\nTotal Contract Value: ${totalValue}\nLocumCalc Hourly Rate: ${trueRate}\n\nGenerated on: ${new Date().toLocaleDateString()}`;
     
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

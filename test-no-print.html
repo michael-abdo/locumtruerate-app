@@ -1376,7 +1376,7 @@
             }
             
             // Log calculation results
-            console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, True Rate: $${trueHourlyRate.toFixed(2)}`);
+            console.log(`📊 Results: Weekly: $${weeklyGrossPay.toFixed(2)}, Total: $${totalContractValue.toFixed(2)}, LocumCalc Rate: $${trueHourlyRate.toFixed(2)}`);
             
             // Update button states after calculation
             updateButtonStates();
@@ -1602,7 +1602,7 @@
                                         <span style="color: #6b7280; font-size: 0.9em;">${contract.timestamp}</span>
                                     </div>
                                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-                                        <div><strong>True Rate:</strong> ${contract.trueHourlyRate}</div>
+                                        <div><strong>LocumCalc Rate:</strong> ${contract.trueHourlyRate}</div>
                                         <div><strong>Total Value:</strong> ${contract.totalValue}</div>
                                         <div><strong>Weekly Pay:</strong> ${contract.weeklyGrossPay}</div>
                                         <div><strong>Contract:</strong> ${contract.contractWeeks} weeks</div>
