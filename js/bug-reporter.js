@@ -8,6 +8,9 @@ class BugReporter {
         this.isInitialized = false;
         this.modal = null;
         this.floating = null;
+        this.isSelectingElement = false;
+        this.selectedElement = null;
+        this.elementOverlay = null;
         this.init();
     }
 
@@ -169,6 +172,45 @@ class BugReporter {
 
                     <div style="margin-bottom: 1rem;">
                         <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
+                            Select Element (Optional)
+                        </label>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <button type="button" id="element-selector-btn" style="
+                                padding: 0.5rem 1rem;
+                                border: 2px solid var(--primary-color, #007bff);
+                                background: white;
+                                color: var(--primary-color, #007bff);
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: 600;
+                                flex: 1;
+                            ">🎯 Select Element on Page</button>
+                            <button type="button" id="clear-element-btn" style="
+                                padding: 0.5rem 1rem;
+                                border: 2px solid #dc3545;
+                                background: white;
+                                color: #dc3545;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                display: none;
+                            ">Clear</button>
+                        </div>
+                        <div id="selected-element-info" style="
+                            background: #f8f9fa;
+                            border: 1px solid #ddd;
+                            border-radius: 6px;
+                            padding: 0.75rem;
+                            font-size: 13px;
+                            color: #666;
+                            display: none;
+                            font-family: monospace;
+                        "></div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
                             Steps to Reproduce
                         </label>
                         <textarea id="bug-steps" rows="4" style="
@@ -277,9 +319,22 @@ class BugReporter {
 
         // Close on escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modal.style.display === 'flex') {
-                this.closeModal();
+            if (e.key === 'Escape') {
+                if (this.isSelectingElement) {
+                    this.cancelElementSelection();
+                } else if (this.modal.style.display === 'flex') {
+                    this.closeModal();
+                }
             }
+        });
+
+        // Element selector functionality
+        document.getElementById('element-selector-btn').addEventListener('click', () => {
+            this.startElementSelection();
+        });
+
+        document.getElementById('clear-element-btn').addEventListener('click', () => {
+            this.clearSelectedElement();
         });
     }
 
@@ -296,6 +351,7 @@ class BugReporter {
 
     resetForm() {
         document.getElementById('bug-report-form').reset();
+        this.clearSelectedElement();
     }
 
     populateSystemInfo() {
@@ -338,7 +394,8 @@ class BugReporter {
                     screen: `${screen.width}x${screen.height}`,
                     referrer: document.referrer || 'Direct'
                 },
-                userInfo: this.getUserInfo()
+                userInfo: this.getUserInfo(),
+                selectedElement: this.selectedElement ? this.getElementInfo(this.selectedElement) : null
             };
 
             const result = await this.sendBugReport(formData);
@@ -452,6 +509,222 @@ class BugReporter {
                 toast.parentNode.removeChild(toast);
             }
         }, 5000);
+    }
+
+    // Element Selection Methods
+    startElementSelection() {
+        this.isSelectingElement = true;
+        this.modal.style.display = 'none'; // Hide modal during selection
+        
+        // Update button states
+        const selectorBtn = document.getElementById('element-selector-btn');
+        selectorBtn.textContent = '🎯 Click any element (ESC to cancel)';
+        selectorBtn.style.background = 'var(--primary-color, #007bff)';
+        selectorBtn.style.color = 'white';
+        
+        // Create selection overlay
+        this.createSelectionOverlay();
+        
+        // Add event listeners for selection
+        document.addEventListener('mouseover', this.handleElementHover.bind(this));
+        document.addEventListener('click', this.handleElementSelect.bind(this));
+        
+        this.showToast('Click on any element to select it for the bug report', 'info');
+    }
+
+    createSelectionOverlay() {
+        this.elementOverlay = document.createElement('div');
+        this.elementOverlay.id = 'element-selection-overlay';
+        this.elementOverlay.style.cssText = `
+            position: absolute;
+            background: rgba(0, 123, 255, 0.3);
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+            transition: all 0.1s ease;
+        `;
+        document.body.appendChild(this.elementOverlay);
+    }
+
+    handleElementHover(e) {
+        if (!this.isSelectingElement) return;
+        
+        const element = e.target;
+        
+        // Skip our own elements
+        if (element.closest('#bug-reporter-modal') || 
+            element.closest('#bug-reporter-floating') ||
+            element.id === 'element-selection-overlay') {
+            this.elementOverlay.style.display = 'none';
+            return;
+        }
+        
+        // Highlight the element
+        const rect = element.getBoundingClientRect();
+        this.elementOverlay.style.display = 'block';
+        this.elementOverlay.style.left = rect.left + window.scrollX + 'px';
+        this.elementOverlay.style.top = rect.top + window.scrollY + 'px';
+        this.elementOverlay.style.width = rect.width + 'px';
+        this.elementOverlay.style.height = rect.height + 'px';
+    }
+
+    handleElementSelect(e) {
+        if (!this.isSelectingElement) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const element = e.target;
+        
+        // Skip our own elements
+        if (element.closest('#bug-reporter-modal') || 
+            element.closest('#bug-reporter-floating') ||
+            element.id === 'element-selection-overlay') {
+            return;
+        }
+        
+        this.selectedElement = element;
+        this.finishElementSelection();
+    }
+
+    finishElementSelection() {
+        this.isSelectingElement = false;
+        
+        // Clean up event listeners
+        document.removeEventListener('mouseover', this.handleElementHover.bind(this));
+        document.removeEventListener('click', this.handleElementSelect.bind(this));
+        
+        // Remove overlay
+        if (this.elementOverlay) {
+            this.elementOverlay.remove();
+            this.elementOverlay = null;
+        }
+        
+        // Show selected element info
+        this.displaySelectedElementInfo();
+        
+        // Show modal again
+        this.modal.style.display = 'flex';
+        
+        // Reset button
+        const selectorBtn = document.getElementById('element-selector-btn');
+        selectorBtn.textContent = '✅ Element Selected';
+        selectorBtn.style.background = '#28a745';
+        selectorBtn.style.color = 'white';
+        
+        // Show clear button
+        document.getElementById('clear-element-btn').style.display = 'block';
+        
+        this.showToast('Element selected! You can now describe the issue with this specific element.', 'success');
+    }
+
+    cancelElementSelection() {
+        this.isSelectingElement = false;
+        
+        // Clean up event listeners
+        document.removeEventListener('mouseover', this.handleElementHover.bind(this));
+        document.removeEventListener('click', this.handleElementSelect.bind(this));
+        
+        // Remove overlay
+        if (this.elementOverlay) {
+            this.elementOverlay.remove();
+            this.elementOverlay = null;
+        }
+        
+        // Reset button
+        const selectorBtn = document.getElementById('element-selector-btn');
+        selectorBtn.textContent = '🎯 Select Element on Page';
+        selectorBtn.style.background = 'white';
+        selectorBtn.style.color = 'var(--primary-color, #007bff)';
+        
+        // Show modal again
+        this.modal.style.display = 'flex';
+        
+        this.showToast('Element selection cancelled', 'info');
+    }
+
+    displaySelectedElementInfo() {
+        if (!this.selectedElement) return;
+        
+        const element = this.selectedElement;
+        const info = this.getElementInfo(element);
+        
+        const infoDiv = document.getElementById('selected-element-info');
+        infoDiv.style.display = 'block';
+        infoDiv.innerHTML = `
+            <strong>Selected Element:</strong><br>
+            Tag: &lt;${info.tagName.toLowerCase()}&gt;<br>
+            ${info.id ? `ID: #${info.id}<br>` : ''}
+            ${info.classes ? `Classes: .${info.classes.join('.')}<br>` : ''}
+            ${info.text ? `Text: "${info.text}"<br>` : ''}
+            Position: ${info.position}<br>
+            Size: ${info.size}
+        `;
+    }
+
+    getElementInfo(element) {
+        const rect = element.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(element);
+        
+        return {
+            tagName: element.tagName,
+            id: element.id || null,
+            classes: element.className ? element.className.split(' ').filter(c => c) : null,
+            text: element.textContent ? element.textContent.trim().substring(0, 50) : null,
+            position: `x: ${Math.round(rect.left)}, y: ${Math.round(rect.top)}`,
+            size: `${Math.round(rect.width)}×${Math.round(rect.height)}px`,
+            selector: this.generateSelector(element),
+            styles: {
+                display: computedStyle.display,
+                position: computedStyle.position,
+                zIndex: computedStyle.zIndex
+            }
+        };
+    }
+
+    generateSelector(element) {
+        // Generate a unique CSS selector for the element
+        if (element.id) {
+            return `#${element.id}`;
+        }
+        
+        const path = [];
+        let current = element;
+        
+        while (current && current.nodeType === Node.ELEMENT_NODE) {
+            let selector = current.tagName.toLowerCase();
+            
+            if (current.className) {
+                selector += '.' + current.className.split(' ').join('.');
+            }
+            
+            path.unshift(selector);
+            current = current.parentElement;
+            
+            // Limit path length
+            if (path.length > 5) break;
+        }
+        
+        return path.join(' > ');
+    }
+
+    clearSelectedElement() {
+        this.selectedElement = null;
+        
+        // Hide element info
+        document.getElementById('selected-element-info').style.display = 'none';
+        
+        // Reset buttons
+        const selectorBtn = document.getElementById('element-selector-btn');
+        selectorBtn.textContent = '🎯 Select Element on Page';
+        selectorBtn.style.background = 'white';
+        selectorBtn.style.color = 'var(--primary-color, #007bff)';
+        
+        document.getElementById('clear-element-btn').style.display = 'none';
+        
+        this.showToast('Selected element cleared', 'info');
     }
 }
 
