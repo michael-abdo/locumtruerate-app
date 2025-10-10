@@ -250,11 +250,20 @@ function getAuthToken() {
  * Get user information from stored data
  */
 function getUserInfo() {
+    console.log('DEBUG: getUserInfo() called');
+    console.log('DEBUG: AUTH_CONFIG.USER_KEY:', AUTH_CONFIG.USER_KEY);
+    
     try {
         const userData = localStorage.getItem(AUTH_CONFIG.USER_KEY);
-        return userData ? JSON.parse(userData) : null;
+        console.log('DEBUG: Raw userData from localStorage:', userData);
+        
+        const parsedUser = userData ? JSON.parse(userData) : null;
+        console.log('DEBUG: Parsed user data:', parsedUser);
+        
+        return parsedUser;
     } catch (error) {
         console.error('Error parsing user data:', error);
+        console.log('DEBUG: getUserInfo() returning null due to error');
         return null;
     }
 }
@@ -263,8 +272,12 @@ function getUserInfo() {
  * Get user role for authorization checks
  */
 function getUserRole() {
+    console.log('DEBUG: getUserRole() called');
     const user = getUserInfo();
-    return user ? user.role : null;
+    console.log('DEBUG: getUserInfo() returned:', user);
+    const role = user ? user.role : null;
+    console.log('DEBUG: getUserRole() returning:', role);
+    return role;
 }
 
 /**
@@ -338,23 +351,35 @@ function redirectToLogin(returnUrl = null) {
  * Handle redirect after successful login
  */
 function handlePostLoginRedirect() {
+    console.log('DEBUG: handlePostLoginRedirect() called');
+    console.log('DEBUG: AUTH_CONFIG.REDIRECT_KEY:', AUTH_CONFIG.REDIRECT_KEY);
+    
     const redirectUrl = localStorage.getItem(AUTH_CONFIG.REDIRECT_KEY);
+    console.log('DEBUG: redirectUrl from localStorage:', redirectUrl);
     
     if (redirectUrl) {
+        console.log('DEBUG: Using stored redirect URL:', redirectUrl);
         localStorage.removeItem(AUTH_CONFIG.REDIRECT_KEY);
+        console.log('DEBUG: Redirecting to stored URL');
         window.location.href = redirectUrl;
     } else {
+        console.log('DEBUG: No stored redirect URL, using role-based redirect');
         // Default redirect based on user role
         const userRole = getUserRole();
+        console.log('DEBUG: User role:', userRole);
+        
         switch (userRole) {
             case 'admin':
+                console.log('DEBUG: Redirecting to admin-dashboard.html');
                 window.location.href = 'admin-dashboard.html';
                 break;
             case 'recruiter':
+                console.log('DEBUG: Redirecting to recruiter-dashboard.html');
                 window.location.href = 'recruiter-dashboard.html';
                 break;
             case 'locum':
             default:
+                console.log('DEBUG: Redirecting to locum-dashboard.html');
                 window.location.href = 'locum-dashboard.html';
                 break;
         }

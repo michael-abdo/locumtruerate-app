@@ -278,13 +278,23 @@
                 const result = await login(email, password);
                 
                 if (result.success) {
+                    console.log('DEBUG: Login success callback reached');
+                    console.log('DEBUG: Login result:', result);
+                    console.log('DEBUG: Token in localStorage:', localStorage.getItem('locum_auth_token') ? 'exists' : 'missing');
+                    console.log('DEBUG: User data in localStorage:', localStorage.getItem('locum_user_data') ? 'exists' : 'missing');
+                    
                     showToast('Login successful! Redirecting...', 'success');
                     
                     // Handle post-login redirect
+                    console.log('DEBUG: Setting timeout for redirect in 1500ms');
                     setTimeout(() => {
+                        console.log('DEBUG: Timeout reached, calling handlePostLoginRedirect()');
+                        console.log('DEBUG: handlePostLoginRedirect function exists:', typeof handlePostLoginRedirect);
                         handlePostLoginRedirect();
                     }, 1500);
                 } else {
+                    console.log('DEBUG: Login failed in callback');
+                    console.log('DEBUG: Login result:', result);
                     // Error already shown by login function
                     submitButton.disabled = false;
                     submitButton.textContent = originalText;
