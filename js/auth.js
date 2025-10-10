@@ -31,15 +31,8 @@ async function apiRequest(url, options = {}) {
     }
 
     try {
-        console.log('DEBUG: Making API request to:', url);
-        console.log('DEBUG: Request config:', config);
-        
         const response = await fetch(url, config);
-        console.log('DEBUG: Response status:', response.status);
-        console.log('DEBUG: Response ok:', response.ok);
-        
         const data = await response.json();
-        console.log('DEBUG: Response data:', data);
 
         // Handle token expiration
         if (!response.ok && data.code === 'TOKEN_EXPIRED') {
@@ -49,9 +42,7 @@ async function apiRequest(url, options = {}) {
             return { success: false, data };
         }
 
-        const result = { success: response.ok, data, status: response.status };
-        console.log('DEBUG: Final apiRequest result:', result);
-        return result;
+        return { success: response.ok, data, status: response.status };
     } catch (error) {
         console.error('API request failed:', error);
         return { 
@@ -74,28 +65,12 @@ async function login(email, password) {
     }
 
     try {
-        const requestUrl = `${AUTH_CONFIG.API_BASE}/api/v1/auth/login`;
-        const requestBody = JSON.stringify({ email, password });
-        console.log('DEBUG: Login request URL:', requestUrl);
-        console.log('DEBUG: Login request body:', requestBody);
-        
-        const result = await apiRequest(requestUrl, {
+        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/login`, {
             method: 'POST',
-            body: requestBody
+            body: JSON.stringify({ email, password })
         });
-        
-        console.log('DEBUG: apiRequest result:', result);
-        
-        // Enhanced debug logging to inspect exact structure
-        console.log('DEBUG: result.data type:', typeof result.data);
-        console.log('DEBUG: result.data keys:', Object.keys(result.data || {}));
-        console.log('DEBUG: result.data.token exists:', !!result.data.token);
-        console.log('DEBUG: result.data.user exists:', !!result.data.user);
 
         if (result.success && result.data && result.data.token) {
-            console.log('DEBUG: Login successful, token received:', !!result.data.token);
-            console.log('DEBUG: User data:', result.data.user);
-            
             // Store authentication data
             localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.token);
             localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.user));
@@ -109,8 +84,6 @@ async function login(email, password) {
             showToast('Login successful!', 'success');
             return { success: true, user: result.data.user };
         } else {
-            console.log('DEBUG: Login failed - result.success:', result.success, 'token exists:', !!result.data?.token);
-            console.log('DEBUG: Full result.data:', result.data);
             const error = result.data.error || result.data.message || 'Login failed';
             showToast(error, 'error');
             return { success: false, error };
