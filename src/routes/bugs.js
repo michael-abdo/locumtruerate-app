@@ -1,11 +1,10 @@
 const express = require('express');
-const { Pool } = require('pg');
 const { createSuccessResponse, createErrorResponse } = require('../utils/responses');
 const config = require('../config/config');
 const { authenticateToken } = require('../middleware/auth');
+const { query } = require('../db/connection'); // Use existing connection
 
 const router = express.Router();
-const pool = new Pool({ connectionString: config.database.url });
 
 /**
  * @route POST /api/v1/bugs
@@ -55,7 +54,7 @@ router.post('/', async (req, res) => {
         };
 
         // Insert bug report into database
-        const query = `
+        const queryText = `
             INSERT INTO bug_reports (
                 title, 
                 type, 
@@ -87,7 +86,7 @@ router.post('/', async (req, res) => {
             new Date()
         ];
 
-        const result = await pool.query(query, values);
+        const result = await query(queryText, values);
         const bugReport = result.rows[0];
 
         config.logger.info(`Bug report submitted: ${bugReport.id} - ${title}`, 'BUG_REPORT');
@@ -180,8 +179,8 @@ router.get('/', authenticateToken, async (req, res) => {
         `;
 
         const [bugsResult, countResult] = await Promise.all([
-            pool.query(query, queryParams),
-            pool.query(countQuery, queryParams.slice(0, -2)) // Remove limit and offset for count
+            query(queryText, queryParams),
+            query(countQuery, queryParams.slice(0, -2)) // Remove limit and offset for count
         ]);
 
         const total = parseInt(countResult.rows[0].total);
@@ -225,14 +224,14 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
             return createErrorResponse(res, 400, `Invalid status. Must be one of: ${validStatuses.join(', ')}`, 'invalid_status');
         }
 
-        const query = `
+        const queryText = `
             UPDATE bug_reports 
             SET status = $1, updated_at = $2
             WHERE id = $3
             RETURNING id, title, status, updated_at
         `;
 
-        const result = await pool.query(query, [status, new Date(), id]);
+        const result = await query(queryText, [status, new Date(), id]);
 
         if (result.rows.length === 0) {
             return createErrorResponse(res, 404, 'Bug report not found', 'not_found');
@@ -287,8 +286,8 @@ router.get('/stats', authenticateToken, async (req, res) => {
         `;
 
         const [statsResult, totalResult] = await Promise.all([
-            pool.query(statsQuery),
-            pool.query(totalQuery)
+            query(statsQuery),
+            query(totalQuery)
         ]);
 
         // Group stats by category
