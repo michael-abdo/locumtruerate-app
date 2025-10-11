@@ -2444,560 +2444,8 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="jobs-table-body">
-                            <tr data-status="active" data-job-id="1">
-                                <td>Emergency Medicine Physician</td>
-                                <td>Metropolitan General</td>
-                                <td>Los Angeles, CA</td>
-                                <td data-sort-value="350">$350/hr</td>
-                                <td data-sort-value="12">12</td>
-                                <td data-sort-value="2025-01-10">Jan 10, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(1, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(1)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(1)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(1)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="2">
-                                <td>Internal Medicine Hospitalist</td>
-                                <td>City Medical Center</td>
-                                <td>Houston, TX</td>
-                                <td data-sort-value="285">$285/hr</td>
-                                <td data-sort-value="8">8</td>
-                                <td data-sort-value="2025-01-08">Jan 8, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(2, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(2)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(2)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(2)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="pending" data-job-id="3">
-                                <td>Anesthesiologist</td>
-                                <td>Sunshine Surgery Center</td>
-                                <td>Miami, FL</td>
-                                <td data-sort-value="425">$425/hr</td>
-                                <td data-sort-value="15">15</td>
-                                <td data-sort-value="2025-01-12">Jan 12, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(3, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(3)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(3)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(3)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="filled" data-job-id="4">
-                                <td>General Surgeon</td>
-                                <td>Prairie Regional Medical</td>
-                                <td>Chicago, IL</td>
-                                <td data-sort-value="380">$380/hr</td>
-                                <td data-sort-value="6">6</td>
-                                <td data-sort-value="2025-01-05">Jan 5, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(4, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled" selected>Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(4)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(4)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(4)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Additional jobs to match KPI count -->
-                            <tr data-status="active" data-job-id="5">
-                                <td>Cardiothoracic Surgeon</td>
-                                <td>Heart Institute</td>
-                                <td>Miami, FL</td>
-                                <td data-sort-value="450">$450/hr</td>
-                                <td data-sort-value="4">4</td>
-                                <td data-sort-value="2025-01-12">Jan 12, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(5, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(5)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(5)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(5)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="6">
-                                <td>Pediatric Emergency Medicine</td>
-                                <td>Children's Medical Center</td>
-                                <td>Dallas, TX</td>
-                                <td data-sort-value="320">$320/hr</td>
-                                <td data-sort-value="9">9</td>
-                                <td data-sort-value="2025-01-11">Jan 11, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(6, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(6)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(6)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(6)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="pending" data-job-id="7">
-                                <td>Orthopedic Surgeon</td>
-                                <td>Sports Medicine Institute</td>
-                                <td>Denver, CO</td>
-                                <td data-sort-value="395">$395/hr</td>
-                                <td data-sort-value="7">7</td>
-                                <td data-sort-value="2025-01-09">Jan 9, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(7, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(7)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(7)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(7)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="8">
-                                <td>Radiologist</td>
-                                <td>Imaging Center West</td>
-                                <td>Phoenix, AZ</td>
-                                <td data-sort-value="310">$310/hr</td>
-                                <td data-sort-value="5">5</td>
-                                <td data-sort-value="2025-01-13">Jan 13, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(8, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(8)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(8)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(8)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="9">
-                                <td>Neurologist</td>
-                                <td>Brain and Spine Center</td>
-                                <td>Boston, MA</td>
-                                <td data-sort-value="365">$365/hr</td>
-                                <td data-sort-value="11">11</td>
-                                <td data-sort-value="2025-01-07">Jan 7, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(9, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(9)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(9)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(9)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="10">
-                                <td>Psychiatrist</td>
-                                <td>Mental Health Associates</td>
-                                <td>Seattle, WA</td>
-                                <td data-sort-value="275">$275/hr</td>
-                                <td data-sort-value="6">6</td>
-                                <td data-sort-value="2025-01-06">Jan 6, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(10, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(10)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(10)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(10)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="11">
-                                <td>Dermatologist</td>
-                                <td>Skin Care Clinic</td>
-                                <td>San Diego, CA</td>
-                                <td data-sort-value="290">$290/hr</td>
-                                <td data-sort-value="8">8</td>
-                                <td data-sort-value="2025-01-04">Jan 4, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(11, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(11)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(11)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(11)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="pending" data-job-id="12">
-                                <td>Gastroenterologist</td>
-                                <td>Digestive Health Center</td>
-                                <td>Atlanta, GA</td>
-                                <td data-sort-value="340">$340/hr</td>
-                                <td data-sort-value="3">3</td>
-                                <td data-sort-value="2025-01-03">Jan 3, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(12, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(12)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(12)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(12)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="13">
-                                <td>Pulmonologist</td>
-                                <td>Respiratory Care Institute</td>
-                                <td>Portland, OR</td>
-                                <td data-sort-value="315">$315/hr</td>
-                                <td data-sort-value="4">4</td>
-                                <td data-sort-value="2025-01-02">Jan 2, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(13, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(13)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(13)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(13)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="14">
-                                <td>Rheumatologist</td>
-                                <td>Arthritis Treatment Center</td>
-                                <td>Nashville, TN</td>
-                                <td data-sort-value="305">$305/hr</td>
-                                <td data-sort-value="2">2</td>
-                                <td data-sort-value="2025-01-01">Jan 1, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(14, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(14)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(14)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(14)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="15">
-                                <td>Oncologist</td>
-                                <td>Cancer Treatment Center</td>
-                                <td>Charlotte, NC</td>
-                                <td data-sort-value="385">$385/hr</td>
-                                <td data-sort-value="9">9</td>
-                                <td data-sort-value="2025-01-10">Jan 10, 2025</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(15, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(15)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(15)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(15)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="filled" data-job-id="16">
-                                <td>Endocrinologist</td>
-                                <td>Diabetes Center</td>
-                                <td>Tampa, FL</td>
-                                <td data-sort-value="295">$295/hr</td>
-                                <td data-sort-value="7">7</td>
-                                <td data-sort-value="2024-12-28">Dec 28, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(16, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled" selected>Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(16)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(16)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(16)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="17">
-                                <td>Nephrologist</td>
-                                <td>Kidney Care Center</td>
-                                <td>Salt Lake City, UT</td>
-                                <td data-sort-value="325">$325/hr</td>
-                                <td data-sort-value="5">5</td>
-                                <td data-sort-value="2024-12-27">Dec 27, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(17, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(17)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(17)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(17)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="18">
-                                <td>Hematologist</td>
-                                <td>Blood Disorders Clinic</td>
-                                <td>Richmond, VA</td>
-                                <td data-sort-value="355">$355/hr</td>
-                                <td data-sort-value="6">6</td>
-                                <td data-sort-value="2024-12-26">Dec 26, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(18, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(18)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(18)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(18)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="pending" data-job-id="19">
-                                <td>Infectious Disease Specialist</td>
-                                <td>Tropical Medicine Center</td>
-                                <td>New Orleans, LA</td>
-                                <td data-sort-value="330">$330/hr</td>
-                                <td data-sort-value="3">3</td>
-                                <td data-sort-value="2024-12-25">Dec 25, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(19, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(19)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(19)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(19)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="20">
-                                <td>Pathologist</td>
-                                <td>Laboratory Sciences</td>
-                                <td>Minneapolis, MN</td>
-                                <td data-sort-value="300">$300/hr</td>
-                                <td data-sort-value="4">4</td>
-                                <td data-sort-value="2024-12-24">Dec 24, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(20, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(20)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(20)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(20)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="21">
-                                <td>Emergency Medicine Physician</td>
-                                <td>Level 1 Trauma Center</td>
-                                <td>Las Vegas, NV</td>
-                                <td data-sort-value="370">$370/hr</td>
-                                <td data-sort-value="10">10</td>
-                                <td data-sort-value="2024-12-23">Dec 23, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(21, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(21)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(21)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(21)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="22">
-                                <td>Family Medicine Physician</td>
-                                <td>Community Health Center</td>
-                                <td>Tucson, AZ</td>
-                                <td data-sort-value="250">$250/hr</td>
-                                <td data-sort-value="8">8</td>
-                                <td data-sort-value="2024-12-22">Dec 22, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(22, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(22)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(22)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(22)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="filled" data-job-id="23">
-                                <td>Anesthesiologist</td>
-                                <td>Surgical Center East</td>
-                                <td>Jacksonville, FL</td>
-                                <td data-sort-value="335">$335/hr</td>
-                                <td data-sort-value="12">12</td>
-                                <td data-sort-value="2024-12-21">Dec 21, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(23, this.value)">
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled" selected>Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(23)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(23)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(23)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr data-status="active" data-job-id="24">
-                                <td>Hospitalist</td>
-                                <td>Regional Medical Center</td>
-                                <td>Kansas City, MO</td>
-                                <td data-sort-value="265">$265/hr</td>
-                                <td data-sort-value="7">7</td>
-                                <td data-sort-value="2024-12-20">Dec 20, 2024</td>
-                                <td>
-                                    <select class="status-dropdown" onchange="changeJobStatus(24, this.value)">
-                                        <option value="active" selected>Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="filled">Filled</option>
-                                        <option value="expired">Expired</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <div class="job-actions">
-                                        <button class="action-btn view" onclick="viewJob(24)">View</button>
-                                        <button class="action-btn edit" onclick="editJob(24)">Edit</button>
-                                        <button class="action-btn delete" onclick="deleteJob(24)">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
+                                                <tbody id="jobs-table-body">
+                            <\!-- Jobs will be loaded dynamically from API -->
                         </tbody>
                     </table>
                     
@@ -4512,13 +3960,336 @@
             updateJobsPagination();
         }
 
-        function viewJob(jobId) {
-            showNotification(`Viewing job details for Job ID: ${jobId}`, 'info');
-            // This would open a detailed view showing:
-            // • Complete job description
-            // • Applicant list and status  
-            // • Performance metrics
-            // • Edit options
+        // API Configuration
+        const AUTH_CONFIG = {
+            API_BASE: 'https://locumtruerate-staging-66ba3177c382.herokuapp.com'
+        };
+
+        // Load recruiter's jobs from API
+        async function loadRecruiterJobs() {
+            const tbody = document.getElementById('jobs-table-body');
+            
+            // Show loading state
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 2rem;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                            <svg class="spinner" width="24" height="24" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
+                                <circle cx="12" cy="12" r="10" stroke="#e2e8f0" stroke-width="2" fill="none" />
+                                <circle cx="12" cy="12" r="10" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="23.562" transform="rotate(-90 12 12)" />
+                            </svg>
+                            Loading your jobs...
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs?recruiter=me`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const jobs = data.data?.jobs || [];
+                
+                // Clear loading state
+                tbody.innerHTML = '';
+                
+                if (jobs.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                <p>No jobs posted yet.</p>
+                                <p style="margin-top: 0.5rem;">Click "+ New Job" to post your first job!</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                // Load application counts for each job
+                const jobsWithApplications = await Promise.all(jobs.map(async (job) => {
+                    const appCount = await getApplicationCount(job.id);
+                    return { ...job, applicationCount: appCount };
+                }));
+                
+                // Render each job
+                jobsWithApplications.forEach(job => {
+                    const row = createJobTableRow(job);
+                    tbody.appendChild(row);
+                });
+                
+                // Update KPIs
+                updateKPIValues(jobsWithApplications);
+                
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--error-color);">
+                            <p>Failed to load jobs. Please try again.</p>
+                            <button class="btn-small primary" onclick="loadRecruiterJobs()">Retry</button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Check if user is not authenticated
+                if (error.message.includes('401') || error.message.includes('403')) {
+                    showNotification('Please login to view your jobs', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                }
+            }
+        }
+        
+        // Get application count for a specific job
+        async function getApplicationCount(jobId) {
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications/for-job/${jobId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    return 0;
+                }
+                
+                const data = await response.json();
+                return data.data?.applications?.length || 0;
+            } catch (error) {
+                console.error(`Error loading applications for job ${jobId}:`, error);
+                return 0;
+            }
+        }
+        
+        // Create job table row
+        function createJobTableRow(job) {
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-status', job.status || 'active');
+            tr.setAttribute('data-job-id', job.id);
+            
+            // Format date
+            const postedDate = new Date(job.createdAt || job.created_at);
+            const formattedDate = postedDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            tr.innerHTML = `
+                <td>${job.title}</td>
+                <td>${job.companyName || job.company_name || 'Your Facility'}</td>
+                <td>${job.location}, ${job.state?.toUpperCase() || ''}</td>
+                <td data-sort-value="${job.hourlyRate || job.hourly_rate || 0}">$${job.hourlyRate || job.hourly_rate || 0}/hr</td>
+                <td data-sort-value="${job.applicationCount || 0}">${job.applicationCount || 0}</td>
+                <td data-sort-value="${job.createdAt || job.created_at || ''}">${formattedDate}</td>
+                <td>
+                    <select class="status-dropdown" onchange="changeJobStatus(${job.id}, this.value)">
+                        <option value="active" ${job.status === 'active' ? 'selected' : ''}>Active</option>
+                        <option value="pending" ${job.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="filled" ${job.status === 'filled' ? 'selected' : ''}>Filled</option>
+                        <option value="expired" ${job.status === 'expired' ? 'selected' : ''}>Expired</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="job-actions">
+                        <button class="action-btn view" onclick="viewJob(${job.id})">View</button>
+                        <button class="action-btn edit" onclick="editJob(${job.id})">Edit</button>
+                        <button class="action-btn delete" onclick="deleteJob(${job.id})">Delete</button>
+                    </div>
+                </td>
+            `;
+            
+            return tr;
+        }
+        
+        // Update KPI values based on loaded jobs
+        function updateKPIValues(jobs) {
+            // Active jobs count
+            const activeJobs = jobs.filter(job => job.status === 'active' || !job.status).length;
+            const activeJobsElement = document.querySelector('.kpi-card:nth-child(1) .kpi-value');
+            if (activeJobsElement) {
+                activeJobsElement.textContent = activeJobs;
+            }
+            
+            // Total applications
+            const totalApplications = jobs.reduce((sum, job) => sum + (job.applicationCount || 0), 0);
+            const applicationsElement = document.querySelector('.kpi-card:nth-child(2) .kpi-value');
+            if (applicationsElement) {
+                applicationsElement.textContent = totalApplications;
+            }
+            
+            // You can update other KPIs as needed based on the API data
+        }
+
+        async function viewJob(jobId) {
+            // Show loading state
+            showNotification('Loading job details and applications...', 'info');
+            
+            try {
+                // Fetch job details and applications in parallel
+                const [jobResponse, applicationsResponse] = await Promise.all([
+                    fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs/${jobId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${getAuthToken()}`
+                        }
+                    }),
+                    fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications/for-job/${jobId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${getAuthToken()}`
+                        }
+                    })
+                ]);
+                
+                if (!jobResponse.ok || !applicationsResponse.ok) {
+                    throw new Error('Failed to load job details');
+                }
+                
+                const jobData = await jobResponse.json();
+                const applicationsData = await applicationsResponse.json();
+                
+                const job = jobData.data?.job || jobData.data;
+                const applications = applicationsData.data?.applications || [];
+                
+                // Show job details modal
+                showJobDetailsModal(job, applications);
+                
+            } catch (error) {
+                console.error('Error viewing job:', error);
+                showNotification('Failed to load job details', 'error');
+            }
+        }
+        
+        function showJobDetailsModal(job, applications) {
+            const modal = document.createElement('div');
+            modal.className = 'compose-modal';
+            modal.innerHTML = `
+                <div class="compose-modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="color: var(--primary-color);">${job.title}</h2>
+                        <button onclick="closeModal(this)" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <strong>Location:</strong> ${job.location}, ${job.state?.toUpperCase() || ''}
+                            </div>
+                            <div>
+                                <strong>Rate:</strong> $${job.hourlyRate || job.hourly_rate || 0}/hr
+                            </div>
+                            <div>
+                                <strong>Status:</strong> <span style="text-transform: capitalize;">${job.status || 'active'}</span>
+                            </div>
+                            <div>
+                                <strong>Applications:</strong> ${applications.length}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <strong>Description:</strong>
+                            <p style="white-space: pre-wrap; margin-top: 0.5rem;">${job.description || 'No description available'}</p>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <strong>Requirements:</strong>
+                            <p style="white-space: pre-wrap; margin-top: 0.5rem;">${job.requirements || 'No requirements specified'}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem;">Applications (${applications.length})</h3>
+                        
+                        ${applications.length > 0 ? `
+                            <div style="display: grid; gap: 1rem;">
+                                ${applications.map(app => `
+                                    <div style="border: 1px solid var(--border-color); padding: 1rem; border-radius: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                            <div>
+                                                <strong>${app.user?.firstName || ''} ${app.user?.lastName || 'Anonymous'}</strong>
+                                                <div style="color: var(--text-secondary); font-size: 0.9rem;">${app.user?.email || ''}</div>
+                                            </div>
+                                            <span class="application-status-pill ${app.status}" style="text-transform: capitalize;">${app.status}</span>
+                                        </div>
+                                        
+                                        ${app.coverLetter ? `
+                                            <div style="margin-top: 0.5rem;">
+                                                <strong>Cover Letter:</strong>
+                                                <p style="margin-top: 0.25rem; white-space: pre-wrap;">${app.coverLetter}</p>
+                                            </div>
+                                        ` : ''}
+                                        
+                                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                            <button class="btn-small primary" onclick="updateApplicationStatus(${app.id}, 'reviewing')">Review</button>
+                                            <button class="btn-small secondary" onclick="updateApplicationStatus(${app.id}, 'rejected')">Reject</button>
+                                            <button class="btn-small accent" onclick="updateApplicationStatus(${app.id}, 'interview')">Schedule Interview</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">No applications yet for this position.</p>
+                        `}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Add backdrop click handler
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        
+        function closeModal(button) {
+            const modal = button.closest('.compose-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        async function updateApplicationStatus(applicationId, newStatus) {
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications/${applicationId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to update application status');
+                }
+                
+                showNotification(`Application status updated to ${newStatus}`, 'success');
+                
+                // Refresh the modal
+                const modal = document.querySelector('.compose-modal');
+                if (modal) {
+                    modal.remove();
+                }
+                
+            } catch (error) {
+                console.error('Error updating application:', error);
+                showNotification('Failed to update application status', 'error');
+            }
         }
 
         function editJob(jobId) {
@@ -8283,7 +8054,22 @@ Dr. James Wilson`,
                 // Load recruiter data first
                 loadRecruiterData();
                 
-                // Load jobs from API
+                // Check authentication and load jobs
+                if (isAuthenticated()) {
+                    loadRecruiterJobs();
+                } else {
+                    // If not authenticated, show login prompt
+                    const tbody = document.getElementById('jobs-table-body');
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                <p>Please <a href="login.html" style="color: var(--primary-color);">login</a> to view your jobs.</p>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                // Load jobs from API (deprecated - using loadRecruiterJobs instead)
                 function loadJobs() {
                     const token = localStorage.getItem('authToken');
                     
