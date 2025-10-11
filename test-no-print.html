@@ -726,7 +726,7 @@
         <section class="page-header">
             <div class="container">
                 <h1>Contract Calculator</h1>
-                <p>Calculate true hourly rates and total contract value with detailed compensation breakdown</p>
+                <p>Calculate actual hourly rates and total contract value with detailed compensation breakdown</p>
             </div>
         </section>
 
@@ -1046,7 +1046,7 @@
                             <div class="comparison-card">
                                 <h4>Your Contract</h4>
                                 <div class="comparison-value" id="yourContractRate">$0.00</div>
-                                <p style="color: var(--text-secondary); font-size: 0.9rem;">True Hourly Rate</p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">LocumCalc Hourly Rate</p>
                             </div>
                             <div class="comparison-card">
                                 <h4>Market Average</h4>
@@ -1493,7 +1493,7 @@
                                     ).join('')}
                                 </tr>
                                 <tr>
-                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">True Hourly Rate</td>
+                                    <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">LocumCalc Hourly Rate</td>
                                     <td style="padding: 12px; border: 1px solid #e2e8f0; background: #f0f9ff; font-weight: bold;">${currentContract.trueHourlyRate}</td>
                                     ${savedContracts.slice(0, 3).map(contract => 
                                         `<td style="padding: 12px; border: 1px solid #e2e8f0;">${contract.trueHourlyRate}</td>`
@@ -2000,7 +2000,7 @@
                                 <span class="result-value">${document.getElementById('totalContractValue').textContent}</span>
                             </div>
                             <div class="result-item">
-                                <span class="result-label">True Hourly Rate:</span>
+                                <span class="result-label">LocumCalc Hourly Rate:</span>
                                 <span class="result-value">${document.getElementById('trueHourlyRate').textContent}</span>
                             </div>
                             
@@ -2326,7 +2326,7 @@ ${body}`;
             <div class="amount">${analysis.totalValue}</div>
         </div>
         <div class="summary-card">
-            <h3>True Hourly Rate</h3>
+            <h3>LocumCalc Hourly Rate</h3>
             <div class="amount">${analysis.trueHourlyRate}</div>
         </div>
         <div class="summary-card">
