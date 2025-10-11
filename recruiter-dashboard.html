@@ -3395,9 +3395,46 @@
             }
         }
 
-        function saveDraftJob() {
-            showNotification('Job saved as draft', 'info');
-            closeJobModal();
+        async function saveDraftJob() {
+            try {
+                // Prepare job data with draft status
+                const jobData = {
+                    title: document.getElementById('job-title').value,
+                    specialty: document.getElementById('job-specialty').value,
+                    location: document.getElementById('job-city').value,
+                    state: document.getElementById('job-state').value,
+                    hourlyRate: parseFloat(document.getElementById('job-rate').value) || 0,
+                    description: document.getElementById('job-description').value,
+                    requirements: document.getElementById('job-requirements')?.value || '',
+                    startDate: document.getElementById('job-start-date')?.value || null,
+                    duration: document.getElementById('job-duration')?.value || '',
+                    status: 'pending'  // Save as draft/pending
+                };
+                
+                // Submit to API
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(jobData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                showNotification('Job saved as draft', 'info');
+                closeJobModal();
+                
+                // Reload jobs list
+                await loadRecruiterJobs();
+                
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                showNotification('Failed to save draft. Please try again.', 'error');
+            }
         }
 
         // Image preview functionality
@@ -3439,56 +3476,64 @@
             document.getElementById('image-upload-prompt').style.display = 'block';
         }
 
-        function submitNewJob(event) {
+        async function submitNewJob(event) {
             event.preventDefault();
             
             const submitButton = event.target.querySelector('button[type="submit"]');
             setButtonLoading(submitButton, true);
             
-            const formData = new FormData();
-            
-            // Add job data
-            formData.append('title', document.getElementById('job-title').value);
-            formData.append('specialty', document.getElementById('job-specialty').value);
-            formData.append('location', `${document.getElementById('job-city').value}, ${document.getElementById('job-state').value}`);
-            formData.append('hourlyRate', document.getElementById('job-rate').value);
-            formData.append('description', document.getElementById('job-description').value);
-            
-            // Add image if selected
-            const imageInput = document.getElementById('job-image');
-            if (imageInput.files && imageInput.files[0]) {
-                formData.append('jobImage', imageInput.files[0]);
-            }
-            
-            // Get auth token (in production, this would be stored securely)
-            const token = localStorage.getItem('authToken');
-            
-            // Submit to API
-            fetch('/api/jobs', {
-                method: 'POST',
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : ''
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                // Prepare job data
+                const jobData = {
+                    title: document.getElementById('job-title').value,
+                    specialty: document.getElementById('job-specialty').value,
+                    location: document.getElementById('job-city').value,
+                    state: document.getElementById('job-state').value,
+                    hourlyRate: parseFloat(document.getElementById('job-rate').value),
+                    description: document.getElementById('job-description').value,
+                    requirements: document.getElementById('job-requirements')?.value || '',
+                    startDate: document.getElementById('job-start-date')?.value || null,
+                    duration: document.getElementById('job-duration')?.value || '',
+                    status: 'active'
+                };
+                
+                // Submit to API
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(jobData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
                 setButtonLoading(submitButton, false);
                 
-                if (data.success) {
-                    showToast('Job posted successfully!', 'success');
-                    closeJobModal();
-                    // Reload jobs list
-                    loadJobs();
-                } else {
-                    showToast(data.error || 'Failed to post job', 'error');
-                }
-            })
-            .catch(error => {
+                showToast('Job posted successfully!', 'success');
+                closeJobModal();
+                
+                // Reload jobs list
+                await loadRecruiterJobs();
+                
+            } catch (error) {
                 console.error('Error posting job:', error);
                 setButtonLoading(submitButton, false);
-                showToast('An error occurred. Please try again.', 'error');
-            });
+                
+                if (error.message.includes('401') || error.message.includes('403')) {
+                    showToast('Please login to post jobs', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    showToast(error.message || 'Failed to post job. Please try again.', 'error');
+                }
+            }
         }
 
         function addJobToTable(jobData) {
@@ -4501,11 +4546,55 @@
             }
         }
 
-        function deleteJob(jobId) {
-            showNotification(`Job posting ${jobId} has been deleted`, 'success');
-            // • Applicants have been notified
-            // • Posting removed from all boards
-            // • Data archived for reporting
+        async function deleteJob(jobId) {
+            // Show confirmation using non-blocking approach per CLAUDE.md guidelines
+            const jobRow = document.querySelector(`tr[data-job-id="${jobId}"]`);
+            if (!jobRow) return;
+            
+            // Get job title for confirmation message
+            const jobTitle = jobRow.querySelector('td:first-child')?.textContent || 'this job';
+            
+            // Disable delete button to prevent double-clicks
+            const deleteButton = jobRow.querySelector('.action-btn.delete');
+            if (deleteButton) {
+                deleteButton.disabled = true;
+                deleteButton.textContent = 'Deleting...';
+            }
+            
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs/${jobId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // Remove from table with animation
+                jobRow.style.transition = 'opacity 0.3s ease-out';
+                jobRow.style.opacity = '0';
+                setTimeout(() => {
+                    jobRow.remove();
+                    updateDashboardStats();
+                    updateJobsPagination();
+                }, 300);
+                
+                showNotification(`${jobTitle} has been deleted successfully`, 'success');
+                
+            } catch (error) {
+                console.error('Error deleting job:', error);
+                showNotification('Failed to delete job. Please try again.', 'error');
+                
+                // Re-enable delete button
+                if (deleteButton) {
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = 'Delete';
+                }
+            }
         }
 
         function viewApplicant(applicantId) {
@@ -5241,11 +5330,32 @@ Senior Healthcare Recruiter`
         }
         
         // Job status change functionality
-        function changeJobStatus(jobId, newStatus) {
+        async function changeJobStatus(jobId, newStatus) {
             const row = document.querySelector(`tr[data-job-id="${jobId}"]`);
-            if (row) {
-                const oldStatus = row.getAttribute('data-status');
-                const jobTitle = row.cells[0].textContent;
+            if (!row) return;
+            
+            const oldStatus = row.getAttribute('data-status');
+            const jobTitle = row.cells[0].textContent;
+            const statusDropdown = row.querySelector('.status-dropdown');
+            
+            // Disable dropdown during update
+            if (statusDropdown) {
+                statusDropdown.disabled = true;
+            }
+            
+            try {
+                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs/${jobId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 // Update row status
                 row.setAttribute('data-status', newStatus);
@@ -5265,6 +5375,20 @@ Senior Healthcare Recruiter`
                 setTimeout(() => {
                     row.style.backgroundColor = '';
                 }, 1000);
+                
+            } catch (error) {
+                console.error('Error updating job status:', error);
+                showNotification('Failed to update job status. Please try again.', 'error');
+                
+                // Revert dropdown to old status
+                if (statusDropdown) {
+                    statusDropdown.value = oldStatus;
+                }
+            } finally {
+                // Re-enable dropdown
+                if (statusDropdown) {
+                    statusDropdown.disabled = false;
+                }
             }
         }
         
