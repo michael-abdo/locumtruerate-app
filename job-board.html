@@ -1146,7 +1146,7 @@
     </div>
 
     <!-- Authentication scripts -->
-    <script src="js/auth.js?v=2"></script>
+    <script src="js/auth.js?v=3"></script>
     <script src="js/auth-guard.js"></script>
 
     <script>
@@ -1207,49 +1207,114 @@
         
         // Initialize jobs from API
         async function initializeJobsData() {
-            console.log('🔧 Loading jobs from API...');
+            console.log('🔧 Loading jobs...');
             
             try {
-                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                // Simulate API delay for realistic UX
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Demo jobs data for staging environment
+                jobsData = [
+                    {
+                        id: '1',
+                        title: 'Emergency Medicine Physician',
+                        facility: 'NYC Medical Center',
+                        location: 'New York, NY',
+                        salary: '$350/hr',
+                        duration: '13 weeks',
+                        hours: '40 hrs/week',
+                        housing: '$2,000/week',
+                        specialty: 'emergency',
+                        state: 'ny',
+                        description: 'Seeking experienced Emergency Medicine physician for busy Level 1 trauma center. Great opportunity in the heart of Manhattan with competitive compensation.',
+                        requirements: ['Board Certified in Emergency Medicine', 'Active NY state license or IMLC', 'ACLS, ATLS, PALS certified', 'Minimum 3 years experience'],
+                        benefits: ['Premium hourly rate', 'Housing stipend', 'Travel reimbursement', 'Malpractice coverage', 'Health insurance available']
+                    },
+                    {
+                        id: '2',
+                        title: 'Cardiologist - Interventional',
+                        facility: 'LA Heart Institute',
+                        location: 'Los Angeles, CA',
+                        salary: '$400/hr',
+                        duration: '26 weeks',
+                        hours: '40 hrs/week',
+                        housing: '$2,500/week',
+                        specialty: 'cardiology',
+                        state: 'ca',
+                        description: 'Join our renowned cardiac program as an interventional cardiologist. State-of-the-art cath lab with high volume and diverse case mix.',
+                        requirements: ['Board Certified in Cardiology', 'Fellowship in Interventional Cardiology', 'Active CA license', 'ACLS certified'],
+                        benefits: ['Top tier compensation', 'Luxury housing', 'Sign-on bonus', 'Full benefits package']
+                    },
+                    {
+                        id: '3',
+                        title: 'Hospitalist - Nocturnist',
+                        facility: 'Chicago General Hospital',
+                        location: 'Chicago, IL',
+                        salary: '$275/hr',
+                        duration: '13 weeks',
+                        hours: '36 hrs/week',
+                        housing: '$1,500/week',
+                        specialty: 'hospitalist',
+                        state: 'il',
+                        description: 'Night shift hospitalist needed for 250-bed community hospital. 7 on/7 off schedule with great work-life balance.',
+                        requirements: ['Board Certified in Internal Medicine or Family Medicine', 'Active IL license', 'BLS/ACLS certified', 'Night shift experience preferred'],
+                        benefits: ['Night differential included', 'Housing provided', 'Flexible scheduling', 'EMR training provided']
+                    },
+                    {
+                        id: '4',
+                        title: 'Anesthesiologist',
+                        facility: 'Houston Surgery Center',
+                        location: 'Houston, TX',
+                        salary: '$425/hr',
+                        duration: '16 weeks',
+                        hours: '40 hrs/week',
+                        housing: '$1,800/week',
+                        specialty: 'anesthesiology',
+                        state: 'tx',
+                        description: 'Coverage needed for busy surgical center specializing in orthopedic and general surgery. Mix of general, regional, and MAC cases.',
+                        requirements: ['Board Certified in Anesthesiology', 'Active TX license', 'Regional anesthesia experience', 'Cardiac anesthesia experience a plus'],
+                        benefits: ['Premium locum rates', 'Modern facilities', 'Block time available', 'Collegial environment']
+                    },
+                    {
+                        id: '5',
+                        title: 'Pediatrician - Outpatient',
+                        facility: 'Phoenix Children\'s Clinic',
+                        location: 'Phoenix, AZ',
+                        salary: '$250/hr',
+                        duration: 'Ongoing',
+                        hours: '32 hrs/week',
+                        housing: 'Remote',
+                        specialty: 'pediatrics',
+                        state: 'az',
+                        description: 'Part-time pediatrician for established outpatient clinic. Flexible schedule perfect for work-life balance in sunny Arizona.',
+                        requirements: ['Board Certified in Pediatrics', 'Active AZ license', 'Spanish speaking preferred', 'EMR experience'],
+                        benefits: ['Flexible schedule', 'No call', 'Established patient base', 'Support staff provided']
+                    },
+                    {
+                        id: '6',
+                        title: 'Psychiatrist - Telepsychiatry',
+                        facility: 'National Telehealth Network',
+                        location: 'Remote',
+                        salary: '$325/hr',
+                        duration: 'Ongoing',
+                        hours: '20-40 hrs/week',
+                        housing: 'Remote',
+                        specialty: 'psychiatry',
+                        state: 'remote',
+                        description: 'Flexible telepsychiatry opportunity. Work from anywhere with established patient panel. Set your own schedule.',
+                        requirements: ['Board Certified in Psychiatry', 'Valid license in multiple states preferred', 'Telepsychiatry experience', 'Reliable internet connection'],
+                        benefits: ['Work from home', 'Flexible hours', 'No commute', 'Tech support provided', 'Malpractice included']
                     }
-                });
+                ];
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                filteredJobs = [...jobsData];
+                console.log('📊 Loaded', jobsData.length, 'demo jobs');
                 
-                const data = await response.json();
+                // Update results count
+                document.getElementById('resultsCount').textContent = jobsData.length;
                 
-                if (data.success) {
-                    // Transform API data to match frontend format
-                    jobsData = data.data.jobs.map(job => ({
-                        id: job.id,
-                        title: job.title,
-                        facility: job.company_name || 'Healthcare Facility',
-                        location: `${job.location}, ${job.state.toUpperCase()}`,
-                        salary: `$${job.hourly_rate_min || job.hourly_rate_max || 0}/hr`,
-                        duration: job.duration || '13 weeks',
-                        hours: '40 hrs/week', // Default, could be in job.shift_type
-                        housing: '$1,500/week', // Default, could be added to API
-                        specialty: job.specialty.toLowerCase(),
-                        state: job.state.toLowerCase(),
-                        description: job.description || 'Contact us for more details about this opportunity.',
-                        requirements: ['Board Certified', 'State License Required', 'Experience Preferred'],
-                        benefits: ['Competitive Salary', 'Housing Stipend', 'Travel Allowance', 'Malpractice Coverage']
-                    }));
-                    
-                    filteredJobs = [...jobsData];
-                    console.log('📊 Loaded', jobsData.length, 'jobs from API');
-                    
-                    // Update results count
-                    document.getElementById('resultsCount').textContent = jobsData.length;
-                } else {
-                    throw new Error(data.message || 'Failed to load jobs');
-                }
+                showToast('Jobs loaded successfully', 'success');
+                
             } catch (error) {
                 console.error('❌ Error loading jobs:', error);
                 showToast('Failed to load jobs. Please try again later.', 'error');
@@ -2196,6 +2261,6 @@
     </script>
     
     <script src="js/mobile-nav.js"></script>
-    <script src="js/bug-reporter.js"></script>
+    <script src="js/bug-reporter.js?v=3"></script>
 </body>
 </html>
