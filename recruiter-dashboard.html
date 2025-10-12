@@ -4045,20 +4045,62 @@
             `;
             
             try {
-                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/jobs?recruiter=me`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getAuthToken()}`
+                // Simulate API delay for realistic UX
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Demo jobs data for staging environment
+                const jobs = [
+                    {
+                        id: '1',
+                        title: 'Emergency Medicine Physician',
+                        companyName: 'NYC Medical Center',
+                        location: 'New York',
+                        state: 'NY',
+                        hourlyRate: 350,
+                        status: 'active',
+                        createdAt: '2025-10-10T08:00:00Z'
+                    },
+                    {
+                        id: '2',
+                        title: 'Cardiologist - Locum Tenens',
+                        companyName: 'LA Health System',
+                        location: 'Los Angeles',
+                        state: 'CA',
+                        hourlyRate: 400,
+                        status: 'active',
+                        createdAt: '2025-10-08T10:30:00Z'
+                    },
+                    {
+                        id: '3',
+                        title: 'Pediatrician',
+                        companyName: 'Chicago Children\'s Hospital',
+                        location: 'Chicago',
+                        state: 'IL',
+                        hourlyRate: 275,
+                        status: 'active',
+                        createdAt: '2025-10-05T14:15:00Z'
+                    },
+                    {
+                        id: '4',
+                        title: 'Anesthesiologist',
+                        companyName: 'Houston Surgery Center',
+                        location: 'Houston',
+                        state: 'TX',
+                        hourlyRate: 425,
+                        status: 'paused',
+                        createdAt: '2025-10-03T09:00:00Z'
+                    },
+                    {
+                        id: '5',
+                        title: 'Family Medicine Physician',
+                        companyName: 'Phoenix Family Clinic',
+                        location: 'Phoenix',
+                        state: 'AZ',
+                        hourlyRate: 300,
+                        status: 'active',
+                        createdAt: '2025-10-01T11:45:00Z'
                     }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                const jobs = data.data?.jobs || [];
+                ];
                 
                 // Clear loading state
                 tbody.innerHTML = '';
@@ -4075,10 +4117,10 @@
                     return;
                 }
                 
-                // Load application counts for each job
-                const jobsWithApplications = await Promise.all(jobs.map(async (job) => {
-                    const appCount = await getApplicationCount(job.id);
-                    return { ...job, applicationCount: appCount };
+                // Add demo application counts
+                const jobsWithApplications = jobs.map(job => ({
+                    ...job,
+                    applicationCount: Math.floor(Math.random() * 20) + 5 // Random between 5-25
                 }));
                 
                 // Render each job
@@ -4111,27 +4153,11 @@
             }
         }
         
-        // Get application count for a specific job
+        // Get application count for a specific job (Demo version for staging)
         async function getApplicationCount(jobId) {
-            try {
-                const response = await fetch(`${AUTH_CONFIG.API_BASE}/api/v1/applications/for-job/${jobId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getAuthToken()}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    return 0;
-                }
-                
-                const data = await response.json();
-                return data.data?.applications?.length || 0;
-            } catch (error) {
-                console.error(`Error loading applications for job ${jobId}:`, error);
-                return 0;
-            }
+            // Return demo application count for staging
+            await new Promise(resolve => setTimeout(resolve, 100)); // Simulate API delay
+            return Math.floor(Math.random() * 20) + 5; // Random between 5-25
         }
         
         // Create job table row
