@@ -1,6 +1,8 @@
 /**
  * Bug Reporter Widget for LocumCalc
- * Vanilla JavaScript bug reporting system
+ * Simplified bug reporting system with just 2 inputs:
+ * - What's wrong? (required description)
+ * - Element selector (optional CSS selector)
  */
 
 class BugReporter {
@@ -116,65 +118,35 @@ class BugReporter {
                 </div>
                 
                 <form id="bug-report-form" style="padding: 1.5rem;">
-                    <div style="margin-bottom: 1rem;">
+                    <div style="margin-bottom: 1.5rem;">
                         <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Bug Title *
+                            What's wrong? *
                         </label>
-                        <input type="text" id="bug-title" required style="
+                        <textarea id="bug-description" rows="6" required style="
+                            width: 100%;
+                            padding: 0.75rem;
+                            border: 2px solid #ddd;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            resize: vertical;
+                            box-sizing: border-box;
+                        " placeholder="Please describe the issue you're experiencing..."></textarea>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
+                            Element Selector (Optional)
+                        </label>
+                        <input type="text" id="element-selector" style="
                             width: 100%;
                             padding: 0.75rem;
                             border: 2px solid #ddd;
                             border-radius: 6px;
                             font-size: 14px;
                             box-sizing: border-box;
-                        " placeholder="Brief description of the issue">
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Bug Type
-                        </label>
-                        <select id="bug-type" style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #ddd;
-                            border-radius: 6px;
-                            font-size: 14px;
-                            box-sizing: border-box;
-                        ">
-                            <option value="ui">UI/Visual Issue</option>
-                            <option value="functionality">Functionality Not Working</option>
-                            <option value="performance">Performance Issue</option>
-                            <option value="data">Data/Calculation Error</option>
-                            <option value="security">Security Concern</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Priority
-                        </label>
-                        <select id="bug-priority" style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #ddd;
-                            border-radius: 6px;
-                            font-size: 14px;
-                            box-sizing: border-box;
-                        ">
-                            <option value="low">Low - Minor issue</option>
-                            <option value="medium" selected>Medium - Affects some users</option>
-                            <option value="high">High - Blocks important functionality</option>
-                            <option value="critical">Critical - Site breaking</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Select Element (Optional)
-                        </label>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            font-family: monospace;
+                        " placeholder="e.g., #submit-button, .error-message, div.header">
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
                             <button type="button" id="element-selector-btn" style="
                                 padding: 0.5rem 1rem;
                                 border: 2px solid var(--primary-color, #007bff);
@@ -185,17 +157,17 @@ class BugReporter {
                                 font-size: 14px;
                                 font-weight: 600;
                                 flex: 1;
-                            ">🎯 Select Element on Page</button>
-                            <button type="button" id="clear-element-btn" style="
+                            ">🎯 Pick Element on Page</button>
+                            <button type="button" id="highlight-element-btn" style="
                                 padding: 0.5rem 1rem;
-                                border: 2px solid #dc3545;
+                                border: 2px solid #28a745;
                                 background: white;
-                                color: #dc3545;
+                                color: #28a745;
                                 border-radius: 6px;
                                 cursor: pointer;
                                 font-size: 14px;
-                                display: none;
-                            ">Clear</button>
+                                font-weight: 600;
+                            ">👁️ Preview</button>
                         </div>
                         <div id="selected-element-info" style="
                             background: #f8f9fa;
@@ -206,52 +178,8 @@ class BugReporter {
                             color: #666;
                             display: none;
                             font-family: monospace;
+                            margin-top: 0.5rem;
                         "></div>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Steps to Reproduce
-                        </label>
-                        <textarea id="bug-steps" rows="4" style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #ddd;
-                            border-radius: 6px;
-                            font-size: 14px;
-                            resize: vertical;
-                            box-sizing: border-box;
-                        " placeholder="1. Go to...&#10;2. Click on...&#10;3. See error..."></textarea>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Expected vs Actual Behavior
-                        </label>
-                        <textarea id="bug-description" rows="4" required style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #ddd;
-                            border-radius: 6px;
-                            font-size: 14px;
-                            resize: vertical;
-                            box-sizing: border-box;
-                        " placeholder="Expected: The form should submit successfully...&#10;Actual: Got an error message..."></textarea>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333;">
-                            Additional Information
-                        </label>
-                        <textarea id="bug-additional" rows="3" style="
-                            width: 100%;
-                            padding: 0.75rem;
-                            border: 2px solid #ddd;
-                            border-radius: 6px;
-                            font-size: 14px;
-                            resize: vertical;
-                            box-sizing: border-box;
-                        " placeholder="Browser, device, any error messages, etc."></textarea>
                     </div>
 
                     <div style="margin-bottom: 1.5rem;">
@@ -333,15 +261,20 @@ class BugReporter {
             this.startElementSelection();
         });
 
-        document.getElementById('clear-element-btn').addEventListener('click', () => {
-            this.clearSelectedElement();
+        document.getElementById('highlight-element-btn').addEventListener('click', () => {
+            this.previewElement();
+        });
+
+        // Update selector when element is picked
+        document.getElementById('element-selector').addEventListener('input', (e) => {
+            this.handleSelectorInput(e.target.value);
         });
     }
 
     openModal() {
         this.populateSystemInfo();
         this.modal.style.display = 'flex';
-        document.getElementById('bug-title').focus();
+        document.getElementById('bug-description').focus();
     }
 
     closeModal() {
@@ -380,12 +313,8 @@ class BugReporter {
 
         try {
             const formData = {
-                title: document.getElementById('bug-title').value,
-                type: document.getElementById('bug-type').value,
-                priority: document.getElementById('bug-priority').value,
-                steps: document.getElementById('bug-steps').value,
                 description: document.getElementById('bug-description').value,
-                additional: document.getElementById('bug-additional').value,
+                elementSelector: document.getElementById('element-selector').value || null,
                 systemInfo: {
                     url: window.location.href,
                     userAgent: navigator.userAgent,
@@ -602,6 +531,10 @@ class BugReporter {
             this.elementOverlay = null;
         }
         
+        // Update input field with selector
+        const selector = this.generateSelector(this.selectedElement);
+        document.getElementById('element-selector').value = selector;
+        
         // Show selected element info
         this.displaySelectedElementInfo();
         
@@ -610,14 +543,11 @@ class BugReporter {
         
         // Reset button
         const selectorBtn = document.getElementById('element-selector-btn');
-        selectorBtn.textContent = '✅ Element Selected';
-        selectorBtn.style.background = '#28a745';
-        selectorBtn.style.color = 'white';
+        selectorBtn.textContent = '🎯 Pick Element on Page';
+        selectorBtn.style.background = 'white';
+        selectorBtn.style.color = 'var(--primary-color, #007bff)';
         
-        // Show clear button
-        document.getElementById('clear-element-btn').style.display = 'block';
-        
-        this.showToast('Element selected! You can now describe the issue with this specific element.', 'success');
+        this.showToast('Element selected! The selector has been added to the input field.', 'success');
     }
 
     cancelElementSelection() {
@@ -716,15 +646,59 @@ class BugReporter {
         // Hide element info
         document.getElementById('selected-element-info').style.display = 'none';
         
-        // Reset buttons
-        const selectorBtn = document.getElementById('element-selector-btn');
-        selectorBtn.textContent = '🎯 Select Element on Page';
-        selectorBtn.style.background = 'white';
-        selectorBtn.style.color = 'var(--primary-color, #007bff)';
-        
-        document.getElementById('clear-element-btn').style.display = 'none';
+        // Clear input
+        document.getElementById('element-selector').value = '';
         
         this.showToast('Selected element cleared', 'info');
+    }
+
+    previewElement() {
+        const selector = document.getElementById('element-selector').value.trim();
+        
+        if (!selector) {
+            this.showToast('Please enter a CSS selector first', 'warning');
+            return;
+        }
+        
+        try {
+            const element = document.querySelector(selector);
+            
+            if (element) {
+                // Temporarily highlight the element
+                const originalBorder = element.style.border;
+                const originalBackground = element.style.background;
+                
+                element.style.border = '3px solid #007bff';
+                element.style.background = 'rgba(0, 123, 255, 0.1)';
+                
+                // Scroll element into view
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Remove highlight after 2 seconds
+                setTimeout(() => {
+                    element.style.border = originalBorder;
+                    element.style.background = originalBackground;
+                }, 2000);
+                
+                this.selectedElement = element;
+                this.displaySelectedElementInfo();
+                this.showToast('Element highlighted on page', 'success');
+            } else {
+                this.showToast('No element found with that selector', 'error');
+                document.getElementById('selected-element-info').style.display = 'none';
+            }
+        } catch (error) {
+            this.showToast('Invalid CSS selector', 'error');
+            console.error('Selector error:', error);
+        }
+    }
+
+    handleSelectorInput(selector) {
+        // Clear selected element info when user types
+        if (selector.trim() === '') {
+            this.selectedElement = null;
+            document.getElementById('selected-element-info').style.display = 'none';
+        }
     }
 }
 
