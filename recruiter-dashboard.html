@@ -8176,24 +8176,32 @@ Dr. James Wilson`,
                 // Initialize core functions with error handling
                 
                 // Load recruiter data first
-                loadRecruiterData();
+                if (typeof loadRecruiterData === 'function') {
+                    loadRecruiterData();
+                }
                 
                 // Check authentication and load jobs
                 if (typeof isAuthenticated === 'function' && isAuthenticated()) {
-                    loadRecruiterJobs();
+                    if (typeof loadRecruiterJobs === 'function') {
+                        loadRecruiterJobs();
+                    }
                 } else if (typeof isAuthenticated === 'function') {
                     // If not authenticated, show login prompt
                     const tbody = document.getElementById('jobs-table-body');
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                                <p>Please <a href="login.html" style="color: var(--primary-color);">login</a> to view your jobs.</p>
-                            </td>
-                        </tr>
-                    `;
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                    <p>Please <a href="login.html" style="color: var(--primary-color);">login</a> to view your jobs.</p>
+                                </td>
+                            </tr>
+                        `;
+                    }
                 } else {
                     // Auth not loaded yet, try to load jobs anyway for demo
-                    loadRecruiterJobs();
+                    if (typeof loadRecruiterJobs === 'function') {
+                        loadRecruiterJobs();
+                    }
                 }
                 
                 // Load jobs from API (deprecated - using loadRecruiterJobs instead)
@@ -8206,10 +8214,12 @@ Dr. James Wilson`,
                 }
                 
                 // Load jobs on initialization
-                loadJobs();
+                // loadJobs(); // Commented out - deprecated function
                 
                 // Add status filter to applicant controls
-                addStatusFilter();
+                if (typeof addStatusFilter === 'function') {
+                    addStatusFilter();
+                }
                 
                 // Initialize pagination
                 if (typeof initializePagination === 'function') {
