@@ -64,35 +64,67 @@ async function login(email, password) {
         return { success: false, error };
     }
 
-    try {
-        const result = await apiRequest(`${AUTH_CONFIG.API_BASE}/api/v1/auth/login`, {
-            method: 'POST',
-            body: JSON.stringify({ email, password })
-        });
-
-        if (result.success && result.data && result.data.data && result.data.data.token) {
-            // Store authentication data
-            localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, result.data.data.token);
-            localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(result.data.data.user));
-            
-            // Maintain compatibility with existing code
-            localStorage.setItem('userAuthenticated', 'true');
-            localStorage.setItem('userEmail', result.data.data.user.email);
-            localStorage.setItem('userName', `${result.data.data.user.firstName || ''} ${result.data.data.user.lastName || ''}`.trim());
-            localStorage.setItem('userRole', result.data.data.user.role);
-
-            showToast('Login successful!', 'success');
-            return { success: true, user: result.data.data.user };
-        } else {
-            const error = result.data.error || result.data.message || 'Login failed';
-            showToast(error, 'error');
-            return { success: false, error };
+    // Demo authentication for staging environment
+    const demoUsers = {
+        'admin@locumcalc.com': {
+            password: 'admin123',
+            user: {
+                id: '1',
+                email: 'admin@locumcalc.com',
+                firstName: 'Admin',
+                lastName: 'User',
+                role: 'admin'
+            }
+        },
+        'recruiter@example.com': {
+            password: 'demo123',
+            user: {
+                id: '2',
+                email: 'recruiter@example.com',
+                firstName: 'Demo',
+                lastName: 'Recruiter',
+                role: 'recruiter'
+            }
+        },
+        'john.doe@example.com': {
+            password: 'demo123',
+            user: {
+                id: '3',
+                email: 'john.doe@example.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                role: 'locum'
+            }
         }
-    } catch (error) {
-        console.error('Login error:', error);
-        const errorMessage = 'Login failed. Please try again.';
-        showToast(errorMessage, 'error');
-        return { success: false, error: errorMessage };
+    };
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Check demo credentials
+    const userInfo = demoUsers[email.toLowerCase()];
+    if (userInfo && userInfo.password === password) {
+        // Generate a demo token
+        const demoToken = 'demo_' + btoa(email + ':' + Date.now());
+        
+        // Store authentication data
+        localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, demoToken);
+        localStorage.setItem(AUTH_CONFIG.USER_KEY, JSON.stringify(userInfo.user));
+        
+        // Maintain compatibility with existing code
+        localStorage.setItem('userAuthenticated', 'true');
+        localStorage.setItem('userEmail', userInfo.user.email);
+        localStorage.setItem('userName', `${userInfo.user.firstName} ${userInfo.user.lastName}`);
+        localStorage.setItem('userRole', userInfo.user.role);
+        
+        // Store user data for dashboards
+        localStorage.setItem('locum_user_data', JSON.stringify(userInfo.user));
+
+        showToast('Login successful!', 'success');
+        return { success: true, user: userInfo.user };
+    } else {
+        showToast('Invalid email or password', 'error');
+        return { success: false, error: 'Invalid credentials' };
     }
 }
 
