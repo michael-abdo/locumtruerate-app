@@ -8179,9 +8179,9 @@ Dr. James Wilson`,
                 loadRecruiterData();
                 
                 // Check authentication and load jobs
-                if (isAuthenticated()) {
+                if (typeof isAuthenticated === 'function' && isAuthenticated()) {
                     loadRecruiterJobs();
-                } else {
+                } else if (typeof isAuthenticated === 'function') {
                     // If not authenticated, show login prompt
                     const tbody = document.getElementById('jobs-table-body');
                     tbody.innerHTML = `
@@ -8191,6 +8191,9 @@ Dr. James Wilson`,
                             </td>
                         </tr>
                     `;
+                } else {
+                    // Auth not loaded yet, try to load jobs anyway for demo
+                    loadRecruiterJobs();
                 }
                 
                 // Load jobs from API (deprecated - using loadRecruiterJobs instead)
