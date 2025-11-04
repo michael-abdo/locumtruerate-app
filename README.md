@@ -1,36 +1,61 @@
-# ContractCalc Pro - Vanilla Demo Pages
+# ContractCalc Pro - Locum Tenens Job Board Platform
 
-## Original Vanilla Demo Pages from sabir15a/LocumCalc.com
+## Project Overview
+A vanilla JavaScript job board platform for locum tenens physicians, featuring multiple dashboard interfaces and utility tools.
 
-This repository contains **ONLY** the original vanilla HTML demo pages and their corresponding screenshots from the sabir15a repository.
+## Directory Structure
 
-### 📋 Demo Pages Included:
+```
+.
+├── public/                 # Main application HTML files
+│   ├── index.html         # Landing page
+│   ├── job-board.html     # Job listings interface
+│   ├── admin-dashboard.html        # Admin control panel
+│   ├── locum-dashboard.html        # Physician dashboard
+│   ├── recruiter-dashboard.html    # Recruiter interface
+│   ├── contract-calculator.html    # Contract rate calculator
+│   ├── paycheck-calculator.html    # Paycheck calculator
+│   ├── login.html         # Authentication pages
+│   ├── signup.html
+│   └── ...
+├── js/                    # JavaScript modules
+│   ├── auth.js            # Authentication logic
+│   ├── bug-reporter.js    # Bug reporting tool
+│   └── ...
+├── css/                   # Stylesheets
+│   └── mobile.css         # Mobile responsive styles
+├── docs/                  # Documentation
+│   ├── images/            # Screenshots and diagrams
+│   └── *.md              # Documentation files
+├── qa/                    # QA test files
+│   └── ux-tests/          # User experience test scripts
+├── scripts/               # Deployment and utility scripts
+│   ├── deploy.sh
+│   └── ...
+├── tests/                 # Test HTML files
+│   └── ...
+├── src/                   # Backend source code (not used in staging)
+├── db/                    # Database files
+└── config/                # Configuration files
+    └── nginx.conf.erb     # Nginx configuration for Heroku
+```
 
-1. **`index.html`** - Main landing page and overview
-2. **`contract-calculator.html`** - Contract rate calculator 
-3. **`paycheck-calculator.html`** - Paycheck calculation tool
-4. **`job-board.html`** - Job listings and search
-5. **`locum-dashboard.html`** - Locum physician dashboard
-6. **`recruiter-dashboard.html`** - Recruiter management dashboard  
-7. **`admin-dashboard.html`** - Admin control panel
+## Technology Stack
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Hosting**: Heroku with nginx buildpack
+- **No frameworks**: Pure JavaScript implementation
 
-### 📸 Screenshots:
-- Corresponding PNG screenshots for each demo page
-- Original screenshots from the design documentation
+## Key Features
+- Multiple user dashboards (Locum, Recruiter, Admin)
+- Job board with search and filtering
+- Contract and paycheck calculators
+- Demo authentication system
+- Bug reporting tool
 
-### 🎨 Design System:
-- **Brand**: ContractCalc Pro
-- **Framework**: Pure HTML/CSS/JavaScript (no dependencies)
-- **Design**: Professional healthcare platform interface
-- **Colors**: Blue (#2563eb) primary with modern design system
+## Usage
+All HTML files in the `public/` directory can be accessed directly. The staging environment uses demo data and does not require backend services.
 
-### 📝 Usage:
-Each HTML file is completely standalone and can be opened directly in a browser. No build process or dependencies required.
-
-### 📅 Source:
-Extracted from original sabir15a/LocumCalc.com repository  
-Branch: master  
-Location: docs/design/UI/
-
-### 🎯 Purpose:
-These are the original vanilla demo pages showcasing the ContractCalc Pro concept and design system before any framework implementation.# Cache bust Mon Sep  8 20:22:50 UTC 2025
+## Deployment
+- **Staging**: Deployed to Heroku at https://locumtruerate-stage-8edec28739b0.herokuapp.com/
+- **Buildpack**: Nginx for static site hosting
+- **Configuration**: See `Procfile` and `static.json`# Cache bust Mon Sep  8 20:22:50 UTC 2025
